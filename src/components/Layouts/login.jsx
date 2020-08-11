@@ -74,19 +74,50 @@ class Main extends Component {
     }
     handleLogin(e){
         e.preventDefault();
-        //Manejamos el inicio de sesion aqui
+        //Manejamos el inicio de sesion aqui, declaramos primero las variables
+        //sobre todo la de localstorage donde viene el host a conectar
+         //La variable body con los datos de inicio
         let valid = this.validInputs(),
-            post = {};
-        post.username = this.state.username;
-        post.password = this.state.password;
+            varLocalStorage = JSON.parse(localStorage.getItem('OrusSystem')),
+            body = {
+                email: this.state.username,
+                password: this.state.password
+            }
+        //Si los datos de usuario son correctos manda la informacion al servidor
         if(valid){
-            this.setState({
-                username:'',
-                password:''
+            fetch("http://"+ varLocalStorage.host +"/api/users/login",{
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.data){
+                    this.setState({
+                        username:'',
+                        password:''
+                    });
+                    this.props.loginFunction(data);
+                } else {
+                    console.log('Login status fetch:', data);
+                    if(data.message) window.alert(data.message);
+                    if(data.errors) window.alert(data.errors);
+                }
+            }).catch(e => {
+                console.log(e);
             });
-            this.props.loginFunction(post);
         }
     }
     catchInputs(e) {
         const {name, value} = e.target;
-       
+        this.setState({
+            [name]: value
+        });
+    }
+    //e9935f70a5ba300cd592aa4ac9f0081291a7bc169029cfea571ca12de1ce8fcc
+}
+
+export default Main;

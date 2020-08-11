@@ -73,7 +73,7 @@ class UserAdd extends Component {
         return (
             <div className="row">
                 <div className="col-md-8">
-                    <div className="card">
+                    <form className="card" onSubmit={this.handleSave} >
                         <div className="card-header">
                             <h3 className="card-title">
                                 <i className="fas fa-user"></i>
@@ -176,20 +176,19 @@ class UserAdd extends Component {
                                         <Link to="/usuarios" 
                                             className="btn btn-default" 
                                             onClick={this.changePage} 
-                                            id='/usuarios/listados' 
+                                            id='/usuarios' 
                                         >
                                             Cancelar
                                         </Link>
                                         <button 
-                                            type="button" 
+                                            type="submit" 
                                             className="btn btn-primary" 
-                                            onClick={this.handleSave}
                                         >Guardar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
                 {this.state.id
                 ? <div className="col-md-4">
@@ -235,6 +234,7 @@ class UserAdd extends Component {
         });
     }
     handleSave(e){
+        e.preventDefault();
         //Maneja el boton de almacenar
         let conf = window.confirm("¿Esta seguro de realizar la accion?");
         if( conf ){

@@ -6,10 +6,14 @@ import {
 import Navtop from './components/Layouts/navtop';
 import Menu from './components/Layouts/menu';
 import Breadcrumb from './components/Layouts/breadcrumb';
-import Control from './components/Layouts/control';
 import Footer from './components/Layouts/footer';
 import Users from './components/Users/index';
 import UserAdd from './components/Users/add';
+import Store from './components/Store/index';
+import StoreAdd from './components/Store/add';
+import Contacts from './components/Contacts/index';
+import ContactsAdd from './components/Contacts/add';
+import Tools from './components/Layouts/tools';
 
 class Routers extends Component {
     constructor(props){
@@ -36,6 +40,7 @@ class Routers extends Component {
                     user={data} 
                     page={this.handlePage} 
                     logOut={this.props.logOut}
+                    active={this.state.page}
                 />
                 <div className="content-wrapper">
                     <Breadcrumb title={this.state.page} subtitle={this.state.subpage} />
@@ -59,7 +64,46 @@ class Routers extends Component {
                                                     page={this.handlePage}
                                                 />
                                             } 
-                                        />       
+                                        />
+                                        <Route path="/almacen/registro/:id?" 
+                                            render={(props) => 
+                                                <StoreAdd {...props} 
+                                                    data={data} 
+                                                    page={this.handlePage}
+                                                />
+                                            } 
+                                        />
+                                        <Route extric path="/almacen" 
+                                            render={(props) => 
+                                                <Store {...props} 
+                                                    data={data} 
+                                                    page={this.handlePage}
+                                                />
+                                            } 
+                                        />
+                                        <Route path="/contactos/registro/:id?" 
+                                            render={(props) => 
+                                                <ContactsAdd {...props} 
+                                                    data={data} 
+                                                    page={this.handlePage}
+                                                />
+                                            } 
+                                        />
+                                        <Route extric path="/contactos" 
+                                            render={(props) => 
+                                                <Contacts {...props} 
+                                                    data={data} 
+                                                    page={this.handlePage}
+                                                />
+                                            } 
+                                        /> 
+                                        <Route extric path="/configuraciones" 
+                                            render={(props) => 
+                                                <Tools {...props} 
+                                                    page={this.handlePage}
+                                                />
+                                            } 
+                                        />      
                                         <Route path="/">
                                             Dashboard
                                         </Route>
@@ -69,7 +113,6 @@ class Routers extends Component {
                         </div>
                     </div>
                 </div>
-                <Control />
                 <Footer />
             </div>
         );

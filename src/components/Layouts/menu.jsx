@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 
 class Menu extends Component {
     constructor(props){
-		super(props);
+        super(props);
         this.changePage = this.changePage.bind(this);
         this.handleLogOut = this.handleLogOut.bind(this);
-	}
-
+    }
+    
     render(){
-        let {companyName, user} = this.props;
-
+        let {companyName, user, active} = this.props;
         return (
             <aside className="main-sidebar sidebar-dark-primary elevation-4">
                 <Link to="/" className="brand-link" onClick={this.changePage} id="/">
@@ -25,7 +24,7 @@ class Menu extends Component {
                                 <i className="fas fa-user-circle"></i>
                                 &nbsp;
                                 {user.name} <small>({user.username})</small><br/>
-                                <span class="badge badge-light">
+                                <span className="badge badge-light">
                                     {user.rol > 0
                                     ? user.rol === 1
                                         ? 'Ventas' 
@@ -36,38 +35,59 @@ class Menu extends Component {
                             </a>
                             <br/>
                             <p>
-                                <button 
-                                    type="button" 
+                                <Link 
+                                    to="/" 
                                     className="btn btn-outline-light" 
                                     onClick={this.handleLogOut} 
-                                >Cerrar sesion</button>
+                                >Cerrar sesion</Link>
                             </p>
                         </div>
                     </div>
                     <nav className="mt-2">
                         <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                             <li className="nav-item has-treeview">
-                                <a href="#" className="nav-link active">
+                                <Link to="/contactos" className={active==='contactos'?"nav-link active":"nav-link"}
+                                    onClick={e => { this.changePage('/contactos') }} 
+                                >
+                                    <i className="nav-icon fas fa-address-book"></i>
+                                    <p>
+                                        Contactos
+                                        <i className="right fas fa-angle-left"></i>
+                                    </p>
+                                </Link>
+                            </li>
+                            <li className="nav-item has-treeview">
+                                <Link to="/almacen" className={active==='almacen'?"nav-link active":"nav-link"}
+                                    onClick={e => { this.changePage('/almacen') }} 
+                                >
+                                    <i className="nav-icon fas fa-database"></i>
+                                    <p>
+                                        Almacen
+                                        <i className="right fas fa-angle-left"></i>
+                                    </p>
+                                </Link>
+                            </li>
+                            <li className="nav-item has-treeview">
+                                <Link to="/usuarios" className={active==='usuarios'?"nav-link active":"nav-link"} 
+                                    onClick={e => { this.changePage('/usuarios') }} 
+                                >
                                     <i className="nav-icon fas fa-user"></i>
                                     <p>
                                         Usuarios
                                         <i className="right fas fa-angle-left"></i>
                                     </p>
-                                </a>
-                                <ul className="nav nav-treeview">
-                                    <li className="nav-item" onClick={this.changePage} id="/usuarios">
-                                        <Link to="/usuarios" className="nav-link" id="/usuarios">
-                                            <i className="far fa-circle nav-icon" id="/usuarios"></i>
-                                            <p id="/usuarios">Listado</p>
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item" onClick={this.changePage} id="/usuarios/registro">
-                                        <Link to="/usuarios/registro" className="nav-link" id="/usuarios/registro">
-                                            <i className="far fa-circle nav-icon" id="/usuarios/registro"></i>
-                                            <p id="/usuarios/registro">Nuevo usuario</p>
-                                        </Link>
-                                    </li>
-                                </ul>
+                                </Link>
+                            </li>
+                            <li className="nav-item has-treeview">
+                                <Link to="/configuraciones" className={active==='configuraciones'?"nav-link active":"nav-link"} 
+                                    onClick={e => { this.changePage('/configuraciones') }} 
+                                >
+                                    <i className="nav-icon fas fa-tools"></i>
+                                    <p>
+                                        Configuraciones
+                                        <i className="right fas fa-angle-left"></i>
+                                    </p>
+                                </Link>
                             </li>
                         </ul>
                     </nav>
@@ -77,14 +97,17 @@ class Menu extends Component {
     }
 
     changePage(e){
-        this.props.page(e.target.id);
+        console.log(e);
+        this.props.page(e);
     }
 
     handleLogOut(){
         let conf = window.confirm('¿Confirma cerrar la sesion?');
 
         if(conf){
+            let e = { target:{id:'/'}};
             this.props.logOut();
+            this.changePage(e);
         }
     }
 }

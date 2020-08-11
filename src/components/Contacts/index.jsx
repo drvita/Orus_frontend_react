@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
+import 'moment/locale/es';
 
-class Users extends Component {
+class Contacts extends Component {
     constructor(props){
         super(props);
         this.state = {
-            users: [],
+            contacts: [],
             load:true
         }
         this.changePage = this.changePage.bind(this);
@@ -13,17 +15,18 @@ class Users extends Component {
     }
     
     componentDidMount(){
-        this.getUsers();
+        this.getContacts();
+        moment.locale('es');
     }
 
     render(){
-        let {users,load} = this.state;
+        let {contacts,load} = this.state;
         return (
             <div className="card">
                 <div className="card-header">
                     <h3 className="card-title">
                         <i className="ion ion-clipboard mr-1"></i>
-                        Usuarios registrados
+                        Contactos registrados
                     </h3>
                     <div className="card-tools">
                         <div className="btn-group">
@@ -46,79 +49,77 @@ class Users extends Component {
                     <table className="table table-hover table-nowrap">
                         <thead>
                             <tr>
-                                <th>Usuario</th>
                                 <th>Nombre</th>
+                                <th>RFC</th>
                                 <th>E-mail</th>
-                                <th>Rol</th>
-                                <th>Actualizado</th>
-                                <th>Creado</th>
-                                <th className="center">Acciones</th>
+                                <th>Tipo</th>
+                                <th>Telefonos</th>
+                                <th>Domicilios</th>
+                                <th>Nacimiento</th>
+                                <th>Accion</th>
                             </tr>
                         </thead>
                         <tbody>
                             {load
                             ? <tr>
-                                <td colSpan="6" className="text-center">
+                                <td colSpan="8" className="text-center">
                                     <div className="spinner-border text-primary" role="status">
                                         <span className="sr-only">Loading...</span>
                                     </div>
                                 </td>
                               </tr>
-                            :  Object.keys(users).length
-                            ? users.map(user => {
+                            :  Object.keys(contacts).length
+                            ? contacts.map(contact => {
+                                contact.telefonos = contact.telefonos.split(',');
                                 return (
-                                <tr key={user.id} >
+                                <tr key={contact.id} >
                                     <td>
                                         <span className="badge badge-primary">
-                                            {user.username}
+                                            {contact.nombre}
                                         </span>
                                     </td>
-                                    <td>{user.name}</td>
-                                    <td>{user.email}</td>
+                                    <td>{contact.rfc}</td>
+                                    <td>{contact.email}</td>
                                     <td>
-                                        <span className="badge badge-light">
-                                            {user.rol > 0
-                                            ? user.rol === 1
-                                                ? 'Ventas' 
-                                                : 'Optometrista' 
-                                            : 'Administrador' 
-                                            }
-                                        </span>
+                                        {contact.tipo
+                                        ? <span className="badge badge-secondary">Proveedor</span> 
+                                        : <span className="badge badge-success">Cliente</span> }
                                     </td>
-                                    <td>{user.updated_at}</td>
-                                    <td>{user.created_at}</td>
+                                    <td>{contact.telefonos[2] ? contact.telefonos[2] : contact.telefonos[0]}</td>
+                                    <td>{contact.domicilio.split(',')[0]}</td>
+                                    <td>{moment(contact.f_nacimiento).fromNow()}</td>
                                     <td>
                                         <a className="btn-flat text-warning" 
                                             href="#delete" 
                                             onClick={this.handleDelete} 
-                                            id={user.id}
+                                            id={contact.id}
                                         >
-                                            <i className="fas fa-trash" id={user.id} ></i>
+                                            <i className="fas fa-trash" id={contact.id} ></i>
                                         </a>
-                                        &nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;
                                         <Link className="btn-flat blue-text" 
-                                            to={"/usuarios/registro/"+user.id} 
+                                            to={"/contactos/registro/"+contact.id} 
                                             onClick={this.changePage} 
-                                            id='/usuarios/registro' 
+                                            id='/contactos/registro' 
                                         >
-                                            <i className="fas fa-pencil-alt" id='/usuarios/registro' ></i>
+                                            <i className="fas fa-pencil-alt" id='/contactos/registro' ></i>
                                         </Link>
                                     </td>
                                 </tr>
                                 );
                             })
                             :   <tr>
-                                    <th colSpan="6" className="text-center">No hay datos para mostrar</th>
+                                    <th colSpan="8" className="text-center">No hay datos para mostrar</th>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
                 <div className="card-footer clearfix">
-                    <Link to="/usuarios/registro" className="btn btn-info float-right" onClick={this.changePage} id='/usuarios/registro' >
-                        <i className="fas fa-plus" id='/usuarios/registro'></i> 
+                    <Link to="/contactos/registro" className="btn btn-info float-right" onClick={this.changePage} id='/contactos/registro' >
+                        <i className="fas fa-plus" id='/contactos/registro'></i> 
                         &nbsp;
-                        Nuevo usuario
+                        Nuevo contacto
                     </Link>
                 </div>
             </div>
@@ -134,7 +135,7 @@ class Users extends Component {
             varLocalStorage = JSON.parse(localStorage.getItem('OrusSystem'));
 
         if( conf ){
-            fetch("http://"+ varLocalStorage.host +"/api/users/"+ id,{
+            fetch("http://"+ varLocalStorage.host +"/api/contacts/"+ id,{
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
@@ -152,11 +153,11 @@ class Users extends Component {
             });
         }
     }
-    getUsers(){
+    getContacts(){
         //Variables en localStorage
         let varLocalStorage = JSON.parse(localStorage.getItem('OrusSystem'));
         //Realiza la peticion de los usuarios
-        fetch("http://"+ varLocalStorage.host +"/api/users",{
+        fetch("http://"+ varLocalStorage.host +"/api/contacts",{
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -167,17 +168,17 @@ class Users extends Component {
         .then(res => res.json())
         .then(data => {
             this.setState({
-                users: data.data,
+                contacts: data.data,
                 load:false
             });
         }).catch(e => {
             console.log(e);
             this.setState({
-                users: [],
+                contacts: [],
                 load:false
             });
         });
     }
 }
 
-export default Users;
+export default Contacts;

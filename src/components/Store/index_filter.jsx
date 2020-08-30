@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 
-export default class Modal extends Component {
+export default class Filter extends Component {
   render() {
     return (
       <div className="modal" tabIndex="-1" role="dialog" id="filters">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Filtros</h5>
+              <h5 className="modal-title">Busquedas</h5>
               <button
                 type="button"
                 className="close"
@@ -28,7 +28,9 @@ export default class Modal extends Component {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Codigo o producto"
+                  placeholder="Por: codigo o producto"
+                  value={this.props.search}
+                  onChange={this.onChangeValue}
                 />
               </div>
             </form>
@@ -41,8 +43,24 @@ export default class Modal extends Component {
               >
                 Cancelar
               </button>
-              <button type="button" className="btn btn-primary">
-                Filtrar
+              <button
+                type="button"
+                className={
+                  this.props.search
+                    ? "btn btn-warning"
+                    : "btn btn-warning disabled"
+                }
+                onClick={this.onClickClean}
+              >
+                Limpiar
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={this.onClickFilter}
+                data-dismiss="modal"
+              >
+                Buscar
               </button>
             </div>
           </div>
@@ -50,4 +68,15 @@ export default class Modal extends Component {
       </div>
     );
   }
+
+  onClickClean = () => {
+    this.props.onChangeValue("");
+  };
+  onClickFilter = () => {
+    console.log("Cargando nuevamente lista de productos");
+    this.props.handleFilter();
+  };
+  onChangeValue = (e) => {
+    this.props.onChangeValue(e.target.value);
+  };
 }

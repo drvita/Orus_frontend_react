@@ -29,6 +29,34 @@ class Routers extends Component {
   componentDidMount() {
     //Manejamos el router dependiendo de la ruta
     this.handlePage(window.location.pathname);
+    //Variables en localStorage
+    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+
+    //Realizando verificación de usuarios
+    console.log("Verificando usuario");
+    fetch("http://" + varLocalStorage.host + "/api/user", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + varLocalStorage.token,
+      },
+    })
+      .then((res) => {
+        if (!res.ok && varLocalStorage.token !== "") {
+          console.log("Usuario invalido", res.ok);
+          this.props.logOut();
+          this.handlePage("/");
+        } else {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        console.log("Usuario valido");
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
 
   render() {
@@ -145,7 +173,7 @@ class Routers extends Component {
 
   handlePage = (page) => {
     //Maneja el renderiazado del componentes cuando se cambíe el componentes
-    if (page === "") page = "/";
+    if (page === "" || page === undefined) page = "/";
     let locations = page.split("/");
     if (locations[1] === "") {
       this.setState({

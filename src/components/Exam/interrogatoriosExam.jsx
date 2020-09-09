@@ -25,27 +25,31 @@ export default class InterrogatorioExam extends Component {
           data-parent="#accordionExample"
         >
           <div className="card-body">
-            <ul className="list-group">
-              <li className="list-group-item">
-                Interrogatorio
+            <div className="row">
+              <div className="col-12">
+                <label>Interrogatorio inicial</label>
                 <textarea
                   name="interrogatorio"
                   className="form-control"
                   value={this.props.interrogatorio}
                   onChange={this.catchInputs}
                 ></textarea>
-              </li>
-              <li className="list-group-item">
-                Cirugias oculares
+              </div>
+            </div>
+            <div className="row mt-2">
+              <div className="col-12">
+                <label>Cirugias oculares</label>
                 <textarea
                   name="coa"
                   className="form-control"
                   value={this.props.coa}
                   onChange={this.catchInputs}
                 ></textarea>
-              </li>
-              <li className="list-group-item">
-                Antecedentes oculares patologicas personales
+              </div>
+            </div>
+            <div className="row mt-2">
+              <div className="col-12">
+                <label>Antecedentes oculares patologicas personales</label>
                 <textarea
                   name="aopp"
                   className="form-control"
@@ -53,9 +57,11 @@ export default class InterrogatorioExam extends Component {
                   value={this.props.aopp}
                   onChange={this.catchInputs}
                 ></textarea>
-              </li>
-              <li className="list-group-item">
-                Antecedentes oculares patologicas familiares
+              </div>
+            </div>
+            <div className="row mt-2">
+              <div className="col-12">
+                <label>Antecedentes oculares patologicas familiares</label>
                 <textarea
                   name="aopf"
                   className="form-control"
@@ -63,8 +69,8 @@ export default class InterrogatorioExam extends Component {
                   value={this.props.aopf}
                   onChange={this.catchInputs}
                 ></textarea>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>

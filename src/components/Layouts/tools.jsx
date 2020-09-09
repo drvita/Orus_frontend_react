@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Category from "./tools_category";
 //import { Link } from 'react-router-dom';
 
 export default class StoreAdd extends Component {
@@ -12,6 +13,7 @@ export default class StoreAdd extends Component {
       name: "",
       username: "",
       password: "",
+      category_list: [],
     };
   }
 
@@ -68,27 +70,23 @@ export default class StoreAdd extends Component {
                 />
               </div>
             </div>
-            <div className="card-footer">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="btn-group float-right" role="group">
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={this.clickSave}
-                    >
-                      Guardar
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <div className="card-footer text-right">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={this.clickSave}
+              >
+                Guardar
+              </button>
             </div>
           </div>
+
+          <Category />
         </div>
         <div className="col-6">
           <div className="card card-primary card-outline">
             <div className="card-body">
-              <h5 className="card-title">Usuarios</h5>
+              <h5 className="card-title">Usuario</h5>
               <p>&nbsp;</p>
               <div className="input-group mb-3">
                 <div className="input-group-prepend">
@@ -152,20 +150,14 @@ export default class StoreAdd extends Component {
                 />
               </div>
             </div>
-            <div className="card-footer">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="btn-group float-right" role="group">
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={this.clickSaveUser}
-                    >
-                      Guardar
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <div className="card-footer text-right">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={this.clickSaveUser}
+              >
+                Guardar
+              </button>
             </div>
           </div>
         </div>

@@ -6,6 +6,10 @@ import Generales from "./generalesExam";
 import Interrogatorios from "./interrogatoriosExam";
 import KeraRet from "./keraRetExam";
 import Diabetes from "./diabetesExam";
+import Agudeza from "./agudezaExam";
+import Diagnostico from "./diagnosticoExam";
+import Graduacion from "./graduacionExam";
+import Observaciones from "./observacionesExam";
 
 export default class ExamAdd extends Component {
   constructor(props) {
@@ -42,16 +46,16 @@ export default class ExamAdd extends Component {
       diagnostico: "Hemetrope",
       presbicie: true,
       txoftalmico: "",
-      esferaoi: "",
-      esferaod: "",
-      cilindroi: "",
-      cilindrod: "",
-      ejeoi: "",
-      ejeod: "",
-      adicioni: "",
-      adiciond: "",
-      dpoi: "",
-      dpod: "",
+      esferaoi: 0,
+      esferaod: 0,
+      cilindroi: 0,
+      cilindrod: 0,
+      ejeoi: 0,
+      ejeod: 0,
+      adicioni: 0,
+      adiciond: 0,
+      dpoi: 0,
+      dpod: 0,
       avfoi: "",
       avfod: "",
       avf2o: "",
@@ -59,8 +63,8 @@ export default class ExamAdd extends Component {
       lcgoi: "",
       lcgod: "",
       txoptico: "",
-      alturaoi: "",
-      alturaod: "",
+      alturaoi: 0,
+      alturaod: 0,
       pioi: 0,
       piod: 0,
       observaciones: "",
@@ -68,17 +72,17 @@ export default class ExamAdd extends Component {
       tablet: false,
       movil: false,
       lap: false,
-      lap_time: "",
-      pc_time: "",
-      tablet_time: "",
-      movil_time: "",
-      d_time: "",
+      lap_time: "00:00",
+      pc_time: "00:00",
+      tablet_time: "00:00",
+      movil_time: "00:00",
+      d_time: "00:00",
       d_media: "",
       d_test: "",
       d_fclod: false,
       d_fcloi: false,
-      d_fclod_time: "",
-      d_fcloi_time: "",
+      d_fclod_time: "00:00",
+      d_fcloi_time: "00:00",
       contact_id: 0,
       status: 0,
     };
@@ -201,636 +205,120 @@ export default class ExamAdd extends Component {
             <div className="card-header">
               <h3 className="card-title">
                 <i className="fas fa-notes-medical mr-1"></i>
-                Nuevo examen
+                {this.state.id ? "Examen" : "Nuevo examen"}
               </h3>
             </div>
             <div className="card-body">
               <div className="accordion" id="accordionExample">
-                <Generales
-                  pc={this.state.pc}
-                  tablet={this.state.tablet}
-                  movil={this.state.movil}
-                  lap={this.state.lap}
-                  lap_time={this.state.lap_time}
-                  pc_time={this.state.pc_time}
-                  tablet_time={this.state.tablet_time}
-                  movil_time={this.state.movil_time}
-                  cefalea={this.state.cefalea}
-                  c_frecuencia={this.state.c_frecuencia}
-                  c_intensidad={this.state.c_intensidad}
-                  frontal={this.state.frontal}
-                  temporal={this.state.temporal}
-                  occipital={this.state.occipital}
-                  generality={this.state.generality}
-                  temporaoi={this.state.temporaoi}
-                  temporaod={this.state.temporaod}
-                  onChangeInput={this.handleChangeInput}
-                />
+                {this.state.contact_id ? (
+                  <React.Fragment>
+                    <Generales
+                      pc={this.state.pc}
+                      tablet={this.state.tablet}
+                      movil={this.state.movil}
+                      lap={this.state.lap}
+                      lap_time={this.state.lap_time}
+                      pc_time={this.state.pc_time}
+                      tablet_time={this.state.tablet_time}
+                      movil_time={this.state.movil_time}
+                      cefalea={this.state.cefalea}
+                      c_frecuencia={this.state.c_frecuencia}
+                      c_intensidad={this.state.c_intensidad}
+                      frontal={this.state.frontal}
+                      temporal={this.state.temporal}
+                      occipital={this.state.occipital}
+                      generality={this.state.generality}
+                      temporaoi={this.state.temporaoi}
+                      temporaod={this.state.temporaod}
+                      onChangeInput={this.handleChangeInput}
+                    />
 
-                <Interrogatorios
-                  interrogatorio={this.state.interrogatorio}
-                  coa={this.state.coa}
-                  aopp={this.state.aopp}
-                  aopf={this.state.aopf}
-                  onChangeInput={this.handleChangeInput}
-                />
+                    <Interrogatorios
+                      interrogatorio={this.state.interrogatorio}
+                      coa={this.state.coa}
+                      aopp={this.state.aopp}
+                      aopf={this.state.aopf}
+                      onChangeInput={this.handleChangeInput}
+                    />
 
-                <KeraRet
-                  keratometriaoi={this.state.keratometriaoi}
-                  keratometriaod={this.state.keratometriaod}
-                  rsoi={this.state.rsoi}
-                  rsod={this.state.rsod}
-                  onChangeInput={this.handleChangeInput}
-                />
+                    <KeraRet
+                      keratometriaoi={this.state.keratometriaoi}
+                      keratometriaod={this.state.keratometriaod}
+                      rsoi={this.state.rsoi}
+                      rsod={this.state.rsod}
+                      onChangeInput={this.handleChangeInput}
+                    />
 
-                <Diabetes
-                  d_time={this.state.d_time}
-                  d_media={this.state.d_media}
-                  d_test={this.state.d_test}
-                  d_fclod={this.state.d_fclod}
-                  d_fclod_time={this.state.d_fclod_time}
-                  d_fcloi={this.state.d_fcloi}
-                  d_fcloi_time={this.state.d_fcloi_time}
-                  oftalmoscopia={this.state.oftalmoscopia}
-                  onChangeInput={this.handleChangeInput}
-                />
+                    <Diabetes
+                      d_time={this.state.d_time}
+                      d_media={this.state.d_media}
+                      d_test={this.state.d_test}
+                      d_fclod={this.state.d_fclod}
+                      d_fclod_time={this.state.d_fclod_time}
+                      d_fcloi={this.state.d_fcloi}
+                      d_fcloi_time={this.state.d_fcloi_time}
+                      oftalmoscopia={this.state.oftalmoscopia}
+                      onChangeInput={this.handleChangeInput}
+                    />
 
-                <div className="card">
-                  <div className="card-header" id="heading5">
-                    <h2 className="mb-0">
-                      <button
-                        className="btn btn-link btn-block text-left text-info collapsed"
-                        type="button"
-                        data-toggle="collapse"
-                        data-target="#caja5"
-                        aria-expanded="false"
-                        aria-controls="caja5"
-                      >
-                        Capacidad y agudeza visual
-                      </button>
-                    </h2>
-                  </div>
-                  <div
-                    id="caja5"
-                    className="collapse"
-                    aria-labelledby="headingThree"
-                    data-parent="#accordionExample"
-                  >
-                    <div className="card-body">
-                      <ul className="list-group">
-                        <li className="list-group-item">
-                          <div className="row">
-                            <div className="col-md-6">Capacidad visual</div>
-                          </div>
-                          <div className="row">
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Derecho</label>
-                              <input
-                                type="text"
-                                name="cvod"
-                                maxLength="12"
-                                className="form-control"
-                                value={this.state.cvod}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Izquierdo</label>
-                              <input
-                                type="text"
-                                name="cvoi"
-                                maxLength="12"
-                                className="form-control"
-                                value={this.state.cvoi}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                          </div>
-                        </li>
-                        <li className="list-group-item">
-                          <div className="row">
-                            <div className="col-md-6">
-                              Agudeza visual (Sin lentes)
-                            </div>
-                            <div className="col-md-6">
-                              Agudeza visual (con la graduaci&oacute;n anterior)
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Derecho</label>
-                              <input
-                                type="text"
-                                name="avslod"
-                                maxLength="12"
-                                className="form-control"
-                                value={this.state.avslod}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Izquierdo</label>
-                              <input
-                                type="text"
-                                name="avsloi"
-                                maxLength="12"
-                                className="form-control"
-                                value={this.state.avsloi}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Derecho</label>
-                              <input
-                                type="text"
-                                name="avcgaod"
-                                maxLength="12"
-                                className="form-control input-xs"
-                                value={this.state.avcgaod}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Izquierdo</label>
-                              <input
-                                type="text"
-                                name="avcgaoi"
-                                maxLength="12"
-                                className="form-control input-xs"
-                                value={this.state.avcgaoi}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                          </div>
-                        </li>
-                        <li className="list-group-item">
-                          <div className="row">
-                            <div className="col-md-6">Agudeza visual final</div>
-                          </div>
-                          <div className="row">
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Derecho</label>
-                              <br />
-                              <input
-                                type="text"
-                                name="avfod"
-                                maxLength="12"
-                                className="form-control"
-                                value={this.state.avfod}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Izquierdo</label>
-                              <br />
-                              <input
-                                type="text"
-                                name="avfoi"
-                                maxLength="12"
-                                className="form-control"
-                                value={this.state.avfoi}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-4">
-                              <i className="fa fa-eye"></i>
-                              <i className="fa fa-eye"></i> <label>Ambos</label>
-                              <br />
-                              <input
-                                type="text"
-                                name="avf2o"
-                                maxLength="25"
-                                className="form-control"
-                                value={this.state.avf2o}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
+                    <Agudeza
+                      cvod={this.state.cvod}
+                      cvoi={this.state.cvoi}
+                      avslod={this.state.avslod}
+                      avsloi={this.state.avsloi}
+                      avcgaod={this.state.avcgaod}
+                      avcgaoi={this.state.avcgaoi}
+                      avfod={this.state.avfod}
+                      avfoi={this.state.avfoi}
+                      avf2o={this.state.avf2o}
+                      onChangeInput={this.handleChangeInput}
+                    />
+
+                    <Diagnostico
+                      diagnostico={this.state.diagnostico}
+                      presbicie={this.state.presbicie}
+                      piod={this.state.piod}
+                      pioi={this.state.pioi}
+                      txoftalmico={this.state.txoftalmico}
+                      onChangeInput={this.handleChangeInput}
+                    />
+
+                    <Graduacion
+                      esferaod={this.state.esferaod}
+                      esferaoi={this.state.esferaoi}
+                      cilindrod={this.state.cilindrod}
+                      cilindroi={this.state.cilindroi}
+                      ejeod={this.state.ejeod}
+                      ejeoi={this.state.ejeoi}
+                      adiciond={this.state.adiciond}
+                      adicioni={this.state.adicioni}
+                      dpod={this.state.dpod}
+                      dpoi={this.state.dpoi}
+                      alturaod={this.state.alturaod}
+                      alturaoi={this.state.alturaoi}
+                      lcmarca={this.state.lcmarca}
+                      lcgod={this.state.lcgod}
+                      lcgoi={this.state.lcgoi}
+                      onChangeInput={this.handleChangeInput}
+                    />
+
+                    <Observaciones
+                      observaciones={this.state.observaciones}
+                      onChangeInput={this.handleChangeInput}
+                    />
+                  </React.Fragment>
+                ) : (
+                  <div className="card">
+                    <div className="card-body text-info">
+                      <i className="fas fa-exclamation-triangle mr-2"></i>
+                      <label>Elija primero un paciente</label>
                     </div>
                   </div>
-                </div>
-
-                <div className="card">
-                  <div className="card-header" id="heading6">
-                    <h2 className="mb-0">
-                      <button
-                        className="btn btn-link btn-block text-left text-info collapsed"
-                        type="button"
-                        data-toggle="collapse"
-                        data-target="#caja6"
-                        aria-expanded="false"
-                        aria-controls="caja6"
-                      >
-                        Diagnostico
-                      </button>
-                    </h2>
-                  </div>
-                  <div
-                    id="caja6"
-                    className="collapse"
-                    aria-labelledby="headingThree"
-                    data-parent="#accordionExample"
-                  >
-                    <div className="card-body">
-                      <ul className="list-group">
-                        <li className="list-group-item">
-                          <div className="row">
-                            <div className="col-md-6"></div>
-                            <div className="col-md-6">
-                              Tensi&oacute;n ocular
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-md-3">
-                              Diagnostico
-                              <select
-                                name="diagnostico"
-                                className="form-control"
-                                value={this.state.diagnostico}
-                                onChange={this.catchInputs}
-                              >
-                                <option value="Hemetrope">
-                                  Hem&eacute;trope
-                                </option>
-                                <option value="hipermetropia">
-                                  Hipermetrop&iacute;a
-                                </option>
-                                <option value="hipermetropia-astigmatismo">
-                                  Hipermetrop&iacute;a y astigmatismo
-                                </option>
-                                <option value="hipermetropia-miopia">
-                                  Hipermetrop&iacute;a y miop&iacute;a
-                                </option>
-                                <option value="astigmatismo-regla">
-                                  Astigmatismo con la regla
-                                </option>
-                                <option value="astigmatismo-contra-regla">
-                                  Astigmatismo contra la regla
-                                </option>
-                                <option value="astigmatismo-oblicuo">
-                                  Astigmatismo oblicuo
-                                </option>
-                                <option value="astigmatismo-miopia">
-                                  Astigmatismo/m&iacute;opico
-                                </option>
-                                <option value="miopia">Miop&iacute;a</option>
-                              </select>
-                            </div>
-                            <div className="col-md-3">
-                              Presbicie
-                              <br />
-                              <input
-                                name="presbicie"
-                                type="checkbox"
-                                checked={this.state.presbicie}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Derecho</label>
-                              <input
-                                type="number"
-                                name="piod"
-                                min="0"
-                                max="40"
-                                step="1"
-                                className="form-control"
-                                value={this.state.piod}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-3">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Izquierdo</label>
-                              <input
-                                type="number"
-                                name="pioi"
-                                min="0"
-                                max="40"
-                                step="1"
-                                className="form-control"
-                                value={this.state.pioi}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                          </div>
-                        </li>
-                        <li className="list-group-item">
-                          Tratamiento oftalmico
-                          <textarea
-                            name="txoftalmico"
-                            className="form-control"
-                            value={this.state.txoftalmico}
-                            onChange={this.catchInputs}
-                          ></textarea>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="card-header" id="heading7">
-                    <h2 className="mb-0">
-                      <button
-                        className="btn btn-link btn-block text-left text-info collapsed"
-                        type="button"
-                        data-toggle="collapse"
-                        data-target="#caja7"
-                        aria-expanded="false"
-                        aria-controls="caja7"
-                      >
-                        Graduaci&oacute;n
-                      </button>
-                    </h2>
-                  </div>
-                  <div
-                    id="caja7"
-                    className="collapse"
-                    aria-labelledby="headingThree"
-                    data-parent="#accordionExample"
-                  >
-                    <div className="card-body">
-                      <ul className="list-group">
-                        <li className="list-group-item">
-                          <div className="row">
-                            <div className="col-md-12">
-                              <table className="table table-bordered table-hover">
-                                <thead>
-                                  <tr>
-                                    <th>#</th>
-                                    <th>Esfera</th>
-                                    <th>Cilindro</th>
-                                    <th>Eje</th>
-                                    <th>Adici&oacute;n</th>
-                                    <th>D/P</th>
-                                    <th>Altura</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>
-                                      <label>D</label>
-                                      <i className="fa fa-eye"></i>
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="esferaod"
-                                        min="-20"
-                                        max="20"
-                                        step=".25"
-                                        className="form-control"
-                                        value={this.state.esferaod}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="cilindrod"
-                                        min="-20"
-                                        max="0"
-                                        step=".25"
-                                        className="form-control"
-                                        value={this.state.cilindrod}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="ejeod"
-                                        min="0"
-                                        max="180"
-                                        step="1"
-                                        className="form-control"
-                                        placeholder="°"
-                                        value={this.state.ejeod}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="adiciond"
-                                        min="0"
-                                        max="3"
-                                        step=".25"
-                                        className="form-control"
-                                        value={this.state.adiciond}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="dpod"
-                                        min="0"
-                                        max="80"
-                                        step=".1"
-                                        className="form-control"
-                                        value={this.state.dpod}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="alturaod"
-                                        min="0"
-                                        max="80"
-                                        step=".1"
-                                        className="form-control"
-                                        value={this.state.alturaod}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td>
-                                      <label>I</label>
-                                      <i className="fa fa-eye"></i>
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="esferaoi"
-                                        min="-20"
-                                        max="20"
-                                        step=".25"
-                                        className="form-control"
-                                        value={this.state.esferaoi}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="cilindroi"
-                                        min="-20"
-                                        max="0"
-                                        step=".25"
-                                        className="form-control"
-                                        value={this.state.cilindroi}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="ejeoi"
-                                        min="0"
-                                        max="180"
-                                        step="1"
-                                        className="form-control"
-                                        placeholder="°"
-                                        value={this.state.ejeoi}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="adicioni"
-                                        min="0"
-                                        max="3"
-                                        step=".25"
-                                        className="form-control"
-                                        value={this.state.adicioni}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="dpoi"
-                                        min="0"
-                                        max="80"
-                                        step=".1"
-                                        className="form-control"
-                                        value={this.state.dpoi}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        type="number"
-                                        name="alturaoi"
-                                        min="0"
-                                        max="80"
-                                        step=".1"
-                                        className="form-control"
-                                        value={this.state.alturaoi}
-                                        onChange={this.catchInputs}
-                                      />
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        </li>
-                        <li className="list-group-item">
-                          <div className="row">
-                            <div className="col-md-12">
-                              Lente de contacto
-                              <input
-                                type="text"
-                                name="lcmarca"
-                                maxLength="70"
-                                className="form-control"
-                                value={this.state.lcmarca}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-md-4">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Derecho</label>
-                              <input
-                                type="text"
-                                name="lcgod"
-                                maxLength="30"
-                                className="form-control"
-                                value={this.state.lcgod}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                            <div className="col-md-4">
-                              <i className="fa fa-eye"></i>{" "}
-                              <label>Izquierdo</label>
-                              <input
-                                type="text"
-                                name="lcgoi"
-                                maxLength="30"
-                                className="form-control"
-                                value={this.state.lcgoi}
-                                onChange={this.catchInputs}
-                              />
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="card-header" id="heading8">
-                    <h2 className="mb-0">
-                      <button
-                        className="btn btn-link btn-block text-left text-info collapsed"
-                        type="button"
-                        data-toggle="collapse"
-                        data-target="#caja8"
-                        aria-expanded="false"
-                        aria-controls="caja8"
-                      >
-                        Observaciones
-                      </button>
-                    </h2>
-                  </div>
-                  <div
-                    id="caja8"
-                    className="collapse"
-                    aria-labelledby="headingThree"
-                    data-parent="#accordionExample"
-                  >
-                    <div className="card-body">
-                      <ul className="list-group">
-                        <li className="list-group-item">
-                          <textarea
-                            name="observaciones"
-                            className="form-control"
-                            value={this.state.observaciones}
-                            onChange={this.catchInputs}
-                          ></textarea>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
             <div className="card-footer text-right">
-              <div
-                className="btn-group"
-                role="group"
-                aria-label="Basic example"
-              >
+              <div className="btn-group" role="group">
                 <Link
                   to="/consultorio"
                   className="btn btn-secondary"
@@ -853,9 +341,7 @@ export default class ExamAdd extends Component {
                         : "fas fa-lock mr-1"
                     }
                   ></i>
-                  <strong>
-                    {this.state.status ? "Desbloquear" : "Bloquear"}
-                  </strong>
+                  <strong>{this.state.status ? "Activar" : "Terminar"}</strong>
                 </button>
                 <button
                   type="button"
@@ -921,7 +407,8 @@ export default class ExamAdd extends Component {
           ? "http://" + varLocalStorage.host + "/api/exams/" + id
           : "http://" + varLocalStorage.host + "/api/exams",
         method = id ? "PUT" : "POST";
-      //Actualiza el contacto o creamos el contacto
+      //Crear o modificar examen
+      console.log("Enviando datos del examen a la API");
       fetch(url, {
         method: method,
         body: JSON.stringify(body),
@@ -931,10 +418,23 @@ export default class ExamAdd extends Component {
           Authorization: "Bearer " + varLocalStorage.token,
         },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+          }
+          return res.json();
+        })
         .then((data) => {
-          if (data.data) this.props.history.goBack();
-          else console.log(data.message);
+          if (data.data) {
+            console.log("Examen almacenado");
+            if (
+              window.confirm(
+                "Examen almacenado con exito!.\n¿Desea cerrar este examen?"
+              )
+            ) {
+              this.props.history.goBack();
+            }
+          } else console.log(data.message);
         })
         .catch((e) => {
           console.log(e);

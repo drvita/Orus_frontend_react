@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import "moment/locale/es";
+//import "moment/locale/es";
 import Filter from "./index_filter";
 
 export default class Exam extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      contacts: {
+      exams: {
         data: [],
         meta: {},
       },
@@ -17,6 +17,8 @@ export default class Exam extends Component {
       orderby: "created_at",
       order: "desc",
       search: "",
+      status: 0,
+      date: moment.utc(new Date()).local().format("YYYY-MM-DD"),
     };
   }
 
@@ -32,17 +34,15 @@ export default class Exam extends Component {
   }
 
   render() {
-    let { contacts, load } = this.state,
+    let { exams, load } = this.state,
       pages = [];
-    if (Object.keys(contacts).length && contacts.meta.total > 10) {
-      for (var i = 1; i <= this.state.contacts.meta.last_page; i++) {
+    if (Object.keys(exams).length && exams.meta.total > 10) {
+      for (var i = 1; i <= exams.meta.last_page; i++) {
         pages.push(
           <li
             key={i}
             className={
-              this.state.contacts.meta.current_page === i
-                ? "page-item disabled"
-                : "page-item"
+              exams.meta.current_page === i ? "page-item disabled" : "page-item"
             }
           >
             <a
@@ -75,7 +75,7 @@ export default class Exam extends Component {
                 <i className="fas fa-search"></i>
               </a>
             </div>
-            {this.state.contacts.meta.total > 10 ? (
+            {exams.meta.total > 10 ? (
               <div className="btn-group">
                 <ul className="pagination pagination-sm">{pages}</ul>
               </div>
@@ -85,7 +85,7 @@ export default class Exam extends Component {
           </div>
         </div>
         <div className="card-body table-responsive p-0">
-          <table className="table table-hover table-nowrap">
+          <table className="table table-bordered table-hover table-nowrap">
             <thead>
               <tr>
                 <th
@@ -96,6 +96,7 @@ export default class Exam extends Component {
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
+                  scope="col"
                 >
                   Nombre del paciente
                   {this.state.orderby === "paciente" ? (
@@ -115,6 +116,7 @@ export default class Exam extends Component {
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
+                  scope="col"
                 >
                   Edad
                   {this.state.orderby === "edad" ? (
@@ -134,6 +136,7 @@ export default class Exam extends Component {
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
+                  scope="col"
                 >
                   Estado
                   {this.state.orderby === "status" ? (
@@ -153,6 +156,7 @@ export default class Exam extends Component {
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
+                  scope="col"
                 >
                   Creado
                   {this.state.orderby === "created_at" ? (
@@ -172,6 +176,7 @@ export default class Exam extends Component {
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
+                  scope="col"
                 >
                   Actualizado
                   {this.state.orderby === "updated_at" ? (
@@ -183,7 +188,9 @@ export default class Exam extends Component {
                     ""
                   )}
                 </th>
-                <th>Accion</th>
+                <th className="text-right" scope="col">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -195,44 +202,61 @@ export default class Exam extends Component {
                     </div>
                   </td>
                 </tr>
-              ) : Object.keys(contacts.data).length ? (
-                contacts.data.map((contact) => {
-                  contact.telefonos =
-                    typeof contact.telefonos === "string"
-                      ? contact.telefonos.split(",")
-                      : contact.telefonos;
+              ) : Object.keys(exams.data).length ? (
+                exams.data.map((exam) => {
                   return (
-                    <tr key={contact.id}>
+                    <tr
+                      key={exam.id}
+                      className={
+                        exam.estado
+                          ? "table-secondary"
+                          : moment
+                              .utc(new Date())
+                              .isSame(moment.utc(exam.created_at), "hour")
+                          ? "table-success"
+                          : ""
+                      }
+                    >
                       <td>
-                        <span className="badge badge-primary text-capitalize">
-                          {contact.paciente.nombre}
+                        <span
+                          className={
+                            exam.estado
+                              ? "badge badge-secondary text-capitalize"
+                              : moment
+                                  .utc(new Date())
+                                  .isSame(moment.utc(exam.created_at), "hour")
+                              ? "badge badge-success text-capitalize"
+                              : "badge badge-primary text-capitalize"
+                          }
+                        >
+                          {exam.paciente.nombre}
                         </span>
                       </td>
-                      <td>{contact.edad}</td>
-                      <td>
-                        {contact.estado ? (
+                      <td>{exam.edad}</td>
+                      <td className="text-uppercase">
+                        {exam.estado ? (
                           <span className="badge badge-secondary">
-                            Bloqueado
+                            Terminado
                           </span>
                         ) : (
                           <span className="badge badge-success">Activo</span>
                         )}
                       </td>
-                      <td>{moment(contact.created_at).format("L")}</td>
-                      <td>{moment(contact.updated_at).fromNow(true)}</td>
-                      <td>
+                      <td>{moment(exam.created_at).format("L LT")}</td>
+                      <td>{moment(exam.updated_at).format("L LT")}</td>
+                      <td className="text-right">
                         <a
-                          className="btn-flat text-warning"
+                          className="btn-flat text-warning mr-2"
                           href="#delete"
                           onClick={this.handleDelete}
-                          id={contact.id}
+                          id={exam.id}
                         >
-                          <i className="fas fa-trash" id={contact.id}></i>
+                          <i className="fas fa-trash" id={exam.id}></i>
                         </a>
-                        &nbsp;&nbsp;
+
                         <Link
                           className="btn-flat blue-text"
-                          to={"/consultorio/registro/" + contact.id}
+                          to={"/consultorio/registro/" + exam.id}
                           onClick={this.changePage}
                           id="/consultorio/registro"
                         >
@@ -270,6 +294,8 @@ export default class Exam extends Component {
           search={this.state.search}
           onChangeValue={this.onchangeSearch}
           handleFilter={this.handleFilter}
+          status={this.state.status}
+          date={this.state.date}
         />
       </div>
     );
@@ -281,9 +307,9 @@ export default class Exam extends Component {
       page: 1,
     });
   };
-  onchangeSearch = (search) => {
+  onchangeSearch = (key, value) => {
     this.setState({
-      search,
+      [key]: value,
     });
   };
   handleOrder = (item) => {
@@ -329,15 +355,21 @@ export default class Exam extends Component {
     }
   };
   getExams() {
+    console.log("Descargando examenes", typeof this.state.status);
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
       url = "http://" + varLocalStorage.host + "/api/exams",
       orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
       search = this.state.search ? `&search=${this.state.search}` : "",
+      date = this.state.date ? `&date=${this.state.date}` : "",
+      status =
+        typeof this.state.status === "number"
+          ? `&status=${this.state.status}`
+          : "",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
 
     //Realiza la peticion de los contactos
-    fetch(url + page + orderby + search, {
+    fetch(url + page + orderby + status + date + search, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -345,16 +377,23 @@ export default class Exam extends Component {
         Authorization: "Bearer " + varLocalStorage.token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          console.log(res);
+        }
+      })
       .then((data) => {
-        console.log("Descargando citas");
+        console.log("Examenes descargados");
         if (!data.message) {
           this.setState({
-            contacts: data,
+            exams: data,
             load: false,
           });
         } else {
-          window.alert(data.message);
+          console.log(data.message);
           this.setState({
             load: false,
           });

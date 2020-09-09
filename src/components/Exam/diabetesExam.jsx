@@ -25,93 +25,97 @@ export default class DiabetesExam extends Component {
           data-parent="#accordionExample"
         >
           <div className="card-body">
-            <ul className="list-group">
-              <li className="list-group-item">
-                <div className="row">
-                  <div className="col-md-8">
-                    <label>Diab&eacute;tico</label>
-                  </div>
-                  <div className="col-md-4">
-                    <label>Fotocoagulaci&oacute;n laser</label>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-3">
-                    Fecha
-                    <input
-                      type="date"
-                      name="d_time"
-                      className="form-control"
-                      value={this.props.d_time}
-                      onChange={this.catchInputs}
-                    />
-                  </div>
-                  <div className="col-md-2">
-                    Rango de glucosa
-                    <input
-                      type="text"
-                      name="d_media"
-                      className="form-control"
-                      value={this.props.d_media}
-                      onChange={this.catchInputs}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    Ultimo examen
-                    <input
-                      type="date"
-                      name="d_test"
-                      className="form-control"
-                      value={this.props.d_test}
-                      onChange={this.catchInputs}
-                    />
-                  </div>
-                  <div className="col-md-2">
-                    <i className="fa fa-eye"></i> Derecho
-                    <input
-                      name="d_fclod"
-                      type="checkbox"
-                      checked={this.props.d_fclod}
-                      onChange={this.catchInputs}
-                    />
-                    <input
-                      type="time"
-                      name="d_fclod_time"
-                      className="form-control"
-                      value={this.props.d_fclod_time}
-                      onChange={this.catchInputs}
-                      readOnly={this.props.d_fclod ? "" : "readonly"}
-                    />
-                  </div>
-                  <div className="col-md-2">
-                    <i className="fa fa-eye"></i> Izquierdo
-                    <input
-                      name="d_fcloi"
-                      type="checkbox"
-                      checked={this.props.d_fcloi}
-                      onChange={this.catchInputs}
-                    />
-                    <input
-                      type="time"
-                      name="d_fcloi_time"
-                      className="form-control"
-                      value={this.props.d_fcloi_time}
-                      onChange={this.catchInputs}
-                      readOnly={this.props.d_fcloi ? "" : "readonly"}
-                    />
-                  </div>
-                </div>
-              </li>
-              <li className="list-group-item">
-                Oftalmoscopia
+            <div className="row">
+              <div className="col-md-8">
+                <label>Diab&eacute;tico</label>
+              </div>
+              <div className="col-md-4">
+                <label>Fotocoagulaci&oacute;n laser</label>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-3">Fecha</div>
+              <div className="col-2">Rango de glucosa</div>
+              <div className="col-3">Ultimo examen</div>
+              <div className="col-2">
+                <i className="fa fa-eye"></i> Derecho
+              </div>
+              <div className="col-2">
+                <i className="fa fa-eye"></i> Izquierdo
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-3">
+                <input
+                  type="date"
+                  name="d_time"
+                  className="form-control"
+                  value={this.props.d_time}
+                  onChange={this.catchInputs}
+                />
+              </div>
+              <div className="col-md-2">
+                <input
+                  type="text"
+                  name="d_media"
+                  className="form-control"
+                  value={this.props.d_media}
+                  onChange={this.catchInputs}
+                />
+              </div>
+              <div className="col-md-3">
+                <input
+                  type="date"
+                  name="d_test"
+                  className="form-control"
+                  value={this.props.d_test}
+                  onChange={this.catchInputs}
+                />
+              </div>
+              <div className="col-md-2">
+                <input
+                  name="d_fclod"
+                  type="checkbox"
+                  checked={this.props.d_fclod}
+                  onChange={this.catchInputs}
+                />
+                <input
+                  type="time"
+                  name="d_fclod_time"
+                  className="form-control"
+                  value={this.props.d_fclod_time}
+                  onChange={this.catchInputs}
+                  readOnly={this.props.d_fclod ? "" : "readonly"}
+                />
+              </div>
+              <div className="col-md-2">
+                <input
+                  name="d_fcloi"
+                  type="checkbox"
+                  checked={this.props.d_fcloi}
+                  onChange={this.catchInputs}
+                />
+                <input
+                  type="time"
+                  name="d_fcloi_time"
+                  className="form-control"
+                  value={this.props.d_fcloi_time}
+                  onChange={this.catchInputs}
+                  readOnly={this.props.d_fcloi ? "" : "readonly"}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-12">
+                <label>Oftalmoscopia</label>
                 <textarea
                   name="oftalmoscopia"
                   className="form-control"
                   value={this.props.oftalmoscopia}
                   onChange={this.catchInputs}
                 ></textarea>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>

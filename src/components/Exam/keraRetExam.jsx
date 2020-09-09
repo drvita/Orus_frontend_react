@@ -25,60 +25,56 @@ export default class KeraRetExam extends Component {
           data-parent="#accordionExample"
         >
           <div className="card-body">
-            <ul className="list-group">
-              <li className="list-group-item">
-                <div className="row">
-                  <div className="col-md-6">Keratometria</div>
-                  <div className="col-md-6">Retinoscopia</div>
-                </div>
-                <div className="row">
-                  <div className="col-md-3">
-                    <i className="fas fa-eye"></i> <label>Izquierdo</label>
-                    <input
-                      type="text"
-                      name="keratometriaoi"
-                      maxLength="12"
-                      className="form-control input-xs"
-                      value={this.props.keratometriaoi}
-                      onChange={this.catchInputs}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <i className="fas fa-eye"></i> <label>Derecho</label>
-                    <input
-                      type="text"
-                      name="keratometriaod"
-                      maxLength="12"
-                      className="form-control input-xs"
-                      value={this.props.keratometriaod}
-                      onChange={this.catchInputs}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <i className="fa fa-eye"></i> <label>Derecho</label>
-                    <input
-                      type="text"
-                      name="rsod"
-                      maxLength="16"
-                      className="form-control"
-                      value={this.props.rsod}
-                      onChange={this.catchInputs}
-                    />
-                  </div>
-                  <div className="col-md-3">
-                    <i className="fa fa-eye"></i> <label>Izquierdo</label>
-                    <input
-                      type="text"
-                      name="rsoi"
-                      maxLength="16"
-                      className="form-control"
-                      value={this.props.rsoi}
-                      onChange={this.catchInputs}
-                    />
-                  </div>
-                </div>
-              </li>
-            </ul>
+            <div className="row">
+              <div className="col-6">Keratometria</div>
+              <div className="col-6">Retinoscopia</div>
+            </div>
+            <div className="row">
+              <div className="col-3">
+                <i className="fas fa-eye"></i> <label>Izquierdo</label>
+                <input
+                  type="text"
+                  name="keratometriaoi"
+                  maxLength="12"
+                  className="form-control input-xs"
+                  value={this.props.keratometriaoi}
+                  onChange={this.catchInputs}
+                />
+              </div>
+              <div className="col-md-3">
+                <i className="fas fa-eye"></i> <label>Derecho</label>
+                <input
+                  type="text"
+                  name="keratometriaod"
+                  maxLength="12"
+                  className="form-control input-xs"
+                  value={this.props.keratometriaod}
+                  onChange={this.catchInputs}
+                />
+              </div>
+              <div className="col-md-3">
+                <i className="fa fa-eye"></i> <label>Derecho</label>
+                <input
+                  type="text"
+                  name="rsod"
+                  maxLength="16"
+                  className="form-control"
+                  value={this.props.rsod}
+                  onChange={this.catchInputs}
+                />
+              </div>
+              <div className="col-md-3">
+                <i className="fa fa-eye"></i> <label>Izquierdo</label>
+                <input
+                  type="text"
+                  name="rsoi"
+                  maxLength="16"
+                  className="form-control"
+                  value={this.props.rsoi}
+                  onChange={this.catchInputs}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

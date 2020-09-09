@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 export default class Filter extends Component {
   render() {
@@ -27,11 +28,47 @@ export default class Filter extends Component {
                 </div>
                 <input
                   type="text"
+                  name="search"
                   className="form-control"
-                  placeholder="Por: nombre, RFC o email"
+                  placeholder="Por: nombre"
                   value={this.props.search}
                   onChange={this.onChangeValue}
                   onKeyPress={this.onKeyPressSearch}
+                />
+              </div>
+
+              <div className="input-group mb-3">
+                <label>Estado</label>
+                <div className="input-group-prepend ml-4">
+                  <span className="input-group-text">
+                    <i className="fas fa-toggle-on"></i>
+                  </span>
+                </div>
+                <select
+                  className="form-control"
+                  name="status"
+                  value={this.props.status}
+                  onChange={this.onChangeValue}
+                >
+                  <option value="">Todos</option>
+                  <option value="0">Activo</option>
+                  <option value="1">Terminado</option>
+                </select>
+              </div>
+
+              <div className="input-group mb-3">
+                <label>Fecha</label>
+                <div className="input-group-prepend ml-4">
+                  <span className="input-group-text">
+                    <i className="fas fa-calendar-alt"></i>
+                  </span>
+                </div>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="date"
+                  value={this.props.date}
+                  onChange={this.onChangeValue}
                 />
               </div>
             </form>
@@ -47,9 +84,14 @@ export default class Filter extends Component {
               <button
                 type="button"
                 className={
-                  this.props.search
+                  this.props.search || typeof this.props.status !== "number"
                     ? "btn btn-warning"
                     : "btn btn-warning disabled"
+                }
+                disabled={
+                  this.props.search || typeof this.props.status !== "number"
+                    ? ""
+                    : "disabled"
                 }
                 onClick={this.onClickClean}
               >
@@ -76,12 +118,18 @@ export default class Filter extends Component {
     }
   };
   onClickClean = () => {
-    this.props.onChangeValue("");
+    this.props.onChangeValue("search", "");
+    this.props.onChangeValue("status", 0);
+    this.props.onChangeValue(
+      "date",
+      moment.utc(new Date()).local().format("YYYY-MM-DD")
+    );
   };
   onClickFilter = () => {
     this.props.handleFilter();
   };
   onChangeValue = (e) => {
-    this.props.onChangeValue(e.target.value);
+    const { name, value } = e.target;
+    this.props.onChangeValue(name, value);
   };
 }

@@ -15,8 +15,10 @@ export default class Contacts extends Component {
       load: true,
       page: 1,
       orderby: "name",
-      order: "desc",
+      order: "asc",
       search: "",
+      type: "",
+      business: "",
     };
   }
 
@@ -85,7 +87,7 @@ export default class Contacts extends Component {
           </div>
         </div>
         <div className="card-body table-responsive p-0">
-          <table className="table table-hover table-nowrap">
+          <table className="table table-bordered table-hover table-nowrap">
             <thead>
               <tr>
                 <th
@@ -203,7 +205,7 @@ export default class Contacts extends Component {
                     ""
                   )}
                 </th>
-                <th>Accion</th>
+                <th className="text-right">Accion</th>
               </tr>
             </thead>
             <tbody>
@@ -228,9 +230,13 @@ export default class Contacts extends Component {
                           {contact.nombre}
                         </span>
                       </td>
-                      <td>{contact.rfc}</td>
-                      <td>{contact.email}</td>
-                      <td>
+                      <td className="text-uppercase">
+                        {contact.rfc ? contact.rfc : "--"}
+                      </td>
+                      <td className="text-lowercase">
+                        {contact.email ? contact.email : "--"}
+                      </td>
+                      <td className="text-uppercase">
                         {contact.tipo ? (
                           <span className="badge badge-secondary">
                             Proveedor
@@ -244,13 +250,15 @@ export default class Contacts extends Component {
                           ? contact.telefonos[2]
                           : contact.telefonos[0]}
                       </td>
-                      <td>{contact.domicilio.split(",")[0]}</td>
+                      <td className="text-capitalize">
+                        {contact.domicilio.split(",")[0]}
+                      </td>
                       <td>
                         {contact.f_nacimiento
                           ? moment(contact.f_nacimiento).fromNow()
                           : "--"}
                       </td>
-                      <td>
+                      <td className="text-right">
                         <a
                           className="btn-flat text-warning"
                           href="#delete"
@@ -298,6 +306,8 @@ export default class Contacts extends Component {
         </div>
         <Filter
           search={this.state.search}
+          type={this.state.type}
+          business={this.state.business}
           onChangeValue={this.onchangeSearch}
           handleFilter={this.handleFilter}
         />
@@ -311,9 +321,9 @@ export default class Contacts extends Component {
       page: 1,
     });
   };
-  onchangeSearch = (search) => {
+  onchangeSearch = (key, value) => {
     this.setState({
-      search,
+      [key]: value,
     });
   };
   handleOrder = (item) => {
@@ -364,10 +374,13 @@ export default class Contacts extends Component {
       url = "http://" + varLocalStorage.host + "/api/contacts",
       orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
       search = this.state.search ? `&search=${this.state.search}` : "",
-      page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
+      page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1",
+      type = this.state.type === "" ? "" : "&type=" + this.state.type,
+      business =
+        this.state.business === "" ? "" : "&business=" + this.state.business;
 
     //Realiza la peticion de los contactos
-    fetch(url + page + orderby + search, {
+    fetch(url + page + orderby + search + type + business, {
       method: "GET",
       headers: {
         Accept: "application/json",

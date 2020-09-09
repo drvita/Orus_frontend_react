@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import moment from "moment";
+import Mapa from "./mapa";
+import ListExam from "../Exam/listForId";
 
-class ContactsAdd extends Component {
+export default class ContactsAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,19 +22,18 @@ class ContactsAdd extends Component {
       t_casa: "",
       t_oficina: "",
       t_movil: "",
+      business: false,
     };
-    this.markers = [];
-    this.changePage = this.changePage.bind(this);
-    this.catchInputs = this.catchInputs.bind(this);
-    this.handleSave = this.handleSave.bind(this);
   }
 
   componentDidMount() {
     let id = this.props.match.params.id;
-    //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+
     if (id > 0) {
+      //Variables en localStorage
+      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
       //Realiza la peticion del usuario seun el id
+      console.log("Descargando datos del contacto");
       fetch("http://" + varLocalStorage.host + "/api/contacts/" + id, {
         method: "GET",
         headers: {
@@ -43,140 +45,40 @@ class ContactsAdd extends Component {
         .then((data) => {
           let domicilio = data.data.domicilio.split(","),
             telefonos = data.data.telefonos.split(",");
-          console.log("Cargando datos del contacto");
+          console.log("Mostrando datos del contacto");
           this.setState({
             id: data.data.id,
             name: data.data.nombre,
             rfc: data.data.rfc,
             email: data.data.email,
             type: data.data.tipo,
+            business: data.data.empresa,
             birthday: data.data.f_nacimiento,
-            calle: domicilio[0].replace(/undefined/g, ""),
-            colonia: domicilio[1].replace(/undefined/g, ""),
-            municipio: domicilio[2].replace(/undefined/g, ""),
-            estado: domicilio[3].replace(/undefined/g, ""),
-            cp: domicilio[4].replace(/undefined/g, ""),
-            t_casa: telefonos[0].replace(/undefined/g, ""),
-            t_oficina: telefonos[1].replace(/undefined/g, ""),
-            t_movil: telefonos[2].replace(/undefined/g, ""),
+            calle: domicilio[0] ? domicilio[0].replace(/undefined/g, "") : "",
+            colonia: domicilio[1] ? domicilio[1].replace(/undefined/g, "") : "",
+            municipio: domicilio[2]
+              ? domicilio[2].replace(/undefined/g, "")
+              : "",
+            estado: domicilio[3] ? domicilio[3].replace(/undefined/g, "") : "",
+            cp: domicilio[4] ? domicilio[4].replace(/undefined/g, "") : "",
+            t_casa: telefonos[0] ? telefonos[0].replace(/undefined/g, "") : "",
+            t_oficina: telefonos[1]
+              ? telefonos[1].replace(/undefined/g, "")
+              : "",
+            t_movil: telefonos[2] ? telefonos[2].replace(/undefined/g, "") : "",
           });
         })
         .catch((e) => {
           console.log(e);
-          this.setState({
-            id: 0,
-            name: "",
-            rfc: "",
-            email: "",
-            type: 0,
-            birthday: "",
-            calle: "",
-            colonia: "",
-            municipio: "",
-            estado: "",
-            cp: "",
-            t_casa: "",
-            t_oficina: "",
-            t_movil: "",
-          });
         });
-    } else {
-      this.setState({
-        id: 0,
-        name: "",
-        rfc: "",
-        email: "",
-        type: 0,
-        birthday: "",
-        calle: "",
-        colonia: "",
-        municipio: "",
-        estado: "",
-        cp: "",
-        t_casa: "",
-        t_oficina: "",
-        t_movil: "",
-      });
     }
-    const googlePlaceAPILoad1 = setInterval(() => {
-      if (window.google) {
-        this.google = window.google;
-        clearInterval(googlePlaceAPILoad1);
-        console.log("Cargando mapa");
-        const mapCenter = new this.google.maps.LatLng(19.2487072, -103.747381);
-        this.map = new this.google.maps.Map(
-          document.getElementById("gmapContainer"),
-          {
-            center: mapCenter,
-            zoom: 16,
-          }
-        );
-      }
-    }, 100);
-  }
-  componentDidUpdate() {
-    if (this.state.id && this.state.calle) {
-      const googlePlaceAPILoad2 = setInterval(() => {
-        if (this.google) {
-          clearInterval(googlePlaceAPILoad2);
-          console.log("Cargando Marker");
-          let input =
-            this.state.calle +
-            "," +
-            this.state.colonia +
-            "," +
-            this.state.municipio +
-            "," +
-            this.state.estado;
-          const request = {
-            query: input,
-            fields: ["formatted_address", "geometry"],
-          };
-          this.service = new this.google.maps.places.PlacesService(this.map);
-          this.service.findPlaceFromQuery(request, (results, status) => {
-            if (status === "OK") {
-              if (this.markers.length) {
-                this.markers[0].setMap(null);
-                this.markers = [];
-              }
-              results.map((place) => {
-                this.marker = new this.google.maps.Marker({
-                  position: place.geometry.location,
-                  title: place.formatted_address,
-                  map: this.map,
-                });
-                this.marker.addListener("click", () => {
-                  let address = this.marker.title.split(","),
-                    add = address[2].split(/(\d{5})/g);
-
-                  if (!add.length) {
-                    add = address[3].split(/(\d{5})/g);
-                  }
-
-                  this.setState({
-                    calle: address[0].trim(),
-                    colonia: address[1].trim(),
-                    municipio: add[2] ? add[2].trim() : this.state.municipio,
-                    cp: add[1] ? add[1].trim() : this.state.cp,
-                  });
-                });
-                this.markers.push(this.marker);
-                this.markers[0].setMap(this.map);
-                this.map.setCenter(this.markers[0].position);
-                return null;
-              });
-            }
-          });
-        }
-      }, 100);
-    }
+    this.nameInput.focus();
   }
 
   render() {
-    //let {data} = this.props;
     return (
-      <React.Fragment>
-        <form className="row" onSubmit={this.handleSave}>
+      <form onSubmit={this.handleSave}>
+        <div className="row">
           <div className="col-md-12">
             <div className="card card-danger card-outline">
               <div className="card-header">
@@ -190,7 +92,42 @@ class ContactsAdd extends Component {
               </div>
               <div className="card-body">
                 <div className="row">
-                  <div className="col-md-4">
+                  <div className="col">
+                    <small>
+                      <label>Tipo de cliente</label>
+                    </small>
+                    <div className="input-group mb-1">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-clipboard-check"></i>
+                        </span>
+                      </div>
+                      <select
+                        className="custom-select"
+                        name="type"
+                        value={this.state.type}
+                        onChange={this.catchInputs}
+                      >
+                        <option value="0">Cliente</option>
+                        <option value="1">Proveedor</option>
+                      </select>
+                    </div>
+
+                    <div className="input-group mb-1">
+                      <div className="input-group-prepend">
+                        <input
+                          type="checkbox"
+                          name="business"
+                          className="mr-2"
+                          checked={this.state.business}
+                          onChange={this.catchInputs}
+                        />
+                        <small>
+                          <label>¿Es una empresa?</label>
+                        </small>
+                      </div>
+                    </div>
+
                     {this.state.name ? (
                       <small>
                         <label>Nombre completo</label>
@@ -198,7 +135,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-id-card-alt"></i>
@@ -208,6 +145,9 @@ class ContactsAdd extends Component {
                         type="text"
                         className="form-control text-capitalize"
                         placeholder="Nombre completo"
+                        ref={(input) => {
+                          this.nameInput = input;
+                        }}
                         name="name"
                         value={this.state.name}
                         onChange={this.catchInputs}
@@ -220,7 +160,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-file-invoice-dollar"></i>
@@ -242,7 +182,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-at"></i>
@@ -257,60 +197,38 @@ class ContactsAdd extends Component {
                         onChange={this.catchInputs}
                       />
                     </div>
-                    {this.state.birthday ? (
-                      <small>
-                        <label>Fecha de nacimiento</label>
-                      </small>
-                    ) : (
-                      <br />
-                    )}
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-calendar-check"></i>
-                        </span>
-                      </div>
-                      <input
-                        type="date"
-                        className="form-control"
-                        placeholder="Fecha de nacimiento"
-                        name="birthday"
-                        value={this.state.birthday ? this.state.birthday : ""}
-                        onChange={this.catchInputs}
-                      />
-                    </div>
-                    <small>
-                      <label>Tipo de cliente</label>
-                    </small>
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-clipboard-check"></i>
-                        </span>
-                      </div>
-                      <select
-                        className="custom-select"
-                        name="type"
-                        value={this.state.type}
-                        onChange={this.catchInputs}
-                      >
-                        <option value="0">Cliente</option>
-                        <option value="1">Proveedor</option>
-                      </select>
-                    </div>
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <div className="input-group-text">
+                    {!this.state.business && !this.state.type ? (
+                      <React.Fragment>
+                        {this.state.birthday ? (
+                          <small>
+                            <label>Fecha de nacimiento</label>
+                          </small>
+                        ) : (
+                          <br />
+                        )}
+                        <div className="input-group mb-1">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text">
+                              <i className="fas fa-calendar-check"></i>
+                            </span>
+                          </div>
                           <input
-                            type="checkbox"
-                            aria-label="Checkbox for following text input"
+                            type="date"
+                            className="form-control"
+                            placeholder="Fecha de nacimiento"
+                            name="birthday"
+                            value={
+                              this.state.birthday ? this.state.birthday : ""
+                            }
+                            onChange={this.catchInputs}
                           />
                         </div>
-                      </div>
-                      &nbsp;&nbsp; ¿Es una empresa?
-                    </div>
+                      </React.Fragment>
+                    ) : (
+                      ""
+                    )}
                   </div>
-                  <div className="col-md-4">
+                  <div className="col">
                     {this.state.calle ? (
                       <small>
                         <label>Calle y numero</label>
@@ -318,7 +236,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-road"></i>
@@ -340,7 +258,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-location-arrow"></i>
@@ -362,7 +280,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-location-arrow"></i>
@@ -384,7 +302,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-map-marker"></i>
@@ -406,7 +324,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-map-marker"></i>
@@ -422,7 +340,7 @@ class ContactsAdd extends Component {
                       />
                     </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col">
                     {this.state.t_casa ? (
                       <small>
                         <label>Telefono de casa</label>
@@ -430,7 +348,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-phone"></i>
@@ -452,7 +370,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-phone-alt"></i>
@@ -474,7 +392,7 @@ class ContactsAdd extends Component {
                     ) : (
                       <br />
                     )}
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-mobile-alt"></i>
@@ -499,12 +417,31 @@ class ContactsAdd extends Component {
                       <Link
                         to="/contactos"
                         className="btn btn-secondary"
-                        onClick={this.changePage}
-                        id="/contactos"
+                        onClick={(e) => {
+                          this.changePage("/contactos");
+                        }}
                       >
                         Cancelar
                       </Link>
-                      <button type="submit" className="btn btn-danger">
+                      <button
+                        type="submit"
+                        className={
+                          this.state.name &&
+                          (this.state.t_casa ||
+                            this.state.t_oficina ||
+                            this.state.t_movil)
+                            ? "btn btn-danger"
+                            : "btn btn-danger disabled"
+                        }
+                        disabled={
+                          this.state.name &&
+                          (this.state.t_casa ||
+                            this.state.t_oficina ||
+                            this.state.t_movil)
+                            ? ""
+                            : "disabled"
+                        }
+                      >
                         Guardar
                       </button>
                     </div>
@@ -513,39 +450,65 @@ class ContactsAdd extends Component {
               </div>
             </div>
           </div>
-        </form>
-        {this.state.id ? (
-          <div className="card card-danger card-outline">
-            <div className="card-header">Mapa</div>
-            <div
-              className="card-body"
-              id="gmapContainer"
-              style={{ height: 400 }}
-            ></div>
-          </div>
-        ) : (
-          ""
-        )}
-      </React.Fragment>
+        </div>
+        <div className="row">
+          {this.state.calle && !this.state.type ? (
+            <div className="col">
+              <Mapa
+                calle={this.state.calle}
+                colonia={this.state.colonia}
+                municipio={this.state.municipio}
+                estado={this.state.estado}
+                cp={this.state.cp}
+                changeAddress={this.changeAddress}
+              />
+            </div>
+          ) : (
+            ""
+          )}
+          {this.state.id && !this.state.type ? (
+            <div className="col">
+              <ListExam
+                id={this.state.id}
+                page={this.changePage}
+                edad={
+                  moment(this.state.birthday)
+                    .fromNow(true)
+                    .replace(/[a-zA-ZñÑ]/gi, "") * 1
+                }
+              />
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      </form>
     );
   }
 
-  changePage(e) {
-    this.props.page(e.target.id);
-  }
-  catchInputs(e) {
-    const { name, value } = e.target;
+  changeAddress = (json) => {
+    this.setState(json);
+  };
+  changePage = (e) => {
+    this.props.page(e);
+  };
+  catchInputs = (e) => {
+    const { name } = e.target,
+      value =
+        e.target.type === "checkbox"
+          ? e.target.checked
+          : e.target.value.toLowerCase();
     this.setState({
-      [name]: value.toLowerCase(),
+      [name]: value,
     });
-  }
-
-  handleSave(e) {
+  };
+  handleSave = (e) => {
     e.preventDefault();
     //Maneja el boton de almacenar
     let conf = window.confirm("¿Esta seguro de realizar la accion?");
     if (conf) {
       //Variables en localStorage
+      console.log("Enviando datos a API para almacenar");
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
       //Extraemos Datos del formulario
       let {
@@ -563,6 +526,7 @@ class ContactsAdd extends Component {
         t_casa,
         t_oficina,
         t_movil,
+        business,
       } = this.state;
       // Procesamos variables
       //Creamos el body
@@ -571,7 +535,8 @@ class ContactsAdd extends Component {
         rfc,
         email,
         type,
-        birthday,
+        birthday: business ? "" : birthday,
+        business,
         domicilio:
           calle + "," + colonia + "," + municipio + "," + estado + "," + cp,
         telnumbers: t_casa + "," + t_oficina + "," + t_movil,
@@ -591,16 +556,27 @@ class ContactsAdd extends Component {
           Authorization: "Bearer " + varLocalStorage.token,
         },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+          }
+          return res.json();
+        })
         .then((data) => {
-          if (data.data) this.props.history.goBack();
-          else console.log(data.message);
+          if (data.data) {
+            console.log("Contacto almacenado");
+            if (
+              window.confirm(
+                "Contacto almacenado con exito!.\n¿Desea cerrar este contacto?"
+              )
+            ) {
+              this.props.history.goBack();
+            }
+          } else console.log(data.message);
         })
         .catch((e) => {
           console.log(e);
         });
     }
-  }
+  };
 }
-
-export default ContactsAdd;

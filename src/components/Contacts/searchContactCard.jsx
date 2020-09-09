@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import "moment/locale/es";
+//import "moment/locale/es";
 
 export default class searchContact extends Component {
   constructor(props) {
@@ -11,13 +11,19 @@ export default class searchContact extends Component {
       contacto: "",
       data: [],
       dataContact: {},
+      load: true,
     };
   }
   componentDidMount() {
     //identificador del contacto
     let id = this.props.contact;
     if (id) {
+      this.setState({
+        load: true,
+      });
       this.getContact(id);
+    } else {
+      this.contactInput.focus();
     }
   }
   componentDidUpdate(props, state) {
@@ -30,84 +36,100 @@ export default class searchContact extends Component {
         });
       }
     }
-    if (props.contact !== this.props.contact) {
+    if (props.contact !== this.props.contact && this.props.contact) {
+      this.setState({
+        load: true,
+      });
       this.getContact(this.props.contact);
     }
   }
 
   render() {
-    if (this.props.contact && Object.keys(this.state.dataContact).length) {
-      let {
-          nombre,
-          telefonos,
-          domicilio,
-          id,
-          f_nacimiento,
-        } = this.state.dataContact,
-        edad = this.props.edad
-          ? this.props.edad + " años"
-          : moment(f_nacimiento).fromNow(true);
-
-      return (
-        <div className="card card-danger card-outline">
-          <div className="card-body box-profile">
-            <div className="text-center">
-              <img
-                className="profile-user-img img-fluid img-circle"
-                src="https://uybor.uz/borless/uybor/img/user-images/no-avatar.png"
-                alt="User Avatar"
-              />
-            </div>
-
-            <h3 className="profile-username text-center text-capitalize">
-              {nombre}
-            </h3>
-            <p className="text-muted text-center">
-              {telefonos.replace(/,/gi, ", ")}
-            </p>
-            <p className="text-muted text-center">
-              {domicilio.replace(/,/gi, ", ")}
-            </p>
-
-            <ul className="list-group list-group-unbordered mb-3">
-              <li className="list-group-item">
-                <b>Edad:</b>
-                <span className="float-right">
-                  {f_nacimiento ? edad : "--"}
-                </span>
-              </li>
-              <li className="list-group-item">
-                <b>#Contacto:</b>
-                <span className="float-right">{id}</span>
-              </li>
-            </ul>
-            {!this.props.status ? (
-              <div className="btn-group btn-block" role="group">
-                <button
-                  type="button"
-                  className="btn btn-warning"
-                  onClick={this.handleClickChange}
-                >
-                  <i className="fas fa-exchange-alt mr-1"></i>
-                  <b>Cambiar</b>
-                </button>
-                <Link
-                  to={"/contactos/registro/" + id}
-                  className="btn btn-info"
-                  onClick={(e) => {
-                    this.handleChangePage("/contactos/registro/");
-                  }}
-                >
-                  <i className="fas fa-edit mr-1"></i>
-                  <b>Editar</b>
-                </Link>
+    if (this.props.contact) {
+      if (this.state.load) {
+        return (
+          <div className="card card-danger card-outline">
+            <div className="card-body box-profile">
+              <div className="text-center">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
               </div>
-            ) : (
-              ""
-            )}
+            </div>
           </div>
-        </div>
-      );
+        );
+      } else if (Object.keys(this.state.dataContact).length) {
+        let {
+            nombre,
+            telefonos,
+            domicilio,
+            id,
+            f_nacimiento,
+          } = this.state.dataContact,
+          edad = this.props.edad
+            ? this.props.edad + " años"
+            : moment(f_nacimiento).fromNow(true);
+        return (
+          <div className="card card-danger card-outline">
+            <div className="card-body box-profile">
+              <div className="text-center">
+                <img
+                  className="profile-user-img img-fluid img-circle"
+                  src="https://uybor.uz/borless/uybor/img/user-images/no-avatar.png"
+                  alt="User Avatar"
+                />
+              </div>
+
+              <h3 className="profile-username text-center text-capitalize">
+                {nombre}
+              </h3>
+              <p className="text-muted text-center">
+                {telefonos.replace(/,/gi, ", ")}
+              </p>
+              <p className="text-muted text-center">
+                {domicilio.replace(/,/gi, ", ")}
+              </p>
+
+              <ul className="list-group list-group-unbordered mb-3">
+                <li className="list-group-item">
+                  <b>Edad:</b>
+                  <span className="float-right">
+                    {f_nacimiento ? edad : "--"}
+                  </span>
+                </li>
+                <li className="list-group-item">
+                  <b>#Contacto:</b>
+                  <span className="float-right">{id}</span>
+                </li>
+              </ul>
+              {!this.props.status ? (
+                <div className="btn-group btn-block" role="group">
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={this.handleClickChange}
+                  >
+                    <i className="fas fa-exchange-alt mr-1"></i>
+                    <b>Cambiar</b>
+                  </button>
+                  <Link
+                    to={"/contactos/registro/" + id}
+                    className="btn btn-info"
+                    onClick={(e) => {
+                      this.handleChangePage("/contactos/registro/");
+                    }}
+                  >
+                    <i className="fas fa-edit mr-1"></i>
+                    <b>Editar</b>
+                  </Link>
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+          </div>
+        );
+      }
     } else {
       return (
         <div className="card card-danger card-outline">
@@ -127,6 +149,9 @@ export default class searchContact extends Component {
                 autoComplete="off"
                 value={this.state.contacto}
                 onChange={this.handleSearcContact}
+                ref={(input) => {
+                  this.contactInput = input;
+                }}
               />
             </div>
             {this.state.data.length ? (
@@ -176,7 +201,7 @@ export default class searchContact extends Component {
   getContact = (id) => {
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-    //Realiza la peticion de los contactos
+    //Realiza busqueda de contacto
     fetch("http://" + varLocalStorage.host + "/api/contacts/" + id, {
       method: "GET",
       headers: {
@@ -190,6 +215,7 @@ export default class searchContact extends Component {
         console.log("Descargando contacto");
         this.setState({
           dataContact: data.data,
+          load: false,
         });
       })
       .catch((e) => {
@@ -234,12 +260,12 @@ export default class searchContact extends Component {
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
       url = "http://" + varLocalStorage.host + "/api/contacts",
-      //orderby = `&orderby=name&order=${this.state.order}`,
+      type = "&type=0",
       search = word ? `&search=${word}` : "",
       page = "?page=1";
 
     //Realiza la peticion de los contactos
-    fetch(url + page + search, {
+    fetch(url + page + search + type, {
       method: "GET",
       headers: {
         Accept: "application/json",

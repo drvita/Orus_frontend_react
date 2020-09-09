@@ -28,6 +28,7 @@ class StoreAdd extends Component {
     this.handleGetItem();
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+    console.log("Descargando lista de categorias");
     fetch("http://" + varLocalStorage.host + "/api/categories", {
       method: "GET",
       headers: {
@@ -36,12 +37,19 @@ class StoreAdd extends Component {
         Authorization: "Bearer " + varLocalStorage.token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+        }
+        return res.json();
+      })
       .then((cat) => {
-        console.log("Descargando lista de categorias");
-        this.setState({
-          category_list: cat.data,
-        });
+        console.log("Lista de categorias descargadas");
+        if (cat.data) {
+          this.setState({
+            category_list: cat.data,
+          });
+        }
       })
       .catch((e) => {
         console.log(e);
@@ -267,8 +275,7 @@ class StoreAdd extends Component {
                         if (list.depende_de === null) {
                           return (
                             <option value={list.id} key={list.id}>
-                              {" "}
-                              {list.categoria}{" "}
+                              {list.categoria}
                             </option>
                           );
                         } else {

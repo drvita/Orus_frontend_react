@@ -26,93 +26,84 @@ export default class GeneralesExam extends Component {
         >
           <div className="card-body">
             <div className="row">
-              <ul className="list-group">
-                <div className="col-md-12">
-                  <li className="list-group-item">
-                    <div className="row">
-                      <div className="col-md-3">
-                        <span className="label label-default">
-                          <i className="fas fa-desktop"></i> PC
-                        </span>
-                        <input
-                          name="pc"
-                          type="checkbox"
-                          checked={this.props.pc}
-                          onChange={this.catchInputs}
-                        />
-                        <input
-                          type="text"
-                          name="pc_time"
-                          className="form-control input-xs"
-                          value={this.props.pc_time}
-                          onChange={this.catchInputs}
-                          readOnly={this.props.pc ? "" : "readonly"}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <span className="label label-default">
-                          <i className="fas fa-tablet"></i> Tablet
-                        </span>
-                        <input
-                          name="tablet"
-                          type="checkbox"
-                          checked={this.props.tablet}
-                          onChange={this.catchInputs}
-                        />
-                        <input
-                          type="text"
-                          name="tablet_time"
-                          className="form-control input-xs"
-                          value={this.props.tablet_time}
-                          onChange={this.catchInputs}
-                          readOnly={this.props.tablet ? "" : "readonly"}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <span className="label label-default">
-                          <i className="fas fa-mobile"></i> Telefono
-                        </span>
-                        <input
-                          name="movil"
-                          type="checkbox"
-                          checked={this.props.movil}
-                          onChange={this.catchInputs}
-                        />
-                        <input
-                          type="text"
-                          name="movil_time"
-                          className="form-control input-xs"
-                          value={this.props.movil_time}
-                          onChange={this.catchInputs}
-                          readOnly={this.props.movil ? "" : "readonly"}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <span className="label label-default">
-                          <i className="fa fa-laptop"></i> Laptop
-                        </span>
-                        <input
-                          name="lap"
-                          type="checkbox"
-                          checked={this.props.lap}
-                          onChange={this.catchInputs}
-                        />
-                        <input
-                          type="text"
-                          name="lap_time"
-                          className="form-control input-xs"
-                          value={this.props.lap_time}
-                          onChange={this.catchInputs}
-                          readOnly={this.props.lap ? "" : "readonly"}
-                        />
-                      </div>
-                    </div>
-                  </li>
-                </div>
-              </ul>
+              <div className="col-md-3">
+                <span className="label label-default">
+                  <i className="fas fa-desktop"></i> PC
+                </span>
+                <input
+                  name="pc"
+                  type="checkbox"
+                  checked={this.props.pc}
+                  onChange={this.catchInputs}
+                />
+                <input
+                  type="time"
+                  name="pc_time"
+                  className="form-control input-xs"
+                  value={this.props.pc_time}
+                  onChange={this.catchInputs}
+                  readOnly={this.props.pc ? "" : "readonly"}
+                />
+              </div>
+              <div className="col-md-3">
+                <span className="label label-default">
+                  <i className="fas fa-tablet"></i> Tablet
+                </span>
+                <input
+                  name="tablet"
+                  type="checkbox"
+                  checked={this.props.tablet}
+                  onChange={this.catchInputs}
+                />
+                <input
+                  type="time"
+                  name="tablet_time"
+                  className="form-control input-xs"
+                  value={this.props.tablet_time}
+                  onChange={this.catchInputs}
+                  readOnly={this.props.tablet ? "" : "readonly"}
+                />
+              </div>
+              <div className="col-md-3">
+                <span className="label label-default">
+                  <i className="fas fa-mobile"></i> Telefono
+                </span>
+                <input
+                  name="movil"
+                  type="checkbox"
+                  checked={this.props.movil}
+                  onChange={this.catchInputs}
+                />
+                <input
+                  type="time"
+                  name="movil_time"
+                  className="form-control input-xs"
+                  value={this.props.movil_time}
+                  onChange={this.catchInputs}
+                  readOnly={this.props.movil ? "" : "readonly"}
+                />
+              </div>
+              <div className="col-md-3">
+                <span className="label label-default">
+                  <i className="fa fa-laptop"></i> Laptop
+                </span>
+                <input
+                  name="lap"
+                  type="checkbox"
+                  checked={this.props.lap}
+                  onChange={this.catchInputs}
+                />
+                <input
+                  type="time"
+                  name="lap_time"
+                  className="form-control input-xs"
+                  value={this.props.lap_time}
+                  onChange={this.catchInputs}
+                  readOnly={this.props.lap ? "" : "readonly"}
+                />
+              </div>
             </div>
-            <br />
-            <div className="row">
+            <div className="row mt-1">
               <div className="col-md-6">
                 <ul className="list-group">
                   <li className="list-group-item d-flex justify-content-between align-items-center">

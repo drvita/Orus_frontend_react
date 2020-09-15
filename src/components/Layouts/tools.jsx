@@ -24,10 +24,10 @@ export default class StoreAdd extends Component {
       server: varLocalStorage.host
         ? varLocalStorage.host
         : window.location.host.split(":")[0],
-      company: varLocalStorage.company,
-      email: varLocalStorage.email,
-      name: varLocalStorage.name,
-      username: varLocalStorage.username,
+      company: varLocalStorage.company? varLocalStorage.company : "",
+      email: varLocalStorage.email? varLocalStorage.email : "",
+      name: varLocalStorage.name ? varLocalStorage.name : "",
+      username: varLocalStorage.username ? varLocalStorage.username : "",
     });
   }
 

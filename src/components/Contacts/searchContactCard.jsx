@@ -106,7 +106,7 @@ export default class searchContact extends Component {
                 <div className="btn-group btn-block" role="group">
                   <button
                     type="button"
-                    className="btn btn-warning"
+                    className="btn btn-dark"
                     onClick={this.handleClickChange}
                   >
                     <i className="fas fa-exchange-alt mr-1"></i>
@@ -114,7 +114,7 @@ export default class searchContact extends Component {
                   </button>
                   <Link
                     to={"/contactos/registro/" + id}
-                    className="btn btn-info"
+                    className="btn btn-danger"
                     onClick={(e) => {
                       this.handleChangePage("/contactos/registro/");
                     }}

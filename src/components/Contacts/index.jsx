@@ -344,7 +344,7 @@ export default class Contacts extends Component {
     this.props.page(e.target.id);
   };
   handleDelete = (e) => {
-    let conf = window.confirm("¿Esta seguro de eliminar el usuario?"),
+    let conf = window.confirm("¿Esta seguro de eliminar el contacto?"),
       id = e.target.id,
       varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
 
@@ -361,7 +361,7 @@ export default class Contacts extends Component {
           this.setState({
             load: true,
           });
-          this.getUsers();
+          this.getContacts();
         })
         .catch((e) => {
           console.log(e);
@@ -388,17 +388,17 @@ export default class Contacts extends Component {
         Authorization: "Bearer " + varLocalStorage.token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          console.log(res);
+        }
+        return res.json();
+      })
       .then((data) => {
         console.log("Descargando contactos");
         this.setState({
           contacts: data,
-          load: false,
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-        this.setState({
           load: false,
         });
       });

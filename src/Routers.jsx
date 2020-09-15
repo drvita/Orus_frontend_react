@@ -13,6 +13,8 @@ import ContactsAdd from "./components/Contacts/add";
 import Tools from "./components/Layouts/tools";
 import Exam from "./components/Exam/index";
 import ExamAdd from "./components/Exam/add";
+import Order from "./components/Order/index";
+import OrderAdd from "./components/Order/add";
 
 class Routers extends Component {
   constructor(props) {
@@ -159,6 +161,25 @@ class Routers extends Component {
                         <Tools {...props} page={this.handlePage} />
                       )}
                     />
+                    <Route
+                      extric
+                      path="/pedidos/registro/:id?"
+                      render={(props) => (
+                        <OrderAdd
+                          {...props}
+                          data={data}
+                          page={this.handlePage}
+                        />
+                      )}
+                    />
+                    <Route
+                      extric
+                      path="/pedidos"
+                      render={(props) => (
+                        <Order {...props} data={data} page={this.handlePage} />
+                      )}
+                    />
+
                     <Route path="/">Dashboard</Route>
                   </Switch>
                 </div>

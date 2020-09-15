@@ -1,48 +1,49 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import moment from "moment";
+//import moment from "moment";
 //import "moment/locale/es";
 import Filter from "./index_filter";
 
-export default class Exam extends Component {
+export default class Contacts extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      exams: {
+      pedidos: {
         data: [],
         meta: {},
       },
       load: true,
       page: 1,
       orderby: "created_at",
-      order: "desc",
+      order: "asc",
       search: "",
       status: 0,
-      date: moment.utc(new Date()).local().format("YYYY-MM-DD"),
     };
   }
 
   componentDidMount() {
-    this.getExams();
+    this.getPedidos();
     //moment.locale("es");
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {
-      console.log("Recargando citas");
-      this.getExams();
+      console.log("Recargando pedidos");
+      this.getPedidos();
     }
   }
 
   render() {
-    let { exams, load } = this.state,
+    let { pedidos, load } = this.state,
       pages = [];
-    if (Object.keys(exams).length && exams.meta.total > 10) {
-      for (var i = 1; i <= exams.meta.last_page; i++) {
+    if (pedidos.meta.total > 10) {
+      for (var i = 1; i <= pedidos.meta.last_page; i++) {
         pages.push(
           <li
             key={i}
             className={
-              exams.meta.current_page === i ? "page-item disabled" : "page-item"
+              pedidos.meta.current_page === i
+                ? "page-item disabled"
+                : "page-item"
             }
           >
             <a
@@ -58,11 +59,11 @@ export default class Exam extends Component {
     }
 
     return (
-      <div className="card card-info card-outline">
+      <div className="card card-warning card-outline">
         <div className="card-header">
           <h3 className="card-title">
-            <i className="fas fa-notes-medical mr-2"></i>
-            Citas para examenes
+            <i className="fas fa-cash-register mr-1"></i>
+            Listado de pedidos
           </h3>
           <div className="card-tools">
             <div className="btn-group">
@@ -75,7 +76,7 @@ export default class Exam extends Component {
                 <i className="fas fa-search"></i>
               </a>
             </div>
-            {exams.meta.total > 10 ? (
+            {pedidos.meta.total > 10 ? (
               <div className="btn-group">
                 <ul className="pagination pagination-sm">{pages}</ul>
               </div>
@@ -90,16 +91,15 @@ export default class Exam extends Component {
               <tr>
                 <th
                   onClick={() => {
-                    this.handleOrder("paciente");
+                    this.handleOrder("id");
                   }}
                   style={{
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
-                  scope="col"
                 >
-                  Nombre del paciente
-                  {this.state.orderby === "paciente" ? (
+                  Orden
+                  {this.state.orderby === "id" ? (
                     <span>
                       &nbsp;
                       <i className="fas fa-sort text-primary"></i>
@@ -110,16 +110,53 @@ export default class Exam extends Component {
                 </th>
                 <th
                   onClick={() => {
-                    this.handleOrder("edad");
+                    this.handleOrder("ncaja");
                   }}
                   style={{
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
-                  scope="col"
                 >
-                  Edad
-                  {this.state.orderby === "edad" ? (
+                  Caja
+                  {this.state.orderby === "ncaja" ? (
+                    <span>
+                      &nbsp;
+                      <i className="fas fa-sort text-primary"></i>
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </th>
+                <th
+                  onClick={() => {
+                    this.handleOrder("contact_id");
+                  }}
+                  style={{
+                    cursor:
+                      this.state.order === "desc" ? "n-resize" : "s-resize",
+                  }}
+                >
+                  Paciente
+                  {this.state.orderby === "contact_id" ? (
+                    <span>
+                      &nbsp;
+                      <i className="fas fa-sort text-primary"></i>
+                    </span>
+                  ) : (
+                    ""
+                  )}
+                </th>
+                <th
+                  onClick={() => {
+                    this.handleOrder("laboratorio");
+                  }}
+                  style={{
+                    cursor:
+                      this.state.order === "desc" ? "n-resize" : "s-resize",
+                  }}
+                >
+                  Laboratorio
+                  {this.state.orderby === "laboratorio" ? (
                     <span>
                       &nbsp;
                       <i className="fas fa-sort text-primary"></i>
@@ -136,7 +173,6 @@ export default class Exam extends Component {
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
-                  scope="col"
                 >
                   Estado
                   {this.state.orderby === "status" ? (
@@ -156,9 +192,8 @@ export default class Exam extends Component {
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
-                  scope="col"
                 >
-                  Creado
+                  Registrado
                   {this.state.orderby === "created_at" ? (
                     <span>
                       &nbsp;
@@ -176,7 +211,6 @@ export default class Exam extends Component {
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
-                  scope="col"
                 >
                   Actualizado
                   {this.state.orderby === "updated_at" ? (
@@ -188,9 +222,7 @@ export default class Exam extends Component {
                     ""
                   )}
                 </th>
-                <th className="text-right" scope="col">
-                  Acciones
-                </th>
+                <th className="text-right">Accion</th>
               </tr>
             </thead>
             <tbody>
@@ -202,67 +234,54 @@ export default class Exam extends Component {
                     </div>
                   </td>
                 </tr>
-              ) : Object.keys(exams.data).length ? (
-                exams.data.map((exam) => {
+              ) : Object.keys(pedidos.data).length ? (
+                pedidos.data.map((pedido) => {
                   return (
-                    <tr
-                      key={exam.id}
-                      className={
-                        exam.estado
-                          ? "table-secondary"
-                          : moment
-                              .utc(new Date())
-                              .isSame(moment.utc(exam.created_at), "hour")
-                          ? "table-success"
-                          : ""
-                      }
-                    >
+                    <tr key={pedido.id}>
                       <td>
-                        <span
-                          className={
-                            exam.estado
-                              ? "badge badge-secondary text-capitalize"
-                              : moment
-                                  .utc(new Date())
-                                  .isSame(moment.utc(exam.created_at), "hour")
-                              ? "badge badge-success text-capitalize"
-                              : "badge badge-primary text-capitalize"
-                          }
-                        >
-                          {exam.paciente.nombre}
+                        <span className="badge badge-warning text-capitalize">
+                          {pedido.id}
                         </span>
                       </td>
-                      <td>{exam.edad}</td>
                       <td className="text-uppercase">
-                        {exam.estado ? (
-                          <span className="badge badge-secondary">
-                            Terminado
-                          </span>
+                        {pedido.caja ? pedido.caja : "--"}
+                      </td>
+                      <td className="text-capitalize">
+                        <span className="badge badge-warning text-capitalize">
+                          {pedido.paciente.nombre}
+                        </span>
+                      </td>
+                      <td className="text-uppercase">
+                        {pedido.laboratorio ? (
+                          <div>
+                            {pedido.laboratorio} /{pedido.folio_lab}
+                          </div>
                         ) : (
-                          <span className="badge badge-success">Activo</span>
+                          "--"
                         )}
                       </td>
-                      <td>{moment(exam.created_at).format("L LT")}</td>
-                      <td>{moment(exam.updated_at).format("L LT")}</td>
+                      <td>{this.setStatusString(pedido.estado)}</td>
+                      <td className="text-capitalize">{pedido.created_at}</td>
+                      <td>{pedido.updated_at}</td>
                       <td className="text-right">
                         <a
-                          className="btn-flat text-warning mr-2"
+                          className="btn-flat text-warning"
                           href="#delete"
                           onClick={this.handleDelete}
-                          id={exam.id}
+                          id={pedido.id}
                         >
-                          <i className="fas fa-trash" id={exam.id}></i>
+                          <i className="fas fa-trash" id={pedido.id}></i>
                         </a>
-
+                        &nbsp;&nbsp;
                         <Link
                           className="btn-flat blue-text"
-                          to={"/consultorio/registro/" + exam.id}
+                          to={"/pedidos/registro/" + pedido.id}
                           onClick={this.changePage}
-                          id="/consultorio/registro"
+                          id="/pedidos/registro"
                         >
                           <i
                             className="fas fa-pencil-alt"
-                            id="/consultorio/registro"
+                            id="/pedidos/registro"
                           ></i>
                         </Link>
                       </td>
@@ -281,26 +300,55 @@ export default class Exam extends Component {
         </div>
         <div className="card-footer clearfix">
           <Link
-            to="/consultorio/registro"
-            className="btn btn-info float-right"
+            to="/pedidos/registro"
+            className="btn btn-warning float-right"
             onClick={this.changePage}
-            id="/consultorio/registro"
+            id="/pedidos/registro"
           >
-            <i className="fas fa-plus" id="/consultorio/registro"></i>
-            &nbsp; Nuevo examen
+            <i className="fas fa-plus" id="/pedidos/registro"></i>
+            &nbsp; Nuevo contacto
           </Link>
         </div>
         <Filter
           search={this.state.search}
+          status={this.state.status}
           onChangeValue={this.onchangeSearch}
           handleFilter={this.handleFilter}
-          status={this.state.status}
-          date={this.state.date}
         />
       </div>
     );
   }
 
+  setStatusString = (status) => {
+    switch (status) {
+      case 0:
+        return (
+          <span className="badge badge-warning text-uppercase">En proceso</span>
+        );
+      case 1:
+        return (
+          <span className="badge badge-info text-uppercase">
+            En laboratorio
+          </span>
+        );
+      case 2:
+        return (
+          <span className="badge badge-primary text-uppercase">Bicelación</span>
+        );
+      case 3:
+        return (
+          <span className="badge badge-success text-uppercase">Terminado</span>
+        );
+      case 4:
+        return (
+          <span className="badge badge-info text-uppercase">Garantia</span>
+        );
+      default:
+        return (
+          <span className="badge badge-secondary text-uppercase">Baja</span>
+        );
+    }
+  };
   handleFilter = () => {
     this.setState({
       load: true,
@@ -328,14 +376,15 @@ export default class Exam extends Component {
   };
   changePage = (e) => {
     this.props.page(e.target.id);
+    console.log("Cambiando page");
   };
   handleDelete = (e) => {
-    let conf = window.confirm("¿Esta seguro de eliminar el usuario?"),
+    let conf = window.confirm("¿Esta seguro de eliminar este pedido?"),
       id = e.target.id,
       varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
 
     if (conf) {
-      fetch("http://" + varLocalStorage.host + "/api/exams/" + id, {
+      fetch("http://" + varLocalStorage.host + "/api/orders/" + id, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -347,29 +396,23 @@ export default class Exam extends Component {
           this.setState({
             load: true,
           });
-          this.getUsers();
+          this.getPedidos();
         })
         .catch((e) => {
           console.log(e);
         });
     }
   };
-  getExams() {
-    console.log("Descargando examenes", typeof this.state.status);
+  getPedidos() {
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/exams",
+      url = "http://" + varLocalStorage.host + "/api/orders",
       orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
       search = this.state.search ? `&search=${this.state.search}` : "",
-      date = this.state.date ? `&date=${this.state.date}` : "",
-      status =
-        typeof this.state.status === "number"
-          ? `&status=${this.state.status}`
-          : "",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
 
     //Realiza la peticion de los contactos
-    fetch(url + page + orderby + status + date + search, {
+    fetch(url + page + orderby + search, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -385,22 +428,9 @@ export default class Exam extends Component {
         return res.json();
       })
       .then((data) => {
-        console.log("Examenes descargados");
-        if (!data.message) {
-          this.setState({
-            exams: data,
-            load: false,
-          });
-        } else {
-          console.log(data.message);
-          this.setState({
-            load: false,
-          });
-        }
-      })
-      .catch((e) => {
-        console.log(e);
+        console.log("Descargando pedidos");
         this.setState({
+          pedidos: data,
           load: false,
         });
       });

@@ -74,14 +74,28 @@ export default class ListForId extends Component {
                       </td>
                       <td className="float-right">
                         <Link
-                          className="btn btn-outline-secondary btn-sm"
+                          className="btn btn-outline-info btn-sm"
                           to={"/consultorio/registro/" + exam.id}
                           onClick={(e) => {
                             this.changePage("/consultorio/registro/");
                           }}
+                          alt="Ver examen"
                         >
                           <i className="fas fa-share"></i>
                         </Link>
+                        {exam.estado ? (
+                          <button
+                            className="btn btn-outline-warning btn-sm ml-2"
+                            alt="Crear pedido"
+                            onClick={(e) => {
+                              this.handleNewOrder(e, exam.id);
+                            }}
+                          >
+                            <i className="fas fa-shopping-basket"></i>
+                          </button>
+                        ) : (
+                          ""
+                        )}
                       </td>
                     </tr>
                   );
@@ -99,7 +113,7 @@ export default class ListForId extends Component {
         <div className="card-footer">
           <button
             type="button"
-            className="btn btn-secondary float-right"
+            className="btn btn-info float-right"
             onClick={this.handleNewExam}
           >
             <i className="fas fa-plus"></i>
@@ -109,9 +123,46 @@ export default class ListForId extends Component {
     );
   }
 
+  handleNewOrder = (e, id) => {
+    e.preventDefault();
+    if (window.confirm("¿Desea agregar un pedido a este examen?")) {
+      //Variables en localStorage
+      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+        body = {
+          contact_id: this.props.id,
+          exam_id: id,
+          items: JSON.stringify([]),
+        };
+      //Crear o modificar examen
+      console.log("Enviando datos del pedido a la API");
+      fetch("http://" + varLocalStorage.host + "/api/orders", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + varLocalStorage.token,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (data.data) {
+            console.log("Pedido almacenado");
+            this.setState({
+              load: true,
+            });
+            this.getExams();
+          } else console.log(data.message);
+        });
+    }
+  };
   handleNewExam = (e) => {
     e.preventDefault();
-    console.log("Click a button");
     //Maneja el boton de almacenar
     let conf = window.confirm(
       "¿Desea agregar un nuevo examen a este paciente?"
@@ -148,9 +199,6 @@ export default class ListForId extends Component {
             });
             this.getExams();
           } else console.log(data.message);
-        })
-        .catch((e) => {
-          console.log(e);
         });
     }
   };

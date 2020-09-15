@@ -83,6 +83,7 @@ export default class ExamAdd extends Component {
       d_fcloi: false,
       d_fclod_time: "00:00",
       d_fcloi_time: "00:00",
+      category_id: 0,
       contact_id: 0,
       status: 0,
     };
@@ -176,6 +177,7 @@ export default class ExamAdd extends Component {
             d_fcloi: data.data.d_fcloi,
             d_fclod_time: data.data.d_fclod_time,
             d_fcloi_time: data.data.d_fcloi_time,
+            category_id: data.data.category_id,
             status: data.data.estado,
           });
         })
@@ -198,7 +200,11 @@ export default class ExamAdd extends Component {
             getIdContact={this.getIdContact}
             changePage={this.changePage}
           />
-          <Recomendaciones />
+          <Recomendaciones
+            category_id={this.state.category_id}
+            onChangeInput={this.handleChangeInput}
+            update={true}
+          />
         </div>
         <div className="col-md-8">
           <div className="card card-info card-outline">
@@ -283,24 +289,49 @@ export default class ExamAdd extends Component {
                       onChangeInput={this.handleChangeInput}
                     />
 
-                    <Graduacion
-                      esferaod={this.state.esferaod}
-                      esferaoi={this.state.esferaoi}
-                      cilindrod={this.state.cilindrod}
-                      cilindroi={this.state.cilindroi}
-                      ejeod={this.state.ejeod}
-                      ejeoi={this.state.ejeoi}
-                      adiciond={this.state.adiciond}
-                      adicioni={this.state.adicioni}
-                      dpod={this.state.dpod}
-                      dpoi={this.state.dpoi}
-                      alturaod={this.state.alturaod}
-                      alturaoi={this.state.alturaoi}
-                      lcmarca={this.state.lcmarca}
-                      lcgod={this.state.lcgod}
-                      lcgoi={this.state.lcgoi}
-                      onChangeInput={this.handleChangeInput}
-                    />
+                    <div className="card">
+                      <div className="card-header" id="heading7">
+                        <h2 className="mb-0">
+                          <button
+                            className="btn btn-link btn-block text-left text-info collapsed"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#caja7"
+                            aria-expanded="false"
+                            aria-controls="caja7"
+                          >
+                            Graduaci&oacute;n
+                          </button>
+                        </h2>
+                      </div>
+                      <div
+                        id="caja7"
+                        className="collapse"
+                        aria-labelledby="headingThree"
+                        data-parent="#accordionExample"
+                      >
+                        <div className="card-body">
+                          <Graduacion
+                            esferaod={this.state.esferaod}
+                            esferaoi={this.state.esferaoi}
+                            cilindrod={this.state.cilindrod}
+                            cilindroi={this.state.cilindroi}
+                            ejeod={this.state.ejeod}
+                            ejeoi={this.state.ejeoi}
+                            adiciond={this.state.adiciond}
+                            adicioni={this.state.adicioni}
+                            dpod={this.state.dpod}
+                            dpoi={this.state.dpoi}
+                            alturaod={this.state.alturaod}
+                            alturaoi={this.state.alturaoi}
+                            lcmarca={this.state.lcmarca}
+                            lcgod={this.state.lcgod}
+                            lcgoi={this.state.lcgoi}
+                            onChangeInput={this.handleChangeInput}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
                     <Observaciones
                       observaciones={this.state.observaciones}

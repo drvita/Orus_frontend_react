@@ -67,41 +67,51 @@ export default class ToolsCategory extends Component {
               </tr>
             </thead>
             <tbody>
-              {category_list.map((cat) => {
-                let padre = "";
+              {category_list.length ? (
+                category_list.map((cat) => {
+                  let padre = "";
 
-                if (cat.depende_de != null) {
-                  if (cat.depende_de.depende_de != null) {
-                    padre = cat.depende_de.depende_de.categoria;
-                  }
-                  padre = padre
-                    ? padre + "/" + cat.depende_de.categoria
-                    : cat.depende_de.categoria;
-                }
-                padre = padre ? padre + "/" + cat.categoria : cat.categoria;
-
-                return (
-                  <tr
-                    key={cat.id}
-                    className={
-                      cat.id === this.state.newItem ? "table-success" : ""
+                  if (cat.depende_de != null) {
+                    if (cat.depende_de.depende_de != null) {
+                      padre = cat.depende_de.depende_de.categoria;
                     }
-                  >
-                    <td className="text-capitalize">{cat.categoria}</td>
-                    <td className="text-capitalize">{padre}</td>
-                    <td>
-                      <button
-                        className="btn btn-outline-light btn-sm"
-                        onClick={(e) => {
-                          this.handleClickDelete(cat.id);
-                        }}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                    padre = padre
+                      ? padre + "/" + cat.depende_de.categoria
+                      : cat.depende_de.categoria;
+                  }
+                  padre = padre ? padre : "--";
+
+                  return (
+                    <tr
+                      key={cat.id}
+                      className={
+                        cat.id === this.state.newItem ? "table-success" : ""
+                      }
+                    >
+                      <td className="text-capitalize">{cat.categoria}</td>
+                      <td className="text-capitalize">{padre}</td>
+                      <td>
+                        <button
+                          className="btn btn-outline-light btn-sm"
+                          onClick={(e) => {
+                            this.handleClickDelete(cat.id);
+                          }}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
             {this.state.add ? (
               <tfoot>
@@ -309,6 +319,7 @@ export default class ToolsCategory extends Component {
           .then((res) => {
             if (!res.ok) {
               window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+              console.log("Error en API", res);
             }
             return res.json();
           })

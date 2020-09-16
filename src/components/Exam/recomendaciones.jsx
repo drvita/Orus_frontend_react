@@ -30,7 +30,7 @@ export default class Recomendaciones extends Component {
         <div className="card-header">
           <h3 className="card-title">
             <i className="fas fa-thumbs-up mr-1"></i>
-            Recomendaciones
+            Recomendaci&oacute;n
           </h3>
         </div>
         <div className="card-body">

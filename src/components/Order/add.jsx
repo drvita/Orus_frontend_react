@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import SearchContact from "../Contacts/searchContactCard";
-import Graduacion from "../Exam/graduacionExam";
-import Recomendaciones from "../Exam/recomendaciones";
 import Items from "./itemsOrder";
+import ListExam from "../Exam/listsExams";
 import moment from "moment";
 import "moment/locale/es";
 import { Link } from "react-router-dom";
@@ -145,54 +144,12 @@ export default class ContactsAdd extends Component {
                   />
                 </div>
                 <div className="tab-pane fade pt-4" id="exam">
-                  <div className="row m-2">
-                    <div className="col">
-                      <div className="border border-info rounded p-2">
-                        <span className="badge badge-pill badge-info mx-2">
-                          Examen
-                        </span>
-                        <strong>{this.state.exam.id}</strong>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="border border-info rounded p-2">
-                        <span className="badge badge-pill badge-info mx-2">
-                          Fecha
-                        </span>
-                        <strong>
-                          {moment
-                            .utc(this.state.exam.created_at)
-                            .local()
-                            .format("LL")}
-                        </strong>
-                      </div>
-                    </div>
-                    <div className="col-2">
-                      <button className="btn btn-info">Cambiar</button>
-                    </div>
-                  </div>
-                  <Graduacion
-                    esferaod=""
-                    esferaoi=""
-                    cilindrod=""
-                    cilindroi=""
-                    ejeod=""
-                    ejeoi=""
-                    adiciond=""
-                    adicioni=""
-                    dpod=""
-                    dpoi=""
-                    alturaod=""
-                    alturaoi=""
-                    lcmarca=""
-                    lcgod=""
-                    lcgoi=""
-                    onChangeInput={this.handleChangeInput}
-                  />
-
-                  <Recomendaciones
-                    category_id={this.state.exam.recomendacion}
-                    onChangeInput={this.handleChangeInput}
+                  <ListExam
+                    paciente={this.state.contact_id}
+                    exam={this.state.exam}
+                    page={this.changePage}
+                    select={true}
+                    ChangeInput={this.handleChangeInput}
                   />
                 </div>
                 <div className="tab-pane fade pt-4" id="lab">

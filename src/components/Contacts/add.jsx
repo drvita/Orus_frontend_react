@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import Mapa from "./mapa";
-import ListExam from "../Exam/listForId";
+import ListExam from "../Exam/listsExams";
 
 export default class ContactsAdd extends Component {
   constructor(props) {
@@ -469,7 +469,8 @@ export default class ContactsAdd extends Component {
           {this.state.id && !this.state.type ? (
             <div className="col">
               <ListExam
-                id={this.state.id}
+                paciente={this.state.id}
+                exam={{}}
                 page={this.changePage}
                 edad={
                   moment(this.state.birthday)

@@ -19,15 +19,25 @@ export default class ListsExams extends Component {
     };
   }
   componentDidMount() {
-    if (!this.props.exam.id) {
+    if (this.props.exam && !this.props.exam.id) {
       this.getExams();
+    } else {
+      this.setState({
+        id: this.props.exam.id,
+        exam: this.props.exam,
+        load: false,
+      });
     }
   }
   componentDidUpdate(props, state) {
-    if (!this.props.exam.id && this.props.exam.id !== props.exam.id) {
+    if (
+      this.props.exam &&
+      !this.props.exam.id &&
+      this.props.exam.id !== props.exam.id
+    ) {
       this.getExams();
     }
-    if (this.props.exam.id !== props.exam.id) {
+    if (this.props.exam && this.props.exam.id !== props.exam.id) {
       this.setState({
         id: this.props.exam.id,
         exam: this.props.exam,
@@ -65,7 +75,12 @@ export default class ListsExams extends Component {
                 </div>
                 <div className="col-2">
                   <button
-                    className="btn btn-info"
+                    className={
+                      this.props.status
+                        ? "btn btn-info disabled"
+                        : "btn btn-info"
+                    }
+                    disabled={this.props.status ? true : false}
                     onClick={this.handleClickDeleteExam}
                   >
                     Cambiar
@@ -116,7 +131,7 @@ export default class ListsExams extends Component {
               <tbody>
                 {load ? (
                   <tr>
-                    <td colSpan="8" className="text-center">
+                    <td colSpan="5" className="text-center">
                       <div
                         className="spinner-border text-primary"
                         role="status"
@@ -172,8 +187,14 @@ export default class ListsExams extends Component {
                   })
                 ) : (
                   <tr>
-                    <th colSpan="3" className="text-center">
+                    <th colSpan="5" className="text-center">
                       Aun no tiene examenes
+                      <button
+                        className="btn btn-outline-info btn-sm ml-4"
+                        onClick={this.handleNewExam}
+                      >
+                        <i className="fas fa-plus"></i>
+                      </button>
                     </th>
                   </tr>
                 )}
@@ -274,7 +295,7 @@ export default class ListsExams extends Component {
                   })
                 ) : (
                   <tr>
-                    <th colSpan="3" className="text-center">
+                    <th colSpan="5" className="text-center">
                       Aun no tiene examenes
                     </th>
                   </tr>
@@ -315,7 +336,7 @@ export default class ListsExams extends Component {
       //Variables en localStorage
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
         body = {
-          contact_id: this.props.id,
+          contact_id: this.props.paciente,
           exam_id: id,
           items: JSON.stringify([]),
         };
@@ -357,7 +378,7 @@ export default class ListsExams extends Component {
       //Variables en localStorage
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
         body = {
-          contact_id: this.props.id,
+          contact_id: this.props.paciente,
           edad: this.props.edad,
         };
       //Crear o modificar examen

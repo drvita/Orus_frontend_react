@@ -15,7 +15,7 @@ export default class Contacts extends Component {
       load: true,
       page: 1,
       orderby: "created_at",
-      order: "asc",
+      order: "desc",
       search: "",
       status: 0,
     };
@@ -62,7 +62,7 @@ export default class Contacts extends Component {
       <div className="card card-warning card-outline">
         <div className="card-header">
           <h3 className="card-title">
-            <i className="fas fa-cash-register mr-1"></i>
+            <i className="fas fa-clipboard-list mr-1"></i>
             Listado de pedidos
           </h3>
           <div className="card-tools">
@@ -108,25 +108,7 @@ export default class Contacts extends Component {
                     ""
                   )}
                 </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("ncaja");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Caja
-                  {this.state.orderby === "ncaja" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
+                <th>Caja</th>
                 <th
                   onClick={() => {
                     this.handleOrder("contact_id");
@@ -146,25 +128,7 @@ export default class Contacts extends Component {
                     ""
                   )}
                 </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("laboratorio");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Laboratorio
-                  {this.state.orderby === "laboratorio" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
+                <th>Detalles</th>
                 <th
                   onClick={() => {
                     this.handleOrder("status");
@@ -244,7 +208,13 @@ export default class Contacts extends Component {
                         </span>
                       </td>
                       <td className="text-uppercase">
-                        {pedido.caja ? pedido.caja : "--"}
+                        {pedido.estado === 2 ? (
+                          <span>
+                            {pedido.caja ? pedido.caja : "Sin asignar"}
+                          </span>
+                        ) : (
+                          "--"
+                        )}
                       </td>
                       <td className="text-capitalize">
                         <span className="badge badge-warning text-capitalize">
@@ -252,10 +222,29 @@ export default class Contacts extends Component {
                         </span>
                       </td>
                       <td className="text-uppercase">
-                        {pedido.laboratorio ? (
+                        {pedido.estado === 1 ? (
                           <div>
-                            {pedido.laboratorio} /{pedido.folio_lab}
+                            <span className="badge badge-danger mr-1">
+                              {pedido.laboratorio
+                                ? pedido.laboratorio.nombre
+                                : "Sin asignar"}
+                            </span>{" "}
+                            {pedido.laboratorio ? "/ " + pedido.folio_lab : ""}
                           </div>
+                        ) : pedido.estado === 2 ? (
+                          <small>
+                            {pedido.observaciones
+                              ? pedido.observaciones
+                              : "sin observaciones"}
+                          </small>
+                        ) : !pedido.estado ? (
+                          <small>
+                            {pedido.examen
+                              ? pedido.examen.estado === "Terminado"
+                                ? "Examen completado"
+                                : "Examen no realizado"
+                              : "Examen no asignado"}
+                          </small>
                         ) : (
                           "--"
                         )}
@@ -276,13 +265,11 @@ export default class Contacts extends Component {
                         <Link
                           className="btn-flat blue-text"
                           to={"/pedidos/registro/" + pedido.id}
-                          onClick={this.changePage}
-                          id="/pedidos/registro"
+                          onClick={(e) => {
+                            this.changePage("/pedidos/registro");
+                          }}
                         >
-                          <i
-                            className="fas fa-pencil-alt"
-                            id="/pedidos/registro"
-                          ></i>
+                          <i className="fas fa-pencil-alt"></i>
                         </Link>
                       </td>
                     </tr>
@@ -302,11 +289,12 @@ export default class Contacts extends Component {
           <Link
             to="/pedidos/registro"
             className="btn btn-warning float-right"
-            onClick={this.changePage}
-            id="/pedidos/registro"
+            onClick={(e) => {
+              this.changePage("/pedidos/registro");
+            }}
           >
-            <i className="fas fa-plus" id="/pedidos/registro"></i>
-            &nbsp; Nuevo contacto
+            <i className="fas fa-plus mr-2"></i>
+            <strong>Nuevo pedido</strong>
           </Link>
         </div>
         <Filter
@@ -374,9 +362,8 @@ export default class Contacts extends Component {
       load: true,
     });
   };
-  changePage = (e) => {
-    this.props.page(e.target.id);
-    console.log("Cambiando page");
+  changePage = (id) => {
+    this.props.page(id);
   };
   handleDelete = (e) => {
     let conf = window.confirm("¿Esta seguro de eliminar este pedido?"),

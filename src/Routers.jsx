@@ -194,7 +194,8 @@ class Routers extends Component {
 
   handlePage = (page) => {
     //Maneja el renderiazado del componentes cuando se cambíe el componentes
-    if (page === "" || page === undefined) page = "/";
+    if (page === "" || typeof page === "undefined" || typeof page === "object")
+      page = "/";
     let locations = page.split("/");
     if (locations[1] === "") {
       this.setState({

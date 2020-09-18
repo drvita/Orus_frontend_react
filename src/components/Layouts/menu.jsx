@@ -116,7 +116,7 @@ class Menu extends Component {
                     this.changePage("/pedidos");
                   }}
                 >
-                  <i className="nav-icon fas fa-cash-register"></i>
+                  <i className="nav-icon fas fa-clipboard-list"></i>
                   <p>
                     Pedidos
                     <i className="right fas fa-angle-left"></i>

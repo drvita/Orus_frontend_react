@@ -2,27 +2,32 @@ import React, { Component } from "react";
 import SearchContact from "../Contacts/searchContactCard";
 import Items from "./itemsOrder";
 import ListExam from "../Exam/listsExams";
+import LabOrder from "./labOrder";
+import Status from "./statusOrder";
+import Bicelacion from "./bicelacionOrder";
+import Garantia from "./garantiaOrder";
 import moment from "moment";
 import "moment/locale/es";
 import { Link } from "react-router-dom";
 
-export default class ContactsAdd extends Component {
+export default class OrderAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
       id: 0,
       observaciones: "",
-      laboratorio: "",
+      lab_id: 0,
       npedidolab: "",
       ncaja: 0,
       mensajes: [],
       items: [],
       contact_id: 0,
+      edad: 0,
       exam_id: 0,
       exam: {},
       status: 0,
-      edad: 0,
       date: "",
+      load: true,
     };
   }
 
@@ -47,18 +52,22 @@ export default class ContactsAdd extends Component {
           this.setState({
             id,
             observaciones: data.data.observaciones,
-            laboratorio: data.data.laboratorio,
+            lab_id: data.data.laboratorio ? data.data.laboratorio.id : 0,
             npedidolab: data.data.folio_lab,
             ncaja: data.data.caja,
             mensajes: JSON.parse(data.data.mensajes),
             items: JSON.parse(data.data.productos),
             contact_id: data.data.paciente.id,
             status: data.data.estado,
-            exam_id: data.data.examen.id,
-            exam: data.data.examen,
+            exam_id: data.data.examen !== null ? data.data.examen.id : 0,
+            exam: data.data.examen !== null ? data.data.examen : {},
             date: data.data.created_at,
           });
         });
+    } else {
+      this.setState({
+        load: false,
+      });
     }
   }
 
@@ -75,162 +84,183 @@ export default class ContactsAdd extends Component {
           />
           <div className="card card-warning card-outline mt-4">
             <div className="card-body">
-              <h5 className="card-title">Resumen</h5>
+              <Status
+                status={this.state.status}
+                ChangeInput={this.handleChangeInput}
+              />
             </div>
           </div>
         </div>
         <div className="col">
           <div className="card card-warning card-outline">
             <div className="card-body">
-              <ul className="nav nav-tabs" id="myTab" role="tablist">
-                <li className="nav-item">
-                  <a
-                    className="nav-link active"
-                    href="#pedido"
-                    data-toggle="tab"
-                  >
-                    Pedido
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" data-toggle="tab" href="#exam">
-                    Examen
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" data-toggle="tab" href="#lab">
-                    Laboratorio
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" data-toggle="tab" href="#bicelacion">
-                    Bicelación
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" data-toggle="tab" href="#estado">
-                    Estado
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" data-toggle="tab" href="#garantia">
-                    Garantia
-                  </a>
-                </li>
-              </ul>
-              <div className="tab-content" id="myTabContent">
-                <div className="tab-pane fade pt-4 show active" id="pedido">
-                  <div className="row">
-                    <div className="col">
-                      <div className="border border-warning rounded p-2">
-                        <span className="badge badge-pill badge-warning mx-2">
-                          Folio
-                        </span>
-                        <strong>{this.state.id}</strong>
+              {this.state.contact_id ? (
+                <React.Fragment>
+                  <ul className="nav nav-tabs mt-2" id="myTab" role="tablist">
+                    <li className="nav-item">
+                      <a
+                        className={
+                          !this.state.status || this.state.status === 3
+                            ? "nav-link active"
+                            : "nav-link"
+                        }
+                        href="#pedido"
+                        data-toggle="tab"
+                      >
+                        Nota
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a className="nav-link" data-toggle="tab" href="#exam">
+                        Examen
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        className={
+                          this.state.status === 1
+                            ? "nav-link active"
+                            : "nav-link"
+                        }
+                        data-toggle="tab"
+                        href="#lab"
+                      >
+                        Laboratorio
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        className={
+                          this.state.status === 2
+                            ? "nav-link active"
+                            : "nav-link"
+                        }
+                        data-toggle="tab"
+                        href="#bicelacion"
+                      >
+                        Bicelación
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        className={
+                          this.state.status === 4
+                            ? "nav-link active"
+                            : "nav-link disabled"
+                        }
+                        data-toggle="tab"
+                        href="#garantia"
+                      >
+                        Garantia
+                      </a>
+                    </li>
+                  </ul>
+                  <div className="tab-content" id="myTabContent">
+                    <div
+                      className={
+                        !this.state.status || this.state.status === 3
+                          ? "tab-pane fade pt-4 show active"
+                          : "tab-pane fade pt-4"
+                      }
+                      id="pedido"
+                    >
+                      <div className="row">
+                        <div className="col">
+                          <div className="border border-warning rounded p-2">
+                            <span className="badge badge-pill badge-warning mx-2">
+                              Folio
+                            </span>
+                            <strong>{this.state.id}</strong>
+                          </div>
+                        </div>
+                        <div className="col">
+                          <div className="border border-warning rounded p-2">
+                            <span className="badge badge-pill badge-warning mx-2">
+                              Fecha
+                            </span>
+                            <strong>{this.state.date}</strong>
+                          </div>
+                        </div>
                       </div>
+                      <Items
+                        items={this.state.items}
+                        status={this.state.status}
+                        ChangeInput={this.handleChangeInput}
+                      />
                     </div>
-                    <div className="col">
-                      <div className="border border-warning rounded p-2">
-                        <span className="badge badge-pill badge-warning mx-2">
-                          Fecha
-                        </span>
-                        <strong>{this.state.date}</strong>
-                      </div>
+                    <div className="tab-pane fade pt-4" id="exam">
+                      <ListExam
+                        paciente={this.state.contact_id}
+                        edad={this.state.edad}
+                        exam={this.state.exam}
+                        page={this.changePage}
+                        select={true}
+                        status={this.state.status}
+                        ChangeInput={this.handleChangeInput}
+                      />
+                    </div>
+                    <div
+                      className={
+                        this.state.status === 1
+                          ? "tab-pane fade pt-4 show active"
+                          : "tab-pane fade pt-4"
+                      }
+                      id="lab"
+                    >
+                      <LabOrder
+                        lab_id={this.state.lab_id ? this.state.lab_id : 0}
+                        npedidolab={
+                          this.state.npedidolab ? this.state.npedidolab : ""
+                        }
+                        status={this.state.status}
+                        ChangeInput={this.handleChangeInput}
+                      />
+                    </div>
+                    <div
+                      className={
+                        this.state.status === 2
+                          ? "tab-pane fade pt-4 show active"
+                          : "tab-pane fade pt-4"
+                      }
+                      id="bicelacion"
+                    >
+                      <Bicelacion
+                        ncaja={this.state.ncaja}
+                        observaciones={this.state.observaciones}
+                        status={this.state.status}
+                        ChangeInput={this.handleChangeInput}
+                      />
+                    </div>
+                    <div
+                      className={
+                        this.state.status === 4
+                          ? "tab-pane fade pt-4 show active"
+                          : "tab-pane fade pt-4"
+                      }
+                      id="garantia"
+                    >
+                      <Garantia
+                        status={this.state.status}
+                        ChangeInput={this.handleChangeInput}
+                      />
                     </div>
                   </div>
-                  <Items
-                    items={this.state.items}
-                    ChangeInput={this.handleChangeInput}
-                  />
-                </div>
-                <div className="tab-pane fade pt-4" id="exam">
-                  <ListExam
-                    paciente={this.state.contact_id}
-                    exam={this.state.exam}
-                    page={this.changePage}
-                    select={true}
-                    ChangeInput={this.handleChangeInput}
-                  />
-                </div>
-                <div className="tab-pane fade pt-4" id="lab">
-                  <div className="row">
-                    <div className="col">
-                      <div className="border border-warning rounded p-2">
-                        <label htmlFor="lab">Laboratorio</label>
-                        <select
-                          className="form-control"
-                          id="lab"
-                          name="laboratorio"
-                        >
-                          <option>Lab 1</option>
-                          <option>Lab 2</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="border border-warning rounded p-2">
-                        <label>Folio</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="folio_lab"
-                        />
-                      </div>
-                    </div>
+                </React.Fragment>
+              ) : this.state.load ? (
+                <div className="text-center">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
                   </div>
                 </div>
-                <div className="tab-pane fade pt-4" id="bicelacion">
-                  <div className="row">
-                    <div className="col">
-                      <div className="border border-warning rounded p-2">
-                        <label htmlFor="lab">Caja</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="caja"
-                        />
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="border border-warning rounded p-2">
-                        <label>Observaciones</label>
-                        <textarea
-                          name="observaciones"
-                          className="form-control"
-                        ></textarea>
-                      </div>
-                    </div>
-                  </div>
+              ) : (
+                <div className="alert alert-warning">
+                  <h4 className="alert-heading">Nuevo pedido</h4>
+                  <p>
+                    <i className="fas fa-user mr-1"></i> Primero seleccione al
+                    paciente!
+                  </p>
                 </div>
-                <div className="tab-pane fade pt-4" id="estado">
-                  <div className="row">
-                    <div className="col">
-                      <div className="border border-warning rounded p-2">
-                        <label htmlFor="lab">Estado</label>
-                        <select className="form-control" name="status">
-                          <option value="">Todos</option>
-                          <option value="0">En proceso</option>
-                          <option value="1">Laboratorio</option>
-                          <option value="2">Bicelación</option>
-                          <option value="3">Terminado</option>
-                          <option value="4">Garantia</option>
-                          <option value="5">Baja</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="tab-pane fade pt-4" id="garantia">
-                  <div className="row">
-                    <div className="col">
-                      <div className="border border-warning rounded p-2">
-                        <label htmlFor="lab">Garantia</label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
             <div className="card-footer text-right">
               <div className="btn-group" role="group">
@@ -244,12 +274,23 @@ export default class ContactsAdd extends Component {
                   <i className="fas fa-ban mr-1"></i>
                   <strong>Cancelar</strong>
                 </Link>
-                <button className="btn btn-warning">
+                <button
+                  className={
+                    this.state.contact_id
+                      ? "btn btn-warning"
+                      : "btn btn-warning disabled"
+                  }
+                  onClick={this.handleSave}
+                  disabled={this.state.contact_id ? false : true}
+                >
                   <i className="fas fa-save mr-1"></i>
                   <strong>Guardar</strong>
                 </button>
               </div>
             </div>
+          </div>
+          <div className="card card-warning card-outline">
+            <div className="card-body">Aqui van los mensajes</div>
           </div>
         </div>
       </div>
@@ -273,21 +314,31 @@ export default class ContactsAdd extends Component {
   handleSave = (e) => {
     e.preventDefault();
     //Maneja el boton de almacenar
-    let conf = window.confirm("¿Esta seguro de realizar la accion?"),
-      id = 0;
+    let conf = window.confirm("¿Esta seguro de realizar la accion de guardar?"),
+      id = this.state.id;
     if (conf) {
       //Variables en localStorage
-      console.log("Enviando datos a API para almacenar");
+      console.log("Enviando datos a API para almacenar", id);
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
       // Procesamos variables
       //Creamos el body
-      let body = this.state;
       //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
       let url = id
           ? "http://" + varLocalStorage.host + "/api/orders/" + id
           : "http://" + varLocalStorage.host + "/api/orders",
-        method = id ? "PUT" : "POST";
-      //Actualiza el contacto o creamos el contacto
+        method = id ? "PUT" : "POST",
+        body = this.state;
+
+      delete body.exam;
+      delete body.date;
+      delete body.edad;
+      delete body.id;
+      if (!body.exam_id) {
+        delete body.exam_id;
+      }
+      body.items = JSON.stringify(body.items);
+      body.mensajes = JSON.stringify(body.mensajes);
+      //Actualiza el pedido o creamos un pedido nuevo según el ID
       fetch(url, {
         method: method,
         body: JSON.stringify(body),
@@ -305,10 +356,10 @@ export default class ContactsAdd extends Component {
         })
         .then((data) => {
           if (data.data) {
-            console.log("Contacto almacenado");
+            console.log("Pedido almacenado");
             if (
               window.confirm(
-                "Contacto almacenado con exito!.\n¿Desea cerrar este contacto?"
+                "Pedido almacenado con exito!.\n¿Desea cerrar este contacto?"
               )
             ) {
               this.props.history.goBack();

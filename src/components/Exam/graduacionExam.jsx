@@ -35,7 +35,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.esferaod}
+                  value={this.props.esferaod ? this.props.esferaod : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -52,7 +52,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.cilindrod}
+                  value={this.props.cilindrod ? this.props.cilindrod : 0}
                   onChange={this.catchInputs}
                 />
               </td>

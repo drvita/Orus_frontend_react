@@ -69,6 +69,7 @@ export default class searchContact extends Component {
           edad = this.props.edad
             ? this.props.edad + " años"
             : moment(f_nacimiento).fromNow(true);
+
         return (
           <div className="card card-danger card-outline">
             <div className="card-body box-profile">
@@ -263,7 +264,7 @@ export default class searchContact extends Component {
       type = "&type=0",
       search = word ? `&search=${word}` : "",
       page = "?page=1";
-
+    console.log("Descargando contactos de la API");
     //Realiza la peticion de los contactos
     fetch(url + page + search + type, {
       method: "GET",
@@ -273,10 +274,15 @@ export default class searchContact extends Component {
         Authorization: "Bearer " + varLocalStorage.token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+        }
+        return res.json();
+      })
       .then((data) => {
-        //console.log("Descargando contactos", data);
         if (data.data.length) {
+          console.log("Almacenando contactos", data);
           this.setState({
             data: data.data,
           });
@@ -290,9 +296,6 @@ export default class searchContact extends Component {
             ],
           });
         }
-      })
-      .catch((e) => {
-        console.log(e);
       });
   };
   handleSearcContact = (e) => {

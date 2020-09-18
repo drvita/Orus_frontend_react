@@ -20,7 +20,7 @@ export default class Items extends Component {
       items: this.props.items,
     });
   }
-  componentDidUpdate(state, props) {
+  componentDidUpdate(props, state) {
     if (this.state.itemNew && this.state.item.length === 0) {
       this.inputItem.focus();
     }
@@ -39,6 +39,9 @@ export default class Items extends Component {
   render() {
     let { items, itemNew, itemsDb } = this.state;
     this.total = 0;
+    if (!items) {
+      items = this.props.items;
+    }
     return (
       <table className="table table-sm table-striped  mt-2">
         <thead>
@@ -167,9 +170,14 @@ export default class Items extends Component {
                   <td className="text-right">$ {item.total}</td>
                   <td>
                     <button
-                      className="btn btn-outline-light btn-sm"
+                      className={
+                        this.props.status
+                          ? "btn btn-outline-light btn-sm disabled"
+                          : "btn btn-outline-light btn-sm"
+                      }
+                      disabled={this.props.status ? true : false}
                       onClick={(e) => {
-                        this.deleteItem(index);
+                        if (!this.props.status) this.deleteItem(index);
                       }}
                     >
                       <i className="fas fa-trash"></i>
@@ -190,7 +198,12 @@ export default class Items extends Component {
           <tr>
             <td className="text-right" colSpan="2">
               <button
-                className="btn btn-outline-warning btn-sm"
+                className={
+                  this.props.status
+                    ? "btn btn-outline-warning btn-sm disabled"
+                    : "btn btn-outline-warning btn-sm"
+                }
+                disabled={this.props.status ? true : false}
                 onClick={this.handleNewItem}
               >
                 <i
@@ -285,7 +298,6 @@ export default class Items extends Component {
       }),
       item = this.state;
 
-    delete item.itemNew;
     item.id = item.id ? item.id : idRandom;
 
     if (find) {
@@ -298,6 +310,9 @@ export default class Items extends Component {
       }
     }
 
+    delete item.itemNew;
+    delete item.itemsDb;
+    delete item.items;
     items.push(item);
     this.setState({
       id: 0,
@@ -307,7 +322,6 @@ export default class Items extends Component {
       total: 0,
       itemNew: false,
     });
-
     this.props.ChangeInput("items", items);
   };
   handleNewItem = (e) => {

@@ -59,11 +59,11 @@ export default class Contacts extends Component {
     }
 
     return (
-      <div className="card card-warning card-outline">
+      <div className="card card-success card-outline">
         <div className="card-header">
           <h3 className="card-title">
-            <i className="fas fa-clipboard-list mr-1"></i>
-            Listado de pedidos
+            <i className="fas fa-cash-register mr-1"></i>
+            Notas
           </h3>
           <div className="card-tools">
             <div className="btn-group">
@@ -98,7 +98,7 @@ export default class Contacts extends Component {
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
                 >
-                  Orden
+                  Folio
                   {this.state.orderby === "id" ? (
                     <span>
                       &nbsp;
@@ -108,38 +108,21 @@ export default class Contacts extends Component {
                     ""
                   )}
                 </th>
-                <th>Caja</th>
+                <th>Cliente</th>
+                <th>SubTotal</th>
+                <th>Descuento</th>
+                <th>Metodo Pago</th>
                 <th
                   onClick={() => {
-                    this.handleOrder("contact_id");
+                    this.handleOrder("total");
                   }}
                   style={{
                     cursor:
                       this.state.order === "desc" ? "n-resize" : "s-resize",
                   }}
                 >
-                  Paciente
-                  {this.state.orderby === "contact_id" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th>Detalles</th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("status");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Estado
-                  {this.state.orderby === "status" ? (
+                  Total
+                  {this.state.orderby === "total" ? (
                     <span>
                       &nbsp;
                       <i className="fas fa-sort text-primary"></i>
@@ -203,58 +186,26 @@ export default class Contacts extends Component {
                   return (
                     <tr key={pedido.id}>
                       <td>
-                        <span className="badge badge-warning text-capitalize">
+                        <span className="badge badge-success text-capitalize">
                           {pedido.id}
                         </span>
                       </td>
-                      <td className="text-uppercase">
-                        {pedido.estado === 2 ? (
-                          <span>
-                            {pedido.caja ? pedido.caja : "Sin asignar"}
-                          </span>
-                        ) : (
-                          "--"
-                        )}
+                      <td className="text-uppercase">{pedido.cliente}</td>
+                      <td className="text-right">
+                        $ {pedido.subtotal ? pedido.subtotal : 0.0}
                       </td>
-                      <td>
-                        <span className="badge badge-warning text-capitalize">
-                          {pedido.paciente.nombre}
-                        </span>
+                      <td className="text-right">
+                        $ {pedido.descuento ? pedido.descuento : 0.0}
                       </td>
-                      <td className="text-uppercase">
-                        {pedido.estado === 1 ? (
-                          <div>
-                            <span className="badge badge-danger mr-1">
-                              {pedido.laboratorio
-                                ? pedido.laboratorio.nombre
-                                : "Sin asignar"}
-                            </span>{" "}
-                            {pedido.laboratorio ? "/ " + pedido.folio_lab : ""}
-                          </div>
-                        ) : pedido.estado === 2 ? (
-                          <small>
-                            {pedido.observaciones
-                              ? pedido.observaciones
-                              : "sin observaciones"}
-                          </small>
-                        ) : !pedido.estado ? (
-                          <small>
-                            {pedido.examen
-                              ? pedido.examen.estado === "Terminado"
-                                ? "Examen completado"
-                                : "Examen no realizado"
-                              : "Examen no asignado"}
-                          </small>
-                        ) : (
-                          "--"
-                        )}
+                      <td className="text-uppercase">{pedido.metodopago}</td>
+                      <td className="text-right">
+                        $ {pedido.total ? pedido.total : 0.0}
                       </td>
-                      <td>{this.setStatusString(pedido.estado)}</td>
                       <td>{pedido.created_at}</td>
                       <td>{pedido.updated_at}</td>
                       <td className="text-right">
                         <a
-                          className="btn-flat text-warning"
+                          className="btn-flat text-success"
                           href="#delete"
                           onClick={this.handleDelete}
                           id={pedido.id}
@@ -288,13 +239,13 @@ export default class Contacts extends Component {
         <div className="card-footer clearfix">
           <Link
             to="/pedidos/registro"
-            className="btn btn-warning float-right"
+            className="btn btn-success float-right"
             onClick={(e) => {
               this.changePage("/pedidos/registro");
             }}
           >
             <i className="fas fa-plus mr-2"></i>
-            <strong>Nuevo pedido</strong>
+            <strong>Nueva nota</strong>
           </Link>
         </div>
         <Filter
@@ -307,36 +258,6 @@ export default class Contacts extends Component {
     );
   }
 
-  setStatusString = (status) => {
-    switch (status) {
-      case 0:
-        return (
-          <span className="badge badge-warning text-uppercase">En proceso</span>
-        );
-      case 1:
-        return (
-          <span className="badge badge-info text-uppercase">
-            En laboratorio
-          </span>
-        );
-      case 2:
-        return (
-          <span className="badge badge-primary text-uppercase">Bicelación</span>
-        );
-      case 3:
-        return (
-          <span className="badge badge-success text-uppercase">Terminado</span>
-        );
-      case 4:
-        return (
-          <span className="badge badge-info text-uppercase">Garantia</span>
-        );
-      default:
-        return (
-          <span className="badge badge-secondary text-uppercase">Baja</span>
-        );
-    }
-  };
   handleFilter = () => {
     this.setState({
       load: true,
@@ -379,25 +300,21 @@ export default class Contacts extends Component {
           Authorization: "Bearer " + varLocalStorage.token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.log(res);
-          }
-          return res.json();
-        })
         .then((data) => {
           this.setState({
             load: true,
           });
           this.getPedidos();
+        })
+        .catch((e) => {
+          console.log(e);
         });
     }
   };
   getPedidos() {
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/orders",
+      url = "http://" + varLocalStorage.host + "/api/sales",
       orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
       search = this.state.search ? `&search=${this.state.search}` : "",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
@@ -419,7 +336,7 @@ export default class Contacts extends Component {
         return res.json();
       })
       .then((data) => {
-        console.log("Descargando pedidos");
+        console.log("Descargando pedidos", data.data);
         this.setState({
           pedidos: data,
           load: false,

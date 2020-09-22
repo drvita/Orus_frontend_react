@@ -15,6 +15,7 @@ import Exam from "./components/Exam/index";
 import ExamAdd from "./components/Exam/add";
 import Order from "./components/Order/index";
 import OrderAdd from "./components/Order/add";
+import Sales from "./components/Sales/index";
 
 class Routers extends Component {
   constructor(props) {
@@ -177,6 +178,14 @@ class Routers extends Component {
                       path="/pedidos"
                       render={(props) => (
                         <Order {...props} data={data} page={this.handlePage} />
+                      )}
+                    />
+
+                    <Route
+                      extric
+                      path="/notas"
+                      render={(props) => (
+                        <Sales {...props} data={data} page={this.handlePage} />
                       )}
                     />
 

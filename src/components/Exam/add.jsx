@@ -430,14 +430,15 @@ export default class ExamAdd extends Component {
     let conf = window.confirm("¿Esta seguro de realizar la accion?");
     if (conf) {
       //Variables en localStorage
+      //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
         body = this.state,
-        id = this.state.id;
-      //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-      let url = id
+        id = this.state.id,
+        url = id
           ? "http://" + varLocalStorage.host + "/api/exams/" + id
           : "http://" + varLocalStorage.host + "/api/exams",
         method = id ? "PUT" : "POST";
+      if (!body.category_id) delete body.category_id;
       //Crear o modificar examen
       console.log("Enviando datos del examen a la API");
       fetch(url, {

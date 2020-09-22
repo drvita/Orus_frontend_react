@@ -15,6 +15,14 @@ export default class OrderAdd extends Component {
     super(props);
     this.state = {
       id: 0,
+      session:
+        Math.random().toString(36).substring(2, 16) +
+        Math.random().toString(36).substring(2, 16) +
+        Math.random().toString(36).substring(2, 16) +
+        Math.random().toString(36).substring(2, 16) +
+        Math.random().toString(36).substring(2, 16) +
+        Math.random().toString(36).substring(2, 16) +
+        Math.random().toString(10),
       observaciones: "",
       lab_id: 0,
       npedidolab: "",
@@ -30,44 +38,14 @@ export default class OrderAdd extends Component {
       load: true,
     };
   }
-
   componentDidMount() {
-    let id = this.props.match.params.id;
     moment.locale("es");
-    if (id > 0) {
-      //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-      //Realiza la peticion del usuario seun el id
-      console.log("Descargando datos del pedido");
-      fetch("http://" + varLocalStorage.host + "/api/orders/" + id, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("Mostrando datos del pedido");
-          this.setState({
-            id,
-            observaciones: data.data.observaciones,
-            lab_id: data.data.laboratorio ? data.data.laboratorio.id : 0,
-            npedidolab: data.data.folio_lab,
-            ncaja: data.data.caja,
-            mensajes: JSON.parse(data.data.mensajes),
-            items: JSON.parse(data.data.productos),
-            contact_id: data.data.paciente.id,
-            status: data.data.estado,
-            exam_id: data.data.examen !== null ? data.data.examen.id : 0,
-            exam: data.data.examen !== null ? data.data.examen : {},
-            date: data.data.created_at,
-          });
-        });
-    } else {
-      this.setState({
-        load: false,
-      });
+    this.getOrder();
+  }
+  componentDidUpdate(props, state) {
+    //console.log("Renderizando Add en items", state.load, this.state.load);
+    if (state.load !== this.state.load && this.state.load === true) {
+      this.getOrder();
     }
   }
 
@@ -185,6 +163,7 @@ export default class OrderAdd extends Component {
                       <Items
                         items={this.state.items}
                         status={this.state.status}
+                        session={this.state.session}
                         ChangeInput={this.handleChangeInput}
                       />
                     </div>
@@ -318,12 +297,11 @@ export default class OrderAdd extends Component {
       id = this.state.id;
     if (conf) {
       //Variables en localStorage
-      console.log("Enviando datos a API para almacenar", id);
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-      // Procesamos variables
-      //Creamos el body
       //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-      let url = id
+      //Creamos el body
+      console.log("Enviando datos a API para almacenar", id);
+      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+        url = id
           ? "http://" + varLocalStorage.host + "/api/orders/" + id
           : "http://" + varLocalStorage.host + "/api/orders",
         method = id ? "PUT" : "POST",
@@ -333,9 +311,8 @@ export default class OrderAdd extends Component {
       delete body.date;
       delete body.edad;
       delete body.id;
-      if (!body.exam_id) {
-        delete body.exam_id;
-      }
+      if (!body.exam_id) delete body.exam_id;
+      if (!body.lab_id) delete body.lab_id;
       body.items = JSON.stringify(body.items);
       body.mensajes = JSON.stringify(body.mensajes);
       //Actualiza el pedido o creamos un pedido nuevo según el ID
@@ -366,6 +343,45 @@ export default class OrderAdd extends Component {
             }
           } else console.log(data.message);
         });
+    }
+  };
+  getOrder = () => {
+    let id = this.props.match.params.id;
+    if (id > 0) {
+      //Variables en localStorage
+      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+      //Realiza la peticion del usuario seun el id
+      console.log("Descargando datos del pedido");
+      fetch("http://" + varLocalStorage.host + "/api/orders/" + id, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + varLocalStorage.token,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Mostrando datos del pedido", data.data);
+          this.setState({
+            id,
+            session: data.data.session,
+            observaciones: data.data.observaciones,
+            lab_id: data.data.laboratorio ? data.data.laboratorio.id : 0,
+            npedidolab: data.data.folio_lab,
+            ncaja: data.data.caja,
+            mensajes: JSON.parse(data.data.mensajes),
+            items: data.data.productos,
+            contact_id: data.data.paciente.id,
+            status: data.data.estado,
+            exam_id: data.data.examen !== null ? data.data.examen.id : 0,
+            exam: data.data.examen !== null ? data.data.examen : {},
+            date: data.data.created_at,
+          });
+        });
+    } else {
+      this.setState({
+        load: false,
+      });
     }
   };
 }

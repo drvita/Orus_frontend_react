@@ -126,6 +126,24 @@ class Menu extends Component {
 
               <li className="nav-item has-treeview">
                 <Link
+                  to="/notas"
+                  className={
+                    active === "notas" ? "nav-link active" : "nav-link"
+                  }
+                  onClick={(e) => {
+                    this.changePage("/notas");
+                  }}
+                >
+                  <i className="nav-icon fas fa-cash-register"></i>
+                  <p>
+                    Notas
+                    <i className="right fas fa-angle-left"></i>
+                  </p>
+                </Link>
+              </li>
+
+              <li className="nav-item has-treeview">
+                <Link
                   to="/almacen"
                   className={
                     active === "almacen" ? "nav-link active" : "nav-link"

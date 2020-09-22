@@ -4,24 +4,25 @@ export default class Items extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: 0,
-      cant: 1,
-      item: "",
-      price: 0,
-      total: 0,
+      store_items_id: 0,
+      session: "",
+      cantidad: 1,
+      precio: 0,
+      subtotal: 0,
+      inStorage: 0,
+      producto: "",
       itemNew: false,
-      items: [],
       itemsDb: [],
     };
     this.total = 0;
   }
   componentDidMount() {
     this.setState({
-      items: this.props.items,
+      session: this.props.session,
     });
   }
   componentDidUpdate(props, state) {
-    if (this.state.itemNew && this.state.item.length === 0) {
+    if (this.state.itemNew && this.state.producto.length === 0) {
       this.inputItem.focus();
     }
     /*
@@ -29,19 +30,13 @@ export default class Items extends Component {
       this.inputCant.focus();
     }
     */
-    if (this.props.items.length !== props.items.length) {
-      this.setState({
-        items: this.props.items,
-      });
-    }
   }
 
   render() {
-    let { items, itemNew, itemsDb } = this.state;
+    let { itemNew, itemsDb } = this.state;
+    let { items } = this.props;
     this.total = 0;
-    if (!items) {
-      items = this.props.items;
-    }
+
     return (
       <table className="table table-sm table-striped  mt-2">
         <thead>
@@ -66,43 +61,49 @@ export default class Items extends Component {
                 <td>
                   <input
                     className={
-                      this.state.id ? "form-control" : "form-control disabled"
+                      this.state.store_items_id
+                        ? "form-control"
+                        : "form-control disabled"
                     }
-                    disabled={this.state.id ? false : true}
+                    disabled={this.state.store_items_id ? false : true}
                     type="number"
-                    name="cant"
+                    name="cantidad"
                     ref={(input) => {
                       this.inputCant = input;
                     }}
-                    value={this.state.cant}
+                    value={this.state.cantidad}
                     onChange={this.catchInputs}
                   />
                 </td>
                 <td>
                   <input
                     className={
-                      !this.state.id ? "form-control" : "form-control disabled"
+                      !this.state.store_items_id
+                        ? "form-control"
+                        : "form-control disabled"
                     }
-                    disabled={!this.state.id ? false : true}
+                    disabled={!this.state.store_items_id ? false : true}
                     type="text"
-                    name="item"
+                    name="producto"
                     autoComplete="off"
                     ref={(input) => {
                       this.inputItem = input;
                     }}
-                    value={this.state.item}
+                    value={this.state.producto}
                     onChange={this.catchInputs}
                   />
                 </td>
                 <td>
                   <input
                     className={
-                      this.state.id ? "form-control" : "form-control disabled"
+                      this.state.store_items_id
+                        ? "form-control"
+                        : "form-control disabled"
                     }
-                    disabled={this.state.id ? false : true}
+                    disabled={this.state.store_items_id ? false : true}
                     type="number"
-                    name="price"
-                    value={this.state.price}
+                    name="precio"
+                    value={this.state.precio}
                     onChange={this.catchInputs}
                   />
                 </td>
@@ -110,8 +111,8 @@ export default class Items extends Component {
                   <input
                     className="form-control disabled"
                     type="number"
-                    name="total"
-                    value={this.state.total}
+                    name="subtotal"
+                    value={this.state.subtotal}
                     readOnly={true}
                   />
                 </td>
@@ -159,15 +160,15 @@ export default class Items extends Component {
           )}
           {items.length ? (
             items.map((item, index) => {
-              this.total += item.total * 1;
+              this.total += item.subtotal * 1;
               return (
-                <tr key={item.id}>
-                  <td className="text-right">{item.cant}</td>
+                <tr key={index}>
+                  <td className="text-right">{item.cantidad}</td>
                   <td>
-                    <span className="badge badge-primary">{item.item}</span>
+                    <span className="badge badge-primary">{item.producto}</span>
                   </td>
-                  <td className="text-right">$ {item.price}</td>
-                  <td className="text-right">$ {item.total}</td>
+                  <td className="text-right">$ {item.precio}</td>
+                  <td className="text-right">$ {item.subtotal}</td>
                   <td>
                     <button
                       className={
@@ -222,36 +223,57 @@ export default class Items extends Component {
     );
   }
 
-  handelClickItemDb = (id, item, price) => {
+  handelClickItemDb = (id, producto, precio) => {
     if (id) {
       this.setState({
-        id,
-        item,
-        price,
-        total: this.state.cant * price,
+        store_items_id: id,
+        producto,
+        precio,
+        subtotal: this.state.cantidad * precio,
         itemsDb: [],
       });
     }
   };
   deleteItem = (id) => {
-    let { items } = this.state;
+    let { items } = this.props;
     items.splice(id, 1);
-    this.setState({
-      items,
-    });
+    this.props.ChangeInput("items", items);
+
+    /*
+    let conf = window.confirm("¿Esta seguro de eliminar el producto?"),
+      varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+
+    if (conf) {
+      fetch("http://" + varLocalStorage.host + "/api/salesItems/" + id, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + varLocalStorage.token,
+        },
+      }).then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          console.log(res);
+        }
+        console.log("Item eliminado");
+        this.props.ChangeInput("load", true);
+      });
+    }
+    */
   };
   catchInputs = (e) => {
     let { name, value, type } = e.target,
-      total = 0;
-    if (name === "cant") {
-      total = this.state.price * value;
-    } else if (name === "price") {
-      total = this.state.cant * value;
+      subtotal = 0;
+    if (name === "cantidad") {
+      subtotal = this.state.precio * value;
+    } else if (name === "precio") {
+      subtotal = this.state.cantidad * value;
     }
     if (type === "number") {
       value = value * 1;
     }
-    if (name === "item" && value.length > 3 && !this.state.id) {
+    if (name === "producto" && value.length > 3 && !this.state.store_items_id) {
       //Variables en localStorage
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
         url = "http://" + varLocalStorage.host + "/api/store",
@@ -278,7 +300,7 @@ export default class Items extends Component {
             this.setState({
               itemsDb: data.data,
             });
-          } else {
+          } else if (data.message) {
             console.log("Error al almacenar items de la DB", data.message);
           }
         });
@@ -286,25 +308,22 @@ export default class Items extends Component {
 
     this.setState({
       [name]: value,
-      total,
+      subtotal,
     });
   };
   addItem = (e) => {
     e.preventDefault();
     let items = this.props.items,
-      idRandom = Math.floor(Math.random() * 100) + 1,
       find = items.find((item) => {
-        return item.item === this.state.item;
+        return item.store_items_id === this.state.store_items_id;
       }),
       item = this.state;
 
-    item.id = item.id ? item.id : idRandom;
-
     if (find) {
       for (var i = 0; i < items.length; i++) {
-        if (items[i].id === item.id) {
-          item.cant += items[i].cant;
-          item.total = item.cant * item.price;
+        if (items[i].store_items_id === item.store_items_id) {
+          item.cantidad += items[i].cantidad;
+          item.subtotal = item.cantidad * item.precio;
           items.splice(i, 1);
         }
       }
@@ -313,26 +332,64 @@ export default class Items extends Component {
     delete item.itemNew;
     delete item.itemsDb;
     delete item.items;
+
     items.push(item);
     this.setState({
-      id: 0,
-      cant: 1,
-      item: "",
-      price: 0,
+      store_items_id: 0,
+      cantidad: 1,
+      producto: "",
+      precio: 0,
       total: 0,
       itemNew: false,
     });
     this.props.ChangeInput("items", items);
+
+    /*
+    //Falta declarar la variable varLocalStorage
+    console.log("Enviando datos a API para almacenar item");
+    //Actualiza el pedido o creamos un pedido nuevo según el ID
+    fetch("http://" + varLocalStorage.host + "/api/salesItems", {
+      method: "POST",
+      body: JSON.stringify(item),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + varLocalStorage.token,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.data) {
+          console.log("Item almacenado", data.data);
+          this.setState({
+            store_items_id: 0,
+            cant: 1,
+            item: "",
+            precio: 0,
+            subtotal: 0,
+            inStorage: 0,
+            itemNew: false,
+          });
+          this.props.ChangeInput("load", true);
+        } else console.log(data.message);
+      });
+    */
   };
   handleNewItem = (e) => {
     e.preventDefault();
     this.setState({
       itemNew: !this.state.itemNew,
-      id: 0,
-      cant: 1,
-      item: "",
-      price: 0,
-      total: 0,
+      store_items_id: 0,
+      cantidad: 1,
+      producto: "",
+      precio: 0,
+      subtotal: 0,
+      inStorage: 0,
       itemsDb: [],
     });
   };

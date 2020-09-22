@@ -282,7 +282,7 @@ export default class searchContact extends Component {
       })
       .then((data) => {
         if (data.data.length) {
-          console.log("Almacenando contactos", data);
+          console.log("Almacenando contactos");
           this.setState({
             data: data.data,
           });

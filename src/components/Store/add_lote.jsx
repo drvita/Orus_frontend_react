@@ -190,7 +190,7 @@ class StoreLote extends Component {
                   </td>
                 </tr>
               ) : (
-                ""
+                <tr></tr>
               )}
             </tbody>
           </table>

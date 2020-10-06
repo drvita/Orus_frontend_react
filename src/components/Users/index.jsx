@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import moment from "moment";
+import "moment/locale/es";
+import Header from "../Layouts/headerTable";
+import Pagination from "../Layouts/pagination";
+import Filters from "./index_filter";
+import Actions from "../Layouts/actionsTable";
 
-class Users extends Component {
+export default class Users extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -12,15 +18,15 @@ class Users extends Component {
       load: true,
       page: 1,
       orderby: "name",
-      order: "desc",
+      order: "asc",
       search: "",
+      rol: "",
     };
-    this.changePage = this.changePage.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
   }
 
   componentDidMount() {
     this.getUsers();
+    moment.locale("es");
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {
@@ -31,179 +37,52 @@ class Users extends Component {
 
   render() {
     let { users, load } = this.state,
-      pages = [];
-    if (users.meta.total > 10) {
-      for (var i = 1; i <= users.meta.last_page; i++) {
-        pages.push(
-          <li
-            key={i}
-            className={
-              users.meta.current_page === i ? "page-item disabled" : "page-item"
-            }
-          >
-            <a
-              href={"#page" + i}
-              className="page-link"
-              onClick={this.handleChangePage.bind(this, i)}
-            >
-              {i}
-            </a>
-          </li>
-        );
-      }
-    }
+      dataHeaders = [
+        { name: "usuario", type: "username" },
+        { name: "nombre", type: "name" },
+        { name: "e-mail", type: "email" },
+        { name: "Rol", type: "rol" },
+        { name: "Actualizado", type: "updated_at" },
+        { name: "Creado", type: "created_at" },
+      ];
+
     return (
       <div className="card card-primary card-outline">
         <div className="card-header">
-          <h3 className="card-title">
+          <h2 className="card-title text-primary">
             <i className="ion ion-clipboard mr-1"></i>
             Usuarios registrados
-          </h3>
+          </h2>
           <div className="card-tools">
-            <div className="btn-group">
-              <a
-                href="#pages"
-                className="btn btn-tool"
-                data-toggle="modal"
-                data-target="#filters"
-              >
-                <i className="fas fa-filter"></i>
-              </a>
-            </div>
+            <Filters
+              search={this.state.search}
+              rol={this.state.rol}
+              changeFilters={this.changeFilters}
+              setFilters={this.setFilter}
+            />
             {users.meta.total > 10 ? (
-              <div className="btn-group">
-                <ul className="pagination pagination-sm">{pages}</ul>
-              </div>
+              <Pagination
+                meta={users.meta}
+                handleChangePage={this.handleChangePage}
+              />
             ) : (
               ""
             )}
           </div>
         </div>
         <div className="card-body table-responsive p-0">
-          <table className="table table-hover table-nowrap">
-            <thead>
-              <tr>
-                <th
-                  onClick={() => {
-                    this.handleOrder("username");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Usuario
-                  {this.state.orderby === "username" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("name");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Nombre
-                  {this.state.orderby === "name" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("email");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  E-mail
-                  {this.state.orderby === "email" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("rol");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Rol
-                  {this.state.orderby === "rol" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("updated_at");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Actualizado
-                  {this.state.orderby === "updated_at" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("created_at");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Creado
-                  {this.state.orderby === "created_at" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th className="center">Acciones</th>
-              </tr>
-            </thead>
+          <table className="table table-bordered table-hover table-nowrap">
+            <Header
+              orderby={this.state.orderby}
+              order={this.state.order}
+              data={dataHeaders}
+              actions={true}
+              handleOrder={this.handleOrder}
+            />
             <tbody>
               {load ? (
                 <tr>
-                  <td colSpan="6" className="text-center">
+                  <td colSpan="7" className="text-center">
                     <div className="spinner-border text-primary" role="status">
                       <span className="sr-only">Loading...</span>
                     </div>
@@ -213,52 +92,49 @@ class Users extends Component {
                 users.data.map((user) => {
                   return (
                     <tr key={user.id}>
-                      <td>
-                        <span className="badge badge-primary text-capitalize">
+                      <th scope="row">
+                        <span className="text-capitalize text-primary">
                           {user.username}
                         </span>
-                      </td>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
+                      </th>
                       <td>
-                        <span className="badge badge-light text-capitalize">
-                          {user.rol > 0
-                            ? user.rol === 1
-                              ? "Ventas"
-                              : "Optometrista"
-                            : "Administrador"}
+                        <span className="badge badge-primary text-capitalize">
+                          {user.name}
                         </span>
                       </td>
-                      <td>{user.updated_at}</td>
-                      <td>{user.created_at}</td>
+                      <td>{user.email}</td>
                       <td>
-                        <a
-                          className="btn-flat text-warning"
-                          href="#delete"
-                          onClick={this.handleDelete}
-                          id={user.id}
-                        >
-                          <i className="fas fa-trash" id={user.id}></i>
-                        </a>
-                        &nbsp;&nbsp;&nbsp;
-                        <Link
-                          className="btn-flat blue-text"
-                          to={"/usuarios/registro/" + user.id}
-                          onClick={this.changePage}
-                          id="/usuarios/registro"
-                        >
-                          <i
-                            className="fas fa-pencil-alt"
-                            id="/usuarios/registro"
-                          ></i>
-                        </Link>
+                        {user.rol > 0 ? (
+                          user.rol === 1 ? (
+                            <span className="text-capitalize text-success">
+                              Ventas
+                            </span>
+                          ) : (
+                            <span className="text-capitalize text-primary">
+                              Optometrista
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-capitalize text-danger">
+                            Administrador
+                          </span>
+                        )}
                       </td>
+                      <td>{moment(user.updated_at).fromNow()}</td>
+                      <td className="text-right">
+                        {moment(user.created_at).format("LL")}
+                      </td>
+                      <Actions
+                        id={user.id}
+                        delete={this.handleDelete}
+                        edit={true}
+                      />
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <th colSpan="6" className="text-center">
+                  <th colSpan="7" className="text-center">
                     No hay datos para mostrar
                   </th>
                 </tr>
@@ -266,21 +142,30 @@ class Users extends Component {
             </tbody>
           </table>
         </div>
-        <div className="card-footer clearfix">
+        <div className="card-footer text-right">
           <Link
             to="/usuarios/registro"
-            className="btn btn-info float-right"
-            onClick={this.changePage}
-            id="/usuarios/registro"
+            className="btn btn-outline-primary btn-lg"
           >
-            <i className="fas fa-plus" id="/usuarios/registro"></i>
-            &nbsp; Nuevo usuario
+            <i className="fas fa-plus mr-2"></i>
+            Nuevo usuario
           </Link>
         </div>
       </div>
     );
   }
 
+  setFilter = () => {
+    this.setState({
+      load: true,
+      page: 1,
+    });
+  };
+  changeFilters = (key, value) => {
+    this.setState({
+      [key]: value,
+    });
+  };
   handleOrder = (item) => {
     this.setState({
       orderby: item,
@@ -288,22 +173,17 @@ class Users extends Component {
       load: true,
     });
   };
-  handleChangePage = (id, e) => {
-    e.preventDefault();
+  handleChangePage = (page) => {
     this.setState({
-      page: id,
+      page,
       load: true,
     });
   };
-  changePage(e) {
-    this.props.page(e.target.id);
-  }
-  handleDelete(e) {
+  handleDelete = (id) => {
     let conf = window.confirm("¿Esta seguro de eliminar el usuario?"),
-      id = e.target.id,
       varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
 
-    if (conf) {
+    if (conf && id) {
       fetch("http://" + varLocalStorage.host + "/api/users/" + id, {
         method: "DELETE",
         headers: {
@@ -312,6 +192,13 @@ class Users extends Component {
           Authorization: "Bearer " + varLocalStorage.token,
         },
       })
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+            console.log(res);
+          }
+          return res.json();
+        })
         .then((data) => {
           this.setState({
             load: true,
@@ -319,18 +206,24 @@ class Users extends Component {
           this.getUsers();
         })
         .catch((e) => {
-          console.log(e);
+          console.error(e);
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          this.setState({
+            load: false,
+          });
         });
     }
-  }
-  getUsers() {
+  };
+  getUsers = () => {
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
       url = "http://" + varLocalStorage.host + "/api/users",
       orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
       search = this.state.search ? `&search=${this.state.search}` : "",
+      rol = this.state.rol.length > 0 ? `&rol=${this.state.rol}` : "",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
     //Realiza la peticion de los usuarios
-    fetch(url + page + orderby + search, {
+    console.log("Descargando usuarios de API");
+    fetch(url + page + orderby + search + rol, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -338,22 +231,33 @@ class Users extends Component {
         Authorization: "Bearer " + varLocalStorage.token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          console.error(res);
+        }
+        return res.json();
+      })
       .then((data) => {
-        console.log("Descargando usuarios");
-        this.setState({
-          users: data,
-          load: false,
-        });
+        if (data.data) {
+          console.log("Almacenando usuarios");
+          this.setState({
+            users: data,
+            load: false,
+          });
+        } else {
+          console.error("Error en la descarga", data);
+          this.setState({
+            load: false,
+          });
+        }
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
+        window.alert("Ups!\n Hubo un error, intentelo mas tarde");
         this.setState({
-          users: [],
           load: false,
         });
       });
-  }
+  };
 }
-
-export default Users;

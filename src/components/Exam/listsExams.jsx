@@ -55,16 +55,24 @@ export default class ListsExams extends Component {
           {id ? (
             <React.Fragment>
               <div className="row mb-4">
-                <div className="col">
-                  <div className="border border-info rounded p-2">
+                <div className="col-2">
+                  <div className="border border-info rounded p-2 d-flex justify-content-between align-items-center">
                     <span className="badge badge-pill badge-info mx-2">
                       Folio
                     </span>
                     <strong>{id}</strong>
                   </div>
                 </div>
+                <div className="col-3">
+                  <div className="border border-info rounded p-2 d-flex justify-content-between align-items-center">
+                    <span className="badge badge-pill badge-info mx-2">
+                      Estado
+                    </span>
+                    <strong>{exam.estado}</strong>
+                  </div>
+                </div>
                 <div className="col">
-                  <div className="border border-info rounded p-2">
+                  <div className="border border-info rounded p-2 d-flex justify-content-between align-items-center">
                     <span className="badge badge-pill badge-info mx-2">
                       Fecha
                     </span>
@@ -73,7 +81,7 @@ export default class ListsExams extends Component {
                     </strong>
                   </div>
                 </div>
-                <div className="col-2">
+                <div className="col-2 text-right">
                   <button
                     className={
                       this.props.status

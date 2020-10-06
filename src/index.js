@@ -17,8 +17,6 @@ class App extends Component {
       host: "",
       company: "",
     };
-    this.logOut = this.logOut.bind(this);
-    this.login = this.login.bind(this);
   }
   componentDidMount() {
     //Variables en localStorage
@@ -26,7 +24,13 @@ class App extends Component {
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
     varLocalStorage = varLocalStorage ? varLocalStorage : [];
     fetch("/config.json")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          console.log(res);
+        }
+        return res.json();
+      })
       .then((data) => {
         //console.log('Config:',data);
         window.config = data;
@@ -55,12 +59,6 @@ class App extends Component {
           varLocalStorage.host = window.config.server;
           localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage));
         }
-      })
-      .catch((e) => {
-        console.log(e);
-        window.config = {
-          server: "192.168.0.24",
-        };
       });
   }
 
@@ -88,7 +86,7 @@ class App extends Component {
     );
   }
 
-  login(s) {
+  login = (s) => {
     //Funcion que maneja el cambio de sesion en el state
     this.setState({
       isLogged: s.data.id ? true : false,
@@ -98,8 +96,9 @@ class App extends Component {
       rol: s.data.rol,
       token: s.token,
     });
-  }
-  logOut() {
+  };
+  logOut = () => {
+    console.log("La session ha sido cerrada");
     localStorage.clear();
     this.setState({
       isLogged: false,
@@ -109,7 +108,7 @@ class App extends Component {
       rol: 0,
       email: "",
     });
-  }
+  };
 }
 
 render(<App />, document.getElementById("root"));

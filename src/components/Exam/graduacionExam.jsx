@@ -70,7 +70,7 @@ export default class GraduacionExam extends Component {
                   }
                   disabled={this.props.readOnly ? true : false}
                   placeholder="°"
-                  value={this.props.ejeod}
+                  value={this.props.ejeod ? this.props.ejeod : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -87,7 +87,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.adiciond}
+                  value={this.props.adiciond ? this.props.adiciond : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -104,7 +104,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.dpod}
+                  value={this.props.dpod ? this.props.dpod : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -121,7 +121,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.alturaod}
+                  value={this.props.alturaod ? this.props.alturaod : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -144,7 +144,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.esferaoi}
+                  value={this.props.esferaoi ? this.props.esferaoi : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -161,7 +161,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.cilindroi}
+                  value={this.props.cilindroi ? this.props.cilindroi : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -179,7 +179,7 @@ export default class GraduacionExam extends Component {
                   }
                   disabled={this.props.readOnly ? true : false}
                   placeholder="°"
-                  value={this.props.ejeoi}
+                  value={this.props.ejeoi ? this.props.ejeoi : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -196,7 +196,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.adicioni}
+                  value={this.props.adicioni ? this.props.adicioni : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -213,7 +213,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.dpoi}
+                  value={this.props.dpoi ? this.props.dpoi : 0}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -230,7 +230,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.alturaoi}
+                  value={this.props.alturaoi ? this.props.alturaoi : 0}
                   onChange={this.catchInputs}
                 />
               </td>

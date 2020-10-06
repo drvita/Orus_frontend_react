@@ -16,6 +16,8 @@ import ExamAdd from "./components/Exam/add";
 import Order from "./components/Order/index";
 import OrderAdd from "./components/Order/add";
 import Sales from "./components/Sales/index";
+import SalesAdd from "./components/Sales/add";
+import Dashboard from "./components/Dashboard/index";
 
 class Routers extends Component {
   constructor(props) {
@@ -24,42 +26,20 @@ class Routers extends Component {
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       page: "dashboard",
-      subpage: "principal",
       company: varLocalStorage.company,
     };
   }
-
   componentDidMount() {
     //Manejamos el router dependiendo de la ruta
     this.handlePage(window.location.pathname);
-    //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-
-    //Realizando verificación de usuarios
-    console.log("Verificando usuario");
-    fetch("http://" + varLocalStorage.host + "/api/user", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
-      },
-    })
-      .then((res) => {
-        if (!res.ok && varLocalStorage.token !== "") {
-          console.log("Usuario invalido", res.ok);
-          this.props.logOut();
-          this.handlePage("/");
-        } else {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        console.log("Usuario valido");
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    this.verifyUser();
+  }
+  componentDidUpdate(props, state) {
+    if (this.state.page !== state.page) {
+      //Se verifica cada que se cambia de pagina, eliminar cuando exita la verificacion
+      // a traves de sockets
+      //this.verifyUser();
+    }
   }
 
   render() {
@@ -76,7 +56,7 @@ class Routers extends Component {
           active={this.state.page}
         />
         <div className="content-wrapper">
-          <Breadcrumb title={this.state.page} subtitle={this.state.subpage} />
+          <Breadcrumb title={this.state.page} />
           <div className="content">
             <div className="container-fluid">
               <div className="row">
@@ -183,13 +163,34 @@ class Routers extends Component {
 
                     <Route
                       extric
+                      path="/notas/registro/:id?"
+                      render={(props) => (
+                        <SalesAdd
+                          {...props}
+                          data={data}
+                          page={this.handlePage}
+                        />
+                      )}
+                    />
+                    <Route
+                      extric
                       path="/notas"
                       render={(props) => (
                         <Sales {...props} data={data} page={this.handlePage} />
                       )}
                     />
 
-                    <Route path="/">Dashboard</Route>
+                    <Route
+                      extric
+                      path="/"
+                      render={(props) => (
+                        <Dashboard
+                          {...props}
+                          data={data}
+                          page={this.handlePage}
+                        />
+                      )}
+                    />
                   </Switch>
                 </div>
               </div>
@@ -201,6 +202,38 @@ class Routers extends Component {
     );
   }
 
+  verifyUser = () => {
+    //Variables en localStorage
+    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+    //Solo realizamos la verificacion si hay sesion
+    if (this.props.data.isLogged) {
+      console.log("Verificando usuario");
+      //Realizando verificación de usuarios
+      if (varLocalStorage.token !== "" && varLocalStorage.host !== "") {
+        fetch("http://" + varLocalStorage.host + "/api/user", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + varLocalStorage.token,
+          },
+        })
+          .then((res) => {
+            if (!res.ok && varLocalStorage.token !== "") {
+              console.log("Usuario invalido:", res.statusText);
+              this.props.logOut();
+              this.handlePage("/");
+            }
+            return res.json();
+          })
+          .then((data) => {
+            if (!data.message) {
+              console.log("Usuario valido:", data.username);
+            }
+          });
+      }
+    }
+  };
   handlePage = (page) => {
     //Maneja el renderiazado del componentes cuando se cambíe el componentes
     if (page === "" || typeof page === "undefined" || typeof page === "object")
@@ -209,12 +242,10 @@ class Routers extends Component {
     if (locations[1] === "") {
       this.setState({
         page: "dashboard",
-        subpage: "principal",
       });
     } else {
       this.setState({
         page: locations[1],
-        subpage: locations[2] ? locations[2] : locations[1],
       });
     }
   };

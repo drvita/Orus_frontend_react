@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-//import "moment/locale/es";
+import "moment/locale/es";
 import Filter from "./index_filter";
 
 export default class Exam extends Component {
@@ -24,7 +24,7 @@ export default class Exam extends Component {
 
   componentDidMount() {
     this.getExams();
-    //moment.locale("es");
+    moment.locale("es");
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {

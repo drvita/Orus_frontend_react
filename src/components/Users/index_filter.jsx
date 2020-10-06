@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 export default class Filter extends Component {
   render() {
+    const { search, rol } = this.props;
     return (
       <React.Fragment>
         <div className="btn-group">
@@ -40,15 +41,15 @@ export default class Filter extends Component {
                     type="text"
                     name="search"
                     className="form-control"
-                    placeholder="Por: nombre, RFC o email"
-                    value={this.props.search}
-                    onChange={this.onChangeValue}
+                    placeholder="Por: nombre, usuario o email"
+                    value={search}
+                    onChange={this.changeFilters}
                     onKeyPress={this.onKeyPressSearch}
                   />
                 </div>
 
                 <div className="input-group mb-3">
-                  <label>Tipo de contacto</label>
+                  <label>Rol</label>
                   <div className="input-group-prepend ml-4">
                     <span className="input-group-text">
                       <i className="fas fa-address-book"></i>
@@ -56,63 +57,50 @@ export default class Filter extends Component {
                   </div>
                   <select
                     className="form-control"
-                    name="type"
-                    value={this.props.type}
-                    onChange={this.onChangeValue}
+                    name="rol"
+                    value={rol}
+                    onChange={this.changeFilters}
                   >
                     <option value="">Todos</option>
-                    <option value="0">Clientes</option>
-                    <option value="1">Proveedores</option>
-                  </select>
-                </div>
-
-                <div className="input-group mb-3">
-                  <label>¿Es una empresa?</label>
-                  <div className="input-group-prepend ml-4">
-                    <span className="input-group-text">
-                      <i className="fas fa-building"></i>
-                    </span>
-                  </div>
-                  <select
-                    className="form-control"
-                    name="business"
-                    value={this.props.business}
-                    onChange={this.onChangeValue}
-                  >
-                    <option value="">Todos</option>
-                    <option value="1">Si</option>
-                    <option value="0">No</option>
+                    <option value="0">Administrador</option>
+                    <option value="1">Ventas</option>
+                    <option value="2">Optometrista</option>
                   </select>
                 </div>
               </form>
 
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-dismiss="modal"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  className={
-                    this.props.search || this.props.type || this.props.business
-                      ? "btn btn-warning"
-                      : "btn btn-warning disabled"
-                  }
-                  onClick={this.onClickClean}
-                >
-                  Limpiar
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={this.onClickFilter}
-                  data-dismiss="modal"
-                >
-                  Buscar
-                </button>
+                <div className="btn-group btn-group-lg" role="group">
+                  <button
+                    type="button"
+                    className="btn btn-outline-dark"
+                    data-dismiss="modal"
+                  >
+                    <i className="fas fa-window-close mr-2"></i>
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className={
+                      this.props.search || this.props.rol
+                        ? "btn btn-outline-dark"
+                        : "btn btn-outline-dark disabled"
+                    }
+                    onClick={this.onClickClean}
+                  >
+                    <i className="fas fa-eraser mr-2"></i>
+                    Limpiar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-dark"
+                    onClick={this.setFilters}
+                    data-dismiss="modal"
+                  >
+                    <i className="fas fa-search mr-2"></i>
+                    Buscar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -124,18 +112,20 @@ export default class Filter extends Component {
   onKeyPressSearch = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      this.setFilters();
     }
   };
   onClickClean = () => {
-    this.props.onChangeValue("search", "");
-    this.props.onChangeValue("type", "");
-    this.props.onChangeValue("business", "");
+    this.props.changeFilters("search", "");
+    this.props.changeFilters("rol", "");
+    this.setFilters();
   };
-  onClickFilter = () => {
-    this.props.handleFilter();
+  setFilters = () => {
+    this.props.setFilters();
+    window.$("#filters").modal("hide");
   };
-  onChangeValue = (e) => {
+  changeFilters = (e) => {
     const { name, value } = e.target;
-    this.props.onChangeValue(name, value);
+    this.props.changeFilters(name, value);
   };
 }

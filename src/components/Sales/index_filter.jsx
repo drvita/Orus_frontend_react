@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 export default class Filter extends Component {
   render() {
+    console.log("date", this.props.date);
     return (
       <div className="modal" tabIndex="-1" role="dialog" id="filters">
         <div className="modal-dialog">
@@ -29,7 +30,7 @@ export default class Filter extends Component {
                   type="text"
                   name="search"
                   className="form-control"
-                  placeholder="Por: paciente o # de orden"
+                  placeholder="Por: paciente o # de venta"
                   value={this.props.search}
                   onChange={this.onChangeValue}
                   onKeyPress={this.onKeyPressSearch}
@@ -46,17 +47,30 @@ export default class Filter extends Component {
                 <select
                   className="form-control"
                   name="type"
-                  value={this.props.status}
+                  value={this.props.type}
                   onChange={this.onChangeValue}
                 >
                   <option value="">Todos</option>
-                  <option value="0">En proceso</option>
-                  <option value="1">Laboratorio</option>
-                  <option value="2">Bicelación</option>
-                  <option value="3">Terminado</option>
-                  <option value="4">Garantia</option>
-                  <option value="5">Baja</option>
+                  <option value="0">Adeudos</option>
+                  <option value="1">Pagados</option>
                 </select>
+              </div>
+
+              <div className="input-group mb-3">
+                <label>Fecha</label>
+                <div className="input-group-prepend">
+                  <span className="input-group-text">
+                    <i className="fas fa-search"></i>
+                  </span>
+                </div>
+                <input
+                  type="date"
+                  name="date"
+                  className="form-control"
+                  value={this.props.date}
+                  onChange={this.onChangeValue}
+                  onKeyPress={this.onKeyPressSearch}
+                />
               </div>
             </form>
 
@@ -71,7 +85,7 @@ export default class Filter extends Component {
               <button
                 type="button"
                 className={
-                  this.props.search || this.props.type || this.props.business
+                  this.props.search || this.props.type
                     ? "btn btn-warning"
                     : "btn btn-warning disabled"
                 }
@@ -102,13 +116,14 @@ export default class Filter extends Component {
   onClickClean = () => {
     this.props.onChangeValue("search", "");
     this.props.onChangeValue("type", "");
-    this.props.onChangeValue("business", "");
+    this.props.onChangeValue("date", "");
   };
   onClickFilter = () => {
     this.props.handleFilter();
   };
   onChangeValue = (e) => {
     const { name, value } = e.target;
+    console.log("Change", name, value);
     this.props.onChangeValue(name, value);
   };
 }

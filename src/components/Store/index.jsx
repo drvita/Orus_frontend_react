@@ -269,16 +269,16 @@ export default class Store extends Component {
                       <td>
                         <span
                           className={
-                            item.cantidades
+                            item.cantidades > 0
                               ? "badge badge-light"
                               : "badge badge-danger"
                           }
                         >
-                          {item.cantidades}
+                          {item.cantidades > 0 ? item.cantidades : 0}
                         </span>
                       </td>
                       <td className="text-right">$ {item.precio}</td>
-                      <td>{item.categoria.nombre}</td>
+                      <td>{item.categoria.categoria}</td>
                       <td>
                         <a
                           className="btn-flat text-warning"

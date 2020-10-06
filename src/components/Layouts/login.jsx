@@ -152,6 +152,7 @@ export default class Main extends Component {
         password: this.state.password,
       };
     //Si los datos de usuario son correctos manda la informacion al servidor
+    console.log("Enviado credenciales al servidor");
     if (valid) {
       fetch("http://" + varLocalStorage.host + "/api/users/login", {
         method: "POST",
@@ -161,13 +162,20 @@ export default class Main extends Component {
           "Content-Type": "application/json",
         },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+            console.log(res);
+          }
+          return res.json();
+        })
         .then((data) => {
           if (data.data) {
             this.setState({
               username: "",
               password: "",
             });
+            console.log("Loggin realizado con exito");
             this.props.loginFunction(data);
           } else {
             console.log("Login status fetch:", data);

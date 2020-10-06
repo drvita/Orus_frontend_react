@@ -20,7 +20,6 @@ export default class Contacts extends Component {
       status: 0,
     };
   }
-
   componentDidMount() {
     this.getPedidos();
     //moment.locale("es");
@@ -217,7 +216,7 @@ export default class Contacts extends Component {
                         )}
                       </td>
                       <td>
-                        <span className="badge badge-warning text-capitalize">
+                        <span className="badge badge-danger text-capitalize">
                           {pedido.paciente.nombre}
                         </span>
                       </td>

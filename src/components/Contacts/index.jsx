@@ -67,16 +67,13 @@ export default class Contacts extends Component {
             Contactos registrados
           </h3>
           <div className="card-tools">
-            <div className="btn-group">
-              <a
-                href="#filter"
-                className="btn btn-tool"
-                data-toggle="modal"
-                data-target="#filters"
-              >
-                <i className="fas fa-search"></i>
-              </a>
-            </div>
+            <Filter
+              search={this.state.search}
+              type={this.state.type}
+              business={this.state.business}
+              onChangeValue={this.onchangeSearch}
+              handleFilter={this.handleFilter}
+            />
             {this.state.contacts.meta.total > 10 ? (
               <div className="btn-group">
                 <ul className="pagination pagination-sm">{pages}</ul>
@@ -304,13 +301,6 @@ export default class Contacts extends Component {
             &nbsp; Nuevo contacto
           </Link>
         </div>
-        <Filter
-          search={this.state.search}
-          type={this.state.type}
-          business={this.state.business}
-          onChangeValue={this.onchangeSearch}
-          handleFilter={this.handleFilter}
-        />
       </div>
     );
   }

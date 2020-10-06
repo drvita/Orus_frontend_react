@@ -4,6 +4,7 @@ export default class Items extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: 0,
       store_items_id: 0,
       session: "",
       cantidad: 1,
@@ -11,6 +12,7 @@ export default class Items extends Component {
       subtotal: 0,
       inStorage: 0,
       producto: "",
+      out: 0,
       itemNew: false,
       itemsDb: [],
     };
@@ -140,7 +142,8 @@ export default class Items extends Component {
                               this.handelClickItemDb(
                                 db.id,
                                 db.producto,
-                                db.precio
+                                db.precio,
+                                db.cantidades
                               );
                             }}
                           >
@@ -165,7 +168,15 @@ export default class Items extends Component {
                 <tr key={index}>
                   <td className="text-right">{item.cantidad}</td>
                   <td>
-                    <span className="badge badge-primary">{item.producto}</span>
+                    <span
+                      className={
+                        !item.inStorage
+                          ? "badge badge-warning"
+                          : "badge badge-primary"
+                      }
+                    >
+                      {item.producto}
+                    </span>
                   </td>
                   <td className="text-right">$ {item.precio}</td>
                   <td className="text-right">$ {item.subtotal}</td>
@@ -198,22 +209,26 @@ export default class Items extends Component {
         <tfoot>
           <tr>
             <td className="text-right" colSpan="2">
-              <button
-                className={
-                  this.props.status
-                    ? "btn btn-outline-warning btn-sm disabled"
-                    : "btn btn-outline-warning btn-sm"
-                }
-                disabled={this.props.status ? true : false}
-                onClick={this.handleNewItem}
-              >
-                <i
-                  className={itemNew ? "fas fa-times-circle" : "fas fa-plus"}
-                ></i>
-              </button>
+              {!this.props.status ? (
+                <button
+                  className={
+                    this.props.status
+                      ? "btn btn-outline-success btn-sm disabled"
+                      : "btn btn-outline-success btn-sm"
+                  }
+                  disabled={this.props.status ? true : false}
+                  onClick={this.handleNewItem}
+                >
+                  <i
+                    className={itemNew ? "fas fa-times-circle" : "fas fa-plus"}
+                  ></i>
+                </button>
+              ) : (
+                ""
+              )}
             </td>
             <th scope="row" className="text-right">
-              Total
+              Subtotal
             </th>
             <td className="text-right">$ {this.total}</td>
             <td></td>
@@ -223,13 +238,17 @@ export default class Items extends Component {
     );
   }
 
-  handelClickItemDb = (id, producto, precio) => {
+  handelClickItemDb = (id, producto, precio, cant) => {
     if (id) {
       this.setState({
+        id: 0,
         store_items_id: id,
         producto,
         precio,
         subtotal: this.state.cantidad * precio,
+        //Verificando que exitan los productos en almacen
+        inStorage: cant >= this.state.cantidad ? 1 : 0,
+        out: cant,
         itemsDb: [],
       });
     }
@@ -238,29 +257,6 @@ export default class Items extends Component {
     let { items } = this.props;
     items.splice(id, 1);
     this.props.ChangeInput("items", items);
-
-    /*
-    let conf = window.confirm("¿Esta seguro de eliminar el producto?"),
-      varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-
-    if (conf) {
-      fetch("http://" + varLocalStorage.host + "/api/salesItems/" + id, {
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      }).then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.log(res);
-        }
-        console.log("Item eliminado");
-        this.props.ChangeInput("load", true);
-      });
-    }
-    */
   };
   catchInputs = (e) => {
     let { name, value, type } = e.target,
@@ -329,56 +325,27 @@ export default class Items extends Component {
       }
     }
 
+    item.inStorage = item.out >= item.cantidad ? 1 : 0;
+    item.out = item.out >= item.cantidad ? 0 : item.cantidad - item.out;
+
     delete item.itemNew;
     delete item.itemsDb;
     delete item.items;
-
     items.push(item);
+
     this.setState({
+      id: 0,
       store_items_id: 0,
       cantidad: 1,
       producto: "",
       precio: 0,
       total: 0,
+      inStorage: 0,
+      out: 0,
       itemNew: false,
     });
+    console.log("Envio de nuevos productos", items);
     this.props.ChangeInput("items", items);
-
-    /*
-    //Falta declarar la variable varLocalStorage
-    console.log("Enviando datos a API para almacenar item");
-    //Actualiza el pedido o creamos un pedido nuevo según el ID
-    fetch("http://" + varLocalStorage.host + "/api/salesItems", {
-      method: "POST",
-      body: JSON.stringify(item),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.data) {
-          console.log("Item almacenado", data.data);
-          this.setState({
-            store_items_id: 0,
-            cant: 1,
-            item: "",
-            precio: 0,
-            subtotal: 0,
-            inStorage: 0,
-            itemNew: false,
-          });
-          this.props.ChangeInput("load", true);
-        } else console.log(data.message);
-      });
-    */
   };
   handleNewItem = (e) => {
     e.preventDefault();
@@ -390,6 +357,7 @@ export default class Items extends Component {
       precio: 0,
       subtotal: 0,
       inStorage: 0,
+      out: 0,
       itemsDb: [],
     });
   };

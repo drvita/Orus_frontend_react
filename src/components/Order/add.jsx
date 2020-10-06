@@ -30,12 +30,14 @@ export default class OrderAdd extends Component {
       mensajes: [],
       items: [],
       contact_id: 0,
+      usuario: "",
       edad: 0,
       exam_id: 0,
       exam: {},
       status: 0,
-      date: "",
+      date: moment().format("LL"),
       load: true,
+      nota: 0,
     };
   }
   componentDidMount() {
@@ -50,6 +52,7 @@ export default class OrderAdd extends Component {
   }
 
   render() {
+    let { contact_id } = this.state;
     return (
       <div className="row">
         <div className="col-4">
@@ -60,21 +63,78 @@ export default class OrderAdd extends Component {
             getIdContact={this.getIdContact}
             changePage={this.changePage}
           />
-          <div className="card card-warning card-outline mt-4">
-            <div className="card-body">
-              <Status
-                status={this.state.status}
-                ChangeInput={this.handleChangeInput}
-              />
+          {contact_id ? (
+            <div className="card card-warning card-outline mt-4">
+              <div className="card-body">
+                <Status
+                  status={this.state.status}
+                  ChangeInput={this.handleChangeInput}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            ""
+          )}
         </div>
         <div className="col">
           <div className="card card-warning card-outline">
             <div className="card-body">
-              {this.state.contact_id ? (
+              {contact_id ? (
                 <React.Fragment>
-                  <ul className="nav nav-tabs mt-2" id="myTab" role="tablist">
+                  <div className="row">
+                    <div className="col-2">
+                      <div className="border border-warning rounded p-2 d-flex justify-content-between align-items-center">
+                        <span className="badge badge-pill badge-warning mx-2">
+                          Folio
+                        </span>
+                        <strong>
+                          {this.state.id ? this.state.id : "Nuevo"}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="col-4">
+                      <div className="border border-warning rounded p-2 d-flex justify-content-between align-items-center">
+                        <span className="badge badge-pill badge-warning mx-2">
+                          Creador
+                        </span>
+                        <strong>
+                          {this.state.usuario
+                            ? this.state.usuario
+                            : this.props.data.name}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="col-2">
+                      <div className="border border-warning rounded p-2 d-flex justify-content-between align-items-center">
+                        <span className="badge badge-pill badge-success mx-2">
+                          Nota
+                        </span>
+                        <strong>
+                          {this.state.nota ? (
+                            <Link
+                              to={"/notas/registro/" + this.state.nota}
+                              onClick={(e) => {
+                                this.changePage("/notas/registro");
+                              }}
+                            >
+                              {this.state.nota}
+                            </Link>
+                          ) : (
+                            "--"
+                          )}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="border border-warning rounded p-2 d-flex justify-content-between align-items-center">
+                        <span className="badge badge-pill badge-warning mx-2">
+                          Fecha
+                        </span>
+                        <strong>{this.state.date}</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <ul className="nav nav-tabs mt-4" id="myTab" role="tablist">
                     <li className="nav-item">
                       <a
                         className={
@@ -98,6 +158,8 @@ export default class OrderAdd extends Component {
                         className={
                           this.state.status === 1
                             ? "nav-link active"
+                            : !this.state.status
+                            ? "nav-link disabled"
                             : "nav-link"
                         }
                         data-toggle="tab"
@@ -111,6 +173,8 @@ export default class OrderAdd extends Component {
                         className={
                           this.state.status === 2
                             ? "nav-link active"
+                            : !this.state.status
+                            ? "nav-link disabled"
                             : "nav-link"
                         }
                         data-toggle="tab"
@@ -142,24 +206,6 @@ export default class OrderAdd extends Component {
                       }
                       id="pedido"
                     >
-                      <div className="row">
-                        <div className="col">
-                          <div className="border border-warning rounded p-2">
-                            <span className="badge badge-pill badge-warning mx-2">
-                              Folio
-                            </span>
-                            <strong>{this.state.id}</strong>
-                          </div>
-                        </div>
-                        <div className="col">
-                          <div className="border border-warning rounded p-2">
-                            <span className="badge badge-pill badge-warning mx-2">
-                              Fecha
-                            </span>
-                            <strong>{this.state.date}</strong>
-                          </div>
-                        </div>
-                      </div>
                       <Items
                         items={this.state.items}
                         status={this.state.status}
@@ -232,7 +278,7 @@ export default class OrderAdd extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="alert alert-warning">
+                <div className="alert alert-light">
                   <h4 className="alert-heading">Nuevo pedido</h4>
                   <p>
                     <i className="fas fa-user mr-1"></i> Primero seleccione al
@@ -255,12 +301,16 @@ export default class OrderAdd extends Component {
                 </Link>
                 <button
                   className={
-                    this.state.contact_id
+                    this.state.contact_id && this.state.items.length
                       ? "btn btn-warning"
                       : "btn btn-warning disabled"
                   }
                   onClick={this.handleSave}
-                  disabled={this.state.contact_id ? false : true}
+                  disabled={
+                    this.state.contact_id && this.state.items.length
+                      ? false
+                      : true
+                  }
                 >
                   <i className="fas fa-save mr-1"></i>
                   <strong>Guardar</strong>
@@ -268,9 +318,13 @@ export default class OrderAdd extends Component {
               </div>
             </div>
           </div>
-          <div className="card card-warning card-outline">
-            <div className="card-body">Aqui van los mensajes</div>
-          </div>
+          {contact_id ? (
+            <div className="card card-warning card-outline">
+              <div className="card-body">Nota: {this.state.nota} </div>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     );
@@ -281,9 +335,9 @@ export default class OrderAdd extends Component {
       [key]: value,
     });
   };
-  getIdContact = (id, edad) => {
+  getIdContact = (contact_id, edad) => {
     this.setState({
-      contact_id: id,
+      contact_id,
       edad,
     });
   };
@@ -299,22 +353,39 @@ export default class OrderAdd extends Component {
       //Variables en localStorage
       //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
       //Creamos el body
-      console.log("Enviando datos a API para almacenar", id);
+      console.log("Enviando datos a API para almacenar");
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
         url = id
           ? "http://" + varLocalStorage.host + "/api/orders/" + id
           : "http://" + varLocalStorage.host + "/api/orders",
         method = id ? "PUT" : "POST",
-        body = this.state;
+        body = {},
+        items = [];
 
-      delete body.exam;
-      delete body.date;
-      delete body.edad;
-      delete body.id;
-      if (!body.exam_id) delete body.exam_id;
-      if (!body.lab_id) delete body.lab_id;
-      body.items = JSON.stringify(body.items);
-      body.mensajes = JSON.stringify(body.mensajes);
+      this.state.items.map((item) => {
+        items.push({
+          cant: item.cantidad,
+          price: item.precio,
+          subtotal: item.subtotal,
+          inStorage: item.inStorage,
+          session: item.session,
+          out: item.out,
+          store_items_id: item.store_items_id,
+        });
+        return false;
+      });
+      body = {
+        session: this.state.session,
+        observaciones: this.state.observaciones,
+        npedidolab: this.state.npedidolab,
+        ncaja: this.state.ncaja,
+        contact_id: this.state.contact_id,
+        status: this.state.status,
+        items: JSON.stringify(items),
+        mensajes: JSON.stringify(this.state.mensajes),
+      };
+      if (this.state.exam_id) body.exam_id = this.state.exam_id;
+      if (this.state.lab_id) body.lab_id = this.state.lab_id;
       //Actualiza el pedido o creamos un pedido nuevo según el ID
       fetch(url, {
         method: method,
@@ -340,6 +411,13 @@ export default class OrderAdd extends Component {
               )
             ) {
               this.props.history.goBack();
+            } else {
+              this.setState({
+                id: data.data.id,
+                usuario: data.data.created,
+                date: data.data.created_at,
+                nota: data.data.nota.id,
+              });
             }
           } else console.log(data.message);
         });
@@ -359,9 +437,15 @@ export default class OrderAdd extends Component {
           Authorization: "Bearer " + varLocalStorage.token,
         },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+            console.log(res);
+          }
+          return res.json();
+        })
         .then((data) => {
-          console.log("Mostrando datos del pedido", data.data);
+          console.log("Mostrando datos del pedido");
           this.setState({
             id,
             session: data.data.session,
@@ -369,13 +453,15 @@ export default class OrderAdd extends Component {
             lab_id: data.data.laboratorio ? data.data.laboratorio.id : 0,
             npedidolab: data.data.folio_lab,
             ncaja: data.data.caja,
-            mensajes: JSON.parse(data.data.mensajes),
+            mensajes: data.data.mensajes,
             items: data.data.productos,
             contact_id: data.data.paciente.id,
             status: data.data.estado,
+            usuario: data.data.created,
             exam_id: data.data.examen !== null ? data.data.examen.id : 0,
             exam: data.data.examen !== null ? data.data.examen : {},
             date: data.data.created_at,
+            nota: data.data.nota.id,
           });
         });
     } else {

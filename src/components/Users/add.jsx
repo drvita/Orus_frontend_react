@@ -74,13 +74,15 @@ class UserAdd extends Component {
     return (
       <div className="row">
         <div className="col-md-8">
-          <form className="card" onSubmit={this.handleSave}>
+          <form
+            className="card card-primary card-outline"
+            onSubmit={this.handleSave}
+          >
             <div className="card-header">
-              <h3 className="card-title">
-                <i className="fas fa-user"></i>
-                &nbsp;&nbsp;&nbsp;
+              <h1 className="card-title text-primary">
+                <i className="fas fa-user mr-2"></i>
                 {this.state.id ? "Editar usuario" : "Registrar nuevo usuario"}
-              </h3>
+              </h1>
             </div>
             <div className="card-body">
               <div className="row">
@@ -180,11 +182,11 @@ class UserAdd extends Component {
             </div>
             <div className="card-footer">
               <div className="row">
-                <div className="col-md-12">
-                  <div className="btn-group float-right" role="group">
+                <div className="col-md-12 text-right">
+                  <div className="btn-group btn-group-lg" role="group">
                     <Link
                       to="/usuarios"
-                      className="btn btn-default"
+                      className="btn btn-dark"
                       onClick={this.changePage}
                       id="/usuarios"
                     >

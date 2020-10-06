@@ -17,10 +17,12 @@ export default class Contacts extends Component {
       orderby: "created_at",
       order: "desc",
       search: "",
-      status: 0,
+      type: "",
+      date: "",
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
   }
-
   componentDidMount() {
     this.getPedidos();
     //moment.locale("es");
@@ -30,6 +32,9 @@ export default class Contacts extends Component {
       console.log("Recargando pedidos");
       this.getPedidos();
     }
+  }
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
 
   render() {
@@ -63,7 +68,7 @@ export default class Contacts extends Component {
         <div className="card-header">
           <h3 className="card-title">
             <i className="fas fa-cash-register mr-1"></i>
-            Notas
+            Listado de notas
           </h3>
           <div className="card-tools">
             <div className="btn-group">
@@ -111,7 +116,6 @@ export default class Contacts extends Component {
                 <th>Cliente</th>
                 <th>SubTotal</th>
                 <th>Descuento</th>
-                <th>Metodo Pago</th>
                 <th
                   onClick={() => {
                     this.handleOrder("total");
@@ -131,6 +135,8 @@ export default class Contacts extends Component {
                     ""
                   )}
                 </th>
+                <th>Abonos</th>
+                <th>Por pagar</th>
                 <th
                   onClick={() => {
                     this.handleOrder("created_at");
@@ -175,10 +181,16 @@ export default class Contacts extends Component {
             <tbody>
               {load ? (
                 <tr>
-                  <td colSpan="8" className="text-center">
-                    <div className="spinner-border text-primary" role="status">
+                  <td colSpan="10" className="text-center p-4">
+                    <div
+                      className="spinner-border text-primary mr-4"
+                      role="status"
+                    >
                       <span className="sr-only">Loading...</span>
                     </div>
+                    <span className="font-weight-light font-italic">
+                      Espere cargando datos de la venta
+                    </span>
                   </td>
                 </tr>
               ) : Object.keys(pedidos.data).length ? (
@@ -190,34 +202,46 @@ export default class Contacts extends Component {
                           {pedido.id}
                         </span>
                       </td>
-                      <td className="text-uppercase">{pedido.cliente}</td>
+                      <td className="text-uppercase">
+                        <div className="badge badge-danger">
+                          {pedido.cliente.nombre}
+                        </div>
+                      </td>
                       <td className="text-right">
                         $ {pedido.subtotal ? pedido.subtotal : 0.0}
                       </td>
                       <td className="text-right">
                         $ {pedido.descuento ? pedido.descuento : 0.0}
                       </td>
-                      <td className="text-uppercase">{pedido.metodopago}</td>
                       <td className="text-right">
                         $ {pedido.total ? pedido.total : 0.0}
+                      </td>
+                      <td className="text-right">$ {pedido.pagado}</td>
+                      <td className="text-right">
+                        {pedido.total - pedido.pagado <= 0 ? (
+                          <label className="text-success">
+                            <i className="fas fa-check"></i>
+                          </label>
+                        ) : (
+                          "$ " + (pedido.total - pedido.pagado)
+                        )}
                       </td>
                       <td>{pedido.created_at}</td>
                       <td>{pedido.updated_at}</td>
                       <td className="text-right">
                         <a
-                          className="btn-flat text-success"
+                          className="btn-flat text-success mr-2"
                           href="#delete"
                           onClick={this.handleDelete}
                           id={pedido.id}
                         >
                           <i className="fas fa-trash" id={pedido.id}></i>
                         </a>
-                        &nbsp;&nbsp;
                         <Link
                           className="btn-flat blue-text"
-                          to={"/pedidos/registro/" + pedido.id}
+                          to={"/notas/registro/" + pedido.id}
                           onClick={(e) => {
-                            this.changePage("/pedidos/registro");
+                            this.changePage("/notas/registro");
                           }}
                         >
                           <i className="fas fa-pencil-alt"></i>
@@ -228,7 +252,7 @@ export default class Contacts extends Component {
                 })
               ) : (
                 <tr>
-                  <th colSpan="8" className="text-center">
+                  <th colSpan="10" className="text-center">
                     No hay datos para mostrar
                   </th>
                 </tr>
@@ -238,10 +262,10 @@ export default class Contacts extends Component {
         </div>
         <div className="card-footer clearfix">
           <Link
-            to="/pedidos/registro"
+            to="/notas/registro"
             className="btn btn-success float-right"
             onClick={(e) => {
-              this.changePage("/pedidos/registro");
+              this.changePage("/notas/registro");
             }}
           >
             <i className="fas fa-plus mr-2"></i>
@@ -250,7 +274,8 @@ export default class Contacts extends Component {
         </div>
         <Filter
           search={this.state.search}
-          status={this.state.status}
+          type={this.state.type}
+          date={this.state.date}
           onChangeValue={this.onchangeSearch}
           handleFilter={this.handleFilter}
         />
@@ -292,7 +317,7 @@ export default class Contacts extends Component {
       varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
 
     if (conf) {
-      fetch("http://" + varLocalStorage.host + "/api/orders/" + id, {
+      fetch("http://" + varLocalStorage.host + "/api/payments/" + id, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -311,17 +336,20 @@ export default class Contacts extends Component {
         });
     }
   };
-  getPedidos() {
+  getPedidos = () => {
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
       url = "http://" + varLocalStorage.host + "/api/sales",
       orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
       search = this.state.search ? `&search=${this.state.search}` : "",
+      type = this.state.type ? `&type=${this.state.type}` : "",
+      date = this.state.date ? `&date=${this.state.date}` : "",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
 
     //Realiza la peticion de los contactos
-    fetch(url + page + orderby + search, {
+    fetch(url + page + orderby + search + type + date, {
       method: "GET",
+      signal: this.signal,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -336,11 +364,11 @@ export default class Contacts extends Component {
         return res.json();
       })
       .then((data) => {
-        console.log("Descargando pedidos", data.data);
+        console.log("Descargando ventas");
         this.setState({
           pedidos: data,
           load: false,
         });
       });
-  }
+  };
 }

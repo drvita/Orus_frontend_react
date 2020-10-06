@@ -131,12 +131,12 @@ class Menu extends Component {
                     active === "notas" ? "nav-link active" : "nav-link"
                   }
                   onClick={(e) => {
-                    this.changePage("/notas");
+                    this.changePage("/Ventas");
                   }}
                 >
                   <i className="nav-icon fas fa-cash-register"></i>
                   <p>
-                    Notas
+                    Ventas
                     <i className="right fas fa-angle-left"></i>
                   </p>
                 </Link>

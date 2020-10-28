@@ -9,27 +9,35 @@ export default class HeaderTable extends Component {
         <thead className="thead-light">
           <tr>
             {data.map((col, index) => {
-              return (
-                <th
-                  scope="col"
-                  key={index}
-                  onClick={() => {
-                    this.handleOrder(col.type);
-                  }}
-                  style={{
-                    cursor: order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  {col.name}
-                  {orderby === col.type ? (
-                    <span className="ml-2">
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-              );
+              if (col.filter) {
+                return (
+                  <th
+                    scope="col"
+                    key={index}
+                    onClick={() => {
+                      this.handleOrder(col.type);
+                    }}
+                    style={{
+                      cursor: order === "desc" ? "n-resize" : "s-resize",
+                    }}
+                  >
+                    {col.name}
+                    {orderby === col.type ? (
+                      <span className="ml-2">
+                        <i className="fas fa-sort text-primary"></i>
+                      </span>
+                    ) : (
+                      ""
+                    )}
+                  </th>
+                );
+              } else {
+                return (
+                  <th scope="col" key={index}>
+                    {col.name}
+                  </th>
+                );
+              }
             })}
             {actions ? <th className="text-center">Acciones</th> : ""}
           </tr>

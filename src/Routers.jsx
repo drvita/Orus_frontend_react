@@ -19,32 +19,57 @@ import Sales from "./components/Sales/index";
 import SalesAdd from "./components/Sales/add";
 import Dashboard from "./components/Dashboard/index";
 
-class Routers extends Component {
+export default class Routers extends Component {
   constructor(props) {
     super(props);
-    //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+
     this.state = {
-      page: "dashboard",
-      company: varLocalStorage.company,
+      page: this.handleTitleSection(window.location.pathname),
+      company: props.data.company,
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
+  }
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    //Manejamos el router dependiendo de la ruta
-    this.handlePage(window.location.pathname);
+    //Verificamos permisos
+    const dir = window.location.pathname,
+      rol = this.props.data.rol;
+
+    if (
+      rol === 1 &&
+      (dir.match(/^\/consultorio/g) ||
+        dir.match(/^\/usuarios/g) ||
+        dir.match(/^\/almacen/g) ||
+        dir.match(/^\/configuraciones/g))
+    ) {
+      window.location.href = "/";
+    }
+    if (
+      rol === 2 &&
+      (dir.match(/^\/pedidos/g) ||
+        dir.match(/^\/usuarios/g) ||
+        dir.match(/^\/almacen/g) ||
+        dir.match(/^\/notas/g) ||
+        dir.match(/^\/configuraciones/g))
+    ) {
+      window.location.href = "/";
+    }
+    //Verificamos la sesion del usuario
     this.verifyUser();
   }
   componentDidUpdate(props, state) {
     if (this.state.page !== state.page) {
-      //Se verifica cada que se cambia de pagina, eliminar cuando exita la verificacion
-      // a traves de sockets
-      //this.verifyUser();
+      //Se verifica cada que se cambia de pagina
+      this.verifyUser();
     }
   }
 
   render() {
     const { data } = this.props;
-    //Aqui se cargan los componentes según su ruta
+
     return (
       <div className="wrapper">
         <Navtop />
@@ -79,6 +104,7 @@ class Routers extends Component {
                         <Users {...props} data={data} page={this.handlePage} />
                       )}
                     />
+
                     <Route
                       path="/almacen/registro/:id?"
                       render={(props) => (
@@ -117,6 +143,7 @@ class Routers extends Component {
                         />
                       )}
                     />
+
                     <Route
                       extric
                       path="/consultorio/registro/:id?"
@@ -135,6 +162,7 @@ class Routers extends Component {
                         <Exam {...props} data={data} page={this.handlePage} />
                       )}
                     />
+
                     <Route
                       extric
                       path="/configuraciones"
@@ -204,25 +232,27 @@ class Routers extends Component {
 
   verifyUser = () => {
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+    let { data, logOut } = this.props,
+      { host, isLogged, token } = data;
+
     //Solo realizamos la verificacion si hay sesion
-    if (this.props.data.isLogged) {
+    if (isLogged && host && token) {
       console.log("Verificando usuario");
       //Realizando verificación de usuarios
-      if (varLocalStorage.token !== "" && varLocalStorage.host !== "") {
-        fetch("http://" + varLocalStorage.host + "/api/user", {
+      if (token !== "" && host !== "") {
+        fetch("http://" + host + "/api/user", {
           method: "GET",
+          signal: this.signal,
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: "Bearer " + varLocalStorage.token,
+            Authorization: "Bearer " + token,
           },
         })
           .then((res) => {
-            if (!res.ok && varLocalStorage.token !== "") {
-              console.log("Usuario invalido:", res.statusText);
-              this.props.logOut();
-              this.handlePage("/");
+            if (!res.ok && token !== "") {
+              console.error("Usuario invalido:", res.statusText);
+              logOut();
             }
             return res.json();
           })
@@ -232,23 +262,28 @@ class Routers extends Component {
             }
           });
       }
+    } else {
+      console.error("La sesion ya no esta activa o se perdio el host");
+      logOut();
     }
   };
-  handlePage = (page) => {
+  handlePage = (title) => {
+    let page = this.handleTitleSection(title);
+    this.setState({
+      page,
+    });
+  };
+  handleTitleSection = (page) => {
+    //Verificamos que la variable no este vacia
+    page = page ? page : window.location.pathname;
     //Maneja el renderiazado del componentes cuando se cambíe el componentes
     if (page === "" || typeof page === "undefined" || typeof page === "object")
       page = "/";
     let locations = page.split("/");
     if (locations[1] === "") {
-      this.setState({
-        page: "dashboard",
-      });
+      return "dashboard";
     } else {
-      this.setState({
-        page: locations[1],
-      });
+      return locations[1];
     }
   };
 }
-
-export default Routers;

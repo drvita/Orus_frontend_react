@@ -1,183 +1,115 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-//import moment from "moment";
-//import "moment/locale/es";
+import moment from "moment";
+import "moment/locale/es";
+import Header from "../Layouts/headerTable";
 import Filter from "./index_filter";
+import Pagination from "../Layouts/pagination";
+import Actions from "../Layouts/actionsTable";
 
 export default class Contacts extends Component {
   constructor(props) {
     super(props);
+    //Variables en localStorage
+    let sdd = JSON.parse(localStorage.getItem("OrusSales"));
     this.state = {
       pedidos: {
         data: [],
         meta: {},
       },
       load: true,
-      page: 1,
-      orderby: "created_at",
-      order: "desc",
-      search: "",
-      type: "",
-      date: "",
+      page: sdd ? sdd.page : 1,
+      orderby: sdd ? sdd.orderby : "created_at",
+      order: sdd ? sdd.order : "asc",
+      search: sdd ? sdd.search : "",
+      type: sdd ? sdd.type : "",
+      date: sdd ? sdd.date : "",
+      host: props.data.host,
+      token: props.data.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
   }
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
+  }
   componentDidMount() {
     this.getPedidos();
-    //moment.locale("es");
+    moment.locale("es");
+    localStorage.setItem(
+      "OrusSales",
+      JSON.stringify({
+        page: this.state.page,
+        orderby: this.state.orderby,
+        order: this.state.order,
+        search: this.state.search,
+        type: this.state.type,
+        date: this.state.date,
+      })
+    );
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {
       console.log("Recargando pedidos");
       this.getPedidos();
+      localStorage.setItem(
+        "OrusSales",
+        JSON.stringify({
+          page: this.state.page,
+          orderby: this.state.orderby,
+          order: this.state.order,
+          search: this.state.search,
+          type: this.state.type,
+          date: this.state.date,
+        })
+      );
     }
-  }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
 
   render() {
-    let { pedidos, load } = this.state,
-      pages = [];
-    if (pedidos.meta.total > 10) {
-      for (var i = 1; i <= pedidos.meta.last_page; i++) {
-        pages.push(
-          <li
-            key={i}
-            className={
-              pedidos.meta.current_page === i
-                ? "page-item disabled"
-                : "page-item"
-            }
-          >
-            <a
-              href={"#page" + i}
-              className="page-link"
-              onClick={this.handleChangePage.bind(this, i)}
-            >
-              {i}
-            </a>
-          </li>
-        );
-      }
-    }
+    let { pedidos, load, search, type, date } = this.state,
+      dataHeaders = [
+        { name: "Folio", type: "id", filter: true },
+        { name: "Cliente" },
+        { name: "Sub-total" },
+        { name: "Descuento" },
+        { name: "Total", type: "total", filter: true },
+        { name: "Abonos" },
+        { name: "Por pagar" },
+        { name: "Actualizado", type: "updated_at", filter: true },
+        { name: "Registrado", type: "created_at", filter: true },
+      ];
 
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
-          <h3 className="card-title">
+          <h3 className="card-title text-success">
             <i className="fas fa-cash-register mr-1"></i>
             Listado de notas
           </h3>
           <div className="card-tools">
-            <div className="btn-group">
-              <a
-                href="#filter"
-                className="btn btn-tool"
-                data-toggle="modal"
-                data-target="#filters"
-              >
-                <i className="fas fa-search"></i>
-              </a>
-            </div>
-            {pedidos.meta.total > 10 ? (
-              <div className="btn-group">
-                <ul className="pagination pagination-sm">{pages}</ul>
-              </div>
-            ) : (
-              ""
-            )}
+            <Filter
+              search={search}
+              type={type}
+              date={date}
+              changeFilters={this.onchangeSearch}
+              handleChangePage={this.handleChangePage}
+            />
+            <Pagination
+              meta={pedidos.meta}
+              handleChangePage={this.handleChangePage}
+            />
           </div>
         </div>
         <div className="card-body table-responsive p-0">
           <table className="table table-bordered table-hover table-nowrap">
-            <thead>
-              <tr>
-                <th
-                  onClick={() => {
-                    this.handleOrder("id");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Folio
-                  {this.state.orderby === "id" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th>Cliente</th>
-                <th>SubTotal</th>
-                <th>Descuento</th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("total");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Total
-                  {this.state.orderby === "total" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th>Abonos</th>
-                <th>Por pagar</th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("created_at");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Registrado
-                  {this.state.orderby === "created_at" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("updated_at");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Actualizado
-                  {this.state.orderby === "updated_at" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th className="text-right">Accion</th>
-              </tr>
-            </thead>
+            <Header
+              orderby={this.state.orderby}
+              order={this.state.order}
+              data={dataHeaders}
+              actions={true}
+              handleOrder={this.handleOrder}
+            />
             <tbody>
               {load ? (
                 <tr>
@@ -203,9 +135,12 @@ export default class Contacts extends Component {
                         </span>
                       </td>
                       <td className="text-uppercase">
-                        <div className="badge badge-danger">
-                          {pedido.cliente.nombre}
-                        </div>
+                        <Link to={"/notas/registro/" + pedido.id}>
+                          <span className="badge badge-danger text-capitalize p-1">
+                            {pedido.cliente.nombre}
+                            <i className="fas fa-pencil-alt ml-1"></i>
+                          </span>
+                        </Link>
                       </td>
                       <td className="text-right">
                         $ {pedido.subtotal ? pedido.subtotal : 0.0}
@@ -226,27 +161,18 @@ export default class Contacts extends Component {
                           "$ " + (pedido.total - pedido.pagado)
                         )}
                       </td>
-                      <td>{pedido.created_at}</td>
-                      <td>{pedido.updated_at}</td>
-                      <td className="text-right">
-                        <a
-                          className="btn-flat text-success mr-2"
-                          href="#delete"
-                          onClick={this.handleDelete}
-                          id={pedido.id}
-                        >
-                          <i className="fas fa-trash" id={pedido.id}></i>
-                        </a>
-                        <Link
-                          className="btn-flat blue-text"
-                          to={"/notas/registro/" + pedido.id}
-                          onClick={(e) => {
-                            this.changePage("/notas/registro");
-                          }}
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
+                      <td className="text-capitalize">
+                        {moment(pedido.updated_at).fromNow()}
                       </td>
+                      <td className="text-capitalize">
+                        {moment(pedido.created_at).format("LL")}
+                      </td>
+                      <Actions
+                        id={pedido.id}
+                        item={pedido.cliente.nombre}
+                        delete={this.handleDelete}
+                        edit={"/notas/registro/"}
+                      />
                     </tr>
                   );
                 })
@@ -260,10 +186,10 @@ export default class Contacts extends Component {
             </tbody>
           </table>
         </div>
-        <div className="card-footer clearfix">
+        <div className="card-footer text-right">
           <Link
             to="/notas/registro"
-            className="btn btn-success float-right"
+            className="btn btn-outline-success"
             onClick={(e) => {
               this.changePage("/notas/registro");
             }}
@@ -272,13 +198,6 @@ export default class Contacts extends Component {
             <strong>Nueva nota</strong>
           </Link>
         </div>
-        <Filter
-          search={this.state.search}
-          type={this.state.type}
-          date={this.state.date}
-          onChangeValue={this.onchangeSearch}
-          handleFilter={this.handleFilter}
-        />
       </div>
     );
   }
@@ -301,8 +220,7 @@ export default class Contacts extends Component {
       load: true,
     });
   };
-  handleChangePage = (id, e) => {
-    e.preventDefault();
+  handleChangePage = (id) => {
     this.setState({
       page: id,
       load: true,
@@ -311,49 +229,92 @@ export default class Contacts extends Component {
   changePage = (id) => {
     this.props.page(id);
   };
-  handleDelete = (e) => {
-    let conf = window.confirm("¿Esta seguro de eliminar este pedido?"),
-      id = e.target.id,
-      varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+  handleDelete = (id, item) => {
+    let conf = window.confirm(
+        "¿Esta seguro de eliminar el pedido de " + item.toUpperCase() + "?"
+      ),
+      { host, token } = this.state;
 
     if (conf) {
-      fetch("http://" + varLocalStorage.host + "/api/payments/" + id, {
+      //Mandamos señal de eliminación
+      this.setState({
+        load: true,
+      });
+      //Inicio de proceso de eliminción por API
+      console.log("Solicitud de eliminación por API");
+      fetch("http://" + host + "/api/sales/" + id, {
         method: "DELETE",
+        signal: this.signal,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("La venta no puede ser eliminado");
+            console.error(res);
+          }
+          return res.json();
+        })
         .then((data) => {
-          this.setState({
-            load: true,
-          });
-          this.getPedidos();
+          if (!data.message) {
+            console.log("Venta eliminada");
+            this.getPedidos();
+            window.alert("Venta eliminada con exito");
+          } else {
+            console.error("Error al eliminar la venta", data.message);
+            this.setState({
+              load: false,
+            });
+          }
         })
         .catch((e) => {
-          console.log(e);
+          console.error(e);
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          this.setState({
+            load: false,
+          });
         });
     }
   };
   getPedidos = () => {
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/sales",
-      orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
-      search = this.state.search ? `&search=${this.state.search}` : "",
-      type = this.state.type ? `&type=${this.state.type}` : "",
-      date = this.state.date ? `&date=${this.state.date}` : "",
-      page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
+    let {
+        host,
+        token,
+        order,
+        orderby,
+        search,
+        page,
+        type,
+        date,
+        load,
+      } = this.state,
+      url = "http://" + host + "/api/sales",
+      ordenar = `&orderby=${orderby}&order=${order}`,
+      buscar = search ? `&search=${search}` : "",
+      pagina = page > 0 ? "?page=" + page : "?page=1",
+      tipo = type === "" ? "" : "&type=" + type,
+      fecha = date === "" ? "" : "&date=" + date;
 
-    //Realiza la peticion de los contactos
-    fetch(url + page + orderby + search + type + date, {
+    //Mandamos señal de carga si no lo he hecho
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
+
+    //Realiza la peticion de ventas
+    console.log("Descargando ventas de API");
+    fetch(url + pagina + ordenar + buscar + tipo + fecha, {
       method: "GET",
       signal: this.signal,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
+        Authorization: "Bearer " + token,
       },
     })
       .then((res) => {

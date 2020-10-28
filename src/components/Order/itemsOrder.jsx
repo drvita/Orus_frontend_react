@@ -178,9 +178,9 @@ export default class Items extends Component {
                       {item.producto}
                     </span>
                   </td>
-                  <td className="text-right">$ {item.precio}</td>
-                  <td className="text-right">$ {item.subtotal}</td>
-                  <td>
+                  <td className="text-right">$ {item.precio.toFixed(2)}</td>
+                  <td className="text-right">$ {item.subtotal.toFixed(2)}</td>
+                  <td className="d-print-none">
                     <button
                       className={
                         this.props.status
@@ -230,7 +230,7 @@ export default class Items extends Component {
             <th scope="row" className="text-right">
               Subtotal
             </th>
-            <td className="text-right">$ {this.total}</td>
+            <td className="text-right">$ {this.total.toFixed(2)}</td>
             <td></td>
           </tr>
         </tfoot>

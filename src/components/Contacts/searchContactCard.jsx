@@ -48,7 +48,7 @@ export default class searchContact extends Component {
     if (this.props.contact) {
       if (this.state.load) {
         return (
-          <div className="card card-danger card-outline">
+          <div className="card card-danger card-outline d-print-none">
             <div className="card-body box-profile">
               <div className="text-center">
                 <div className="spinner-border text-primary" role="status">
@@ -85,10 +85,22 @@ export default class searchContact extends Component {
                 {nombre}
               </h3>
               <p className="text-muted text-center">
-                {telefonos.replace(/,/gi, ", ")}
+                {telefonos[2] ? (
+                  telefonos[2]
+                ) : telefonos[0] ? (
+                  telefonos[0]
+                ) : telefonos[1] ? (
+                  telefonos[1]
+                ) : (
+                  <span className="text-danger">Capture el telefono</span>
+                )}
               </p>
               <p className="text-muted text-center">
-                {domicilio.replace(/,/gi, ", ")}
+                {domicilio[0] ? (
+                  domicilio[0]
+                ) : (
+                  <span className="text-danger">Capture el domicilio</span>
+                )}
               </p>
 
               <ul className="list-group list-group-unbordered mb-3">
@@ -133,7 +145,7 @@ export default class searchContact extends Component {
       }
     } else {
       return (
-        <div className="card card-danger card-outline">
+        <div className="card card-danger card-outline d-print-none">
           <div className="card-body">
             <label>Buscar paciente</label>
             <div className="input-group mb-3">
@@ -282,7 +294,7 @@ export default class searchContact extends Component {
       })
       .then((data) => {
         if (data.data && data.data.length) {
-          console.log("Almacenando contactos");
+          console.log("Mostrando información del contacto");
           this.setState({
             data: data.data,
           });

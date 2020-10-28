@@ -20,7 +20,7 @@ export default class Navtop extends Component {
           <li className="nav-item dropdown">
             <a href="#end" className="nav-link" data-toggle="dropdown">
               <i className="far fa-comments"></i>
-              <span className="badge badge-danger navbar-badge">3</span>
+              <span className="badge badge-danger navbar-badge">0</span>
             </a>
             <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
               <a href="#end" className="dropdown-item">
@@ -48,7 +48,7 @@ export default class Navtop extends Component {
           <li className="nav-item dropdown">
             <a className="nav-link" data-toggle="dropdown" href="#end">
               <i className="far fa-bell"></i>
-              <span className="badge badge-warning navbar-badge">15</span>
+              <span className="badge badge-warning navbar-badge">0</span>
             </a>
             <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
               <span className="dropdown-header">15 Notifications</span>

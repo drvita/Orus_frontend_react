@@ -111,9 +111,7 @@ export default class AddAbono extends Component {
                     />
                   </div>
                 </div>
-              ) : (
-                ""
-              )}
+              ) : null}
             </form>
 
             <div className="modal-footer">

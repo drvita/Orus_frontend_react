@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 class Menu extends Component {
   render() {
     let { companyName, user, active } = this.props;
+
     return (
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         <Link
@@ -88,113 +89,124 @@ class Menu extends Component {
                   </p>
                 </Link>
               </li>
-              <li className="nav-item has-treeview">
-                <Link
-                  to="/consultorio"
-                  className={
-                    active === "consultorio" ? "nav-link active" : "nav-link"
-                  }
-                  onClick={(e) => {
-                    this.changePage("/consultorio");
-                  }}
-                >
-                  <i className="nav-icon fas fa-notes-medical"></i>
-                  <p>
-                    Consultorio
-                    <i className="right fas fa-angle-left"></i>
-                  </p>
-                </Link>
-              </li>
+              {user.rol === 2 || !user.rol ? (
+                <li className="nav-item has-treeview">
+                  <Link
+                    to="/consultorio"
+                    className={
+                      active === "consultorio" ? "nav-link active" : "nav-link"
+                    }
+                    onClick={(e) => {
+                      this.changePage("/consultorio");
+                    }}
+                  >
+                    <i className="nav-icon fas fa-notes-medical"></i>
+                    <p>
+                      Consultorio
+                      <i className="right fas fa-angle-left"></i>
+                    </p>
+                  </Link>
+                </li>
+              ) : null}
 
-              <li className="nav-item has-treeview">
-                <Link
-                  to="/pedidos"
-                  className={
-                    active === "pedidos" ? "nav-link active" : "nav-link"
-                  }
-                  onClick={(e) => {
-                    this.changePage("/pedidos");
-                  }}
-                >
-                  <i className="nav-icon fas fa-clipboard-list"></i>
-                  <p>
-                    Pedidos
-                    <i className="right fas fa-angle-left"></i>
-                  </p>
-                </Link>
-              </li>
+              {user.rol <= 1 ? (
+                <li className="nav-item has-treeview">
+                  <Link
+                    to="/pedidos"
+                    className={
+                      active === "pedidos" ? "nav-link active" : "nav-link"
+                    }
+                    onClick={(e) => {
+                      this.changePage("/pedidos");
+                    }}
+                  >
+                    <i className="nav-icon fas fa-clipboard-list"></i>
+                    <p>
+                      Pedidos
+                      <i className="right fas fa-angle-left"></i>
+                    </p>
+                  </Link>
+                </li>
+              ) : null}
 
-              <li className="nav-item has-treeview">
-                <Link
-                  to="/notas"
-                  className={
-                    active === "notas" ? "nav-link active" : "nav-link"
-                  }
-                  onClick={(e) => {
-                    this.changePage("/Ventas");
-                  }}
-                >
-                  <i className="nav-icon fas fa-cash-register"></i>
-                  <p>
-                    Ventas
-                    <i className="right fas fa-angle-left"></i>
-                  </p>
-                </Link>
-              </li>
+              {user.rol <= 1 ? (
+                <li className="nav-item has-treeview">
+                  <Link
+                    to="/notas"
+                    className={
+                      active === "notas" ? "nav-link active" : "nav-link"
+                    }
+                    onClick={(e) => {
+                      this.changePage("/Ventas");
+                    }}
+                  >
+                    <i className="nav-icon fas fa-cash-register"></i>
+                    <p>
+                      Ventas
+                      <i className="right fas fa-angle-left"></i>
+                    </p>
+                  </Link>
+                </li>
+              ) : null}
 
-              <li className="nav-item has-treeview">
-                <Link
-                  to="/almacen"
-                  className={
-                    active === "almacen" ? "nav-link active" : "nav-link"
-                  }
-                  onClick={(e) => {
-                    this.changePage("/almacen");
-                  }}
-                >
-                  <i className="nav-icon fas fa-database"></i>
-                  <p>
-                    Almacen
-                    <i className="right fas fa-angle-left"></i>
-                  </p>
-                </Link>
-              </li>
-              <li className="nav-item has-treeview">
-                <Link
-                  to="/usuarios"
-                  className={
-                    active === "usuarios" ? "nav-link active" : "nav-link"
-                  }
-                  onClick={(e) => {
-                    this.changePage("/usuarios");
-                  }}
-                >
-                  <i className="nav-icon fas fa-user"></i>
-                  <p>
-                    Usuarios
-                    <i className="right fas fa-angle-left"></i>
-                  </p>
-                </Link>
-              </li>
-              <li className="nav-item has-treeview">
-                <Link
-                  to="/configuraciones"
-                  className={
-                    active === "configuraciones"
-                      ? "nav-link active"
-                      : "nav-link"
-                  }
-                  onClick={(e) => {
-                    this.changePage("/configuraciones");
-                  }}
-                >
-                  <i className="nav-icon fas fa-tools"></i>
-                  <p>
-                    Configuraciones
-                    <i className="right fas fa-angle-left"></i>
-                  </p>
-                </Link>
-              </li>
+              {!user.rol ? (
+                <React.Fragment>
+                  <li className="nav-item has-treeview">
+                    <Link
+                      to="/almacen"
+                      className={
+                        active === "almacen" ? "nav-link active" : "nav-link"
+                      }
+                      onClick={(e) => {
+                        this.changePage("/almacen");
+                      }}
+                    >
+                      <i className="nav-icon fas fa-database"></i>
+                      <p>
+                        Almacen
+                        <i className="right fas fa-angle-left"></i>
+                      </p>
+                    </Link>
+                  </li>
+                  <li className="nav-item has-treeview">
+                    <Link
+                      to="/usuarios"
+                      className={
+                        active === "usuarios" ? "nav-link active" : "nav-link"
+                      }
+                      onClick={(e) => {
+                        this.changePage("/usuarios");
+                      }}
+                    >
+                      <i className="nav-icon fas fa-user"></i>
+                      <p>
+                        Usuarios
+                        <i className="right fas fa-angle-left"></i>
+                      </p>
+                    </Link>
+                  </li>
+                  <li className="nav-item has-treeview">
+                    <Link
+                      to="/configuraciones"
+                      className={
+                        active === "configuraciones"
+                          ? "nav-link active"
+                          : "nav-link"
+                      }
+                      onClick={(e) => {
+                        this.changePage("/configuraciones");
+                      }}
+                    >
+                      <i className="nav-icon fas fa-tools"></i>
+                      <p>
+                        Configuraciones
+                        <i className="right fas fa-angle-left"></i>
+                      </p>
+                    </Link>
+                  </li>
+                </React.Fragment>
+              ) : null}
+
               <li className="nav-item has-treeview">
                 <Link to="/" className="nav-link" onClick={this.handleLogOut}>
                   <i className="nav-icon fas fa-sign-out-alt"></i>

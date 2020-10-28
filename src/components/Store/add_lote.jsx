@@ -54,9 +54,9 @@ class StoreLote extends Component {
       }
     }
     return (
-      <div className="card card-info card-outline">
+      <div className="card card-primary card-outline">
         <div className="card-header">
-          <h3 className="card-title">
+          <h3 className="card-title text-primary">
             <i className="fas fa-list"></i>
             Listado de lotes
           </h3>
@@ -112,9 +112,9 @@ class StoreLote extends Component {
                       <td className="text-right">
                         $ {lot.precio ? lot.precio : 0}
                       </td>
-                      <td>
+                      <td className="text-right">
                         <a
-                          className="btn-flat text-warning"
+                          className="btn-flat text-dark"
                           href="#delete"
                           onClick={(e) => {
                             this.handleDelete(e, lot.id);
@@ -172,19 +172,19 @@ class StoreLote extends Component {
                       onChange={this.catchInputs}
                     />
                   </td>
-                  <td>
+                  <td className="text-right">
                     <div className="btn-group" role="group">
                       <button
-                        className="btn btn-info btn-sm"
+                        className="btn btn-outline-primary btn-sm"
                         onClick={this.handleSave}
                       >
-                        Guardar
+                        <i className="fas fa-save"></i>
                       </button>
                       <button
-                        className="btn btn-secondary btn-sm"
+                        className="btn btn-outline-dark btn-sm"
                         onClick={this.handleNewLote}
                       >
-                        Cancelar
+                        <i className="fas fa-undo"></i>
                       </button>
                     </div>
                   </td>

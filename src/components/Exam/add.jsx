@@ -86,110 +86,28 @@ export default class ExamAdd extends Component {
       category_id: 0,
       contact_id: 0,
       status: 0,
+      load: false,
+      host: props.data.host,
+      token: props.data.token,
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
   }
-
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
+  }
   componentDidMount() {
-    //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      id = this.props.match.params.id;
+    //Variables
+    let id = this.props.match.params.id;
 
     if (id) {
-      //Realiza la peticion de los contactos
-      fetch("http://" + varLocalStorage.host + "/api/exams/" + id, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("Descargando examen");
-          this.setState({
-            contact_id: data.data.paciente.id,
-            edad: data.data.edad,
-            id: data.data.id,
-            keratometriaoi: data.data.keratometriaoi,
-            keratometriaod: data.data.keratometriaod,
-            pantalleooi: data.data.pantalleooi,
-            pantalleood: data.data.pantalleood,
-            interrogatorio: data.data.interrogatorio,
-            cefalea: data.data.cefalea,
-            c_frecuencia: data.data.c_frecuencia,
-            c_intensidad: data.data.c_intensidad,
-            frontal: data.data.frontal,
-            temporal: data.data.temporal,
-            occipital: data.data.occipital,
-            generality: data.data.generality,
-            temporaoi: data.data.temporaoi,
-            temporaod: data.data.temporaod,
-            coa: data.data.coa,
-            aopp: data.data.aopp,
-            aopf: data.data.aopf,
-            avsloi: data.data.avsloi,
-            avslod: data.data.avslod,
-            avcgaoi: data.data.avcgaoi,
-            avcgaod: data.data.avcgaod,
-            cvoi: data.data.cvoi,
-            cvod: data.data.cvod,
-            oftalmoscopia: data.data.oftalmoscopia,
-            rsoi: data.data.rsoi,
-            rsod: data.data.rsod,
-            diagnostico: data.data.diagnostico,
-            presbicie: data.data.presbicie,
-            txoftalmico: data.data.txoftalmico,
-            esferaoi: data.data.esferaoi,
-            esferaod: data.data.esferaod,
-            cilindroi: data.data.cilindroi,
-            cilindrod: data.data.cilindrod,
-            ejeoi: data.data.ejeoi,
-            ejeod: data.data.ejeod,
-            adicioni: data.data.adicioni,
-            adiciond: data.data.adiciond,
-            dpoi: data.data.dpoi,
-            dpod: data.data.dpod,
-            avfoi: data.data.avfoi,
-            avfod: data.data.avfod,
-            avf2o: data.data.avf2o,
-            lcmarca: data.data.lcmarca,
-            lcgoi: data.data.lcgoi,
-            lcgod: data.data.lcgod,
-            txoptico: data.data.txoptico,
-            alturaoi: data.data.alturaoi,
-            alturaod: data.data.alturaod,
-            pioi: data.data.pioi,
-            piod: data.data.piod,
-            observaciones: data.data.observaciones,
-            pc: data.data.pc,
-            tablet: data.data.tablet,
-            movil: data.data.movil,
-            lap: data.data.lap,
-            lap_time: data.data.lap_time,
-            pc_time: data.data.pc_time,
-            tablet_time: data.data.tablet_time,
-            movil_time: data.data.movil_time,
-            d_time: data.data.d_time,
-            d_media: data.data.d_media,
-            d_test: data.data.d_test,
-            d_fclod: data.data.d_fclod,
-            d_fcloi: data.data.d_fcloi,
-            d_fclod_time: data.data.d_fclod_time,
-            d_fcloi_time: data.data.d_fcloi_time,
-            category_id: data.data.category_id,
-            status: data.data.estado,
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      this.getExam(id);
     }
   }
 
   render() {
-    //let {data} = this.props;
-    //console.log("Id:", this.state.id);
+    let { contact_id } = this.state;
+
     return (
       <form className="row">
         <div className="col-md-4">
@@ -200,11 +118,13 @@ export default class ExamAdd extends Component {
             getIdContact={this.getIdContact}
             changePage={this.changePage}
           />
-          <Recomendaciones
-            category_id={this.state.category_id}
-            onChangeInput={this.handleChangeInput}
-            update={true}
-          />
+          {contact_id ? (
+            <Recomendaciones
+              category_id={this.state.category_id}
+              onChangeInput={this.handleChangeInput}
+              update={true}
+            />
+          ) : null}
         </div>
         <div className="col-md-8">
           <div className="card card-info card-outline">
@@ -216,7 +136,7 @@ export default class ExamAdd extends Component {
             </div>
             <div className="card-body">
               <div className="accordion" id="accordionExample">
-                {this.state.contact_id ? (
+                {contact_id ? (
                   <React.Fragment>
                     <Generales
                       pc={this.state.pc}
@@ -352,7 +272,7 @@ export default class ExamAdd extends Component {
               <div className="btn-group" role="group">
                 <Link
                   to="/consultorio"
-                  className="btn btn-secondary"
+                  className="btn btn-dark"
                   onClick={(e) => {
                     this.changePage("/consultorio");
                   }}
@@ -377,12 +297,10 @@ export default class ExamAdd extends Component {
                 <button
                   type="button"
                   className={
-                    this.state.contact_id
-                      ? "btn btn-info"
-                      : "btn btn-info disabled"
+                    contact_id ? "btn btn-info" : "btn btn-info disabled"
                   }
                   onClick={this.handleSave}
-                  disabled={this.state.contact_id ? "" : "disabled"}
+                  disabled={contact_id ? "" : "disabled"}
                 >
                   <i className="fas fa-save mr-1"></i>
                   <strong>Guardar</strong>
@@ -426,28 +344,39 @@ export default class ExamAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    //Maneja el boton de almacenar
+    //Confirmación de almacenamiento
     let conf = window.confirm("¿Esta seguro de realizar la accion?");
+
     if (conf) {
-      //Variables en localStorage
-      //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+      //Variables
+      let { load, host, token } = this.state,
         body = this.state,
         id = this.state.id,
+        //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
         url = id
-          ? "http://" + varLocalStorage.host + "/api/exams/" + id
-          : "http://" + varLocalStorage.host + "/api/exams",
+          ? "http://" + host + "/api/exams/" + id
+          : "http://" + host + "/api/exams",
         method = id ? "PUT" : "POST";
       if (!body.category_id) delete body.category_id;
+
+      //Verificar si los datos son validos.
+
+      //Mandamos señal de procesamiento
+      if (!load) {
+        this.setState({
+          load: true,
+        });
+      }
       //Crear o modificar examen
       console.log("Enviando datos del examen a la API");
       fetch(url, {
         method: method,
+        signal: this.signal,
         body: JSON.stringify(body),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
         .then((res) => {
@@ -458,15 +387,143 @@ export default class ExamAdd extends Component {
         })
         .then((data) => {
           if (data.data) {
-            console.log("Examen almacenado");
+            console.log("Contacto almacenado");
             if (
               window.confirm(
-                "Examen almacenado con exito!.\n¿Desea cerrar este examen?"
+                "Examen almacenado con exito!.\n¿Desea cerrar este contacto?"
               )
             ) {
               this.props.history.goBack();
+            } else {
+              this.setState({
+                load: false,
+                id: data.data.id,
+              });
             }
-          } else console.log(data.message);
+          } else {
+            window.alert("Error al almacenar el examen. Intentelo mas tarde");
+            console.error(data.message);
+            this.setState({
+              load: false,
+            });
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+  };
+  getExam = (id) => {
+    if (id) {
+      //Variables
+      let { host, token, load } = this.state;
+
+      //Mandamos señal de carga si no lo he hecho
+      if (!load) {
+        this.setState({
+          load: true,
+        });
+      }
+      //Realiza la peticion del examen por el id
+      console.log("Descargando datos del contacto");
+      fetch("http://" + host + "/api/exams/" + id, {
+        method: "GET",
+        signal: this.signal,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+            console.error(res);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (!data.message) {
+            console.log("Mostrando examenes");
+            this.setState({
+              contact_id: data.data.paciente.id,
+              edad: data.data.edad,
+              id: data.data.id,
+              keratometriaoi: data.data.keratometriaoi,
+              keratometriaod: data.data.keratometriaod,
+              pantalleooi: data.data.pantalleooi,
+              pantalleood: data.data.pantalleood,
+              interrogatorio: data.data.interrogatorio,
+              cefalea: data.data.cefalea,
+              c_frecuencia: data.data.c_frecuencia,
+              c_intensidad: data.data.c_intensidad,
+              frontal: data.data.frontal,
+              temporal: data.data.temporal,
+              occipital: data.data.occipital,
+              generality: data.data.generality,
+              temporaoi: data.data.temporaoi,
+              temporaod: data.data.temporaod,
+              coa: data.data.coa,
+              aopp: data.data.aopp,
+              aopf: data.data.aopf,
+              avsloi: data.data.avsloi,
+              avslod: data.data.avslod,
+              avcgaoi: data.data.avcgaoi,
+              avcgaod: data.data.avcgaod,
+              cvoi: data.data.cvoi,
+              cvod: data.data.cvod,
+              oftalmoscopia: data.data.oftalmoscopia,
+              rsoi: data.data.rsoi,
+              rsod: data.data.rsod,
+              diagnostico: data.data.diagnostico,
+              presbicie: data.data.presbicie,
+              txoftalmico: data.data.txoftalmico,
+              esferaoi: data.data.esferaoi,
+              esferaod: data.data.esferaod,
+              cilindroi: data.data.cilindroi,
+              cilindrod: data.data.cilindrod,
+              ejeoi: data.data.ejeoi,
+              ejeod: data.data.ejeod,
+              adicioni: data.data.adicioni,
+              adiciond: data.data.adiciond,
+              dpoi: data.data.dpoi,
+              dpod: data.data.dpod,
+              avfoi: data.data.avfoi,
+              avfod: data.data.avfod,
+              avf2o: data.data.avf2o,
+              lcmarca: data.data.lcmarca,
+              lcgoi: data.data.lcgoi,
+              lcgod: data.data.lcgod,
+              txoptico: data.data.txoptico,
+              alturaoi: data.data.alturaoi,
+              alturaod: data.data.alturaod,
+              pioi: data.data.pioi,
+              piod: data.data.piod,
+              observaciones: data.data.observaciones,
+              pc: data.data.pc,
+              tablet: data.data.tablet,
+              movil: data.data.movil,
+              lap: data.data.lap,
+              lap_time: data.data.lap_time,
+              pc_time: data.data.pc_time,
+              tablet_time: data.data.tablet_time,
+              movil_time: data.data.movil_time,
+              d_time: data.data.d_time,
+              d_media: data.data.d_media,
+              d_test: data.data.d_test,
+              d_fclod: data.data.d_fclod,
+              d_fcloi: data.data.d_fcloi,
+              d_fclod_time: data.data.d_fclod_time,
+              d_fcloi_time: data.data.d_fcloi_time,
+              category_id: data.data.category_id,
+              status: data.data.estado,
+            });
+          } else {
+            console.error("Error al cargar el usuario", data.message);
+            this.setState({
+              load: false,
+            });
+          }
         })
         .catch((e) => {
           console.log(e);

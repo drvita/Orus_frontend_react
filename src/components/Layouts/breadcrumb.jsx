@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
 
-class Breadcrumb extends Component {
+export default class Breadcrumb extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,5 +34,3 @@ class Breadcrumb extends Component {
     );
   }
 }
-
-export default Breadcrumb;

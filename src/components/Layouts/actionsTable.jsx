@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default class ActionsTable extends Component {
   render() {
-    const { id } = this.props;
+    const { item, edit, id } = this.props;
     return (
       <td className="text-right">
         {this.props.delete ? (
@@ -12,7 +12,7 @@ export default class ActionsTable extends Component {
             href="#delete"
             onClick={(e) => {
               e.preventDefault();
-              this.handleDelete(id);
+              this.handleDelete(id, item);
             }}
           >
             <i className="fas fa-trash"></i>
@@ -20,8 +20,8 @@ export default class ActionsTable extends Component {
         ) : (
           ""
         )}
-        {this.props.edit ? (
-          <Link className="btn-flat text-dark" to={"/usuarios/registro/" + id}>
+        {edit ? (
+          <Link className="btn-flat text-dark" to={edit + id}>
             <i className="fas fa-pencil-alt"></i>
           </Link>
         ) : (
@@ -31,7 +31,7 @@ export default class ActionsTable extends Component {
     );
   }
 
-  handleDelete = (id) => {
-    this.props.delete(id);
+  handleDelete = (id, item) => {
+    this.props.delete(id, item);
   };
 }

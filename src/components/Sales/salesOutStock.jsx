@@ -5,6 +5,8 @@ export default class SalesOutStock extends Component {
     super(props);
     this.state = {
       stock: [],
+      host: props.data.host,
+      token: props.data.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -47,33 +49,39 @@ export default class SalesOutStock extends Component {
 
   getStockOut = () => {
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/salesItems",
+    let { host, token } = this.state,
+      url = "http://" + host + "/api/salesItems",
       stock = "?stock=false";
 
-    //Realiza la peticion de los productos faltantes
-    console.log("Descargando stock faltante");
-    fetch(url + stock, {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.log(res);
-        }
-        return res.json();
+    if (token && host) {
+      //Realiza la peticion de los productos faltantes
+      console.log("Descargando stock faltante");
+      fetch(url + stock, {
+        method: "GET",
+        signal: this.signal,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
       })
-      .then((data) => {
-        console.log("Almacenando datos descargados");
-        this.setState({
-          stock: data.data,
+        .then((res) => {
+          if (!res.ok && res.status !== 401) {
+            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+            console.log(res);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log("Almacenando datos descargados");
+          if (data.data) {
+            this.setState({
+              stock: data.data,
+            });
+          }
         });
-      });
+    } else {
+      console.error("Datos invalidos de session");
+    }
   };
 }

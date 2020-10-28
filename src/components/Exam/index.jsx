@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/es";
+import Header from "../Layouts/headerTable";
 import Filter from "./index_filter";
+import Pagination from "../Layouts/pagination";
+import Actions from "../Layouts/actionsTable";
 
 export default class Exam extends Component {
   constructor(props) {
@@ -19,9 +22,15 @@ export default class Exam extends Component {
       search: "",
       status: 0,
       date: moment.utc(new Date()).local().format("YYYY-MM-DD"),
+      host: props.data.host,
+      token: props.data.token,
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
   }
-
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
+  }
   componentDidMount() {
     this.getExams();
     moment.locale("es");
@@ -35,164 +44,44 @@ export default class Exam extends Component {
 
   render() {
     let { exams, load } = this.state,
-      pages = [];
-    if (Object.keys(exams).length && exams.meta.total > 10) {
-      for (var i = 1; i <= exams.meta.last_page; i++) {
-        pages.push(
-          <li
-            key={i}
-            className={
-              exams.meta.current_page === i ? "page-item disabled" : "page-item"
-            }
-          >
-            <a
-              href={"#page" + i}
-              className="page-link"
-              onClick={this.handleChangePage.bind(this, i)}
-            >
-              {i}
-            </a>
-          </li>
-        );
-      }
-    }
+      dataHeaders = [
+        { name: "Paciente", type: "name", filter: true },
+        { name: "Edad" },
+        { name: "Estado" },
+        { name: "Actualizado", type: "updated_at", filter: true },
+        { name: "Registrado", type: "created_at", filter: true },
+      ];
 
     return (
       <div className="card card-info card-outline">
         <div className="card-header">
-          <h3 className="card-title">
+          <h3 className="card-title text-info">
             <i className="fas fa-notes-medical mr-2"></i>
-            Citas para examenes
+            Examanes de la vista
           </h3>
           <div className="card-tools">
-            <div className="btn-group">
-              <a
-                href="#filter"
-                className="btn btn-tool"
-                data-toggle="modal"
-                data-target="#filters"
-              >
-                <i className="fas fa-search"></i>
-              </a>
-            </div>
-            {exams.meta.total > 10 ? (
-              <div className="btn-group">
-                <ul className="pagination pagination-sm">{pages}</ul>
-              </div>
-            ) : (
-              ""
-            )}
+            <Filter
+              search={this.state.search}
+              status={this.state.status}
+              date={this.state.date}
+              changeFilters={this.onchangeSearch}
+              handleChangePage={this.handleChangePage}
+            />
+            <Pagination
+              meta={exams.meta}
+              handleChangePage={this.handleChangePage}
+            />
           </div>
         </div>
         <div className="card-body table-responsive p-0">
           <table className="table table-bordered table-hover table-nowrap">
-            <thead>
-              <tr>
-                <th
-                  onClick={() => {
-                    this.handleOrder("paciente");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                  scope="col"
-                >
-                  Nombre del paciente
-                  {this.state.orderby === "paciente" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("edad");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                  scope="col"
-                >
-                  Edad
-                  {this.state.orderby === "edad" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("status");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                  scope="col"
-                >
-                  Estado
-                  {this.state.orderby === "status" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("created_at");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                  scope="col"
-                >
-                  Creado
-                  {this.state.orderby === "created_at" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("updated_at");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                  scope="col"
-                >
-                  Actualizado
-                  {this.state.orderby === "updated_at" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th className="text-right" scope="col">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
+            <Header
+              orderby={this.state.orderby}
+              order={this.state.order}
+              data={dataHeaders}
+              actions={true}
+              handleOrder={this.handleOrder}
+            />
             <tbody>
               {load ? (
                 <tr>
@@ -218,54 +107,29 @@ export default class Exam extends Component {
                       }
                     >
                       <td>
-                        <span
-                          className={
-                            exam.estado
-                              ? "badge badge-secondary text-capitalize"
-                              : moment
-                                  .utc(new Date())
-                                  .isSame(moment.utc(exam.created_at), "hour")
-                              ? "badge badge-success text-capitalize"
-                              : "badge badge-primary text-capitalize"
-                          }
-                        >
-                          {exam.paciente.nombre}
-                        </span>
-                      </td>
-                      <td>{exam.edad}</td>
-                      <td className="text-uppercase">
-                        {exam.estado ? (
-                          <span className="badge badge-secondary">
-                            Terminado
+                        <Link to={"/consultorio/registro/" + exam.id}>
+                          <span className="badge badge-danger text-capitalize p-1">
+                            {exam.paciente.nombre}
+                            <i className="fas fa-pencil-alt ml-1"></i>
                           </span>
-                        ) : (
-                          <span className="badge badge-success">Activo</span>
-                        )}
-                      </td>
-                      <td>{moment(exam.created_at).format("L LT")}</td>
-                      <td>{moment(exam.updated_at).format("L LT")}</td>
-                      <td className="text-right">
-                        <a
-                          className="btn-flat text-warning mr-2"
-                          href="#delete"
-                          onClick={this.handleDelete}
-                          id={exam.id}
-                        >
-                          <i className="fas fa-trash" id={exam.id}></i>
-                        </a>
-
-                        <Link
-                          className="btn-flat blue-text"
-                          to={"/consultorio/registro/" + exam.id}
-                          onClick={this.changePage}
-                          id="/consultorio/registro"
-                        >
-                          <i
-                            className="fas fa-pencil-alt"
-                            id="/consultorio/registro"
-                          ></i>
                         </Link>
                       </td>
+                      <td>{exam.edad ? exam.edad : "--"}</td>
+                      <td className="text-uppercase">
+                        {exam.estado ? (
+                          <span className="text-secondary">Terminado</span>
+                        ) : (
+                          <span className="text-success">Activo</span>
+                        )}
+                      </td>
+                      <td>{moment(exam.created_at).fromNow()}</td>
+                      <td>{moment(exam.updated_at).format("LL")}</td>
+                      <Actions
+                        id={exam.id}
+                        item={exam.paciente.nombre}
+                        delete={exam.estado ? null : this.handleDelete}
+                        edit={"/consultorio/registro/"}
+                      />
                     </tr>
                   );
                 })
@@ -279,10 +143,10 @@ export default class Exam extends Component {
             </tbody>
           </table>
         </div>
-        <div className="card-footer clearfix">
+        <div className="card-footer text-right">
           <Link
             to="/consultorio/registro"
-            className="btn btn-info float-right"
+            className="btn btn-outline-info"
             onClick={this.changePage}
             id="/consultorio/registro"
           >
@@ -290,13 +154,6 @@ export default class Exam extends Component {
             &nbsp; Nuevo examen
           </Link>
         </div>
-        <Filter
-          search={this.state.search}
-          onChangeValue={this.onchangeSearch}
-          handleFilter={this.handleFilter}
-          status={this.state.status}
-          date={this.state.date}
-        />
       </div>
     );
   }
@@ -319,8 +176,7 @@ export default class Exam extends Component {
       load: true,
     });
   };
-  handleChangePage = (id, e) => {
-    e.preventDefault();
+  handleChangePage = (id) => {
     this.setState({
       page: id,
       load: true,
@@ -329,52 +185,91 @@ export default class Exam extends Component {
   changePage = (e) => {
     this.props.page(e.target.id);
   };
-  handleDelete = (e) => {
-    let conf = window.confirm("¿Esta seguro de eliminar el usuario?"),
-      id = e.target.id,
-      varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+  handleDelete = (id, item) => {
+    let conf = window.confirm(
+        "¿Esta seguro de eliminar el examen del paciente " +
+          item.toUpperCase() +
+          "?"
+      ),
+      { host, token } = this.state;
 
     if (conf) {
-      fetch("http://" + varLocalStorage.host + "/api/exams/" + id, {
+      //Mandamos señal de eliminación
+      this.setState({
+        load: true,
+      });
+      //Inicio de proceso de eliminción por API
+      fetch("http://" + host + "/api/exams/" + id, {
         method: "DELETE",
+        signal: this.signal,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+            console.error(res);
+          }
+          return res.json();
+        })
         .then((data) => {
-          this.setState({
-            load: true,
-          });
-          this.getUsers();
+          if (!data.message) {
+            console.log("Examen eliminado");
+            this.getExams();
+            window.alert("Examen eliminado con exito");
+          } else {
+            console.error("Error al eliminar el examen", data.message);
+            this.setState({
+              load: false,
+            });
+          }
         })
         .catch((e) => {
-          console.log(e);
+          console.error(e);
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          this.setState({
+            load: false,
+          });
         });
     }
   };
   getExams() {
-    console.log("Descargando examenes", typeof this.state.status);
-    //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/exams",
-      orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
-      search = this.state.search ? `&search=${this.state.search}` : "",
-      date = this.state.date ? `&date=${this.state.date}` : "",
-      status =
-        typeof this.state.status === "number"
-          ? `&status=${this.state.status}`
-          : "",
-      page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
+    //Variables
+    let {
+        host,
+        token,
+        order,
+        orderby,
+        search,
+        page,
+        status,
+        load,
+        date,
+      } = this.state,
+      url = "http://" + host + "/api/exams",
+      ordenar = `&orderby=${orderby}&order=${order}`,
+      buscar = search ? `&search=${search}` : "",
+      pagina = page > 0 ? "?page=" + page : "?page=1",
+      fecha = date === "" ? "" : "&date=" + date,
+      estado = status === "" ? "" : "&status=" + status;
 
+    //Mandamos señal de carga si no lo he hecho
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
     //Realiza la peticion de los contactos
-    fetch(url + page + orderby + status + date + search, {
+    fetch(url + pagina + ordenar + estado + fecha + buscar, {
       method: "GET",
+      signal: this.signal,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
+        Authorization: "Bearer " + token,
       },
     })
       .then((res) => {
@@ -385,8 +280,8 @@ export default class Exam extends Component {
         return res.json();
       })
       .then((data) => {
-        console.log("Examenes descargados");
         if (!data.message) {
+          console.log("Examenes descargados");
           this.setState({
             exams: data,
             load: false,

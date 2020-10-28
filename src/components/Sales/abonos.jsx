@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
 import AddAbono from "./abonoAdd";
+import Print from "./print_pay";
 
 export default class ListAbonos extends Component {
   constructor(props) {
@@ -23,6 +24,8 @@ export default class ListAbonos extends Component {
 
   render() {
     let { abonos, total, load } = this.state;
+    let { id, date, contact } = this.props;
+
     return (
       <React.Fragment>
         <table className="table">
@@ -32,7 +35,7 @@ export default class ListAbonos extends Component {
               <th scope="col">Metodo de pago</th>
               <th scope="col">Cantidad</th>
               <th scope="col">Recibio</th>
-              <th scope="col"></th>
+              <th scope="col">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -53,9 +56,22 @@ export default class ListAbonos extends Component {
                           ""
                         )}
                       </td>
-                      <td className="text-right">$ {abono.total}</td>
+                      <td className="text-right">$ {abono.total.toFixed(2)}</td>
                       <td>{abono.created_user}</td>
-                      <td></td>
+                      <td className="text-right">
+                        <button
+                          className="btn btn-outline-light btn-sm"
+                          onClick={() => {
+                            this.print(
+                              abono.total,
+                              moment(abono.created_at).format("L"),
+                              abono.id
+                            );
+                          }}
+                        >
+                          <i className="fas fa-print"></i>
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -102,7 +118,7 @@ export default class ListAbonos extends Component {
                 ) : (
                   ""
                 )}
-                Total: $ {total}
+                Total: $ {total.toFixed(2)}
               </th>
               <td colSpan="2"></td>
             </tr>
@@ -115,10 +131,26 @@ export default class ListAbonos extends Component {
           contactId={this.props.contact}
           handleChange={this.handleChange}
         />
+        <Print folio={id} date={date} contact={contact} id="print_pay" />
       </React.Fragment>
     );
   }
 
+  print = (total, date, id) => {
+    let content = document.getElementById("print_pay"),
+      pri = document.getElementById("ifmcontentstoprint").contentWindow;
+
+    pri.document.open();
+    pri.document.write(content.innerHTML);
+    pri.document.write("<fieldset><h3>");
+    pri.document.write("Fecha: " + date);
+    pri.document.write("<br/>Folio: " + id);
+    pri.document.write("<br/>Monto: $ " + total.toFixed(2));
+    pri.document.write("</h3></fieldset>");
+    pri.document.close();
+    pri.focus();
+    pri.print();
+  };
   handleChange = (total) => {
     this.getPayments();
     this.setState({

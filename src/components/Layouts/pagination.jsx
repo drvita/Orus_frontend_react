@@ -15,7 +15,11 @@ export default class Pagination extends Component {
           >
             <a
               href={"#page" + i}
-              className="page-link text-primary"
+              className={
+                meta.current_page === i
+                  ? "page-link text-dark"
+                  : "page-link text-primary"
+              }
               onClick={(e) => {
                 e.preventDefault();
                 this.handleChangePage(e.target.innerHTML * 1);
@@ -28,11 +32,15 @@ export default class Pagination extends Component {
       }
     }
 
-    return (
-      <div className="btn-group">
-        <ul className="pagination pagination-sm">{pages}</ul>
-      </div>
-    );
+    if (meta.total > 10) {
+      return (
+        <div className="btn-group">
+          <ul className="pagination pagination-sm">{pages}</ul>
+        </div>
+      );
+    } else {
+      return false;
+    }
   }
 
   handleChangePage = (page) => {

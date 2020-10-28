@@ -3,10 +3,12 @@ import React, { Component } from "react";
 export default class Mapa extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      load: true,
+    };
     this.markers = [];
     this.map = "";
   }
-
   componentDidMount() {
     const googlePlaceAPILoad1 = setInterval(() => {
       if (window.google) {
@@ -25,6 +27,9 @@ export default class Mapa extends Component {
           console.log("Cargando Marker");
           this.eventLoadMap();
         }
+        this.setState({
+          load: false,
+        });
       }
     }, 100);
   }

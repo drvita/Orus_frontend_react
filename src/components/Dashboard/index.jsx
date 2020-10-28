@@ -9,7 +9,7 @@ export default class Dashboard extends Component {
           <div className="card card-success card-outline">
             <div className="card-body">
               <h5 className="card-title mb-2">Articulos en pedido sin stock</h5>
-              <SalesOutStock />
+              <SalesOutStock data={this.props.data} />
             </div>
           </div>
         </div>

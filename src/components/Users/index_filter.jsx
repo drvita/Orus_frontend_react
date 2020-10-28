@@ -121,7 +121,7 @@ export default class Filter extends Component {
     this.setFilters();
   };
   setFilters = () => {
-    this.props.setFilters();
+    this.props.handleChangePage(1);
     window.$("#filters").modal("hide");
   };
   changeFilters = (e) => {

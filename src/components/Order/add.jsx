@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import moment from "moment";
+import "moment/locale/es";
 import SearchContact from "../Contacts/searchContactCard";
 import Items from "./itemsOrder";
 import ListExam from "../Exam/listsExams";
@@ -6,9 +9,7 @@ import LabOrder from "./labOrder";
 import Status from "./statusOrder";
 import Bicelacion from "./bicelacionOrder";
 import Garantia from "./garantiaOrder";
-import moment from "moment";
-import "moment/locale/es";
-import { Link } from "react-router-dom";
+import Chat from "../Layouts/messenger";
 
 export default class OrderAdd extends Component {
   constructor(props) {
@@ -35,24 +36,36 @@ export default class OrderAdd extends Component {
       exam_id: 0,
       exam: {},
       status: 0,
-      date: moment().format("LL"),
-      load: true,
+      date: Date.now(),
+      load: false,
       nota: 0,
+      host: props.data.host,
+      token: props.data.token,
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
+  }
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    moment.locale("es");
-    this.getOrder();
+    let id = this.props.match.params.id;
+    if (id) {
+      moment.locale("es");
+      this.getOrder(id);
+    }
   }
   componentDidUpdate(props, state) {
     //console.log("Renderizando Add en items", state.load, this.state.load);
     if (state.load !== this.state.load && this.state.load === true) {
-      this.getOrder();
+      //this.getOrder();
     }
   }
 
   render() {
-    let { contact_id } = this.state;
+    let { contact_id, id } = this.state,
+      { data } = this.props;
+
     return (
       <div className="row">
         <div className="col-4">
@@ -72,9 +85,7 @@ export default class OrderAdd extends Component {
                 />
               </div>
             </div>
-          ) : (
-            ""
-          )}
+          ) : null}
         </div>
         <div className="col">
           <div className="card card-warning card-outline">
@@ -130,7 +141,7 @@ export default class OrderAdd extends Component {
                         <span className="badge badge-pill badge-warning mx-2">
                           Fecha
                         </span>
-                        <strong>{this.state.date}</strong>
+                        <strong>{moment(this.state.date).format("LL")}</strong>
                       </div>
                     </div>
                   </div>
@@ -318,13 +329,9 @@ export default class OrderAdd extends Component {
               </div>
             </div>
           </div>
-          {contact_id ? (
-            <div className="card card-warning card-outline">
-              <div className="card-body">Nota: {this.state.nota} </div>
-            </div>
-          ) : (
-            ""
-          )}
+          {contact_id && id ? (
+            <Chat data={data} table="orders" idRow={id} />
+          ) : null}
         </div>
       </div>
     );
@@ -346,18 +353,18 @@ export default class OrderAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    //Maneja el boton de almacenar
-    let conf = window.confirm("¿Esta seguro de realizar la accion de guardar?"),
-      id = this.state.id;
+    //Confirmación de almacenamiento
+    let conf = window.confirm("¿Esta seguro de realizar la accion de guardar?");
+
     if (conf) {
       //Variables en localStorage
       //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
       //Creamos el body
-      console.log("Enviando datos a API para almacenar");
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+
+      let { id, load, host, token } = this.state,
         url = id
-          ? "http://" + varLocalStorage.host + "/api/orders/" + id
-          : "http://" + varLocalStorage.host + "/api/orders",
+          ? "http://" + host + "/api/orders/" + id
+          : "http://" + host + "/api/orders",
         method = id ? "PUT" : "POST",
         body = {},
         items = [];
@@ -386,14 +393,25 @@ export default class OrderAdd extends Component {
       };
       if (this.state.exam_id) body.exam_id = this.state.exam_id;
       if (this.state.lab_id) body.lab_id = this.state.lab_id;
+
+      //Verificamos campos validos
+
+      //Mandamos señal de procesamiento
+      if (!load) {
+        this.setState({
+          load: true,
+        });
+      }
+
       //Actualiza el pedido o creamos un pedido nuevo según el ID
+      console.log("Enviando datos a API para almacenar");
       fetch(url, {
         method: method,
         body: JSON.stringify(body),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
         .then((res) => {
@@ -417,24 +435,38 @@ export default class OrderAdd extends Component {
                 usuario: data.data.created,
                 date: data.data.created_at,
                 nota: data.data.nota.id,
+                load: false,
               });
             }
-          } else console.log(data.message);
+          } else {
+            window.alert("Error al almacenar el pedido. Intentelo mas tarde");
+            console.error(data.message);
+            this.setState({
+              load: false,
+            });
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+          this.setState({
+            load: false,
+          });
         });
     }
   };
-  getOrder = () => {
-    let id = this.props.match.params.id;
+  getOrder = (id) => {
     if (id > 0) {
       //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-      //Realiza la peticion del usuario seun el id
-      console.log("Descargando datos del pedido");
-      fetch("http://" + varLocalStorage.host + "/api/orders/" + id, {
+      let { host, token } = this.state;
+      //Realiza la peticion del pedido
+      console.log("Solicitando datos a la API");
+      fetch("http://" + host + "/api/orders/" + id, {
         method: "GET",
+        signal: this.signal,
         headers: {
           Accept: "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
         .then((res) => {
@@ -445,24 +477,31 @@ export default class OrderAdd extends Component {
           return res.json();
         })
         .then((data) => {
-          console.log("Mostrando datos del pedido");
-          this.setState({
-            id,
-            session: data.data.session,
-            observaciones: data.data.observaciones,
-            lab_id: data.data.laboratorio ? data.data.laboratorio.id : 0,
-            npedidolab: data.data.folio_lab,
-            ncaja: data.data.caja,
-            mensajes: data.data.mensajes,
-            items: data.data.productos,
-            contact_id: data.data.paciente.id,
-            status: data.data.estado,
-            usuario: data.data.created,
-            exam_id: data.data.examen !== null ? data.data.examen.id : 0,
-            exam: data.data.examen !== null ? data.data.examen : {},
-            date: data.data.created_at,
-            nota: data.data.nota.id,
-          });
+          if (!data.message) {
+            console.log("Mostrando datos del pedido");
+            this.setState({
+              id,
+              session: data.data.session,
+              observaciones: data.data.observaciones,
+              lab_id: data.data.laboratorio ? data.data.laboratorio.id : 0,
+              npedidolab: data.data.folio_lab,
+              ncaja: data.data.caja,
+              mensajes: data.data.mensajes,
+              items: data.data.productos,
+              contact_id: data.data.paciente.id,
+              status: data.data.estado,
+              usuario: data.data.created,
+              exam_id: data.data.examen !== null ? data.data.examen.id : 0,
+              exam: data.data.examen !== null ? data.data.examen : {},
+              date: data.data.created_at,
+              nota: data.data.nota.id,
+            });
+          } else {
+            console.error("Error al cargar el usuario", data.message);
+            this.setState({
+              load: false,
+            });
+          }
         });
     } else {
       this.setState({

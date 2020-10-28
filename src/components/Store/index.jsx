@@ -1,253 +1,111 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import moment from "moment";
+import "moment/locale/es";
+import Header from "../Layouts/headerTable";
 import Filter from "./index_filter";
+import Pagination from "../Layouts/pagination";
+import Actions from "../Layouts/actionsTable";
 
 export default class Store extends Component {
   constructor(props) {
     super(props);
+    //Variables en localStorage
+    let sdd = JSON.parse(localStorage.getItem("OrusStore"));
     this.state = {
       items: {
         data: [],
         meta: {},
       },
       load: true,
-      page: 1,
-      orderby: "cant",
-      order: "desc",
-      search: "",
+      page: sdd ? sdd.page : 1,
+      orderby: sdd ? sdd.orderby : "created_at",
+      order: sdd ? sdd.order : "asc",
+      search: sdd ? sdd.search : "",
+      host: props.data.host,
+      token: props.data.token,
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
   }
-
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
+  }
   componentDidMount() {
-    this.getItems(this.state.page);
+    this.getItems();
+    moment.locale("es");
+    localStorage.setItem(
+      "OrusContacts",
+      JSON.stringify({
+        page: this.state.page,
+        orderby: this.state.orderby,
+        order: this.state.order,
+        search: this.state.search,
+      })
+    );
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {
       console.log("Recargando productos");
-      this.getItems(this.state.page);
+      this.getItems();
+      localStorage.setItem(
+        "OrusContacts",
+        JSON.stringify({
+          page: this.state.page,
+          orderby: this.state.orderby,
+          order: this.state.order,
+          search: this.state.search,
+        })
+      );
     }
   }
 
   render() {
     let { items, load } = this.state,
-      pages = [];
-    if (this.state.items.meta.total > 10) {
-      for (var i = 1; i <= this.state.items.meta.last_page; i++) {
-        pages.push(
-          <li
-            key={i}
-            className={
-              this.state.items.meta.current_page === i
-                ? "page-item disabled"
-                : "page-item"
-            }
-          >
-            <a
-              href="#e"
-              id={i}
-              className="page-link"
-              onClick={this.handleChangePage}
-            >
-              {i}
-            </a>
-          </li>
-        );
-      }
-    }
+      dataHeaders = [
+        { name: "Codigo", type: "code", filter: true },
+        { name: "Marca", type: "brand", filter: true },
+        { name: "Producto", type: "name", filter: true },
+        { name: "PS" },
+        { name: "UND" },
+        { name: "Precio", type: "price", filter: true },
+        { name: "Categoria" },
+        { name: "Actualizado", type: "updated_at", filter: true },
+        { name: "Registrado", type: "created_at", filter: true },
+      ];
+
     return (
       <div className="card card-primary card-outline">
         <div className="card-header">
-          <h3 className="card-title">
-            <i className="ion ion-clipboard mr-1"></i>
-            Productos registrados en almacen
+          <h3 className="card-title text-primary">
+            <i className="fas fa-database mr-1"></i>
+            Productos en almacen
           </h3>
           <div className="card-tools">
-            <div className="btn-group">
-              <a
-                href="#modal"
-                className="btn btn-tool"
-                data-toggle="modal"
-                data-target="#filters"
-              >
-                <i className="fas fa-search"></i>
-              </a>
-            </div>
-            {this.state.items.meta.total > 10 ? (
-              <div className="btn-group">
-                <ul className="pagination pagination-sm">{pages}</ul>
-              </div>
-            ) : (
-              ""
-            )}
+            <Filter
+              search={this.state.search}
+              changeFilters={this.onchangeSearch}
+              handleChangePage={this.handleChangePage}
+            />
+            <Pagination
+              meta={items.meta}
+              handleChangePage={this.handleChangePage}
+            />
           </div>
         </div>
         <div className="card-body table-responsive p-0">
-          <table className="table table-hover table-nowrap">
-            <thead>
-              <tr>
-                <th
-                  onClick={() => {
-                    this.handleOrder("updated_at");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Actualizado
-                  {this.state.orderby === "updated_at" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("code");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                    width: 110,
-                  }}
-                >
-                  Codigo
-                  {this.state.orderby === "code" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("brand");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Marca
-                  {this.state.orderby === "brand" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("name");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Nombre
-                  {this.state.orderby === "name" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("unit");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  PS
-                  {this.state.orderby === "unit" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("cant");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                    width: 60,
-                  }}
-                >
-                  UND
-                  {this.state.orderby === "cant" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("price");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                    width: 90,
-                  }}
-                  className="text-right"
-                >
-                  Precio
-                  {this.state.orderby === "price" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th
-                  onClick={() => {
-                    this.handleOrder("category_id");
-                  }}
-                  style={{
-                    cursor:
-                      this.state.order === "desc" ? "n-resize" : "s-resize",
-                  }}
-                >
-                  Categoria
-                  {this.state.orderby === "category_id" ? (
-                    <span>
-                      &nbsp;
-                      <i className="fas fa-sort text-primary"></i>
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </th>
-                <th className="center">Acciones</th>
-              </tr>
-            </thead>
+          <table className="table table-bordered table-hover table-nowrap">
+            <Header
+              orderby={this.state.orderby}
+              order={this.state.order}
+              data={dataHeaders}
+              actions={true}
+              handleOrder={this.handleOrder}
+            />
             <tbody>
               {load ? (
                 <tr>
-                  <td colSpan="9" className="text-center">
+                  <td colSpan="10" className="text-center">
                     <div className="spinner-border text-primary" role="status">
                       <span className="sr-only">Loading...</span>
                     </div>
@@ -257,21 +115,23 @@ export default class Store extends Component {
                 items.data.map((item) => {
                   return (
                     <tr key={item.id}>
-                      <td>{item.updated_at}</td>
                       <td>
-                        <span className="badge badge-primary">
-                          {item.codigo}
-                        </span>
+                        <span className="text-primary">{item.codigo}</span>
                       </td>
                       <td>{item.marca}</td>
-                      <td>{item.producto}</td>
-                      <td>{item.unidad}</td>
+                      <td>
+                        <Link to={"/almacen/registro/" + item.id}>
+                          <span className="badge badge-primary text-capitalize p-1">
+                            {item.producto}
+                            <i className="fas fa-pencil-alt ml-1"></i>
+                          </span>
+                        </Link>
+                      </td>
+                      <td className="text-right">{item.unidad}</td>
                       <td>
                         <span
                           className={
-                            item.cantidades > 0
-                              ? "badge badge-light"
-                              : "badge badge-danger"
+                            item.cantidades > 0 ? "text-success" : "text-danger"
                           }
                         >
                           {item.cantidades > 0 ? item.cantidades : 0}
@@ -279,34 +139,24 @@ export default class Store extends Component {
                       </td>
                       <td className="text-right">$ {item.precio}</td>
                       <td>{item.categoria.categoria}</td>
-                      <td>
-                        <a
-                          className="btn-flat text-warning"
-                          href="#delete"
-                          onClick={this.handleDelete}
-                          id={item.id}
-                        >
-                          <i className="fas fa-trash" id={item.id}></i>
-                        </a>
-                        &nbsp;&nbsp;&nbsp;
-                        <Link
-                          className="btn-flat blue-text"
-                          to={"/almacen/registro/" + item.id}
-                          onClick={this.changePage}
-                          id="/almacen/registro"
-                        >
-                          <i
-                            className="fas fa-pencil-alt"
-                            id="/almacen/registro"
-                          ></i>
-                        </Link>
+                      <td className="text-capitalize">
+                        {moment(item.updated_at).fromNow()}
                       </td>
+                      <td className="text-capitalize">
+                        {moment(item.created_at).format("LL")}
+                      </td>
+                      <Actions
+                        id={item.id}
+                        item={item.producto}
+                        delete={this.handleDelete}
+                        edit={"/almacen/registro/"}
+                      />
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <th colSpan="9" className="text-center">
+                  <th colSpan="10" className="text-center">
                     No hay datos para mostrar
                   </th>
                 </tr>
@@ -314,35 +164,24 @@ export default class Store extends Component {
             </tbody>
           </table>
         </div>
-        <div className="card-footer clearfix">
+        <div className="card-footer text-right">
           <Link
             to="/almacen/registro"
-            className="btn btn-info float-right"
+            className="btn btn-outline-primary"
             onClick={this.changePage}
             id="/almacen/registro"
           >
-            <i className="fas fa-plus" id="/almacen/registro"></i>
-            &nbsp; Nuevo producto
+            <i className="fas fa-plus mr-1"></i>
+            Nuevo producto
           </Link>
         </div>
-        <Filter
-          search={this.state.search}
-          onChangeValue={this.onchangeSearch}
-          handleFilter={this.handleFilter}
-        />
       </div>
     );
   }
 
-  handleFilter = () => {
+  onchangeSearch = (key, value) => {
     this.setState({
-      load: true,
-      page: 1,
-    });
-  };
-  onchangeSearch = (search) => {
-    this.setState({
-      search,
+      [key]: value,
     });
   };
   handleOrder = (item) => {
@@ -352,82 +191,116 @@ export default class Store extends Component {
       load: true,
     });
   };
-  handleChangePage = (e) => {
-    e.preventDefault();
+  handleChangePage = (id) => {
     this.setState({
-      page: e.target.id,
+      page: id,
       load: true,
     });
   };
   changePage = (e) => {
     this.props.page(e.target.id);
   };
-  handleDelete = (e) => {
-    e.preventDefault();
-    const tr = e.target.parentNode.parentNode.parentNode;
-    tr.classList.add("bg-danger");
-
-    let conf = window.confirm("¿Esta seguro de eliminar el producto?"),
-      id = e.target.id,
-      varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      deleteColor = setInterval(() => {
-        clearInterval(deleteColor);
-        tr.classList.remove("bg-danger");
-      }, 6500);
+  handleDelete = (id, item) => {
+    let conf = window.confirm(
+        "¿Esta seguro de eliminar el producto " + item.toUpperCase() + "?"
+      ),
+      { host, token } = this.state;
 
     if (conf && id) {
-      fetch("http://" + varLocalStorage.host + "/api/store/" + id, {
+      //Mandamos señal de eliminación
+      this.setState({
+        load: true,
+      });
+      //Inicio de proceso de eliminción por API
+      console.log("Solicitud de eliminación por API");
+      fetch("http://" + host + "/api/store/" + id, {
         method: "DELETE",
+        signal: this.signal,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
+        .then((res) => {
+          if (!res.ok) {
+            window.alert("El contacto no puede ser eliminado");
+            console.error(res);
+          }
+          return res.json();
+        })
         .then((data) => {
-          console.log("Eliminando producto");
-          if (data.ok && data.status === 204) {
-            this.setState({
-              load: true,
-            });
+          if (!data.message) {
+            console.log("Producto eliminado");
+            this.getItems();
+            window.alert("Producto eliminado con exito");
           } else {
-            window.alert(
-              data.statusText +
-                "\nEl producto tiene lotes registrados, no se puede eliminar"
-            );
+            console.error("Error al eliminar el producto", data.message);
+            this.setState({
+              load: false,
+            });
           }
         })
         .catch((e) => {
-          console.log(e);
+          console.error(e);
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          this.setState({
+            load: false,
+          });
         });
     }
   };
-  getItems(page) {
-    //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/store",
-      orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
-      search = this.state.search ? `&search=${this.state.search}` : "";
-    page = page * 1 > 0 ? "?page=" + page : "?page=1";
-    //Realiza la peticion de los usuarios
-    fetch(url + page + orderby + search, {
+  getItems() {
+    //Variables
+    let { orderby, order, search, page, host, token, load } = this.state,
+      url = "http://" + host + "/api/store",
+      ordenar = `&orderby=${orderby}&order=${order}`,
+      buscar = search ? `&search=${search}` : "",
+      pagina = page > 0 ? "?page=" + page : "?page=1";
+
+    //Verificamos datos
+
+    //Mandamos señal de carga si no lo he hecho
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
+    //Realiza la peticion de los contactos
+    console.log("Descargando productos de API");
+    fetch(url + pagina + ordenar + buscar, {
       method: "GET",
+      signal: this.signal,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
+        Authorization: "Bearer " + token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          console.error(res);
+        }
+        return res.json();
+      })
       .then((data) => {
-        console.log("Descargando lista de productos");
-        this.setState({
-          items: data,
-          load: false,
-        });
+        if (!data.message) {
+          console.log("Almacenando productos");
+          this.setState({
+            items: data,
+            load: false,
+          });
+        } else {
+          console.error("Error en la descarga de productos", data.message);
+          this.setState({
+            load: false,
+          });
+        }
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
+        window.alert("Ups!\n Hubo un error, intentelo mas tarde");
         this.setState({
           load: false,
         });

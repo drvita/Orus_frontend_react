@@ -189,10 +189,10 @@ export default class Main extends Component {
           })
           .then((data) => {
             if (data.data) {
-              console.log("Loggin realizado con exito");
+              console.log("Loggin: realizado con exito");
               this.props.loginFunction(data);
             } else {
-              console.error("Login status fetch:", data);
+              console.error("Login: Sin acceso", data);
               if (data.message) window.alert(data.message);
               if (data.errors) window.alert(data.errors);
               this.setState({

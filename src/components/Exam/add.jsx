@@ -10,6 +10,7 @@ import Agudeza from "./agudezaExam";
 import Diagnostico from "./diagnosticoExam";
 import Graduacion from "./graduacionExam";
 import Observaciones from "./observacionesExam";
+import Chat from "../Layouts/messenger";
 
 export default class ExamAdd extends Component {
   constructor(props) {
@@ -106,11 +107,12 @@ export default class ExamAdd extends Component {
   }
 
   render() {
-    let { contact_id } = this.state;
+    let { contact_id, id } = this.state,
+      { data } = this.props;
 
     return (
       <form className="row">
-        <div className="col-md-4">
+        <div className="col-md-3">
           <SearchContact
             contact={this.state.contact_id}
             edad={this.state.edad}
@@ -125,8 +127,11 @@ export default class ExamAdd extends Component {
               update={true}
             />
           ) : null}
+          {contact_id && id ? (
+            <Chat data={data} table="exams" idRow={id} />
+          ) : null}
         </div>
-        <div className="col-md-8">
+        <div className="col-md-7">
           <div className="card card-info card-outline">
             <div className="card-header">
               <h3 className="card-title">

@@ -68,7 +68,7 @@ export default class OrderAdd extends Component {
 
     return (
       <div className="row">
-        <div className="col-4">
+        <div className="col-3">
           <SearchContact
             contact={this.state.contact_id}
             edad={this.state.edad}
@@ -87,7 +87,7 @@ export default class OrderAdd extends Component {
             </div>
           ) : null}
         </div>
-        <div className="col">
+        <div className="col-6">
           <div className="card card-warning card-outline">
             <div className="card-body">
               {contact_id ? (
@@ -329,6 +329,8 @@ export default class OrderAdd extends Component {
               </div>
             </div>
           </div>
+        </div>
+        <div className="col">
           {contact_id && id ? (
             <Chat data={data} table="orders" idRow={id} />
           ) : null}

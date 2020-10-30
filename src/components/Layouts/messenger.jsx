@@ -8,6 +8,7 @@ export default class messenger extends Component {
 
     this.state = {
       messages: [],
+      message: "",
       load: true,
       host: props.data.host,
       token: props.data.token,
@@ -16,10 +17,13 @@ export default class messenger extends Component {
   componentDidMount() {
     this.getMessengers();
   }
+  componentDidUpdate() {
+    window.$("#boxchat").scrollTop(window.$("#boxchat").prop("scrollHeight"));
+  }
 
   render() {
     const { data } = this.props,
-      { messages, load } = this.state,
+      { messages, load, message } = this.state,
       user = data.idUser;
 
     return (
@@ -42,8 +46,16 @@ export default class messenger extends Component {
         ) : messages.length ? (
           <React.Fragment>
             <div className="card-body">
-              <div className="direct-chat-messages">
+              <div className="direct-chat-messages" id="boxchat">
                 {messages.map((message) => {
+                  let avatar = "/img/avatars/avatar5.png";
+
+                  if (message.created_user.rol === 1)
+                    avatar = "/img/avatars/avatar2.png";
+                  if (!message.created_user.rol)
+                    avatar = "/img/avatars/avatar3.png";
+                  if (message.created_user.id === 2)
+                    avatar = "/img/avatars/avatar4.png";
                   return (
                     <div
                       className={
@@ -77,8 +89,8 @@ export default class messenger extends Component {
                         className="direct-chat-img"
                         src={
                           message.created_user.id === 1
-                            ? "/img/OrusBot.png"
-                            : "/img/avatar.png"
+                            ? "/img/avatars/OrusBot.png"
+                            : avatar
                         }
                         alt="message user image1"
                       />
@@ -87,24 +99,6 @@ export default class messenger extends Component {
                   );
                 })}
               </div>
-            </div>
-
-            <div className="card-footer">
-              <form action="#" method="post">
-                <div className="input-group">
-                  <input
-                    type="text"
-                    name="message"
-                    placeholder="Escriba un mensaje ..."
-                    className="form-control"
-                  />
-                  <span className="input-group-append">
-                    <button type="button" className="btn btn-primary">
-                      Enviar
-                    </button>
-                  </span>
-                </div>
-              </form>
             </div>
           </React.Fragment>
         ) : (
@@ -117,10 +111,94 @@ export default class messenger extends Component {
             </div>
           </div>
         )}
+
+        <div className="card-footer">
+          <form action="#" method="post">
+            <div className="input-group">
+              <input
+                type="text"
+                name="message"
+                placeholder="Escriba un mensaje ..."
+                className="form-control"
+                value={message}
+                onChange={this.handleMessege}
+              />
+              <span className="input-group-append">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={this.sendMessenger}
+                  disabled={message.length > 5 ? false : true}
+                >
+                  Enviar
+                </button>
+              </span>
+            </div>
+          </form>
+        </div>
       </div>
     );
   }
 
+  handleMessege = (e) => {
+    let { value, name } = e.target;
+    this.setState({
+      [name]: value.toLowerCase(),
+    });
+  };
+  sendMessenger = () => {
+    const { message, load, host, token } = this.state,
+      { table, idRow } = this.props,
+      url = "http://" + host + "/api/messengers",
+      body = {
+        table,
+        idRow,
+        user: "",
+        message,
+      };
+
+    //Mandamos señal de procesamiento
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
+    console.log("Enviando mensajes a la API");
+    //Realiza la peticion de los contactos
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.data) {
+          console.log("Almacenado mensajes");
+          this.getMessengers();
+        } else {
+          console.error(data.message);
+          this.setState({
+            load: false,
+          });
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+        this.setState({
+          load: false,
+        });
+      });
+  };
   getMessengers = () => {
     //Variables en localStorage
     const { load, host, token } = this.state,
@@ -156,6 +234,7 @@ export default class messenger extends Component {
           console.log("Almacenado mensajes");
           this.setState({
             messages: data.data,
+            message: "",
             load: false,
           });
         } else {

@@ -3,7 +3,11 @@ import { Link } from "react-router-dom";
 
 class Menu extends Component {
   render() {
-    let { companyName, user, active } = this.props;
+    let { companyName, user, active } = this.props,
+      avatar = "/img/avatars/avatar5.png";
+    if (user.rol === 1) avatar = "/img/avatars/avatar2.png";
+    if (!user.rol) avatar = "/img/avatars/avatar3.png";
+    if (user.idUser === 2) avatar = "/img/avatars/avatar4.png";
 
     return (
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
@@ -16,7 +20,7 @@ class Menu extends Component {
         >
           <img
             src="/img/AdminLTELogo.png"
-            alt={companyName + " logo"}
+            alt={companyName + " logo "}
             className="brand-image img-circle elevation-3"
             style={{ opacity: 0.8 }}
           />
@@ -28,14 +32,14 @@ class Menu extends Component {
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
             <div className="image">
               <img
-                src="/img/avatar5.png"
+                src={avatar}
                 className="img-circle elevation-2"
                 alt={user.name}
               />
             </div>
             <div className="info">
               <a href="#end" className="d-block text-capitalize">
-                {user.name}{" "}
+                {user.name}
                 <small className="text-lowercase">({user.username})</small>
                 <br />
                 <span className="badge badge-light">

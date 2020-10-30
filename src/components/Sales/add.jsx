@@ -7,6 +7,7 @@ import Items from "../Order/itemsOrder";
 import Abonos from "./abonos";
 import Print from "./print_sale";
 import EdoCuenta from "./edoCuenta";
+import Chat from "../Layouts/messenger";
 
 export default class SaleAdd extends Component {
   constructor(props) {
@@ -59,14 +60,22 @@ export default class SaleAdd extends Component {
         session,
         load,
         date,
+        order_id,
       } = this.state,
-      pay = subtotal - (descuento + pagado);
+      pay = subtotal - (descuento + pagado),
+      { data } = this.props,
+      chat = order_id ? (
+        <Chat data={data} table="orders" idRow={order_id} />
+      ) : (
+        <Chat data={data} table="sales" idRow={id} />
+      );
+
     this.total = subtotal - descuento;
     pay = pay > 0 ? pay : 0;
     return (
       <React.Fragment>
         <div className="row d-print-none">
-          <div className="col-4">
+          <div className="col-3">
             <SearchContact
               contact={contact_id}
               status={status}
@@ -85,7 +94,7 @@ export default class SaleAdd extends Component {
               />
             ) : null}
           </div>
-          <div className="col">
+          <div className="col-6">
             <div className="card card-success card-outline">
               <div className="card-body">
                 {contact_id ? (
@@ -117,14 +126,14 @@ export default class SaleAdd extends Component {
                             Pedido
                           </span>
                           <strong>
-                            {this.state.order_id ? (
+                            {order_id ? (
                               <Link
-                                to={"/pedidos/registro/" + this.state.order_id}
+                                to={"/pedidos/registro/" + order_id}
                                 onClick={(e) => {
                                   this.changePage("/pedidos/registro");
                                 }}
                               >
-                                {this.state.order_id}
+                                {order_id}
                               </Link>
                             ) : (
                               "--"
@@ -233,6 +242,7 @@ export default class SaleAdd extends Component {
               </div>
             ) : null}
           </div>
+          <div className="col">{contact_id ? chat : null}</div>
         </div>
         <Print
           id="print_sale"

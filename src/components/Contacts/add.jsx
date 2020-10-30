@@ -49,6 +49,7 @@ export default class ContactsAdd extends Component {
     } else {
       //Si existe un usuario previo
       if (
+        data &&
         data.name &&
         data.name.length > 4 &&
         window.confirm(

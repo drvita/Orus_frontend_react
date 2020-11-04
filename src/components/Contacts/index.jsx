@@ -19,11 +19,11 @@ export default class Contacts extends Component {
       },
       load: true,
       page: sdd ? sdd.page : 1,
-      orderby: sdd ? sdd.orderby : "created_at",
-      order: sdd ? sdd.order : "asc",
-      search: sdd ? sdd.search : "",
-      type: sdd ? sdd.type : "",
-      business: sdd ? sdd.business : "",
+      orderby: sdd && sdd.orderby ? sdd.orderby : "created_at",
+      order: sdd && sdd.order ? sdd.order : "asc",
+      search: sdd && sdd.search ? sdd.search : "",
+      type: sdd && sdd.type ? sdd.type : "",
+      business: sdd && sdd.business ? sdd.business : "",
       host: props.data.host,
       token: props.data.token,
     };
@@ -145,14 +145,14 @@ export default class Contacts extends Component {
                         )}
                       </td>
                       <td>
-                        {contact.telefonos[2]
-                          ? contact.telefonos[2]
-                          : contact.telefonos[0]
-                          ? contact.telefonos[0]
+                        {contact.telefonos && contact.telefonos.t_movil
+                          ? contact.telefonos.t_movil
                           : "--"}
                       </td>
                       <td className="text-capitalize">
-                        {contact.domicilio[0] ? contact.domicilio[0] : "--"}
+                        {contact.domicilio && contact.domicilio.calle
+                          ? contact.domicilio.calle
+                          : "--"}
                       </td>
                       <td className="text-center">
                         {contact.f_nacimiento
@@ -221,54 +221,69 @@ export default class Contacts extends Component {
     this.props.page(e.target.id);
   };
   handleDelete = (id, item) => {
-    let conf = window.confirm(
-        "¿Esta seguro de eliminar el contacto " + item.toUpperCase() + "?"
-      ),
-      { host, token } = this.state;
-    //Confirmacion de la eliminación
-    if (conf && id) {
-      //Mandamos señal de eliminación
-      this.setState({
-        load: true,
-      });
-      //Inicio de proceso de eliminción por API
-      console.log("Solicitud de eliminación por API");
-      fetch("http://" + host + "/api/contacts/" + id, {
-        method: "DELETE",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("El contacto no puede ser eliminado");
-            console.error(res);
-          }
-          return res.json();
+    //Confirmación de eliminacion
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar el contacto " + item.toUpperCase() + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result && result.value) {
+        let { host, token } = this.state;
+        //Mandamos señal de eliminación
+        this.setState({
+          load: true,
+        });
+        //Inicio de proceso de eliminción por API
+        console.log("Solicitud de eliminación por API");
+        fetch("http://" + host + "/api/contacts/" + id, {
+          method: "DELETE",
+          signal: this.signal,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
         })
-        .then((data) => {
-          if (!data.message) {
-            console.log("Contacto eliminado");
-            this.getContacts();
-            window.alert("Contacto eliminado con exito");
-          } else {
-            console.error("Error al eliminar el contacto", data.message);
+          .then((res) => {
+            if (!res.ok) {
+              window.Swal.fire(
+                "Error!",
+                "El contacto no puede ser eliminado",
+                "error"
+              );
+              console.error(res);
+              return res.json();
+            } else return null;
+          })
+          .then((data) => {
+            if (!data) {
+              console.log("Contacto eliminado", data);
+              window.Swal.fire(
+                "success!",
+                "Contacto eliminado con exito.",
+                "success"
+              ).then((res) => this.getContacts());
+            } else if (data && data.message) {
+              console.error(data.message);
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+            window.Swal.fire(
+              "Error!",
+              "Ups! Algo salio mal, intentelo mas tarde.",
+              "error"
+            );
             this.setState({
               load: false,
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          this.setState({
-            load: false,
           });
-        });
-    }
+      }
+    });
   };
   getContacts() {
     //Variables
@@ -311,7 +326,11 @@ export default class Contacts extends Component {
     })
       .then((res) => {
         if (!res.ok) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          window.Swal.fire(
+            "Error!",
+            "Ups! Algo salio mal, intentelo mas tarde.",
+            "error"
+          );
           console.error(res);
         }
         return res.json();
@@ -332,7 +351,11 @@ export default class Contacts extends Component {
       })
       .catch((e) => {
         console.error(e);
-        window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+        window.Swal.fire(
+          "Error!",
+          "Ups! Algo salio mal, intentelo mas tarde.",
+          "error"
+        );
         this.setState({
           load: false,
         });

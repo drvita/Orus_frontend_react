@@ -115,63 +115,59 @@ export default class Users extends Component {
                 </tr>
               ) : Object.keys(users.data).length ? (
                 users.data.map((user) => {
-                  if (user.id !== 1) {
-                    return (
-                      <tr key={user.id}>
-                        <th scope="row">
-                          <span className="text-capitalize text-primary">
-                            {user.username}
+                  return (
+                    <tr key={user.id}>
+                      <th scope="row">
+                        <span className="text-capitalize text-primary">
+                          {user.username}
+                        </span>
+                      </th>
+                      <td>
+                        <Link to={"/usuarios/registro/" + user.id}>
+                          <span className="badge badge-primary text-capitalize p-1">
+                            {user.name}
+                            <i className="fas fa-pencil-alt ml-1"></i>
                           </span>
-                        </th>
-                        <td>
-                          <Link to={"/usuarios/registro/" + user.id}>
-                            <span className="badge badge-primary text-capitalize p-1">
-                              {user.name}
-                              <i className="fas fa-pencil-alt ml-1"></i>
+                        </Link>
+                      </td>
+                      <td>{user.email}</td>
+                      <td>
+                        {user.rol > 0 ? (
+                          user.rol === 1 ? (
+                            <span className="text-capitalize text-success">
+                              <i className="fas fa-user-tag mr-2"></i>
+                              Ventas
                             </span>
-                          </Link>
-                        </td>
-                        <td>{user.email}</td>
-                        <td>
-                          {user.rol > 0 ? (
-                            user.rol === 1 ? (
-                              <span className="text-capitalize text-success">
-                                <i className="fas fa-user-tag mr-2"></i>
-                                Ventas
-                              </span>
-                            ) : (
-                              <span className="text-capitalize text-primary">
-                                <i className="fas fa-user-tie mr-2"></i>
-                                Optometrista
-                              </span>
-                            )
                           ) : (
-                            <span className="text-capitalize text-danger">
-                              <i className="fas fa-user-shield mr-2"></i>
-                              Administrador
+                            <span className="text-capitalize text-primary">
+                              <i className="fas fa-user-tie mr-2"></i>
+                              Optometrista
                             </span>
-                          )}
-                        </td>
-                        <td>
-                          {user.session
-                            ? moment(user.session.last_activity).fromNow()
-                            : "--"}
-                        </td>
-                        <td>{moment(user.updated_at).fromNow()}</td>
-                        <td className="text-right">
-                          {moment(user.created_at).format("LL")}
-                        </td>
-                        <Actions
-                          id={user.id}
-                          item={user.username}
-                          delete={this.handleDelete}
-                          edit={"/usuarios/registro/"}
-                        />
-                      </tr>
-                    );
-                  } else {
-                    return false;
-                  }
+                          )
+                        ) : (
+                          <span className="text-capitalize text-danger">
+                            <i className="fas fa-user-shield mr-2"></i>
+                            Administrador
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        {user.session
+                          ? moment(user.session.last_activity).fromNow()
+                          : "--"}
+                      </td>
+                      <td>{moment(user.updated_at).fromNow()}</td>
+                      <td className="text-right">
+                        {moment(user.created_at).format("LL")}
+                      </td>
+                      <Actions
+                        id={user.id}
+                        item={user.username}
+                        delete={this.handleDelete}
+                        edit={"/usuarios/registro/"}
+                      />
+                    </tr>
+                  );
                 })
               ) : (
                 <tr>

@@ -24,7 +24,7 @@ export default class ListAbonos extends Component {
 
   render() {
     let { abonos, total, load } = this.state;
-    let { id, date, contact } = this.props;
+    let { id, date, contact, order, pay, user, sale } = this.props;
 
     return (
       <React.Fragment>
@@ -39,7 +39,7 @@ export default class ListAbonos extends Component {
             </tr>
           </thead>
           <tbody>
-            {abonos.length ? (
+            {abonos.length && !load ? (
               <React.Fragment>
                 {abonos.map((abono) => {
                   return (
@@ -125,11 +125,13 @@ export default class ListAbonos extends Component {
           </tfoot>
         </table>
         <AddAbono
-          pay={this.props.pay}
-          user={this.props.user}
-          saleId={this.props.sale}
-          contactId={this.props.contact}
+          pay={pay}
+          user={user}
+          saleId={sale}
+          contactId={contact}
+          order={order}
           handleChange={this.handleChange}
+          handleLoad={this.handleLoad}
         />
         <Print folio={id} date={date} contact={contact} id="print_pay" />
       </React.Fragment>
@@ -151,11 +153,16 @@ export default class ListAbonos extends Component {
     pri.focus();
     pri.print();
   };
+  handleLoad = (load) => {
+    this.setState({
+      load,
+    });
+  };
   handleChange = (total) => {
-    this.getPayments();
     this.setState({
       total: this.state.total + total,
     });
+    this.getPayments();
   };
   SetMethodPayment = (status) => {
     switch (status) {
@@ -198,6 +205,13 @@ export default class ListAbonos extends Component {
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
       order = "&order=desc",
       sale = "?sale=" + this.props.sale;
+
+    //Mandamos señal de procesamiento
+    if (!this.state.load) {
+      this.setState({
+        load: true,
+      });
+    }
     //Realiza la peticion del usuario seun el id
     console.log("Descargando datos de los pagos");
     fetch("http://" + varLocalStorage.host + "/api/payments" + sale + order, {

@@ -37,7 +37,7 @@ export default class OrderAdd extends Component {
       exam: {},
       status: 0,
       date: Date.now(),
-      load: false,
+      load: true,
       nota: 0,
       host: props.data.host,
       token: props.data.token,
@@ -53,6 +53,10 @@ export default class OrderAdd extends Component {
     if (id) {
       moment.locale("es");
       this.getOrder(id);
+    } else {
+      this.setState({
+        load: false,
+      });
     }
   }
   componentDidUpdate(props, state) {
@@ -63,7 +67,7 @@ export default class OrderAdd extends Component {
   }
 
   render() {
-    let { contact_id, id } = this.state,
+    let { contact_id, id, load, exam_id, items } = this.state,
       { data } = this.props;
 
     return (
@@ -87,10 +91,10 @@ export default class OrderAdd extends Component {
             </div>
           ) : null}
         </div>
-        <div className="col-6">
+        <div className="col">
           <div className="card card-warning card-outline">
             <div className="card-body">
-              {contact_id ? (
+              {contact_id && !load ? (
                 <React.Fragment>
                   <div className="row">
                     <div className="col-2">
@@ -312,15 +316,13 @@ export default class OrderAdd extends Component {
                 </Link>
                 <button
                   className={
-                    this.state.contact_id && this.state.items.length
+                    contact_id && (items.length || exam_id)
                       ? "btn btn-warning"
                       : "btn btn-warning disabled"
                   }
                   onClick={this.handleSave}
                   disabled={
-                    this.state.contact_id && this.state.items.length
-                      ? false
-                      : true
+                    contact_id && (items.length || exam_id) ? false : true
                   }
                 >
                   <i className="fas fa-save mr-1"></i>
@@ -330,11 +332,11 @@ export default class OrderAdd extends Component {
             </div>
           </div>
         </div>
-        <div className="col">
-          {contact_id && id ? (
+        {contact_id && id ? (
+          <div className="col-3">
             <Chat data={data} table="orders" idRow={id} />
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -432,13 +434,7 @@ export default class OrderAdd extends Component {
             ) {
               this.props.history.goBack();
             } else {
-              this.setState({
-                id: data.data.id,
-                usuario: data.data.created,
-                date: data.data.created_at,
-                nota: data.data.nota.id,
-                load: false,
-              });
+              this.getOrder(data.data.id);
             }
           } else {
             window.alert("Error al almacenar el pedido. Intentelo mas tarde");
@@ -496,10 +492,11 @@ export default class OrderAdd extends Component {
               exam_id: data.data.examen !== null ? data.data.examen.id : 0,
               exam: data.data.examen !== null ? data.data.examen : {},
               date: data.data.created_at,
-              nota: data.data.nota.id,
+              nota: data.data.nota ? data.data.nota.id : 0,
+              load: false,
             });
           } else {
-            console.error("Error al cargar el usuario", data.message);
+            console.error("Error al cargar datos del pedido", data.message);
             this.setState({
               load: false,
             });

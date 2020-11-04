@@ -282,119 +282,137 @@ export default class ContactsAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
+    let { validName, validEmail } = this.state;
+
+    //Verificamos campos validos
+    if (!validName) {
+      window.alert("El contacto ya esta registrado");
+      return false;
+    }
+    if (!validEmail) {
+      window.alert("El email ya esta registrado");
+      return false;
+    }
     //Confirmación de almacenamiento
-    let conf = window.confirm("¿Esta seguro de almacenar a este contacto?");
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de almacenar a este contacto?",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result && result.value) {
+        let {
+            id,
+            name,
+            rfc,
+            email,
+            type,
+            birthday,
+            calle,
+            colonia,
+            municipio,
+            estado,
+            cp,
+            t_casa,
+            t_oficina,
+            t_movil,
+            business,
+            load,
+            host,
+            token,
+          } = this.state,
+          //Creamos el body
+          body = {
+            name,
+            rfc,
+            email,
+            type,
+            birthday: business ? "" : birthday,
+            business,
+            domicilio: JSON.stringify({
+              calle,
+              colonia,
+              municipio,
+              estado,
+              cp,
+            }),
+            telnumbers: JSON.stringify({
+              t_casa,
+              t_oficina,
+              t_movil,
+            }),
+          },
+          //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
+          url = id
+            ? "http://" + host + "/api/contacts/" + id
+            : "http://" + host + "/api/contacts",
+          //Actualiza el contacto o creamos el contacto
+          method = id ? "PUT" : "POST";
 
-    if (conf) {
-      let {
-          id,
-          name,
-          validName,
-          rfc,
-          email,
-          validEmail,
-          type,
-          birthday,
-          calle,
-          colonia,
-          municipio,
-          estado,
-          cp,
-          t_casa,
-          t_oficina,
-          t_movil,
-          business,
-          load,
-          host,
-          token,
-        } = this.state,
-        //Creamos el body
-        body = {
-          name,
-          rfc,
-          email,
-          type,
-          birthday: business ? "" : birthday,
-          business,
-          domicilio:
-            calle + "," + colonia + "," + municipio + "," + estado + "," + cp,
-          telnumbers: t_casa + "," + t_oficina + "," + t_movil,
-        },
-        //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-        url = id
-          ? "http://" + host + "/api/contacts/" + id
-          : "http://" + host + "/api/contacts",
-        //Actualiza el contacto o creamos el contacto
-        method = id ? "PUT" : "POST";
-
-      //Verificamos campos validos
-      if (!validName) {
-        window.alert("El contacto ya esta registrado");
-        return false;
-      }
-      if (!validEmail) {
-        window.alert("El email ya esta registrado");
-        return false;
-      }
-
-      //Mandamos señal de procesamiento
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
-      //Enviamos datos al API
-      console.log("Enviando datos a API para almacenar");
-      fetch(url, {
-        method: method,
-        body: JSON.stringify(body),
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          }
-          return res.json();
+        //Mandamos señal de procesamiento
+        if (!load) {
+          this.setState({
+            load: true,
+          });
+        }
+        //Enviamos datos al API
+        console.log("Enviando datos a API para almacenar");
+        fetch(url, {
+          method: method,
+          body: JSON.stringify(body),
+          signal: this.signal,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
         })
-        .then((data) => {
-          if (data.data) {
-            console.log("Contacto almacenado");
-            localStorage.setItem("OrusContactNew", JSON.stringify({}));
-            if (
-              window.confirm(
-                "Contacto almacenado con exito!.\n¿Desea cerrar este contacto?"
-              )
-            ) {
-              this.props.history.goBack();
+          .then((res) => {
+            if (!res.ok) {
+              window.Swal.fire(
+                "Error!",
+                "Ups! Algo salio mal, intentelo mas tarde.",
+                "error"
+              );
+            }
+            return res.json();
+          })
+          .then((data) => {
+            if (data.data) {
+              console.log("Contacto almacenado");
+              localStorage.setItem("OrusContactNew", JSON.stringify({}));
+              window.Swal.fire(
+                "success!",
+                "Contacto almacenado con exito.",
+                "success"
+              ).then((res) => this.props.history.goBack());
             } else {
+              window.Swal.fire(
+                "Error!",
+                "Error al almacenar el contacto. Intentelo mas tarde",
+                "error"
+              );
+              console.error(data.message);
               this.setState({
                 load: false,
-                id: data.data.id,
-                validName: true,
-                validEmail: true,
               });
             }
-          } else {
-            window.alert("Error al almacenar el contacto. Intentelo mas tarde");
-            console.error(data.message);
+          })
+          .catch((e) => {
+            console.error(e);
+            window.Swal.fire(
+              "Error!",
+              "Ups! Algo salio mal, intentelo mas tarde.",
+              "error"
+            );
             this.setState({
               load: false,
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          this.setState({
-            load: false,
           });
-        });
-    }
+      }
+    });
   };
   getUser = (id) => {
     if (id > 0) {
@@ -436,26 +454,16 @@ export default class ContactsAdd extends Component {
               type: data.data.tipo,
               business: data.data.empresa,
               birthday: data.data.f_nacimiento,
-              calle: domicilio[0] ? domicilio[0].replace(/undefined/g, "") : "",
-              colonia: domicilio[1]
-                ? domicilio[1].replace(/undefined/g, "")
-                : "",
-              municipio: domicilio[2]
-                ? domicilio[2].replace(/undefined/g, "")
-                : "",
-              estado: domicilio[3]
-                ? domicilio[3].replace(/undefined/g, "")
-                : "",
-              cp: domicilio[4] ? domicilio[4].replace(/undefined/g, "") : "",
-              t_casa: telefonos[0]
-                ? telefonos[0].replace(/undefined/g, "")
-                : "",
-              t_oficina: telefonos[1]
-                ? telefonos[1].replace(/undefined/g, "")
-                : "",
-              t_movil: telefonos[2]
-                ? telefonos[2].replace(/undefined/g, "")
-                : "",
+              calle: domicilio && domicilio.calle ? domicilio.calle : "",
+              colonia: domicilio && domicilio.colonia ? domicilio.colonia : "",
+              municipio:
+                domicilio && domicilio.municipio ? domicilio.municipio : "",
+              estado: domicilio && domicilio.estado ? domicilio.estado : "",
+              cp: domicilio && domicilio.cp ? domicilio.cp : "",
+              t_casa: telefonos && telefonos.t_casa ? telefonos.t_casa : "",
+              t_oficina:
+                telefonos && telefonos.t_oficina ? telefonos.t_oficina : "",
+              t_movil: telefonos && telefonos.t_movil ? telefonos.t_movil : "",
               validName: true,
               validEmail: true,
               load: false,

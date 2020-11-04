@@ -85,19 +85,19 @@ export default class searchContact extends Component {
                 {nombre}
               </h3>
               <p className="text-muted text-center">
-                {telefonos[2] ? (
-                  telefonos[2]
-                ) : telefonos[0] ? (
-                  telefonos[0]
-                ) : telefonos[1] ? (
-                  telefonos[1]
+                {telefonos.t_movil ? (
+                  telefonos.t_movil
+                ) : telefonos.t_casa ? (
+                  telefonos.t_casa
+                ) : telefonos.t_casa ? (
+                  telefonos.t_casa
                 ) : (
                   <span className="text-danger">Capture el telefono</span>
                 )}
               </p>
               <p className="text-muted text-center">
-                {domicilio[0] ? (
-                  domicilio[0]
+                {domicilio.calle ? (
+                  domicilio.calle
                 ) : (
                   <span className="text-danger">Capture el domicilio</span>
                 )}
@@ -202,9 +202,7 @@ export default class searchContact extends Component {
                   );
                 })}
               </ul>
-            ) : (
-              ""
-            )}
+            ) : null}
           </div>
         </div>
       );

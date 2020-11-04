@@ -145,15 +145,16 @@ export default class AddAbono extends Component {
     //Agregamos parametros de identificación
     body["sale_id"] = this.props.saleId;
     body["contact_id"] = this.props.contactId;
+    body["order_id"] = this.props.order;
 
     if (conf) {
       //Variables en localStorage
-      //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-      //Creamos el body
-      console.log("Enviando datos a API para almacenar abono");
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
 
+      this.props.handleLoad(true);
+
       //Agregamos nuevo abono
+      console.log("Enviando datos a API para almacenar abono");
       fetch("http://" + varLocalStorage.host + "/api/payments", {
         method: "POST",
         body: JSON.stringify(body),

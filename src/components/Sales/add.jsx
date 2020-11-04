@@ -65,9 +65,9 @@ export default class SaleAdd extends Component {
       pay = subtotal - (descuento + pagado),
       { data } = this.props,
       chat = order_id ? (
-        <Chat data={data} table="orders" idRow={order_id} />
+        <Chat data={data} table="orders" idRow={order_id} pagado={pagado} />
       ) : (
-        <Chat data={data} table="sales" idRow={id} />
+        <Chat data={data} table="sales" idRow={id} pagado={pagado} />
       );
 
     this.total = subtotal - descuento;
@@ -94,10 +94,10 @@ export default class SaleAdd extends Component {
               />
             ) : null}
           </div>
-          <div className="col-6">
+          <div className="col">
             <div className="card card-success card-outline">
               <div className="card-body">
-                {contact_id ? (
+                {contact_id && !load ? (
                   <React.Fragment>
                     <div className="row mb-4">
                       <div className="col-2">
@@ -228,13 +228,14 @@ export default class SaleAdd extends Component {
                 <div className="card-body">
                   <h5 className="card-title mb-4">
                     <i className="fas fa-money-bill mr-2"></i>
-                    Abonos
+                    Ultimos Abonos
                   </h5>
                   <Abonos
                     abonos={pagado * 1}
                     sale={id * 1}
                     contact={contact_id}
                     pay={pay * 1}
+                    order={order_id * 1}
                     user={this.props.data.name}
                     handleChange={this.handleChangeInput}
                   />
@@ -242,7 +243,7 @@ export default class SaleAdd extends Component {
               </div>
             ) : null}
           </div>
-          <div className="col">{contact_id ? chat : null}</div>
+          {id && contact_id ? <div className="col-3">{chat}</div> : null}
         </div>
         <Print
           id="print_sale"
@@ -370,7 +371,7 @@ export default class SaleAdd extends Component {
           return res.json();
         })
         .then((data) => {
-          if (data.data) {
+          if (!data.message) {
             console.log("Pedido almacenado");
             if (
               window.confirm(
@@ -406,6 +407,12 @@ export default class SaleAdd extends Component {
   };
   getSales = () => {
     let id = this.props.match.params.id;
+    //Mandamos señal de procesamiento
+    if (!this.state.load) {
+      this.setState({
+        load: true,
+      });
+    }
     if (id > 0) {
       //Variables en localStorage
       let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
@@ -427,21 +434,32 @@ export default class SaleAdd extends Component {
           return res.json();
         })
         .then((data) => {
-          console.log("Almacenando datos de la venta");
-          this.setState({
-            id: data.data.id,
-            session: data.data.session ? data.data.session : this.state.session,
-            items: data.data.productos,
-            descuento: data.data.descuento,
-            subtotal: data.data.subtotal,
-            total: data.data.total,
-            contact_id: data.data.cliente.id,
-            usuario: data.data.created,
-            date: moment(data.data.created_at).format("LL"),
-            status: 1,
-            order_id: data.data.pedido,
-            pagado: data.data.pagado,
-          });
+          if (data.data) {
+            console.log("Almacenando datos de la venta");
+            this.setState({
+              id: data.data.id,
+              session: data.data.session
+                ? data.data.session
+                : this.state.session,
+              items: data.data.productos,
+              descuento: data.data.descuento,
+              subtotal: data.data.subtotal,
+              total: data.data.total,
+              contact_id: data.data.cliente.id,
+              usuario: data.data.created,
+              date: moment(data.data.created_at).format("LL"),
+              status: 1,
+              order_id: data.data.pedido,
+              pagado: data.data.pagado,
+              load: false,
+            });
+          } else {
+            window.alert("Error al descargar la venta. Intentelo mas tarde");
+            console.error(data.message);
+            this.setState({
+              load: false,
+            });
+          }
         });
     } else {
       this.setState({

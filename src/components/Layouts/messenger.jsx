@@ -17,8 +17,12 @@ export default class messenger extends Component {
   componentDidMount() {
     this.getMessengers();
   }
-  componentDidUpdate() {
-    window.$("#boxchat").scrollTop(window.$("#boxchat").prop("scrollHeight"));
+  componentDidUpdate(props, state) {
+    //window.$("#boxchat").scrollTop(window.$("#boxchat").prop("scrollHeight"));
+    if (props.pagado !== this.props.pagado) {
+      console.log("Recargando chat");
+      this.getMessengers();
+    }
   }
 
   render() {

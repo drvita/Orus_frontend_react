@@ -170,11 +170,15 @@ export default class Contacts extends Component {
                       </td>
                       <td>{this.setStatusString(pedido.estado)}</td>
                       <td className="text-right">
-                        <Link to={"/notas/registro/" + pedido.nota.id}>
-                          <span className="badge badge-success">
-                            {pedido.nota.id}
-                          </span>
-                        </Link>
+                        {pedido.nota ? (
+                          <Link to={"/notas/registro/" + pedido.nota.id}>
+                            <span className="badge badge-success">
+                              {pedido.nota.id}
+                            </span>
+                          </Link>
+                        ) : (
+                          "--"
+                        )}
                       </td>
                       <td className="text-capitalize">
                         {moment(pedido.updated_at).fromNow()}

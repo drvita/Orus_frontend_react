@@ -20,7 +20,7 @@ export default class Contacts extends Component {
       load: true,
       page: sdd ? sdd.page : 1,
       orderby: sdd ? sdd.orderby : "created_at",
-      order: sdd ? sdd.order : "asc",
+      order: sdd ? sdd.order : "desc",
       search: sdd ? sdd.search : "",
       type: sdd ? sdd.type : "",
       date: sdd ? sdd.date : "",

@@ -151,80 +151,87 @@ export default class ContactsAdd extends Component {
                 </h3>
               </div>
               <div className="card-body">
-                {load ? (
-                  <div className="text-center">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="row was-validated">
-                    <Personal
-                      id={id}
-                      name={name}
-                      rfc={rfc}
-                      email={email}
-                      type={type}
-                      birthday={birthday}
-                      business={business}
-                      validName={validName}
-                      validEmail={validEmail}
-                      onChange={this.catchInputs}
-                    />
+                <div className="row was-validated">
+                  <Personal
+                    id={id}
+                    name={name}
+                    rfc={rfc}
+                    email={email}
+                    type={type}
+                    birthday={birthday}
+                    business={business}
+                    validName={validName}
+                    validEmail={validEmail}
+                    onChange={this.catchInputs}
+                  />
 
-                    <Domicilio
-                      calle={calle}
-                      colonia={colonia}
-                      municipio={municipio}
-                      estado={estado}
-                      cp={cp}
-                      onChange={this.catchInputs}
-                    />
+                  <Domicilio
+                    calle={calle}
+                    colonia={colonia}
+                    municipio={municipio}
+                    estado={estado}
+                    cp={cp}
+                    onChange={this.catchInputs}
+                  />
 
-                    <Telefono
-                      t_casa={t_casa}
-                      t_movil={t_movil}
-                      t_oficina={t_oficina}
-                      onChange={this.catchInputs}
-                    />
-                  </div>
-                )}
+                  <Telefono
+                    t_casa={t_casa}
+                    t_movil={t_movil}
+                    t_oficina={t_oficina}
+                    onChange={this.catchInputs}
+                  />
+                </div>
               </div>
               <div className="card-footer">
                 <div className="row">
                   <div className="col-md-12">
-                    <div className="btn-group float-right" role="group">
-                      <Link
-                        to="/contactos"
-                        className="btn btn-dark"
-                        onClick={(e) => {
-                          this.changePage("/contactos");
-                        }}
-                      >
-                        <i className="fas fa-ban mr-1"></i>
-                        Cancelar
-                      </Link>
-                      <button
-                        type="submit"
-                        className={
-                          validName &&
-                          validEmail &&
-                          (t_casa || t_oficina || t_movil)
-                            ? "btn btn-danger"
-                            : "btn btn-danger disabled"
-                        }
-                        disabled={
-                          validName &&
-                          validEmail &&
-                          (t_casa || t_oficina || t_movil)
-                            ? ""
-                            : "disabled"
-                        }
-                      >
-                        <i className="fas fa-save mr-1"></i>
-                        Guardar
-                      </button>
-                    </div>
+                    {load ? (
+                      <div className="text-center">
+                        <div
+                          className="spinner-border text-primary"
+                          role="status"
+                        >
+                          <span className="sr-only">Loading...</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="btn-group float-right" role="group">
+                        <Link
+                          to="/contactos"
+                          className="btn btn-dark"
+                          onClick={(e) => {
+                            this.changePage("/contactos");
+                          }}
+                        >
+                          <i
+                            className={
+                              id ? "fas fa-arrow-left mr-2" : "fas fa-ban mr-2"
+                            }
+                          ></i>
+                          <strong>{id ? "Regresar" : "Cancelar"}</strong>
+                        </Link>
+                        <button
+                          type="submit"
+                          className={
+                            validName &&
+                            validEmail &&
+                            (t_casa || t_oficina || t_movil)
+                              ? "btn btn-danger"
+                              : "btn btn-danger disabled"
+                          }
+                          disabled={
+                            validName &&
+                            validEmail &&
+                            (t_casa || t_oficina || t_movil)
+                              ? ""
+                              : "disabled"
+                          }
+                        >
+                          <i className="fas fa-save mr-1"></i>
+                          Guardar
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -259,9 +266,7 @@ export default class ContactsAdd extends Component {
                 }
               />
             </div>
-          ) : (
-            ""
-          )}
+          ) : null}
         </div>
       </form>
     );
@@ -282,7 +287,7 @@ export default class ContactsAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    let { validName, validEmail } = this.state;
+    let { validName, validEmail, id } = this.state;
 
     //Verificamos campos validos
     if (!validName) {
@@ -296,121 +301,107 @@ export default class ContactsAdd extends Component {
     //Confirmación de almacenamiento
     window.Swal.fire({
       title: "Almacenamiento",
-      text: "¿Esta seguro de almacenar a este contacto?",
-      icon: "info",
+      text: id
+        ? "¿Esta seguro de actualizar al contacto?"
+        : "¿Esta seguro de crear un nuevo contacto?",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Guardar",
+      confirmButtonText: id ? "Actualizar" : "Crear",
       cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result && result.value) {
-        let {
-            id,
-            name,
-            rfc,
-            email,
-            type,
-            birthday,
-            calle,
-            colonia,
-            municipio,
-            estado,
-            cp,
-            t_casa,
-            t_oficina,
-            t_movil,
-            business,
-            load,
-            host,
-            token,
-          } = this.state,
-          //Creamos el body
-          body = {
-            name,
-            rfc,
-            email,
-            type,
-            birthday: business ? "" : birthday,
-            business,
-            domicilio: JSON.stringify({
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let {
+              name,
+              rfc,
+              email,
+              type,
+              birthday,
               calle,
               colonia,
               municipio,
               estado,
               cp,
-            }),
-            telnumbers: JSON.stringify({
               t_casa,
               t_oficina,
               t_movil,
-            }),
-          },
-          //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-          url = id
-            ? "http://" + host + "/api/contacts/" + id
-            : "http://" + host + "/api/contacts",
-          //Actualiza el contacto o creamos el contacto
-          method = id ? "PUT" : "POST";
+              business,
+              host,
+              token,
+            } = this.state,
+            //Creamos el body
+            body = {
+              name,
+              rfc,
+              email,
+              type,
+              birthday: business ? "" : birthday,
+              business,
+              domicilio: JSON.stringify({
+                calle,
+                colonia,
+                municipio,
+                estado,
+                cp,
+              }),
+              telnumbers: JSON.stringify({
+                t_casa,
+                t_oficina,
+                t_movil,
+              }),
+            },
+            //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
+            url = id
+              ? "http://" + host + "/api/contacts/" + id
+              : "http://" + host + "/api/contacts",
+            //Actualiza el contacto o creamos el contacto
+            method = id ? "PUT" : "POST";
 
-        //Mandamos señal de procesamiento
-        if (!load) {
-          this.setState({
-            load: true,
-          });
-        }
-        //Enviamos datos al API
-        console.log("Enviando datos a API para almacenar");
-        fetch(url, {
-          method: method,
-          body: JSON.stringify(body),
-          signal: this.signal,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-        })
-          .then((res) => {
-            if (!res.ok) {
+          //Enviamos datos al API
+          console.log("Enviando datos del pedido a la API");
+          return fetch(url, {
+            method: method,
+            body: JSON.stringify(body),
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch: ", e);
               window.Swal.fire(
-                "Error!",
-                "Ups! Algo salio mal, intentelo mas tarde.",
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
                 "error"
               );
-            }
-            return res.json();
-          })
-          .then((data) => {
-            if (data.data) {
-              console.log("Contacto almacenado");
-              localStorage.setItem("OrusContactNew", JSON.stringify({}));
-              window.Swal.fire(
-                "success!",
-                "Contacto almacenado con exito.",
-                "success"
-              ).then((res) => this.props.history.goBack());
-            } else {
-              window.Swal.fire(
-                "Error!",
-                "Error al almacenar el contacto. Intentelo mas tarde",
-                "error"
-              );
-              console.error(data.message);
-              this.setState({
-                load: false,
-              });
-            }
-          })
-          .catch((e) => {
-            console.error(e);
-            window.Swal.fire(
-              "Error!",
-              "Ups! Algo salio mal, intentelo mas tarde.",
-              "error"
-            );
-            this.setState({
-              load: false,
             });
-          });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+        if (data.data) {
+          console.log("Contacto almacenado");
+          localStorage.setItem("OrusContactNew", JSON.stringify({}));
+          window.Swal.fire(
+            id
+              ? "Contacto actualizado con exito"
+              : "Contacto almacenado con exito",
+            "",
+            "success"
+          ).then((res) => this.props.history.goBack());
+        } else {
+          window.Swal.fire("Error", "al almacenar el contacto", "error");
+          console.error("Orus res: ", data.message);
+        }
       }
     });
   };
@@ -426,26 +417,26 @@ export default class ContactsAdd extends Component {
         });
       }
       //Realiza la peticion al API
-      console.log("Descargando datos del contacto");
+      console.log("Descargando datos del contacto del API");
       fetch("http://" + host + "/api/contacts/" + id, {
         method: "GET",
         signal: this.signal,
         headers: {
           Accept: "application/json",
+          "Content-Type": "application/json",
           Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-            console.error(res);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
           }
-          return res.json();
+          return response.json();
         })
         .then((data) => {
-          if (!data.message) {
+          if (data.data) {
             let { domicilio, telefonos } = data.data;
-            console.log("Mostrando datos del contacto");
+            console.log("Almacenando datos del contacto");
             this.setState({
               id: data.data.id,
               name: data.data.nombre,
@@ -469,7 +460,8 @@ export default class ContactsAdd extends Component {
               load: false,
             });
           } else {
-            console.error("Error al cargar el usuario", data.message);
+            console.error("Orus: ", data.message);
+            window.Swal.fire("Error", "Al descargar el contacto", "error");
             this.setState({
               load: false,
             });
@@ -477,6 +469,11 @@ export default class ContactsAdd extends Component {
         })
         .catch((e) => {
           console.error(e);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
           this.setState({
             load: false,
           });

@@ -28,7 +28,8 @@ export default class StoreAdd extends Component {
     this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    this.getItem();
+    let id = this.props.match.params.id;
+    this.getItem(id);
     this.getCategory();
   }
 
@@ -155,7 +156,7 @@ export default class StoreAdd extends Component {
                           className="form-control"
                           placeholder="Marca"
                           name="brand"
-                          value={this.state.brand}
+                          value={this.state.brand ? this.state.brand : ""}
                           onChange={this.catchInputs}
                         />
                       </div>
@@ -324,133 +325,138 @@ export default class StoreAdd extends Component {
         Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          console.error("Error al solicitar categorias");
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-        return res.json();
+        return response.json();
       })
       .then((cat) => {
         if (cat.data) {
-          console.log("almacenando categorias");
+          console.log("descargando categorias");
           this.setState({
             category_list: cat.data,
           });
         } else {
-          console.error(cat.message);
+          console.error("Orus: ", cat.message);
+          window.Swal.fire(
+            "Error",
+            "Error al descargar las categorias",
+            "error"
+          );
         }
       })
-      .catch((e) => {
-        console.log(e);
+      .catch((error) => {
+        console.log("Orus:", error);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
+        this.setState({
+          load: false,
+        });
       });
   };
   handleSave = (e) => {
     e.preventDefault();
-    //Maneja el boton de almacenar
-    let conf = window.confirm("¿Esta seguro de almacenar este producto?");
 
-    if (conf) {
-      let {
-          id,
-          code,
-          codebar,
-          brand,
-          name,
-          unit,
-          cant,
-          price,
-          category_id,
-          token,
-          host,
-          load,
-        } = this.state,
-        body = {
-          code,
-          codebar,
-          brand,
-          name,
-          unit,
-          cant,
-          price,
-          category_id,
-        },
-        url = id
-          ? "http://" + host + "/api/store/" + id
-          : "http://" + host + "/api/store",
-        method = id ? "PUT" : "POST";
+    let { id } = this.state;
 
-      //Verificamos datos del formulario
+    //Verificamos campos validos
 
-      //Mandamos señal de procesamiento
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: id
+        ? "¿Esta seguro de actualizar el producto?"
+        : "¿Esta seguro de crear un nuevo producto?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let {
+              id,
+              code,
+              codebar,
+              brand,
+              name,
+              unit,
+              cant,
+              price,
+              category_id,
+              token,
+              host,
+            } = this.state,
+            body = {
+              code,
+              codebar,
+              brand,
+              name,
+              unit,
+              cant,
+              price,
+              category_id,
+            },
+            url = id
+              ? "http://" + host + "/api/store/" + id
+              : "http://" + host + "/api/store",
+            method = id ? "PUT" : "POST";
 
-      //Actualiza el producto o creamos el producto
-      fetch(url, {
-        method: method,
-        body: JSON.stringify(body),
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.data) {
-            console.log("Producto almacenado");
-            if (
-              window.confirm(
-                "Producto almacenado con exito!.\n¿Desea ir al listado?"
-              )
-            ) {
-              this.props.history.goBack();
-            } else {
-              this.setState({
-                load: false,
-                id: data.data.id,
-              });
-            }
-          } else {
-            window.alert("Error al almacenar el contacto. Intentelo mas tarde");
-            console.error(data.message);
-            this.setState({
-              load: false,
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos del producto a API");
+          return fetch(url, {
+            method: method,
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          this.setState({
-            load: false,
-          });
-        });
-    }
-  };
-  getItem = () => {
-    let id = this.props.match.params.id;
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
 
+        if (data.data) {
+          console.log("Producto almacenada");
+          window.Swal.fire(
+            "Producto guardado con exito",
+            "",
+            "success"
+          ).then((res) => this.props.history.goBack());
+        } else {
+          window.Swal.fire("Error", "al almacenar el producto", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
+  };
+  getItem = (id) => {
     if (id > 0) {
       //Variables
-      let { load, host, token } = this.state;
-
-      //Mandamos señal de carga si no lo he hecho
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
+      let { host, token } = this.state;
       //Realiza la peticion al API
+      console.log("Solicitando datos de producto a la API");
       fetch("http://" + host + "/api/store/" + id, {
         method: "GET",
         signal: this.signal,
@@ -460,16 +466,15 @@ export default class StoreAdd extends Component {
           Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-            console.error(res);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
           }
-          return res.json();
+          return response.json();
         })
         .then((data) => {
-          if (!data.message) {
-            console.log("Mostrando producto");
+          if (data.data) {
+            console.log("Descargando producto");
             this.setState({
               id: data.data.id,
               code: data.data.codigo,
@@ -483,18 +488,32 @@ export default class StoreAdd extends Component {
               load: false,
             });
           } else {
-            console.error("Error al cargar el producto", data.message);
+            console.error("Orus: ", data.message);
+            window.Swal.fire(
+              "Error",
+              "Error en el sistema, comuniquese con el administrador de sistema",
+              "error"
+            );
             this.setState({
               load: false,
             });
           }
         })
-        .catch((e) => {
-          console.error(e);
+        .catch((error) => {
+          console.log("Orus:", error);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
           this.setState({
             load: false,
           });
         });
+    } else {
+      this.setState({
+        load: false,
+      });
     }
   };
 }

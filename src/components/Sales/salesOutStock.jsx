@@ -23,7 +23,9 @@ export default class SalesOutStock extends Component {
     return (
       <div className="card card-primary card-outline">
         <div className="card-header">
-          <h3 className="card-title">Articulos en pedido sin stock</h3>
+          <h3 className="card-title text-primary">
+            Articulos en pedido sin stock
+          </h3>
         </div>
         <div className="card-body">
           <table className="table table-sm">
@@ -79,7 +81,7 @@ export default class SalesOutStock extends Component {
       .then((res) => {
         if (!res.ok && res.status !== 401) {
           window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.log(res);
+          console.error("Orus: ", res);
         }
         return res.json();
       })

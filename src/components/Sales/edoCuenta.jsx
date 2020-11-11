@@ -47,15 +47,15 @@ export default class edoCuenta extends Component {
 
           <div className="card-text row">
             <label className="col-6 p-2">Abonado</label>
-            <h2 className="col text-success p-2 text-right">
+            <h3 className="col text-success p-2 text-right">
               $ {pagado.toFixed(2)}
-            </h2>
+            </h3>
           </div>
           <div className="card-text row">
             <label className="col-6 p-2">Saldo</label>
-            <h2 className="col text-success p-2 text-right">
+            <h3 className="col text-success p-2 text-right">
               $ {pay.toFixed(2)}
-            </h2>
+            </h3>
           </div>
         </div>
       </div>

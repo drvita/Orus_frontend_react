@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 export default class Filter extends Component {
   render() {
@@ -132,8 +133,8 @@ export default class Filter extends Component {
   };
   onClickClean = () => {
     this.props.changeFilters("search", "");
-    this.props.changeFilters("status", "");
-    this.props.changeFilters("date", "");
+    this.props.changeFilters("status", 0);
+    this.props.changeFilters("date", moment(new Date()).format("YYYY-MM-DD"));
     this.setFilters();
   };
   setFilters = () => {

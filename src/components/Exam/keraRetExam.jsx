@@ -30,17 +30,6 @@ export default class KeraRetExam extends Component {
               <div className="col-6">Retinoscopia</div>
             </div>
             <div className="row">
-              <div className="col-3">
-                <i className="fas fa-eye"></i> <label>Izquierdo</label>
-                <input
-                  type="text"
-                  name="keratometriaoi"
-                  maxLength="12"
-                  className="form-control input-xs"
-                  value={this.props.keratometriaoi}
-                  onChange={this.catchInputs}
-                />
-              </div>
               <div className="col-md-3">
                 <i className="fas fa-eye"></i> <label>Derecho</label>
                 <input
@@ -49,6 +38,17 @@ export default class KeraRetExam extends Component {
                   maxLength="12"
                   className="form-control input-xs"
                   value={this.props.keratometriaod}
+                  onChange={this.catchInputs}
+                />
+              </div>
+              <div className="col-3">
+                <i className="fas fa-eye"></i> <label>Izquierdo</label>
+                <input
+                  type="text"
+                  name="keratometriaoi"
+                  maxLength="12"
+                  className="form-control input-xs"
+                  value={this.props.keratometriaoi}
                   onChange={this.catchInputs}
                 />
               </div>

@@ -67,16 +67,16 @@ export default class OrderAdd extends Component {
   }
 
   render() {
-    let { contact_id, id, load, exam_id, items } = this.state,
+    let { contact_id, id, load, items, nota, status } = this.state,
       { data } = this.props;
 
     return (
       <div className="row">
         <div className="col-3">
           <SearchContact
-            contact={this.state.contact_id}
+            contact={contact_id}
             edad={this.state.edad}
-            status={this.state.status}
+            status={nota ? true : status}
             getIdContact={this.getIdContact}
             changePage={this.changePage}
           />
@@ -145,7 +145,7 @@ export default class OrderAdd extends Component {
                         <span className="badge badge-pill badge-warning mx-2">
                           Fecha
                         </span>
-                        <strong>{moment(this.state.date).format("LL")}</strong>
+                        <strong>{moment(this.state.date).format("ll")}</strong>
                       </div>
                     </div>
                   </div>
@@ -316,14 +316,12 @@ export default class OrderAdd extends Component {
                 </Link>
                 <button
                   className={
-                    contact_id && (items.length || exam_id)
+                    contact_id && items.length
                       ? "btn btn-warning"
                       : "btn btn-warning disabled"
                   }
                   onClick={this.handleSave}
-                  disabled={
-                    contact_id && (items.length || exam_id) ? false : true
-                  }
+                  disabled={contact_id && items.length ? false : true}
                 >
                   <i className="fas fa-save mr-1"></i>
                   <strong>Guardar</strong>
@@ -357,108 +355,107 @@ export default class OrderAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    //Confirmación de almacenamiento
-    let conf = window.confirm("¿Esta seguro de realizar la accion de guardar?");
+    let { id } = this.state;
 
-    if (conf) {
-      //Variables en localStorage
-      //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-      //Creamos el body
+    //Verificamos campos validos
 
-      let { id, load, host, token } = this.state,
-        url = id
-          ? "http://" + host + "/api/orders/" + id
-          : "http://" + host + "/api/orders",
-        method = id ? "PUT" : "POST",
-        body = {},
-        items = [];
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: id
+        ? "¿Esta seguro de actualizar el pedido?"
+        : "¿Esta seguro de crear un nuevo pedido?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let { host, token } = this.state,
+            url = id
+              ? "http://" + host + "/api/orders/" + id
+              : "http://" + host + "/api/orders",
+            method = id ? "PUT" : "POST",
+            body = {},
+            items = [];
 
-      this.state.items.map((item) => {
-        items.push({
-          cant: item.cantidad,
-          price: item.precio,
-          subtotal: item.subtotal,
-          inStorage: item.inStorage,
-          session: item.session,
-          out: item.out,
-          store_items_id: item.store_items_id,
-        });
-        return false;
-      });
-      body = {
-        session: this.state.session,
-        observaciones: this.state.observaciones,
-        npedidolab: this.state.npedidolab,
-        ncaja: this.state.ncaja,
-        contact_id: this.state.contact_id,
-        status: this.state.status,
-        items: JSON.stringify(items),
-        mensajes: JSON.stringify(this.state.mensajes),
-      };
-      if (this.state.exam_id) body.exam_id = this.state.exam_id;
-      if (this.state.lab_id) body.lab_id = this.state.lab_id;
-
-      //Verificamos campos validos
-
-      //Mandamos señal de procesamiento
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
-
-      //Actualiza el pedido o creamos un pedido nuevo según el ID
-      console.log("Enviando datos a API para almacenar");
-      fetch(url, {
-        method: method,
-        body: JSON.stringify(body),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.data) {
-            console.log("Pedido almacenado");
-            if (
-              window.confirm(
-                "Pedido almacenado con exito!.\n¿Desea cerrar este contacto?"
-              )
-            ) {
-              this.props.history.goBack();
-            } else {
-              this.getOrder(data.data.id);
-            }
-          } else {
-            window.alert("Error al almacenar el pedido. Intentelo mas tarde");
-            console.error(data.message);
-            this.setState({
-              load: false,
+          this.state.items.map((item) => {
+            items.push({
+              cant: item.cantidad,
+              price: item.precio,
+              subtotal: item.subtotal,
+              inStorage: item.inStorage,
+              session: item.session,
+              out: item.out,
+              store_items_id: item.store_items_id,
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          this.setState({
-            load: false,
+            return false;
           });
-        });
-    }
+          body = {
+            session: this.state.session,
+            observaciones: this.state.observaciones,
+            npedidolab: this.state.npedidolab,
+            ncaja: this.state.ncaja,
+            contact_id: this.state.contact_id,
+            status: this.state.status,
+            items: JSON.stringify(items),
+            mensajes: JSON.stringify(this.state.mensajes),
+          };
+          if (this.state.exam_id) body.exam_id = this.state.exam_id;
+          if (this.state.lab_id) body.lab_id = this.state.lab_id;
+
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos a API para almacenar");
+          return fetch(url, {
+            method: method,
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
+            });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+
+        if (data.data) {
+          console.log("Pedido almacenada");
+          window.Swal.fire(
+            "Pedido guardado con exito",
+            "",
+            "success"
+          ).then((res) => this.props.history.goBack());
+        } else {
+          window.Swal.fire("Error", "al almacenar el pedido", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
   getOrder = (id) => {
     if (id > 0) {
-      //Variables en localStorage
+      //Variables en state
       let { host, token } = this.state;
       //Realiza la peticion del pedido
-      console.log("Solicitando datos a la API");
+      console.log("Solicitando datos de pedido a la API");
       fetch("http://" + host + "/api/orders/" + id, {
         method: "GET",
         signal: this.signal,
@@ -467,12 +464,11 @@ export default class OrderAdd extends Component {
           Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.log(res);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
           }
-          return res.json();
+          return response.json();
         })
         .then((data) => {
           if (!data.message) {
@@ -496,11 +492,27 @@ export default class OrderAdd extends Component {
               load: false,
             });
           } else {
-            console.error("Error al cargar datos del pedido", data.message);
+            console.error("Orus: ", data.message);
+            window.Swal.fire(
+              "Error",
+              "Error al descargar los pedidos",
+              "error"
+            );
             this.setState({
               load: false,
             });
           }
+        })
+        .catch((error) => {
+          console.log("Orus:", error);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
+          this.setState({
+            load: false,
+          });
         });
     } else {
       this.setState({

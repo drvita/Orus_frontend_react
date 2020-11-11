@@ -44,11 +44,7 @@ export default class Dashboard extends Component {
         </div>
         {!data.rol ? (
           <div className="col-3">
-            <div className="card">
-              <div className="card-body bg-light">
-                <DateUser data={data} changeState={this.changeState} />
-              </div>
-            </div>
+            <DateUser data={data} changeState={this.changeState} />
             <BoxCut caja={caja} ventas={ventas} />
           </div>
         ) : null}

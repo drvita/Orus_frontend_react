@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from "moment";
-import "moment/locale/es";
 
 export default class AddAbono extends Component {
   constructor(props) {
@@ -139,50 +138,80 @@ export default class AddAbono extends Component {
 
   handlePay = (e) => {
     e.preventDefault();
-    //Maneja el boton de almacenar
-    let conf = window.confirm("¿Esta seguro de realizar el abono?"),
-      body = this.state;
-    //Agregamos parametros de identificación
-    body["sale_id"] = this.props.saleId;
-    body["contact_id"] = this.props.contactId;
-    body["order_id"] = this.props.order;
 
-    if (conf) {
-      //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+    //Verificamos campos validos
 
-      this.props.handleLoad(true);
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de realizar el abono?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let body = this.state,
+            ls = JSON.parse(localStorage.getItem("OrusSystem")),
+            url = "http://" + ls.host + "/api/payments";
 
-      //Agregamos nuevo abono
-      console.log("Enviando datos a API para almacenar abono");
-      fetch("http://" + varLocalStorage.host + "/api/payments", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.data) {
-            console.log("Abono almacenado");
-            this.props.handleChange(this.state.total);
-            this.setState({
-              metodopago: 1,
-              total: 0,
-              banco: "",
-              auth: "",
+          //Agregamos parametros de identificación
+          body["sale_id"] = this.props.saleId;
+          body["contact_id"] = this.props.contactId;
+          body["order_id"] = this.props.order;
+
+          //this.props.handleLoad(true);
+
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos del pago a API para almacenar");
+          return fetch(url, {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + ls.token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(response.statusText + "(" + back.message + ")");
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          } else console.log(data.message);
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+
+        if (data.data) {
+          console.log("Abono almacenado");
+          this.props.handleChange(this.state.total);
+          this.setState({
+            metodopago: 1,
+            total: 0,
+            banco: "",
+            auth: "",
+          });
+          window.Swal.fire("Abono guardado con exito", "", "success");
+        } else {
+          window.Swal.fire("Error", "al almacenar el abono", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
   onChangeValue = (e) => {
     let { name, value, type } = e.target;

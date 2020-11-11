@@ -117,28 +117,26 @@ export default class messenger extends Component {
         )}
 
         <div className="card-footer">
-          <form action="#" method="post">
-            <div className="input-group">
-              <input
-                type="text"
-                name="message"
-                placeholder="Escriba un mensaje ..."
-                className="form-control"
-                value={message}
-                onChange={this.handleMessege}
-              />
-              <span className="input-group-append">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={this.sendMessenger}
-                  disabled={message.length > 5 ? false : true}
-                >
-                  Enviar
-                </button>
-              </span>
-            </div>
-          </form>
+          <div className="input-group">
+            <input
+              type="text"
+              name="message"
+              placeholder="Escriba un mensaje ..."
+              className="form-control"
+              value={message}
+              onChange={this.handleMessege}
+            />
+            <span className="input-group-append">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={this.sendMessenger}
+                disabled={message.length > 5 ? false : true}
+              >
+                Enviar
+              </button>
+            </span>
+          </div>
         </div>
       </div>
     );

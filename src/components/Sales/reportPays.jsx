@@ -31,7 +31,7 @@ export default class ReportPay extends Component {
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
-          <h3 className="card-title">
+          <h3 className="card-title text-success">
             {data.rol ? "Mis ventas del dia" : "Ventas del dia"}
           </h3>
         </div>

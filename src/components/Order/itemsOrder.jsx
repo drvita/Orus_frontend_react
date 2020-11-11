@@ -344,7 +344,6 @@ export default class Items extends Component {
       out: 0,
       itemNew: false,
     });
-    console.log("Envio de nuevos productos", items);
     this.props.ChangeInput("items", items);
   };
   handleNewItem = (e) => {

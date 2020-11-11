@@ -25,40 +25,45 @@ export default class DateUser extends Component {
   render() {
     const { date, user, users } = this.state;
     return (
-      <React.Fragment>
-        <div className="form-group row">
-          <label className="col col-form-label">Fecha</label>
-          <div className="col">
-            <input
-              type="date"
-              name="date"
-              className="form-control"
-              value={date}
-              onChange={this.changeState}
-            />
+      <div className="card">
+        <div className="card-body bg-light">
+          <div className="row mb-4">
+            <h5 className="card-title text-secondary">Filtros</h5>
+          </div>
+          <div className="form-group row">
+            <label className="col col-form-label">Fecha</label>
+            <div className="col">
+              <input
+                type="date"
+                name="date"
+                className="form-control"
+                value={date}
+                onChange={this.changeState}
+              />
+            </div>
+          </div>
+          <div className="form-group row">
+            <label className="col col-form-label">Usuario</label>
+            <div className="col">
+              <select
+                name="user"
+                className="form-control"
+                value={user}
+                onChange={this.changeState}
+              >
+                <option value="0">Todos</option>
+                {users.map((user) => {
+                  return (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
           </div>
         </div>
-        <div className="form-group row">
-          <label className="col col-form-label">Usuario</label>
-          <div className="col">
-            <select
-              name="user"
-              className="form-control"
-              value={user}
-              onChange={this.changeState}
-            >
-              <option value="0">Todos</option>
-              {users.map((user) => {
-                return (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-        </div>
-      </React.Fragment>
+      </div>
     );
   }
 

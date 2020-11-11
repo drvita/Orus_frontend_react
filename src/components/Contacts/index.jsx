@@ -20,7 +20,7 @@ export default class Contacts extends Component {
       load: true,
       page: sdd ? sdd.page : 1,
       orderby: sdd && sdd.orderby ? sdd.orderby : "created_at",
-      order: sdd && sdd.order ? sdd.order : "asc",
+      order: sdd && sdd.order ? sdd.order : "desc",
       search: sdd && sdd.search ? sdd.search : "",
       type: sdd && sdd.type ? sdd.type : "",
       business: sdd && sdd.business ? sdd.business : "",
@@ -35,7 +35,6 @@ export default class Contacts extends Component {
   }
   componentDidMount() {
     this.getContacts();
-    moment.locale("es");
     localStorage.setItem(
       "OrusContacts",
       JSON.stringify({
@@ -159,16 +158,12 @@ export default class Contacts extends Component {
                           ? moment(contact.f_nacimiento).format("D/MMM")
                           : "--"}
                       </td>
-                      <td className="text-capitalize">
-                        {moment(contact.updated_at).fromNow()}
-                      </td>
-                      <td className="text-capitalize">
-                        {moment(contact.created_at).format("LL")}
-                      </td>
+                      <td>{moment(contact.updated_at).fromNow()}</td>
+                      <td>{moment(contact.created_at).format("ll")}</td>
                       <Actions
                         id={contact.id}
                         item={contact.nombre}
-                        delete={this.handleDelete}
+                        delete={contact.enUso ? null : this.handleDelete}
                         edit={"/contactos/registro/"}
                       />
                     </tr>
@@ -230,58 +225,54 @@ export default class Contacts extends Component {
       confirmButtonColor: "#d33",
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result && result.value) {
-        let { host, token } = this.state;
-        //Mandamos señal de eliminación
-        this.setState({
-          load: true,
-        });
-        //Inicio de proceso de eliminción por API
-        console.log("Solicitud de eliminación por API");
-        fetch("http://" + host + "/api/contacts/" + id, {
-          method: "DELETE",
-          signal: this.signal,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-        })
-          .then((res) => {
-            if (!res.ok) {
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let { host, token } = this.state;
+
+          //Inicio de proceso de eliminción por API
+          console.log("Solicitud de eliminación por API");
+          fetch("http://" + host + "/api/contacts/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error(e);
               window.Swal.fire(
-                "Error!",
-                "El contacto no puede ser eliminado",
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
                 "error"
               );
-              console.error(res);
-              return res.json();
-            } else return null;
-          })
-          .then((data) => {
-            if (!data) {
-              console.log("Contacto eliminado", data);
-              window.Swal.fire(
-                "success!",
-                "Contacto eliminado con exito.",
-                "success"
-              ).then((res) => this.getContacts());
-            } else if (data && data.message) {
-              console.error(data.message);
-            }
-          })
-          .catch((e) => {
-            console.error(e);
-            window.Swal.fire(
-              "Error!",
-              "Ups! Algo salio mal, intentelo mas tarde.",
-              "error"
-            );
-            this.setState({
-              load: false,
             });
-          });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        window.Swal.fire(
+          "Contacto eliminado con exito",
+          "",
+          "success"
+        ).then((res) => this.getContacts());
+      } else if (result && !result.dismiss) {
+        console.log("Orus: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
       }
     });
   };
@@ -305,8 +296,6 @@ export default class Contacts extends Component {
       tipo = type === "" ? "" : "&type=" + type,
       negocio = business === "" ? "" : "&business=" + business;
 
-    //Verificamos datos
-
     //Mandamos señal de carga si no lo he hecho
     if (!load) {
       this.setState({
@@ -314,7 +303,7 @@ export default class Contacts extends Component {
       });
     }
     //Realiza la peticion de los contactos
-    console.log("Descargando contactos de API");
+    console.log("Descargando contactos del API");
     fetch(url + pagina + ordenar + buscar + tipo + negocio, {
       method: "GET",
       signal: this.signal,
@@ -324,26 +313,22 @@ export default class Contacts extends Component {
         Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          window.Swal.fire(
-            "Error!",
-            "Ups! Algo salio mal, intentelo mas tarde.",
-            "error"
-          );
-          console.error(res);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-        return res.json();
+        return response.json();
       })
       .then((data) => {
-        if (!data.message) {
+        if (data.data) {
           console.log("Almacenando contactos");
           this.setState({
             contacts: data,
             load: false,
           });
         } else {
-          console.error("Error en la descarga de contactos", data.message);
+          console.error("Orus: ", data.message);
+          window.Swal.fire("Error", "Al descargar contactos", "error");
           this.setState({
             load: false,
           });
@@ -352,8 +337,8 @@ export default class Contacts extends Component {
       .catch((e) => {
         console.error(e);
         window.Swal.fire(
-          "Error!",
-          "Ups! Algo salio mal, intentelo mas tarde.",
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
           "error"
         );
         this.setState({

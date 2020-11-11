@@ -157,21 +157,21 @@ export default class GeneralesExam extends Component {
                   <li className="list-group-item">
                     Temporal
                     <br />
-                    <i className="fa fa-eye"></i> Izquierdo
-                    <span className="badge badge-pill">
-                      <input
-                        name="temporaoi"
-                        type="checkbox"
-                        checked={this.props.temporaoi}
-                        onChange={this.catchInputs}
-                      />
-                    </span>
                     <i className="fa fa-eye"></i> Derecho
                     <span className="badge badge-pill">
                       <input
                         name="temporaod"
                         type="checkbox"
                         checked={this.props.temporaod}
+                        onChange={this.catchInputs}
+                      />
+                    </span>
+                    <i className="fa fa-eye"></i> Izquierdo
+                    <span className="badge badge-pill">
+                      <input
+                        name="temporaoi"
+                        type="checkbox"
+                        checked={this.props.temporaoi}
                         onChange={this.catchInputs}
                       />
                     </span>

@@ -118,7 +118,9 @@ export default class Store extends Component {
                       <td>
                         <span className="text-primary">{item.codigo}</span>
                       </td>
-                      <td>{item.marca}</td>
+                      <td className="text-uppercase">
+                        {item.marca ? item.marca : "sin marca"}
+                      </td>
                       <td>
                         <Link to={"/almacen/registro/" + item.id}>
                           <span className="badge badge-primary text-capitalize p-1">
@@ -137,7 +139,7 @@ export default class Store extends Component {
                           {item.cantidades > 0 ? item.cantidades : 0}
                         </span>
                       </td>
-                      <td className="text-right">$ {item.precio}</td>
+                      <td className="text-right">$ {item.precio.toFixed(2)}</td>
                       <td>{item.categoria.categoria}</td>
                       <td className="text-capitalize">
                         {moment(item.updated_at).fromNow()}
@@ -148,7 +150,11 @@ export default class Store extends Component {
                       <Actions
                         id={item.id}
                         item={item.producto}
-                        delete={this.handleDelete}
+                        delete={
+                          item.lotes || item.cantidades
+                            ? null
+                            : this.handleDelete
+                        }
                         edit={"/almacen/registro/"}
                       />
                     </tr>
@@ -201,71 +207,74 @@ export default class Store extends Component {
     this.props.page(e.target.id);
   };
   handleDelete = (id, item) => {
-    let conf = window.confirm(
-        "¿Esta seguro de eliminar el producto " + item.toUpperCase() + "?"
-      ),
-      { host, token } = this.state;
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar el producto " + item.toUpperCase() + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let { host, token } = this.state;
 
-    if (conf && id) {
-      //Mandamos señal de eliminación
-      this.setState({
-        load: true,
-      });
-      //Inicio de proceso de eliminción por API
-      console.log("Solicitud de eliminación por API");
-      fetch("http://" + host + "/api/store/" + id, {
-        method: "DELETE",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("El contacto no puede ser eliminado");
-            console.error(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data.message) {
-            console.log("Producto eliminado");
-            this.getItems();
-            window.alert("Producto eliminado con exito");
-          } else {
-            console.error("Error al eliminar el producto", data.message);
-            this.setState({
-              load: false,
+          //Inicio de proceso de eliminción por API
+          console.log("Solicitud de eliminación de producto por API");
+          return fetch("http://" + host + "/api/store/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          this.setState({
-            load: false,
-          });
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Producto eliminado");
+        window.Swal.fire(
+          "Producto eliminado con exito",
+          "",
+          "success"
+        ).then((res) => this.getItems());
+      } else if (result && !result.dismiss) {
+        console.log("Orus res: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
+      }
+    });
   };
   getItems() {
     //Variables
-    let { orderby, order, search, page, host, token, load } = this.state,
+    let { orderby, order, search, page, host, token } = this.state,
       url = "http://" + host + "/api/store",
       ordenar = `&orderby=${orderby}&order=${order}`,
       buscar = search ? `&search=${search}` : "",
       pagina = page > 0 ? "?page=" + page : "?page=1";
 
-    //Verificamos datos
-
-    //Mandamos señal de carga si no lo he hecho
-    if (!load) {
-      this.setState({
-        load: true,
-      });
-    }
     //Realiza la peticion de los contactos
     console.log("Descargando productos de API");
     fetch(url + pagina + ordenar + buscar, {
@@ -277,30 +286,34 @@ export default class Store extends Component {
         Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.error(res);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-        return res.json();
+        return response.json();
       })
       .then((data) => {
-        if (!data.message) {
+        if (data.data) {
           console.log("Almacenando productos");
           this.setState({
             items: data,
             load: false,
           });
         } else {
-          console.error("Error en la descarga de productos", data.message);
+          console.error("Orus: ", data.message);
+          window.Swal.fire("Error", "Al descargar pedidos", "error");
           this.setState({
             load: false,
           });
         }
       })
       .catch((e) => {
-        console.error(e);
-        window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+        console.error("Orus: " + e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
         this.setState({
           load: false,
         });

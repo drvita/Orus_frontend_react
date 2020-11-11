@@ -34,7 +34,6 @@ export default class UserAdd extends Component {
     let id = this.props.match.params.id;
     if (id) {
       this.getUser(id);
-      moment.locale("es");
     }
   }
 
@@ -267,9 +266,7 @@ export default class UserAdd extends Component {
               </div>
             </div>
           </div>
-        ) : (
-          ""
-        )}
+        ) : null}
       </div>
     );
   }
@@ -285,18 +282,10 @@ export default class UserAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    let {
-      host,
-      token,
-      validUserName,
-      validUserEmail,
-      id,
-      name,
-      username,
-      rol,
-      password,
-      email,
-    } = this.state;
+
+    let { id, validUserName, validUserEmail } = this.state;
+
+    //Verificamos campos validos
     if (!validUserName) {
       window.alert("El nombre de usuario ya esta en uso");
       return false;
@@ -305,83 +294,93 @@ export default class UserAdd extends Component {
       window.alert("El correo ya esta en uso");
       return false;
     }
-    //Maneja el boton de almacenar
-    if (window.confirm("¿Esta seguro de almacenar a este usuario?")) {
-      //Creamos el body
-      let body = {
-        name,
-        username,
-        rol,
-        email,
-      };
-      //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-      let url = id
-          ? "http://" + host + "/api/users/" + id
-          : "http://" + host + "/api/users",
-        method = id ? "PUT" : "POST";
-      //Agregamos el password si no esta vacio
-      if (password.length > 8) body.password = password;
-      //Actualiza el usuario o creamos el usuario
-      this.setState({
-        load: true,
-      });
-      fetch(url, {
-        method: method,
-        body: JSON.stringify(body),
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.log(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.data) {
-            console.log("Usuario almacenado");
-            if (
-              window.confirm(
-                "Usuario almacenado con exito!.\n¿Desea cerrar este contacto?"
-              )
-            ) {
-              this.props.history.goBack();
-            } else {
-              this.setState({
-                load: false,
-                id: data.data.id,
-              });
-            }
-          } else {
-            window.alert("Error al almacenar el usuario. Intentelo mas tarde");
-            console.log(data.message);
-            this.setState({
-              load: false,
+
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: id
+        ? "¿Esta seguro de actualizar el usuario?"
+        : "¿Esta seguro de crear un nuevo usuario?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let {
+              host,
+              token,
+              id,
+              name,
+              username,
+              rol,
+              password,
+              email,
+            } = this.state,
+            body = {
+              name,
+              username,
+              rol,
+              email,
+            },
+            url = id
+              ? "http://" + host + "/api/users/" + id
+              : "http://" + host + "/api/users",
+            method = id ? "PUT" : "POST";
+
+          //Agregamos el password si no esta vacio
+          if (password.length > 8) body.password = password;
+
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos del usuario a API");
+          return fetch(url, {
+            method: method,
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          this.setState({
-            load: false,
-          });
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+
+        if (data.data) {
+          console.log("Usuario almacenada");
+          window.Swal.fire(
+            "Usuario guardado con exito",
+            "",
+            "success"
+          ).then((res) => this.props.history.goBack());
+        } else {
+          window.Swal.fire("Error", "al almacenar el usuario", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
   getUser = (id) => {
     //Variables en localStorage
     let { host, token } = this.state;
     if (id > 0) {
-      //Realiza la peticion del usuario seun el id
-      this.setState({
-        load: true,
-      });
       fetch("http://" + host + "/api/users/" + id, {
         method: "GET",
         signal: this.signal,
@@ -390,15 +389,14 @@ export default class UserAdd extends Component {
           Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.log(res);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
           }
-          return res.json();
+          return response.json();
         })
         .then((data) => {
-          if (!data.message) {
+          if (data.data) {
             console.log("Cargando datos de usuario");
             this.setState({
               id: data.data.id,
@@ -414,18 +412,32 @@ export default class UserAdd extends Component {
               validUserEmail: true,
             });
           } else {
-            console.error("Error al cargar el usuario", data.message);
+            console.error("Orus: ", data.message);
+            window.Swal.fire(
+              "Error",
+              "Error en el sistema, comuniquese con el administrador de sistema",
+              "error"
+            );
             this.setState({
               load: false,
             });
           }
         })
-        .catch((e) => {
-          console.error(e);
+        .catch((error) => {
+          console.log("Orus:", error);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
           this.setState({
             load: false,
           });
         });
+    } else {
+      this.setState({
+        load: false,
+      });
     }
   };
 }

@@ -117,7 +117,7 @@ class StoreLote extends Component {
                           className="btn-flat text-dark"
                           href="#delete"
                           onClick={(e) => {
-                            this.handleDelete(e, lot.id);
+                            this.handleDelete(e, lot.id, lot.factura);
                           }}
                         >
                           <i className="fas fa-trash"></i>
@@ -150,6 +150,7 @@ class StoreLote extends Component {
                       className="form-control text-right"
                       type="number"
                       name="amount"
+                      min="1"
                       value={this.state.amount}
                       onChange={this.catchInputs}
                     />
@@ -248,52 +249,82 @@ class StoreLote extends Component {
   }
   handleSave(e) {
     e.preventDefault();
-    //Validamos campos antes de almacenar
+
+    //Verificamos campos validos
     if (!this.validInputs()) {
       return false;
     }
-    //Maneja el boton de almacenar
-    let conf = window.confirm("¿Esta seguro de almacenar un nuevo lote?");
-    if (conf) {
-      //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-      //Datos del formulario
-      let { id, bill, cost, price, amount } = this.state;
-      //Creamos el body
-      let body = {
-        bill,
-        cost,
-        price,
-        amount,
-        store_items_id: id,
-      };
-      //Creamos lote nuevo
-      fetch("http://" + varLocalStorage.host + "/api/items", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.data) {
-            this.setState({
-              load: true,
-              loteNew: false,
+
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de almacenar un nuevo lote?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let ls = JSON.parse(localStorage.getItem("OrusSystem")),
+            { id, bill, cost, price, amount } = this.state,
+            body = {
+              bill,
+              cost,
+              price,
+              amount,
+              store_items_id: id,
+            };
+
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos del producto a API");
+          return fetch("http://" + ls.host + "/api/items", {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + ls.token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-            this.handelGetLots(this.state.page);
-            this.props.refresh();
-          } else {
-            console.log(data.message);
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+
+        if (data.data) {
+          console.log("Lote almacenada");
+          this.setState({
+            load: true,
+            loteNew: false,
+          });
+          window.Swal.fire("Lote guardado con exito", "", "success").then(
+            (res) => {
+              this.handelGetLots(this.state.page);
+              this.props.refresh();
+            }
+          );
+        } else {
+          window.Swal.fire("Error", "al almacenar el lote", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   }
   handelGetLots(page) {
     //Variables
@@ -309,7 +340,12 @@ class StoreLote extends Component {
         Authorization: "Bearer " + varLocalStorage.token,
       },
     })
-      .then((res) => res.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log("Descargando lotes");
         this.setState({
@@ -317,45 +353,92 @@ class StoreLote extends Component {
           lote: data,
           load: false,
         });
+      })
+      .catch((error) => {
+        console.log("Orus:", error);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
+        this.setState({
+          load: false,
+        });
       });
   }
-  handleDelete = (e, id) => {
+  handleDelete = (e, id, item) => {
     e.preventDefault();
-    const tr = e.target.parentNode.parentNode.parentNode;
-    tr.classList.add("bg-danger");
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar el lote " + item.toUpperCase() + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm && id) {
+          const tr = e.target.parentNode.parentNode.parentNode;
+          tr.classList.add("bg-danger");
 
-    let conf = window.confirm("¿Esta seguro de eliminar este lote?"),
-      varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      deleteColor = setInterval(() => {
-        clearInterval(deleteColor);
-        tr.classList.remove("bg-danger");
-      }, 6500);
-    if (conf && id) {
-      fetch("http://" + varLocalStorage.host + "/api/items/" + id, {
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((data) => {
-          console.log("Eliminando lote");
-          if (data.ok && data.status === 204) {
-            this.setState({
-              load: true,
-              loteNew: false,
+          let ls = JSON.parse(localStorage.getItem("OrusSystem")),
+            deleteColor = setInterval(() => {
+              clearInterval(deleteColor);
+              tr.classList.remove("bg-danger");
+            }, 6500);
+
+          //Inicio de proceso de eliminción por API
+          console.log("Solicitud de eliminación de lote por API");
+          return fetch("http://" + ls.host + "/api/items/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + ls.token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Producto eliminado");
+        this.setState({
+          load: true,
+          loteNew: false,
+        });
+        window.Swal.fire("Lote eliminado con exito", "", "success").then(
+          (res) => {
             this.handelGetLots(this.state.page);
             this.props.refresh();
-          } else {
-            window.alert(data.statusText);
           }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
+        );
+      } else if (result && !result.dismiss) {
+        console.log("Orus res: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
+      }
+    });
   };
 }
 

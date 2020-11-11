@@ -52,13 +52,22 @@ export default class ListAbonos extends Component {
                             {abono.banco ? abono.banco : "--"} /{" "}
                             {abono.Autorizacion ? abono.Autorizacion : "--"}
                           </span>
-                        ) : (
-                          ""
-                        )}
+                        ) : null}
                       </td>
                       <td className="text-right">$ {abono.total.toFixed(2)}</td>
                       <td>{abono.created_user}</td>
                       <td className="text-right">
+                        {moment(new Date()).isSame(abono.created_at, "day") ? (
+                          <button
+                            className="btn btn-black btn-sm"
+                            onClick={() => {
+                              this.delete(abono.id);
+                            }}
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        ) : null}
+
                         <button
                           className="btn btn-outline-light btn-sm"
                           onClick={() => {
@@ -115,9 +124,7 @@ export default class ListAbonos extends Component {
                   >
                     <i className="fas fa-money-bill-wave-alt"></i>
                   </a>
-                ) : (
-                  ""
-                )}
+                ) : null}
                 Total: $ {total.toFixed(2)}
               </th>
               <td colSpan="2"></td>
@@ -138,6 +145,67 @@ export default class ListAbonos extends Component {
     );
   }
 
+  delete = (id) => {
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar el abono?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm && id) {
+          let ls = JSON.parse(localStorage.getItem("OrusSystem"));
+
+          //Inicio de proceso de eliminción por API
+          console.log("Solicitud de eliminación de venta por API");
+          return fetch("http://" + ls.host + "/api/payments/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + ls.token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
+            });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Abono eliminado");
+        window.Swal.fire(
+          "Abono eliminado con exito",
+          "",
+          "success"
+        ).then((res) => this.getPayments());
+      } else if (result && !result.dismiss) {
+        console.log("Orus res: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
+      }
+    });
+  };
   print = (total, date, id) => {
     let content = document.getElementById("print_pay"),
       pri = document.getElementById("ifmcontentstoprint").contentWindow;

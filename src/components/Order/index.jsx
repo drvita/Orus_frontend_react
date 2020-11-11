@@ -20,7 +20,7 @@ export default class Contacts extends Component {
       load: true,
       page: sdd ? sdd.page : 1,
       orderby: sdd ? sdd.orderby : "created_at",
-      order: sdd ? sdd.order : "asc",
+      order: sdd ? sdd.order : "desc",
       search: sdd ? sdd.search : "",
       status: sdd ? sdd.status : "",
       host: props.data.host,
@@ -147,7 +147,7 @@ export default class Contacts extends Component {
                               {pedido.laboratorio
                                 ? pedido.laboratorio.nombre
                                 : "Sin asignar"}
-                            </span>{" "}
+                            </span>
                             {pedido.laboratorio ? "/ " + pedido.folio_lab : ""}
                           </div>
                         ) : pedido.estado === 2 ? (
@@ -180,16 +180,16 @@ export default class Contacts extends Component {
                           "--"
                         )}
                       </td>
-                      <td className="text-capitalize">
-                        {moment(pedido.updated_at).fromNow()}
-                      </td>
-                      <td className="text-capitalize">
-                        {moment(pedido.created_at).format("LL")}
-                      </td>
+                      <td>{moment(pedido.updated_at).fromNow()}</td>
+                      <td>{moment(pedido.created_at).format("ll")}</td>
                       <Actions
                         id={pedido.id}
                         item={pedido.paciente.nombre}
-                        delete={this.handleDelete}
+                        delete={
+                          !pedido.estado && !pedido.nota
+                            ? this.handleDelete
+                            : null
+                        }
                         edit={"/pedidos/registro/"}
                       />
                     </tr>
@@ -265,54 +265,65 @@ export default class Contacts extends Component {
     this.props.page(id);
   };
   handleDelete = (id, name) => {
-    let conf = window.confirm(
-        "¿Esta seguro de eliminar el pedido de " + name.toUpperCase() + "?"
-      ),
-      { host, token } = this.state;
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar el pedido de " + name.toUpperCase() + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let { host, token } = this.state;
 
-    if (conf) {
-      //Mandamos señal de eliminación
-      this.setState({
-        load: true,
-      });
-      //Inicio de proceso de eliminción por API
-      console.log("Solicitud de eliminación por API");
-      fetch("http://" + host + "/api/orders/" + id, {
-        method: "DELETE",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.log(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data.message) {
-            console.log("Pedido eliminado");
-            this.getPedidos();
-            window.alert("Pedido eliminado con exito");
-          } else {
-            console.error("Error al eliminar el pedido", data.message);
-            this.setState({
-              load: false,
+          //Inicio de proceso de eliminción por API
+          console.log("Solicitud de eliminación de order por API");
+          return fetch("http://" + host + "/api/orders/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          this.setState({
-            load: false,
-          });
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Pedido eliminado");
+        window.Swal.fire(
+          "Pedido eliminado con exito",
+          "",
+          "success"
+        ).then((res) => this.getPedidos());
+      } else if (result && !result.dismiss) {
+        console.log("Orus res: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
+      }
+    });
   };
   getPedidos() {
     //Variables en localStorage
@@ -324,6 +335,7 @@ export default class Contacts extends Component {
       pagina = page > 0 ? "?page=" + page : "?page=1";
 
     //Realiza la peticion de los contactos
+    console.log("Descargando ventas de API");
     fetch(url + pagina + ordenar + buscar + estado, {
       method: "GET",
       signal: this.signal,
@@ -333,30 +345,34 @@ export default class Contacts extends Component {
         Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.log(res);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-        return res.json();
+        return response.json();
       })
       .then((data) => {
-        if (!data.message) {
-          console.log("Mostrando datos del pedidos");
+        if (data.data) {
+          console.log("Mostrando lista de pedidos");
           this.setState({
             pedidos: data,
             load: false,
           });
         } else {
-          console.error("Error en la descarga los pedidos", data.message);
+          console.error("Orus: ", data.message);
+          window.Swal.fire("Error", "Al descargar pedidos", "error");
           this.setState({
             load: false,
           });
         }
       })
       .catch((e) => {
-        console.error(e);
-        window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+        console.error("Orus: " + e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
         this.setState({
           load: false,
         });

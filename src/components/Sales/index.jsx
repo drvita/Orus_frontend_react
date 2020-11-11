@@ -143,34 +143,32 @@ export default class Contacts extends Component {
                         </Link>
                       </td>
                       <td className="text-right">
-                        $ {pedido.subtotal ? pedido.subtotal : 0.0}
+                        $ {pedido.subtotal.toFixed(2)}
                       </td>
                       <td className="text-right">
-                        $ {pedido.descuento ? pedido.descuento : 0.0}
+                        $ {pedido.descuento.toFixed(2)}
                       </td>
                       <td className="text-right">
-                        $ {pedido.total ? pedido.total : 0.0}
+                        $ {pedido.total.toFixed(2)}
                       </td>
-                      <td className="text-right">$ {pedido.pagado}</td>
+                      <td className="text-right">
+                        $ {pedido.pagado.toFixed(2)}
+                      </td>
                       <td className="text-right">
                         {pedido.total - pedido.pagado <= 0 ? (
                           <label className="text-success">
                             <i className="fas fa-check"></i>
                           </label>
                         ) : (
-                          "$ " + (pedido.total - pedido.pagado)
+                          "$ " + (pedido.total - pedido.pagado).toFixed(2)
                         )}
                       </td>
-                      <td className="text-capitalize">
-                        {moment(pedido.updated_at).fromNow()}
-                      </td>
-                      <td className="text-capitalize">
-                        {moment(pedido.created_at).format("LL")}
-                      </td>
+                      <td>{moment(pedido.updated_at).fromNow()}</td>
+                      <td>{moment(pedido.created_at).format("ll")}</td>
                       <Actions
                         id={pedido.id}
                         item={pedido.cliente.nombre}
-                        delete={this.handleDelete}
+                        delete={pedido.pagado ? null : this.handleDelete}
                         edit={"/notas/registro/"}
                       />
                     </tr>
@@ -230,54 +228,65 @@ export default class Contacts extends Component {
     this.props.page(id);
   };
   handleDelete = (id, item) => {
-    let conf = window.confirm(
-        "¿Esta seguro de eliminar el pedido de " + item.toUpperCase() + "?"
-      ),
-      { host, token } = this.state;
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar la venta de " + item.toUpperCase() + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let { host, token } = this.state;
 
-    if (conf) {
-      //Mandamos señal de eliminación
-      this.setState({
-        load: true,
-      });
-      //Inicio de proceso de eliminción por API
-      console.log("Solicitud de eliminación por API");
-      fetch("http://" + host + "/api/sales/" + id, {
-        method: "DELETE",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("La venta no puede ser eliminado");
-            console.error(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data.message) {
-            console.log("Venta eliminada");
-            this.getPedidos();
-            window.alert("Venta eliminada con exito");
-          } else {
-            console.error("Error al eliminar la venta", data.message);
-            this.setState({
-              load: false,
+          //Inicio de proceso de eliminción por API
+          console.log("Solicitud de eliminación de venta por API");
+          return fetch("http://" + host + "/api/sales/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          this.setState({
-            load: false,
-          });
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Venta eliminada");
+        window.Swal.fire(
+          "Venta eliminada con exito",
+          "",
+          "success"
+        ).then((res) => this.getPedidos());
+      } else if (result && !result.dismiss) {
+        console.log("Orus res: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
+      }
+    });
   };
   getPedidos = () => {
     //Variables en localStorage

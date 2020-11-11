@@ -158,7 +158,7 @@ export default class Users extends Component {
                       </td>
                       <td>{moment(user.updated_at).fromNow()}</td>
                       <td className="text-right">
-                        {moment(user.created_at).format("LL")}
+                        {moment(user.created_at).format("ll")}
                       </td>
                       <Actions
                         id={user.id}
@@ -212,68 +212,76 @@ export default class Users extends Component {
     });
   };
   handleDelete = (id, item) => {
-    let conf = window.confirm(
-        "¿Esta seguro de eliminar el usuario: " + item.toUpperCase() + "?"
-      ),
-      { host, token } = this.state;
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar el usuario " + item.toUpperCase() + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let { host, token } = this.state;
 
-    if (conf && id) {
-      this.setState({
-        load: true,
-      });
-      fetch("http://" + host + "/api/users/" + id, {
-        method: "DELETE",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.error(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data.message) {
-            console.log("Usuario eliminado");
-            this.getUsers();
-            window.alert("Usuario eliminado con exito");
-          } else {
-            console.error("Error al eliminar el usuario", data.message);
-            this.setState({
-              load: false,
+          //Inicio de proceso de eliminción por API
+          console.log("Solicitud de eliminación de usuario por API");
+          return fetch("http://" + host + "/api/users/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          this.setState({
-            load: false,
-          });
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Usuario eliminado");
+        window.Swal.fire(
+          "Usuario eliminado con exito",
+          "",
+          "success"
+        ).then((res) => this.getUsers());
+      } else if (result && !result.dismiss) {
+        console.log("Orus res: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
+      }
+    });
   };
   getUsers = () => {
-    let { host, token, load } = this.state,
+    let { host, token } = this.state,
       url = "http://" + host + "/api/users",
       orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
       search = this.state.search ? `&search=${this.state.search}` : "",
       rol = this.state.rol.length > 0 ? `&rol=${this.state.rol}` : "",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
 
-    //Mandamos señal de carga si no lo he hecho
-    if (!load) {
-      this.setState({
-        load: true,
-      });
-    }
     //Realiza la peticion de los usuarios
-    console.log("Descargando usuarios de API");
+    console.log("Solicitando usuarios a la API");
     fetch(url + page + orderby + search + rol, {
       method: "GET",
       signal: this.signal,
@@ -283,30 +291,34 @@ export default class Users extends Component {
         Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.error(res);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-        return res.json();
+        return response.json();
       })
       .then((data) => {
-        if (!data.message) {
-          console.log("Almacenando usuarios");
+        if (data.data) {
+          console.log("Descargando usuarios");
           this.setState({
             users: data,
             load: false,
           });
         } else {
-          console.error("Error en la descarga de usuarios", data.message);
+          console.error("Orus: ", data.message);
+          window.Swal.fire("Error", "Al descargar usuarios", "error");
           this.setState({
             load: false,
           });
         }
       })
       .catch((e) => {
-        console.error(e);
-        window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+        console.error("Orus: " + e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
         this.setState({
           load: false,
         });

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import moment from "moment";
 import SearchContact from "../Contacts/searchContactCard";
 import Recomendaciones from "./recomendaciones";
 import Generales from "./generalesExam";
@@ -86,7 +87,9 @@ export default class ExamAdd extends Component {
       d_fcloi_time: "00:00",
       category_id: 0,
       contact_id: 0,
+      order_id: 0,
       status: 0,
+      created_at: "",
       load: false,
       host: props.data.host,
       token: props.data.token,
@@ -107,16 +110,17 @@ export default class ExamAdd extends Component {
   }
 
   render() {
-    let { contact_id, id } = this.state,
-      { data } = this.props;
+    const { contact_id, id, order_id, edad, status, created_at } = this.state,
+      { data } = this.props,
+      toDay = moment(new Date()).isSame(moment(created_at), "day");
 
     return (
       <form className="row">
-        <div className="col-md-3">
+        <div className="col-3">
           <SearchContact
-            contact={this.state.contact_id}
-            edad={this.state.edad}
-            status={this.state.status}
+            contact={contact_id}
+            edad={edad}
+            status={status || !toDay || order_id ? true : false}
             getIdContact={this.getIdContact}
             changePage={this.changePage}
           />
@@ -127,11 +131,8 @@ export default class ExamAdd extends Component {
               update={true}
             />
           ) : null}
-          {contact_id && id ? (
-            <Chat data={data} table="exams" idRow={id} />
-          ) : null}
         </div>
-        <div className="col-md-7">
+        <div className="col">
           <div className="card card-info card-outline">
             <div className="card-header">
               <h3 className="card-title">
@@ -282,8 +283,12 @@ export default class ExamAdd extends Component {
                     this.changePage("/consultorio");
                   }}
                 >
-                  <i className="fas fa-ban mr-1"></i>
-                  <strong>Cancelar</strong>
+                  <i
+                    className={
+                      id ? "fas fa-arrow-left mr-2" : "fas fa-ban mr-2"
+                    }
+                  ></i>
+                  <strong>{id ? "Regresar" : "Cancelar"}</strong>
                 </Link>
                 <button
                   type="button"
@@ -314,6 +319,11 @@ export default class ExamAdd extends Component {
             </div>
           </div>
         </div>
+        {contact_id && order_id ? (
+          <div className="col-3">
+            <Chat data={data} table="orders" idRow={order_id} />
+          </div>
+        ) : null}
       </form>
     );
   }
@@ -349,74 +359,76 @@ export default class ExamAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
+    let { host, token, id } = this.state;
+
+    //Verificar si los datos son validos.
+
     //Confirmación de almacenamiento
-    let conf = window.confirm("¿Esta seguro de realizar la accion?");
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: id
+        ? "¿Esta seguro de actualizar el examen?"
+        : "¿Esta seguro de crear un nuevo examen?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: id ? "Actualizar" : "Crear",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          //Variables
+          let body = this.state,
+            //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
+            url = id
+              ? "http://" + host + "/api/exams/" + id
+              : "http://" + host + "/api/exams",
+            method = id ? "PUT" : "POST";
+          if (!body.category_id) delete body.category_id;
 
-    if (conf) {
-      //Variables
-      let { load, host, token } = this.state,
-        body = this.state,
-        id = this.state.id,
-        //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-        url = id
-          ? "http://" + host + "/api/exams/" + id
-          : "http://" + host + "/api/exams",
-        method = id ? "PUT" : "POST";
-      if (!body.category_id) delete body.category_id;
-
-      //Verificar si los datos son validos.
-
-      //Mandamos señal de procesamiento
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
-      //Crear o modificar examen
-      console.log("Enviando datos del examen a la API");
-      fetch(url, {
-        method: method,
-        signal: this.signal,
-        body: JSON.stringify(body),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.data) {
-            console.log("Contacto almacenado");
-            if (
-              window.confirm(
-                "Examen almacenado con exito!.\n¿Desea cerrar este contacto?"
-              )
-            ) {
-              this.props.history.goBack();
-            } else {
-              this.setState({
-                load: false,
-                id: data.data.id,
-              });
-            }
-          } else {
-            window.alert("Error al almacenar el examen. Intentelo mas tarde");
-            console.error(data.message);
-            this.setState({
-              load: false,
+          //Crear o modificar examen
+          console.log("Enviando datos del examen a la API");
+          return fetch(url, {
+            method: method,
+            signal: this.signal,
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch: ", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+        if (data.data) {
+          console.log("Examen almacenado");
+          window.Swal.fire(
+            id ? "Examen actualizado con exito" : "Examen almacenado con exito",
+            "",
+            "success"
+          ).then((res) => this.props.history.goBack());
+        } else {
+          window.Swal.fire("Error", "al almacenar el examen", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
   getExam = (id) => {
     if (id) {
@@ -430,7 +442,7 @@ export default class ExamAdd extends Component {
         });
       }
       //Realiza la peticion del examen por el id
-      console.log("Descargando datos del contacto");
+      console.log("Descargando datos del examen");
       fetch("http://" + host + "/api/exams/" + id, {
         method: "GET",
         signal: this.signal,
@@ -440,15 +452,14 @@ export default class ExamAdd extends Component {
           Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-            console.error(res);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
           }
-          return res.json();
+          return response.json();
         })
         .then((data) => {
-          if (!data.message) {
+          if (data.data) {
             console.log("Mostrando examenes");
             this.setState({
               contact_id: data.data.paciente.id,
@@ -521,17 +532,28 @@ export default class ExamAdd extends Component {
               d_fclod_time: data.data.d_fclod_time,
               d_fcloi_time: data.data.d_fcloi_time,
               category_id: data.data.category_id,
+              order_id: data.data.order_id ? data.data.order_id : 0,
               status: data.data.estado,
+              created_at: data.data.created_at,
             });
           } else {
-            console.error("Error al cargar el usuario", data.message);
+            console.error("Orus: ", data.message);
+            window.Swal.fire("Error", "Al descargar el examen", "error");
             this.setState({
               load: false,
             });
           }
         })
         .catch((e) => {
-          console.log(e);
+          console.error(e);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
+          this.setState({
+            load: false,
+          });
         });
     }
   };

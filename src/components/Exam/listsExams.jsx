@@ -212,6 +212,8 @@ export default class ListsExams extends Component {
         </React.Fragment>
       );
     } else {
+      let examToday = false,
+        newExam = false;
       return (
         <div className="card card-info card-outline">
           <div className="card-header">
@@ -226,7 +228,7 @@ export default class ListsExams extends Component {
                   <th>Fecha</th>
                   <th>Edad</th>
                   <th>Estado</th>
-                  <th>&nbsp;</th>
+                  <th className="text-center">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -243,25 +245,21 @@ export default class ListsExams extends Component {
                   </tr>
                 ) : Object.keys(data.data).length ? (
                   data.data.map((row) => {
+                    examToday = moment(new Date()).isSame(
+                      moment(row.created_at),
+                      "day"
+                    );
+                    newExam = newExam ? true : examToday;
+                    console.log("Hoy: ", examToday, newExam);
                     return (
                       <tr
                         key={row.id}
-                        className={
-                          moment
-                            .utc(new Date())
-                            .isSame(moment.utc(row.created_at), "day")
-                            ? "table-success"
-                            : ""
-                        }
+                        className={examToday ? "table-success" : ""}
                       >
                         <td>
                           <span className="badge badge-info">{row.id}</span>
                         </td>
-                        <td>
-                          {moment.utc(row.created_at).local().format("L")}
-                          <br />
-                          {moment(new Date()).isSame(row.created_at)}
-                        </td>
+                        <td>{moment(row.created_at).format("L")}</td>
                         <td>{row.edad}</td>
                         <td>
                           {row.estado ? (
@@ -272,7 +270,7 @@ export default class ListsExams extends Component {
                             <span className="badge badge-success">Activo</span>
                           )}
                         </td>
-                        <td className="float-right">
+                        <td className="text-right">
                           <Link
                             className="btn btn-outline-info btn-sm"
                             to={"/consultorio/registro/" + row.id}
@@ -281,22 +279,8 @@ export default class ListsExams extends Component {
                             }}
                             alt="Ver examen"
                           >
-                            <i className="fas fa-share"></i>
+                            <i className="fas fa-share"></i> Ver examen
                           </Link>
-                          {row.estado ? (
-                            <button
-                              className="btn btn-outline-warning btn-sm ml-2"
-                              alt="Crear pedido"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                this.handleNewOrder(row.id);
-                              }}
-                            >
-                              <i className="fas fa-shopping-basket"></i>
-                            </button>
-                          ) : (
-                            ""
-                          )}
                         </td>
                       </tr>
                     );
@@ -312,13 +296,15 @@ export default class ListsExams extends Component {
             </table>
           </div>
           <div className="card-footer">
-            <button
-              type="button"
-              className="btn btn-info float-right"
-              onClick={this.handleNewExam}
-            >
-              <i className="fas fa-plus"></i>
-            </button>
+            {!newExam ? (
+              <button
+                type="button"
+                className="btn btn-info float-right"
+                onClick={this.handleNewExam}
+              >
+                <i className="fas fa-plus"></i>
+              </button>
+            ) : null}
           </div>
         </div>
       );
@@ -340,103 +326,166 @@ export default class ListsExams extends Component {
     this.props.ChangeInput("exam", exam);
   };
   handleNewOrder = (id) => {
-    if (window.confirm("¿Desea agregar un pedido a este examen?")) {
-      //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-        body = {
-          contact_id: this.props.paciente,
-          exam_id: id,
-          items: JSON.stringify([]),
-        };
-      //Crear o modificar examen
-      console.log("Enviando datos del pedido a la API");
-      fetch("http://" + varLocalStorage.host + "/api/orders", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.data) {
-            console.log("Pedido almacenado");
-            this.setState({
-              load: true,
+    //Confirmación de almacenamiento
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de crear una nueva orden?",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Si",
+      cancelButtonText: "No",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          //Variables en localStorage
+          let ls = JSON.parse(localStorage.getItem("OrusSystem")),
+            { paciente } = this.props,
+            body = {
+              contact_id: paciente,
+              exam_id: id,
+              items: JSON.stringify([]),
+            };
+          //Crear o modificar examen
+          console.log("Enviando datos del pedido a la API");
+          return fetch("http://" + ls.host + "/api/orders", {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + ls.token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch: ", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-            this.getExams();
-          } else console.log(data.message);
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+        if (data.data) {
+          console.log("Orden almacenada");
+          localStorage.setItem("OrusContactNew", JSON.stringify({}));
+          window.Swal.fire(
+            "Orden creada con exito",
+            "",
+            "success"
+          ).then((res) => this.getExams());
+        } else {
+          window.Swal.fire("Error", "al almacenar la orden", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
   handleNewExam = (e) => {
     e.preventDefault();
-    //Maneja el boton de almacenar
-    let conf = window.confirm(
-      "¿Desea agregar un nuevo examen a este paciente?"
-    );
-    if (conf) {
-      //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-        body = {
-          contact_id: this.props.paciente,
-          edad: this.props.edad,
-        };
-      //Crear o modificar examen
-      console.log("Enviando datos del examen a la API");
-      fetch("http://" + varLocalStorage.host + "/api/exams", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.data) {
-            console.log("Examen almacenado");
-            this.setState({
-              load: true,
+
+    //Confirmación de almacenamiento
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de crear un nueva examen?",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Si",
+      cancelButtonText: "No",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          //Variables en localStorage
+          let ls = JSON.parse(localStorage.getItem("OrusSystem")),
+            { paciente, edad } = this.props,
+            body = {
+              contact_id: paciente,
+              edad,
+            };
+          //Crear examen
+          console.log("Enviando datos del examen a la API");
+          return fetch("http://" + ls.host + "/api/exams", {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + ls.token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch: ", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-            this.getExams();
-          } else console.log(data.message);
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+        if (data.data) {
+          console.log("Examen almacenado");
+          localStorage.setItem("OrusContactNew", JSON.stringify({}));
+          window.Swal.fire(
+            "Examen creado con exito",
+            "",
+            "success"
+          ).then((res) => this.getExams());
+        } else {
+          window.Swal.fire("Error", "al almacenar el examen", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
   changePage = (e) => {
     this.props.page(e);
   };
   getExams = () => {
-    if (this.props.paciente) {
+    const { load } = this.state;
+    const { paciente } = this.props;
+
+    if (paciente) {
       //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-        url = "http://" + varLocalStorage.host + "/api/exams",
+      let ls = JSON.parse(localStorage.getItem("OrusSystem")),
+        url = "http://" + ls.host + "/api/exams",
         page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1",
         orderby = "&orderby=created_at&order=desc",
-        paciente = "&paciente=" + this.props.paciente;
+        client = "&paciente=" + paciente;
+
+      //Mandamos señal de carga si no lo he hecho
+      if (!load) {
+        this.setState({
+          load: true,
+        });
+      }
 
       //Realiza la peticion de examenes a la API
       console.log("Descargando examenes del contacto");
-      fetch(url + page + paciente + orderby, {
+      fetch(url + page + client + orderby, {
         method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + ls.token,
         },
       })
         .then((res) => {

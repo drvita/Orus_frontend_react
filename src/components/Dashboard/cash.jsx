@@ -32,7 +32,9 @@ export default class Cash extends Component {
     let total = 0;
     return (
       <div className="card card-dark card-outline">
-        <div className="card-header">Movimientos de caja</div>
+        <div className="card-header">
+          <h3 className="card-title text-dark">Movimientos de caja</h3>
+        </div>
         <div className="card-body">
           <table className="table table-sm">
             <thead>
@@ -225,6 +227,7 @@ export default class Cash extends Component {
           this.props.changeState("caja", efectivo);
           this.setState({
             atms: data.data,
+            efectivo: 0,
           });
         }
       })

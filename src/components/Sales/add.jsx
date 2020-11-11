@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import "moment/locale/es";
 import SearchContact from "../Contacts/searchContactCard";
 import Items from "../Order/itemsOrder";
 import Abonos from "./abonos";
@@ -30,7 +29,7 @@ export default class SaleAdd extends Component {
       order_id: 0,
       status: 0,
       usuario: "",
-      date: moment().format("LL"),
+      date: Date.now(),
       load: true,
       pagado: 0,
       host: props.data.host,
@@ -45,7 +44,8 @@ export default class SaleAdd extends Component {
     this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    this.getSales();
+    let id = this.props.match.params.id;
+    this.getSales(id);
   }
 
   render() {
@@ -146,7 +146,7 @@ export default class SaleAdd extends Component {
                           <span className="badge badge-pill badge-success mx-2">
                             Fecha
                           </span>
-                          <strong>{date}</strong>
+                          <strong>{moment(date).format("ll")}</strong>
                         </div>
                       </div>
                     </div>
@@ -307,135 +307,123 @@ export default class SaleAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    //Confirmacion de almacenamiento
-    let conf = window.confirm("¿Esta seguro de almacenar esta venta?");
+    let { id } = this.state;
 
-    if (conf) {
-      //Variables
-      let { id, host, token, load } = this.state,
-        url = id
-          ? "http://" + host + "/api/sales/" + id
-          : "http://" + host + "/api/sales",
-        method = id ? "PUT" : "POST",
-        body = {},
-        items = [];
+    //Verificamos campos validos
 
-      this.state.items.map((item) => {
-        items.push({
-          cant: item.cantidad,
-          price: item.precio,
-          subtotal: item.subtotal,
-          inStorage: item.inStorage,
-          out: item.out,
-          session: item.session,
-          store_items_id: item.store_items_id,
-        });
-        return false;
-      });
-      body = {
-        session: this.state.session,
-        descuento: this.state.descuento,
-        subtotal: this.state.subtotal,
-        total: this.state.subtotal - this.state.descuento,
-        contact_id: this.state.contact_id,
-        order_id: this.state.order_id ? this.state.order_id : "",
-        pagado: this.state.pagado,
-        items: JSON.stringify(items),
-      };
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: id
+        ? "¿Esta seguro de actualizar la venta?"
+        : "¿Esta seguro de crear una nueva venta?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          //Variables
+          let { host, token } = this.state,
+            url = id
+              ? "http://" + host + "/api/sales/" + id
+              : "http://" + host + "/api/sales",
+            method = id ? "PUT" : "POST",
+            body = {},
+            items = [];
 
-      //Verificamos datos
-
-      //Mandamos señal de procesamiento
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
-
-      //Actualiza el pedido o creamos un pedido nuevo según el ID
-      console.log("Enviando datos a API");
-      fetch(url, {
-        method: method,
-        body: JSON.stringify(body),
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data.message) {
-            console.log("Pedido almacenado");
-            if (
-              window.confirm(
-                "Venta almacenada con exito!.\n¿Desea cerrar esta venta?"
-              )
-            ) {
-              this.props.history.goBack();
-            } else {
-              this.setState({
-                id: data.data.id,
-                usuario: data.data.created,
-                date: data.data.created_at,
-                status: 1,
-                load: false,
-              });
-            }
-          } else {
-            window.alert("Error al almacenar la venta. Intentelo mas tarde");
-            console.error(data.message);
-            this.setState({
-              load: false,
+          this.state.items.map((item) => {
+            items.push({
+              cant: item.cantidad,
+              price: item.precio,
+              subtotal: item.subtotal,
+              inStorage: item.inStorage,
+              out: item.out,
+              session: item.session,
+              store_items_id: item.store_items_id,
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-          this.setState({
-            load: false,
+            return false;
           });
-        });
-    }
+          body = {
+            session: this.state.session,
+            descuento: this.state.descuento,
+            subtotal: this.state.subtotal,
+            total: this.state.subtotal - this.state.descuento,
+            contact_id: this.state.contact_id,
+            order_id: this.state.order_id ? this.state.order_id : "",
+            pagado: this.state.pagado,
+            items: JSON.stringify(items),
+          };
+
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos a API para almacenar");
+          return fetch(url, {
+            method: method,
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
+            });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+
+        if (data.data) {
+          console.log("Venta almacenada");
+          window.Swal.fire(
+            "Venta guardada con exito",
+            "",
+            "success"
+          ).then((res) => this.props.history.goBack());
+        } else {
+          window.Swal.fire("Error", "al almacenar la venta", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
-  getSales = () => {
-    let id = this.props.match.params.id;
-    //Mandamos señal de procesamiento
-    if (!this.state.load) {
-      this.setState({
-        load: true,
-      });
-    }
+  getSales = (id) => {
     if (id > 0) {
-      //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-      //Realiza la peticion del usuario seun el id
-      console.log("Descargando datos de la venta");
-      fetch("http://" + varLocalStorage.host + "/api/sales/" + id, {
+      //Variables en state
+      let { host, token } = this.state;
+      //Realiza la peticion del pedido
+      console.log("Solicitando datos de pedido a la API");
+      fetch("http://" + host + "/api/sales/" + id, {
         method: "GET",
         signal: this.signal,
         headers: {
           Accept: "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.log(res);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
           }
-          return res.json();
+          return response.json();
         })
         .then((data) => {
-          if (data.data) {
-            console.log("Almacenando datos de la venta");
+          if (!data.message) {
+            console.log("Mostrando datos del pedido");
             this.setState({
               id: data.data.id,
               session: data.data.session
@@ -447,19 +435,30 @@ export default class SaleAdd extends Component {
               total: data.data.total,
               contact_id: data.data.cliente.id,
               usuario: data.data.created,
-              date: moment(data.data.created_at).format("LL"),
+              date: data.data.created_at,
               status: 1,
               order_id: data.data.pedido,
               pagado: data.data.pagado,
               load: false,
             });
           } else {
-            window.alert("Error al descargar la venta. Intentelo mas tarde");
-            console.error(data.message);
+            console.error("Orus: ", data.message);
+            window.Swal.fire("Error", data.message, "error");
             this.setState({
               load: false,
             });
           }
+        })
+        .catch((error) => {
+          console.log("Orus:", error);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
+          this.setState({
+            load: false,
+          });
         });
     } else {
       this.setState({

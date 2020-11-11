@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import "moment/locale/es";
 import Header from "../Layouts/headerTable";
 import Filter from "./index_filter";
 import Pagination from "../Layouts/pagination";
@@ -10,18 +9,20 @@ import Actions from "../Layouts/actionsTable";
 export default class Exam extends Component {
   constructor(props) {
     super(props);
+    //Variables en localStorage
+    let sdd = JSON.parse(localStorage.getItem("OrusExam"));
     this.state = {
       exams: {
         data: [],
         meta: {},
       },
       load: true,
-      page: 1,
-      orderby: "created_at",
-      order: "desc",
-      search: "",
-      status: 0,
-      date: moment.utc(new Date()).local().format("YYYY-MM-DD"),
+      page: sdd ? sdd.page : 1,
+      orderby: sdd && sdd.orderby ? sdd.orderby : "created_at",
+      order: sdd && sdd.order ? sdd.order : "desc",
+      search: sdd && sdd.search ? sdd.search : "",
+      status: sdd && sdd.status >= 0 ? sdd.status : "",
+      date: sdd && sdd.date ? sdd.date : "",
       host: props.data.host,
       token: props.data.token,
     };
@@ -33,12 +34,33 @@ export default class Exam extends Component {
   }
   componentDidMount() {
     this.getExams();
-    moment.locale("es");
+    localStorage.setItem(
+      "OrusExam",
+      JSON.stringify({
+        page: this.state.page,
+        orderby: this.state.orderby,
+        order: this.state.order,
+        search: this.state.search,
+        status: this.state.status,
+        date: this.state.date,
+      })
+    );
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {
-      console.log("Recargando citas");
+      console.log("Recargando examenes");
       this.getExams();
+      localStorage.setItem(
+        "OrusExam",
+        JSON.stringify({
+          page: this.state.page,
+          orderby: this.state.orderby,
+          order: this.state.order,
+          search: this.state.search,
+          status: this.state.status,
+          date: this.state.date,
+        })
+      );
     }
   }
 
@@ -48,6 +70,12 @@ export default class Exam extends Component {
         { name: "Paciente", type: "name", filter: true },
         { name: "Edad" },
         { name: "Estado" },
+        { name: "Esfera" },
+        { name: "Cilindro" },
+        { name: "Eje" },
+        { name: "Adicion" },
+        { name: "D/P" },
+        { name: "Altura" },
         { name: "Actualizado", type: "updated_at", filter: true },
         { name: "Registrado", type: "created_at", filter: true },
       ];
@@ -85,7 +113,7 @@ export default class Exam extends Component {
             <tbody>
               {load ? (
                 <tr>
-                  <td colSpan="8" className="text-center">
+                  <td colSpan="12" className="text-center">
                     <div className="spinner-border text-primary" role="status">
                       <span className="sr-only">Loading...</span>
                     </div>
@@ -122,12 +150,34 @@ export default class Exam extends Component {
                           <span className="text-success">Activo</span>
                         )}
                       </td>
+                      <td>
+                        {exam.esferaod}/{exam.esferaoi}
+                      </td>
+                      <td>
+                        {exam.cilindrod}/{exam.cilindroi}
+                      </td>
+                      <td>
+                        {exam.ejeod}/{exam.ejeoi}
+                      </td>
+                      <td>
+                        {exam.adiciond}/{exam.adicioni}
+                      </td>
+                      <td>
+                        {exam.dpod}/{exam.dpoi}
+                      </td>
+                      <td>
+                        {exam.alturaod}/{exam.alturaoi}
+                      </td>
                       <td>{moment(exam.created_at).fromNow()}</td>
-                      <td>{moment(exam.updated_at).format("LL")}</td>
+                      <td>{moment(exam.updated_at).format("ll")}</td>
                       <Actions
                         id={exam.id}
                         item={exam.paciente.nombre}
-                        delete={exam.estado ? null : this.handleDelete}
+                        delete={
+                          exam.estado || exam.order_id
+                            ? null
+                            : this.handleDelete
+                        }
                         edit={"/consultorio/registro/"}
                       />
                     </tr>
@@ -135,7 +185,7 @@ export default class Exam extends Component {
                 })
               ) : (
                 <tr>
-                  <th colSpan="8" className="text-center">
+                  <th colSpan="12" className="text-center">
                     No hay datos para mostrar
                   </th>
                 </tr>
@@ -186,55 +236,68 @@ export default class Exam extends Component {
     this.props.page(e.target.id);
   };
   handleDelete = (id, item) => {
-    let conf = window.confirm(
+    //Confirmación de eliminacion
+    window.Swal.fire({
+      title: "Eliminar",
+      text:
         "¿Esta seguro de eliminar el examen del paciente " +
-          item.toUpperCase() +
-          "?"
-      ),
-      { host, token } = this.state;
+        item.toUpperCase() +
+        "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let { host, token } = this.state;
 
-    if (conf) {
-      //Mandamos señal de eliminación
-      this.setState({
-        load: true,
-      });
-      //Inicio de proceso de eliminción por API
-      fetch("http://" + host + "/api/exams/" + id, {
-        method: "DELETE",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.error(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data.message) {
-            console.log("Examen eliminado");
-            this.getExams();
-            window.alert("Examen eliminado con exito");
-          } else {
-            console.error("Error al eliminar el examen", data.message);
-            this.setState({
-              load: false,
+          //Inicio de proceso de eliminción por API
+          return fetch("http://" + host + "/api/exams/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error(e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          this.setState({
-            load: false,
-          });
-        });
-    }
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Examen eliminado");
+        window.Swal.fire(
+          "Examen eliminado con exito",
+          "",
+          "success"
+        ).then((res) => this.getExams());
+      } else if (result && !result.dismiss) {
+        console.log("Orus: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
+      }
+    });
   };
   getExams() {
     //Variables
@@ -272,29 +335,34 @@ export default class Exam extends Component {
         Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.log(res);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-        return res.json();
+        return response.json();
       })
       .then((data) => {
-        if (!data.message) {
+        if (data.data) {
           console.log("Examenes descargados");
           this.setState({
             exams: data,
             load: false,
           });
         } else {
-          console.log(data.message);
+          console.error("Orus: ", data.message);
+          window.Swal.fire("Error", "Al descargar examenes", "error");
           this.setState({
             load: false,
           });
         }
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
         this.setState({
           load: false,
         });

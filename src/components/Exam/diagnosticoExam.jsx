@@ -38,7 +38,7 @@ export default class DiagnosticoExam extends Component {
                   value={this.props.diagnostico}
                   onChange={this.catchInputs}
                 >
-                  <option value="Hemetrope">Hem&eacute;trope</option>
+                  <option value="Emetrope">Em&eacute;trope</option>
                   <option value="hipermetropia">Hipermetrop&iacute;a</option>
                   <option value="hipermetropia-astigmatismo">
                     Hipermetrop&iacute;a y astigmatismo

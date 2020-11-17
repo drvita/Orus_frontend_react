@@ -145,7 +145,7 @@ export default class UserAdd extends Component {
                           required={id ? false : true}
                           minLength="8"
                           maxLength="16"
-                          pattern="^(?=.*[A-Z])(?=.*[!@#$&\.*])(?=.*[0-9])(?=.*[a-z]).{8,16}$"
+                          pattern="^(?=.*[A-Z])(?=.*[!@#$&.*])(?=.*[0-9])(?=.*[a-z]).{8,16}$"
                         />
                       </div>
                     </div>
@@ -287,11 +287,21 @@ export default class UserAdd extends Component {
 
     //Verificamos campos validos
     if (!validUserName) {
-      window.alert("El nombre de usuario ya esta en uso");
+      window.Swal.fire({
+        icon: "error",
+        title: "El nombre de usuario ya esta en uso",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       return false;
     }
     if (!validUserEmail) {
-      window.alert("El correo ya esta en uso");
+      window.Swal.fire({
+        icon: "error",
+        title: "El correo ya esta en uso",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       return false;
     }
 
@@ -303,7 +313,7 @@ export default class UserAdd extends Component {
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#007bff",
-      confirmButtonText: "Guardar",
+      confirmButtonText: id ? "Actualizar" : "Crear",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
@@ -364,12 +374,15 @@ export default class UserAdd extends Component {
         let data = result.value;
 
         if (data.data) {
-          console.log("Usuario almacenada");
-          window.Swal.fire(
-            "Usuario guardado con exito",
-            "",
-            "success"
-          ).then((res) => this.props.history.goBack());
+          console.log("Usuario almacenado");
+          window.Swal.fire({
+            icon: "success",
+            title: id
+              ? "Usuario actualizado con exito"
+              : "Usuario almacenado con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => this.props.history.goBack());
         } else {
           window.Swal.fire("Error", "al almacenar el usuario", "error");
           console.error("Orus res: ", data.message);

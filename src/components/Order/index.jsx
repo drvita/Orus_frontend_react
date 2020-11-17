@@ -34,7 +34,7 @@ export default class Contacts extends Component {
   }
   componentDidMount() {
     this.getPedidos();
-    moment.locale("es");
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
     localStorage.setItem(
       "OrusOrder",
       JSON.stringify({
@@ -310,11 +310,12 @@ export default class Contacts extends Component {
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
         console.log("Pedido eliminado");
-        window.Swal.fire(
-          "Pedido eliminado con exito",
-          "",
-          "success"
-        ).then((res) => this.getPedidos());
+        window.Swal.fire({
+          icon: "success",
+          title: "Pedido eliminado con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getPedidos());
       } else if (result && !result.dismiss) {
         console.log("Orus res: ", result);
         window.Swal.fire(
@@ -327,12 +328,28 @@ export default class Contacts extends Component {
   };
   getPedidos() {
     //Variables en localStorage
-    let { search, status, page, order, orderby, host, token } = this.state,
+    let {
+        search,
+        status,
+        page,
+        order,
+        orderby,
+        host,
+        token,
+        load,
+      } = this.state,
       url = "http://" + host + "/api/orders",
       ordenar = `&orderby=${orderby}&order=${order}`,
       buscar = search ? `&search=${search}` : "",
       estado = status ? "&status=" + status : "",
       pagina = page > 0 ? "?page=" + page : "?page=1";
+
+    //Mandamos señal de carga si no lo he hecho
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
 
     //Realiza la peticion de los contactos
     console.log("Descargando ventas de API");

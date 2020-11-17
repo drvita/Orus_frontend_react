@@ -202,6 +202,7 @@ export default class StoreAdd extends Component {
                           className="form-control text-right"
                           placeholder="Cantidades en existencia"
                           name="cant"
+                          min="0"
                           value={this.state.cant}
                           onChange={this.catchInputs}
                         />
@@ -373,7 +374,7 @@ export default class StoreAdd extends Component {
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#007bff",
-      confirmButtonText: "Guardar",
+      confirmButtonText: id ? "Actualizar" : "Crear",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
@@ -417,11 +418,13 @@ export default class StoreAdd extends Component {
               Authorization: "Bearer " + token,
             },
           })
-            .then((response) => {
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
               if (!response.ok) {
-                throw new Error(response.statusText);
+                throw new Error(back.message);
               }
-              return response.json();
+              return back;
             })
             .catch((e) => {
               console.error("Orus fetch", e);
@@ -439,11 +442,19 @@ export default class StoreAdd extends Component {
 
         if (data.data) {
           console.log("Producto almacenada");
-          window.Swal.fire(
-            "Producto guardado con exito",
-            "",
-            "success"
-          ).then((res) => this.props.history.goBack());
+          window.Swal.fire({
+            icon: "success",
+            title: id
+              ? "Producto actualizado con exito"
+              : "Producto almacenado con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => {
+            this.setState({
+              id: data.data.id,
+            });
+            this.props.history.push(`/almacen/registro/${data.data.id}`);
+          });
         } else {
           window.Swal.fire("Error", "al almacenar el producto", "error");
           console.error("Orus res: ", data.message);

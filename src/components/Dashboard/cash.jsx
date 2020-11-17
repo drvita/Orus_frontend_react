@@ -43,6 +43,7 @@ export default class Cash extends Component {
                 <th>Usuario</th>
                 <th>Tipo</th>
                 <th>Monto</th>
+                <th>D</th>
               </tr>
             </thead>
             <tbody>
@@ -65,12 +66,28 @@ export default class Cash extends Component {
                           ? atm.efectivo.toFixed(2)
                           : (atm.efectivo * -1).toFixed(2)}
                       </td>
+                      <th className="text-right">
+                        <a
+                          href="#delete"
+                          className="text-dark"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            this.deleteAtm(
+                              atm.id,
+                              atm.tipo,
+                              atm.efectivo.toFixed(2)
+                            );
+                          }}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </a>
+                      </th>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center">
+                  <td colSpan="5" className="text-center">
                     No hay datos
                   </td>
                 </tr>
@@ -82,6 +99,7 @@ export default class Cash extends Component {
                   <label>Total</label>
                 </td>
                 <td className="text-right">$ {total.toFixed(2)}</td>
+                <td></td>
               </tr>
             </tfoot>
           </table>
@@ -126,6 +144,70 @@ export default class Cash extends Component {
     );
   }
 
+  deleteAtm = (id, tipo, efectivo) => {
+    efectivo = efectivo > 0 ? efectivo : efectivo * -1;
+    tipo = tipo ? "la ENTRADA" : "el EGRESO";
+
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar " + tipo + " de " + efectivo + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        let { host, token } = this.state;
+
+        if (confirm && efectivo) {
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos ATM a API");
+          return fetch("http://" + host + "/api/atms/" + id, {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
+            });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Entrada eliminada");
+        window.Swal.fire({
+          icon: "success",
+          title: "Entrada eliminada con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getAtms());
+      } else if (result && !result.dismiss) {
+        console.log("Orus res: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
+      }
+    });
+  };
   changeState = (e) => {
     let { value, name } = e.target;
     if (name === "tipo") value = value * 1;
@@ -134,57 +216,68 @@ export default class Cash extends Component {
     });
   };
   sendAtm = () => {
-    //Variables en localStorage
-    let { host, token, efectivo, tipo } = this.state,
-      body = {
-        efectivo: tipo ? efectivo : efectivo * -1,
-        type: tipo,
-      },
-      url = "http://" + host + "/api/atms";
-
-    if (efectivo > 0) {
-      //Realiza la peticion de los productos faltantes
-      console.log("Enviando al API el efectivo");
-      fetch(url, {
-        method: "POST",
-        body: JSON.stringify(body),
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok && res.status !== 401) {
-            window.Swal.fire({
-              title: "Error!",
-              text: "Ups!\n Hubo un error, intentelo mas tarde",
-              icon: "error",
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de agregar un movimiento a la caja?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Crear",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        let { host, token, efectivo, tipo } = this.state,
+          body = {
+            efectivo: tipo ? efectivo : efectivo * -1,
+            type: tipo,
+          },
+          url = "http://" + host + "/api/atms";
+        if (confirm && efectivo) {
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos ATM a API");
+          return fetch(url, {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
             });
-            console.log(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          console.log("Almacenando datos de efectivo");
-          if (!data.message) {
-            window.Swal.fire(
-              "success!",
-              "Efectivo almacenado con exito.",
-              "success"
-            ).then((res) => this.getAtms());
-          }
-        })
-        .catch((e) => {
-          console.error(e);
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+
+        if (data.data) {
+          console.log("ATM almacenado");
           window.Swal.fire({
-            title: "Error!",
-            text: "Ups!\n Hubo un error, intentelo mas tarde",
-            icon: "error",
-          });
-        });
-    }
+            icon: "success",
+            title: "Movimiento almacenado con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => this.getAtms());
+        } else {
+          window.Swal.fire("Error", "al almacenar el movimiento", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
   getAtms = () => {
     //Variables en localStorage

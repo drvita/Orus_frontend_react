@@ -228,13 +228,22 @@ class Menu extends Component {
     this.props.page(e);
   };
 
-  handleLogOut = () => {
-    let conf = window.confirm("¿Confirma cerrar la sesion?");
-
-    if (conf) {
-      this.props.logOut();
-      this.changePage("/");
-    }
+  handleLogOut = (e) => {
+    e.preventDefault();
+    window.Swal.fire({
+      title: "Session",
+      text: "¿Esta seguro de cerrar la sesion?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Si",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        this.props.logOut();
+        this.changePage("/");
+      }
+    });
   };
 }
 

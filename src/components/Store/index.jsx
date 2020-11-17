@@ -252,11 +252,12 @@ export default class Store extends Component {
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
         console.log("Producto eliminado");
-        window.Swal.fire(
-          "Producto eliminado con exito",
-          "",
-          "success"
-        ).then((res) => this.getItems());
+        window.Swal.fire({
+          icon: "success",
+          title: "Producto eliminado con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getItems());
       } else if (result && !result.dismiss) {
         console.log("Orus res: ", result);
         window.Swal.fire(
@@ -269,11 +270,18 @@ export default class Store extends Component {
   };
   getItems() {
     //Variables
-    let { orderby, order, search, page, host, token } = this.state,
+    let { load, orderby, order, search, page, host, token } = this.state,
       url = "http://" + host + "/api/store",
       ordenar = `&orderby=${orderby}&order=${order}`,
       buscar = search ? `&search=${search}` : "",
       pagina = page > 0 ? "?page=" + page : "?page=1";
+
+    //Mandamos señal de carga si no lo he hecho
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
 
     //Realiza la peticion de los contactos
     console.log("Descargando productos de API");

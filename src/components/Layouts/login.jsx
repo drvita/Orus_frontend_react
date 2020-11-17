@@ -35,10 +35,11 @@ export default class Main extends Component {
               <form onSubmit={this.handleLogin}>
                 <div className="input-group mb-3">
                   <input
-                    type="text"
+                    type="email"
                     className="form-control"
                     placeholder="Usuario"
                     name="username"
+                    required="required"
                     autoFocus={hostShow ? false : true}
                     onChange={this.catchInputs}
                     value={username}
@@ -55,6 +56,10 @@ export default class Main extends Component {
                     className="form-control"
                     placeholder="Contraseña"
                     name="password"
+                    required="required"
+                    minLength="8"
+                    maxLength="16"
+                    pattern="^(?=.*[A-Z])(?=.*[!@#$&\.*])(?=.*[0-9])(?=.*[a-z]).{8,16}$"
                     autoComplete="off"
                     onChange={this.catchInputs}
                     value={password}
@@ -126,16 +131,20 @@ export default class Main extends Component {
   }
 
   pressEnter = (e) => {
+    e.preventDefault();
     if (e.key === "Enter") {
-      e.preventDefault();
       let { host } = this.state;
-      window.alert(
-        "La conexion al servidor fue actualizada con exito: \n" + host
-      );
-      this.setState({
-        hostShow: false,
+      window.Swal.fire({
+        icon: "success",
+        title: "La conexion al servidor fue actualizada con exito: " + host,
+        showConfirmButton: false,
+        timer: 1500,
+      }).then((res) => {
+        this.setState({
+          hostShow: false,
+        });
+        this.props.changeState("host", host);
       });
-      this.props.changeState("host", host);
     }
   };
   showTools = (e) => {
@@ -146,7 +155,13 @@ export default class Main extends Component {
   };
   validInputs() {
     //Valida los campos del formulario
-    if (this.state.username.length > 4 && this.state.password.length > 7) {
+    let { username, password } = this.state;
+    const regexUser = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+      regexPass = /^(?=.*[A-Z])(?=.*[!@#$&.*])(?=.*[0-9])(?=.*[a-z]).{8,16}$/;
+
+    username = username.replace(/\s/g, "").toLowerCase();
+
+    if (regexUser.test(username) && regexPass.test(password)) {
       return true;
     } else {
       alert("Los datos ingresados no son validos");
@@ -159,6 +174,7 @@ export default class Main extends Component {
     this.setState({
       load: true,
     });
+
     if (host) {
       //Manejamos el inicio de sesion aqui, declaramos primero las variables
       //sobre todo la de localstorage donde viene el host a conectar
@@ -168,6 +184,7 @@ export default class Main extends Component {
           email: username,
           password,
         };
+
       //Si los datos de usuario son correctos manda la informacion al servidor
       if (valid) {
         console.log("Enviado credenciales al servidor");
@@ -180,12 +197,13 @@ export default class Main extends Component {
             "Content-Type": "application/json",
           },
         })
-          .then((res) => {
-            if (!res.ok) {
-              window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-              console.error(res);
+          .then(async (response) => {
+            let back = {};
+            if (response.status !== 204) back = await response.json();
+            if (!response.ok) {
+              throw new Error(back.message);
             }
-            return res.json();
+            return back;
           })
           .then((data) => {
             if (data.data) {
@@ -193,18 +211,32 @@ export default class Main extends Component {
               this.props.loginFunction(data);
             } else {
               console.error("Login: Sin acceso", data);
-              if (data.message) window.alert(data.message);
-              if (data.errors) window.alert(data.errors);
+              if (data.message) {
+                window.Swal.fire("Session", data.message, "error");
+              }
+              if (data.errors) {
+                window.Swal.fire("Session", data.errors, "error");
+              }
               this.setState({
-                username: "",
-                password: "",
                 load: false,
               });
             }
           })
-          .catch((e) => {
-            console.error(e);
+          .catch((message) => {
+            console.error("Orus fetch: ", message);
+            window.Swal.fire(
+              "Fallo de servidor",
+              "Los datos no son correctos",
+              "error"
+            );
+            this.setState({
+              load: false,
+            });
           });
+      } else {
+        this.setState({
+          load: false,
+        });
       }
     } else {
       console.error("No existe un valor para host");

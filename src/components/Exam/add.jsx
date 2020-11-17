@@ -16,6 +16,7 @@ import Chat from "../Layouts/messenger";
 export default class ExamAdd extends Component {
   constructor(props) {
     super(props);
+    let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
     this.state = {
       id: 0,
       edad: 0,
@@ -86,7 +87,7 @@ export default class ExamAdd extends Component {
       d_fclod_time: "00:00",
       d_fcloi_time: "00:00",
       category_id: 0,
-      contact_id: 0,
+      contact_id: contact && contact.id ? contact.id : 0,
       order_id: 0,
       status: 0,
       created_at: "",
@@ -103,7 +104,6 @@ export default class ExamAdd extends Component {
   componentDidMount() {
     //Variables
     let id = this.props.match.params.id;
-
     if (id) {
       this.getExam(id);
     }
@@ -112,15 +112,16 @@ export default class ExamAdd extends Component {
   render() {
     const { contact_id, id, order_id, edad, status, created_at } = this.state,
       { data } = this.props,
-      toDay = moment(new Date()).isSame(moment(created_at), "day");
-
+      hoy = moment(Date.now()),
+      registro = moment(created_at),
+      toDay = moment(hoy).isSame(registro, "day");
     return (
       <form className="row">
         <div className="col-3">
           <SearchContact
             contact={contact_id}
             edad={edad}
-            status={status || !toDay || order_id ? true : false}
+            status={status || id ? !toDay : true || order_id ? false : true}
             getIdContact={this.getIdContact}
             changePage={this.changePage}
           />
@@ -418,11 +419,14 @@ export default class ExamAdd extends Component {
         let data = result.value;
         if (data.data) {
           console.log("Examen almacenado");
-          window.Swal.fire(
-            id ? "Examen actualizado con exito" : "Examen almacenado con exito",
-            "",
-            "success"
-          ).then((res) => this.props.history.goBack());
+          window.Swal.fire({
+            icon: "success",
+            title: id
+              ? "Examen actualizado con exito"
+              : "Examen almacenado con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => this.props.history.goBack());
         } else {
           window.Swal.fire("Error", "al almacenar el examen", "error");
           console.error("Orus res: ", data.message);

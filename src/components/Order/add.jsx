@@ -14,6 +14,8 @@ import Chat from "../Layouts/messenger";
 export default class OrderAdd extends Component {
   constructor(props) {
     super(props);
+    //Recogemos valores de registro previo
+    let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
     this.state = {
       id: 0,
       session:
@@ -28,9 +30,8 @@ export default class OrderAdd extends Component {
       lab_id: 0,
       npedidolab: "",
       ncaja: 0,
-      mensajes: [],
       items: [],
-      contact_id: 0,
+      contact_id: contact && contact.id ? contact.id : 0,
       usuario: "",
       edad: 0,
       exam_id: 0,
@@ -50,6 +51,7 @@ export default class OrderAdd extends Component {
   }
   componentDidMount() {
     let id = this.props.match.params.id;
+
     if (id) {
       moment.locale("es");
       this.getOrder(id);
@@ -367,7 +369,7 @@ export default class OrderAdd extends Component {
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#007bff",
-      confirmButtonText: "Guardar",
+      confirmButtonText: id ? "Actualizar" : "Crear",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
@@ -400,7 +402,6 @@ export default class OrderAdd extends Component {
             contact_id: this.state.contact_id,
             status: this.state.status,
             items: JSON.stringify(items),
-            mensajes: JSON.stringify(this.state.mensajes),
           };
           if (this.state.exam_id) body.exam_id = this.state.exam_id;
           if (this.state.lab_id) body.lab_id = this.state.lab_id;
@@ -416,11 +417,13 @@ export default class OrderAdd extends Component {
               Authorization: "Bearer " + token,
             },
           })
-            .then((response) => {
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
               if (!response.ok) {
-                throw new Error(response.statusText);
+                throw new Error(back.message);
               }
-              return response.json();
+              return back;
             })
             .catch((e) => {
               console.error("Orus fetch", e);
@@ -438,11 +441,20 @@ export default class OrderAdd extends Component {
 
         if (data.data) {
           console.log("Pedido almacenada");
-          window.Swal.fire(
-            "Pedido guardado con exito",
-            "",
-            "success"
-          ).then((res) => this.props.history.goBack());
+          window.Swal.fire({
+            icon: "success",
+            title: id
+              ? "Pedido actualizado con exito"
+              : "Pedido almacenado con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => {
+            this.setState({
+              id: data.data.id,
+              nota: data.data.nota.id,
+            });
+            this.props.history.push(`/pedidos/registro/${data.data.id}`);
+          });
         } else {
           window.Swal.fire("Error", "al almacenar el pedido", "error");
           console.error("Orus res: ", data.message);
@@ -480,7 +492,6 @@ export default class OrderAdd extends Component {
               lab_id: data.data.laboratorio ? data.data.laboratorio.id : 0,
               npedidolab: data.data.folio_lab,
               ncaja: data.data.caja,
-              mensajes: data.data.mensajes,
               items: data.data.productos,
               contact_id: data.data.paciente.id,
               status: data.data.estado,

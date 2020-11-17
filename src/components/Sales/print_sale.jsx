@@ -90,10 +90,10 @@ export default class printSale extends Component {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => {
+                {items.map((item, index) => {
                   totalItems += item.cantidad * item.precio;
                   return (
-                    <tr key={item.id}>
+                    <tr key={index}>
                       <td>
                         <h5>{item.cantidad}</h5>
                       </td>

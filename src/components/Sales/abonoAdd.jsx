@@ -205,7 +205,12 @@ export default class AddAbono extends Component {
             banco: "",
             auth: "",
           });
-          window.Swal.fire("Abono guardado con exito", "", "success");
+          window.Swal.fire({
+            icon: "success",
+            title: "Abono almacenado con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         } else {
           window.Swal.fire("Error", "al almacenar el abono", "error");
           console.error("Orus res: ", data.message);

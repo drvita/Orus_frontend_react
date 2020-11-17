@@ -13,6 +13,7 @@ export default class Items extends Component {
       inStorage: 0,
       producto: "",
       out: 0,
+      descripcion: "",
       itemNew: false,
       itemsDb: [],
     };
@@ -94,6 +95,16 @@ export default class Items extends Component {
                     value={this.state.producto}
                     onChange={this.catchInputs}
                   />
+                  {this.state.store_items_id ? (
+                    <input
+                      className="form-control"
+                      type="text"
+                      name="descripcion"
+                      placeholder="Detalles"
+                      value={this.state.descripcion}
+                      onChange={this.catchInputs}
+                    />
+                  ) : null}
                 </td>
                 <td>
                   <input
@@ -158,9 +169,7 @@ export default class Items extends Component {
                 <tr></tr>
               )}
             </React.Fragment>
-          ) : (
-            <tr></tr>
-          )}
+          ) : null}
           {items.length ? (
             items.map((item, index) => {
               this.total += item.subtotal * 1;
@@ -176,6 +185,7 @@ export default class Items extends Component {
                       }
                     >
                       {item.producto}
+                      {item.descripcion ? " (" + item.descripcion + ")" : null}
                     </span>
                   </td>
                   <td className="text-right">$ {item.precio.toFixed(2)}</td>
@@ -262,9 +272,15 @@ export default class Items extends Component {
     let { name, value, type } = e.target,
       subtotal = 0;
     if (name === "cantidad") {
+      value = value * 1;
       subtotal = this.state.precio * value;
+      console.log("cantidad ", value);
     } else if (name === "precio") {
+      value = value * 1;
       subtotal = this.state.cantidad * value;
+      console.log("precio: ", value);
+    } else if (name === "descripcion") {
+      subtotal = this.state.subtotal;
     }
     if (type === "number") {
       value = value * 1;
@@ -310,23 +326,13 @@ export default class Items extends Component {
   addItem = (e) => {
     e.preventDefault();
     let items = this.props.items,
-      find = items.find((item) => {
-        return item.store_items_id === this.state.store_items_id;
-      }),
       item = this.state;
-
-    if (find) {
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].store_items_id === item.store_items_id) {
-          item.cantidad += items[i].cantidad;
-          item.subtotal = item.cantidad * item.precio;
-          items.splice(i, 1);
-        }
-      }
-    }
 
     item.inStorage = item.out >= item.cantidad ? 1 : 0;
     item.out = item.out >= item.cantidad ? 0 : item.cantidad - item.out;
+    item.producto = item.descripcion
+      ? item.producto + "  (" + item.descripcion + ")"
+      : item.producto;
 
     delete item.itemNew;
     delete item.itemsDb;

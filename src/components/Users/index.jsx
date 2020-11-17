@@ -34,7 +34,6 @@ export default class Users extends Component {
   }
   componentDidMount() {
     this.getUsers();
-    moment.locale("es");
     localStorage.setItem(
       "OrusUsers",
       JSON.stringify({
@@ -257,11 +256,12 @@ export default class Users extends Component {
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
         console.log("Usuario eliminado");
-        window.Swal.fire(
-          "Usuario eliminado con exito",
-          "",
-          "success"
-        ).then((res) => this.getUsers());
+        window.Swal.fire({
+          icon: "success",
+          title: "Usuario eliminado con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getUsers());
       } else if (result && !result.dismiss) {
         console.log("Orus res: ", result);
         window.Swal.fire(
@@ -273,12 +273,19 @@ export default class Users extends Component {
     });
   };
   getUsers = () => {
-    let { host, token } = this.state,
+    let { load, host, token } = this.state,
       url = "http://" + host + "/api/users",
       orderby = `&orderby=${this.state.orderby}&order=${this.state.order}`,
       search = this.state.search ? `&search=${this.state.search}` : "",
       rol = this.state.rol.length > 0 ? `&rol=${this.state.rol}` : "",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
+
+    //Mandamos señal de carga si no lo he hecho
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
 
     //Realiza la peticion de los usuarios
     console.log("Solicitando usuarios a la API");

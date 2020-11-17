@@ -5,8 +5,10 @@ export default class ReportPay extends Component {
     super(props);
     this.state = {
       host: props.data.host,
+      rol: props.data.rol,
       token: props.data.token,
       total: 0,
+      efectivo: 0,
     };
     this.char = null;
     this.controller = new AbortController();
@@ -26,7 +28,7 @@ export default class ReportPay extends Component {
   }
 
   render() {
-    const { total } = this.state;
+    const { total, efectivo, rol } = this.state;
     const { data } = this.props;
     return (
       <div className="card card-success card-outline">
@@ -37,7 +39,15 @@ export default class ReportPay extends Component {
         </div>
         <div className="card-body">
           <canvas id="donutChart"></canvas>
-          Venta: <strong>$ {total.toFixed(2)}</strong>
+          <p>
+            {!rol ? (
+              <React.Fragment>
+                Venta: <strong>$ {total.toFixed(2)}</strong>
+                <br />
+              </React.Fragment>
+            ) : null}
+            Efectivo: <strong>$ {efectivo.toFixed(2)}</strong>
+          </p>
         </div>
       </div>
     );
@@ -92,7 +102,8 @@ export default class ReportPay extends Component {
             },
             labels = [],
             values = [],
-            total = 0.0,
+            total = 0,
+            efectivo = 0,
             donutData = {};
           if (this.char) this.char.destroy();
 
@@ -102,8 +113,10 @@ export default class ReportPay extends Component {
               await data.map((mp) => {
                 labels.push(this.SetMethodPayment(mp.metodopago));
                 values.push(mp.total.toFixed(2));
-                if (mp.metodopago === 1)
+                if (mp.metodopago === 1) {
                   this.props.changeState("ventas", mp.total);
+                  efectivo = mp.total;
+                }
                 total += mp.total;
                 return null;
               });
@@ -114,6 +127,7 @@ export default class ReportPay extends Component {
 
             this.setState({
               total,
+              efectivo,
             });
           } else {
             console.error("Error al cargar la venta del dia", data.message);

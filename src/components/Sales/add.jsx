@@ -11,6 +11,7 @@ import Chat from "../Layouts/messenger";
 export default class SaleAdd extends Component {
   constructor(props) {
     super(props);
+    let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
     this.state = {
       id: 0,
       session:
@@ -25,7 +26,7 @@ export default class SaleAdd extends Component {
       subtotal: 0,
       total: 0,
       items: [],
-      contact_id: 0,
+      contact_id: contact && contact.id ? contact.id : 0,
       order_id: 0,
       status: 0,
       usuario: "",
@@ -38,7 +39,6 @@ export default class SaleAdd extends Component {
     this.total = 0;
     this.controller = new AbortController();
     this.signal = this.controller.signal;
-    moment.locale("es");
   }
   componentWillUnmount() {
     this.controller.abort(); // Cancelando cualquier carga de fetch
@@ -150,10 +150,9 @@ export default class SaleAdd extends Component {
                         </div>
                       </div>
                     </div>
-
                     <Items
                       items={items}
-                      status={status}
+                      status={status && this.total === pagado ? true : false}
                       session={session}
                       ChangeInput={this.handleChangeInput}
                     />
@@ -319,7 +318,7 @@ export default class SaleAdd extends Component {
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#007bff",
-      confirmButtonText: "Guardar",
+      confirmButtonText: id ? "Actualizar" : "Crear",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
@@ -342,6 +341,7 @@ export default class SaleAdd extends Component {
               out: item.out,
               session: item.session,
               store_items_id: item.store_items_id,
+              descripcion: item.descripcion,
             });
             return false;
           });
@@ -367,11 +367,13 @@ export default class SaleAdd extends Component {
               Authorization: "Bearer " + token,
             },
           })
-            .then((response) => {
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
               if (!response.ok) {
-                throw new Error(response.statusText);
+                throw new Error(back.message);
               }
-              return response.json();
+              return back;
             })
             .catch((e) => {
               console.error("Orus fetch", e);
@@ -389,11 +391,20 @@ export default class SaleAdd extends Component {
 
         if (data.data) {
           console.log("Venta almacenada");
-          window.Swal.fire(
-            "Venta guardada con exito",
-            "",
-            "success"
-          ).then((res) => this.props.history.goBack());
+          window.Swal.fire({
+            icon: "success",
+            title: id
+              ? "Venta actualizada con exito"
+              : "Venta almacenada con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => {
+            this.setState({
+              id: data.data.id,
+              //order_id: data.data.pedido,
+            });
+            this.props.history.push(`/notas/registro/${data.data.id}`);
+          });
         } else {
           window.Swal.fire("Error", "al almacenar la venta", "error");
           console.error("Orus res: ", data.message);
@@ -423,6 +434,7 @@ export default class SaleAdd extends Component {
         })
         .then((data) => {
           if (!data.message) {
+            const { rol } = this.props.data;
             console.log("Mostrando datos del pedido");
             this.setState({
               id: data.data.id,
@@ -436,7 +448,7 @@ export default class SaleAdd extends Component {
               contact_id: data.data.cliente.id,
               usuario: data.data.created,
               date: data.data.created_at,
-              status: 1,
+              status: !rol ? 0 : 1,
               order_id: data.data.pedido,
               pagado: data.data.pagado,
               load: false,

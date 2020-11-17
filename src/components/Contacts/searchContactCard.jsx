@@ -6,21 +6,17 @@ import moment from "moment";
 export default class searchContact extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       contacto: "",
       data: [],
       dataContact: {},
-      load: true,
+      load: false,
     };
   }
   componentDidMount() {
     //identificador del contacto
     let id = this.props.contact;
     if (id) {
-      this.setState({
-        load: true,
-      });
       this.getContact(id);
     } else {
       this.contactInput.focus();
@@ -45,8 +41,10 @@ export default class searchContact extends Component {
   }
 
   render() {
+    const { load } = this.state;
+
     if (this.props.contact) {
-      if (this.state.load) {
+      if (load) {
         return (
           <div className="card card-danger card-outline d-print-none">
             <div className="card-body box-profile">
@@ -76,7 +74,7 @@ export default class searchContact extends Component {
               <div className="text-center">
                 <img
                   className="profile-user-img img-fluid img-circle"
-                  src="https://uybor.uz/borless/uybor/img/user-images/no-avatar.png"
+                  src="/img/avatars/no-avatar.png"
                   alt="User Avatar"
                 />
               </div>
@@ -142,6 +140,8 @@ export default class searchContact extends Component {
             </div>
           </div>
         );
+      } else {
+        return null;
       }
     } else {
       return (
@@ -156,7 +156,7 @@ export default class searchContact extends Component {
               </div>
               <input
                 type="text"
-                className="form-control"
+                className="form-control text-capitalize"
                 placeholder="Nombre del paciente"
                 name="contacto"
                 autoComplete="off"
@@ -202,6 +202,12 @@ export default class searchContact extends Component {
                   );
                 })}
               </ul>
+            ) : load ? (
+              <div className="text-center">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
+              </div>
             ) : null}
           </div>
         </div>
@@ -221,7 +227,14 @@ export default class searchContact extends Component {
         Authorization: "Bearer " + varLocalStorage.token,
       },
     })
-      .then((res) => res.json())
+      .then(async (response) => {
+        let back = {};
+        if (response.status !== 204) back = await response.json();
+        if (!response.ok) {
+          throw new Error(back.message);
+        }
+        return back;
+      })
       .then((data) => {
         console.log("Descargando contacto");
         this.setState({
@@ -238,12 +251,13 @@ export default class searchContact extends Component {
   };
   handleClickChange = (e) => {
     e.preventDefault();
-    if (window.confirm("¿Realmente desea cambiar de paciente?")) {
+    if (window.confirm("¿Esta seguro?")) {
       this.setState({
         contacto: "",
         data: [],
         dataContact: {},
       });
+      localStorage.setItem("OrusContactInUse", JSON.stringify({}));
       this.props.getIdContact(0);
     }
   };
@@ -261,6 +275,7 @@ export default class searchContact extends Component {
             .fromNow(true)
             .replace(/[a-zA-ZñÑ]/gi, "") * 1;
         this.props.getIdContact(id, edad);
+        localStorage.setItem("OrusContactInUse", JSON.stringify({ id }));
         return false;
       } else {
         return true;
@@ -268,48 +283,75 @@ export default class searchContact extends Component {
     });
   };
   getContacts = (word) => {
-    //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/contacts",
-      type = "&type=0",
-      search = word ? `&search=${word}` : "",
-      page = "?page=1";
-    console.log("Descargando contactos de la API");
-    //Realiza la peticion de los contactos
-    fetch(url + page + search + type, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.data && data.data.length) {
-          console.log("Mostrando información del contacto");
-          this.setState({
-            data: data.data,
-          });
-        } else {
-          this.setState({
-            data: [
-              {
-                id: 0,
-                nombre: "No hay contactos para: " + word,
-              },
-            ],
-          });
-        }
+    let { load } = this.state;
+
+    //Revisamos que ya este cargando
+    if (!load) {
+      this.setState({
+        load: true,
       });
+    }
+
+    if (this.timeSave) clearTimeout(this.timeSave);
+    this.timeSave = setTimeout(() => {
+      //Variables en localStorage
+      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+        url = "http://" + varLocalStorage.host + "/api/contacts",
+        type = "&type=0",
+        search = word ? `&search=${word}` : "",
+        page = "?page=1";
+      console.log("Descargando contactos de la API");
+      //Realiza la peticion de los contactos
+      fetch(url + page + search + type, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + varLocalStorage.token,
+        },
+      })
+        .then(async (response) => {
+          let back = {};
+          if (response.status !== 204) back = await response.json();
+          if (!response.ok) {
+            throw new Error(back.message);
+          }
+          return back;
+        })
+        .then((data) => {
+          if (data.data && data.data.length) {
+            console.log("Mostrando información del contacto");
+            this.setState({
+              data: data.data,
+              load: false,
+            });
+          } else {
+            this.setState({
+              data: [
+                {
+                  id: 0,
+                  nombre: "No hay contactos para: " + word,
+                },
+              ],
+              load: false,
+            });
+            localStorage.setItem(
+              "OrusContactInUse",
+              JSON.stringify({ name: word.toLowerCase() })
+            );
+          }
+        })
+        .catch((e) => {
+          console.error("Orus fetch", e);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
+        });
+    }, 1500);
   };
   handleSearcContact = (e) => {
-    //console.log(e.target.value);
     const { name, value } = e.target;
     this.setState({
       [name]: value,

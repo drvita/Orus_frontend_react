@@ -45,6 +45,7 @@ export default class Exam extends Component {
         date: this.state.date,
       })
     );
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {
@@ -284,11 +285,12 @@ export default class Exam extends Component {
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
         console.log("Examen eliminado");
-        window.Swal.fire(
-          "Examen eliminado con exito",
-          "",
-          "success"
-        ).then((res) => this.getExams());
+        window.Swal.fire({
+          icon: "success",
+          title: "Examen eliminado con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getExams());
       } else if (result && !result.dismiss) {
         console.log("Orus: ", result);
         window.Swal.fire(

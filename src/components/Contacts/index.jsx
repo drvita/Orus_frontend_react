@@ -232,7 +232,7 @@ export default class Contacts extends Component {
 
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación por API");
-          fetch("http://" + host + "/api/contacts/" + id, {
+          return fetch("http://" + host + "/api/contacts/" + id, {
             method: "DELETE",
             signal: this.signal,
             headers: {
@@ -250,7 +250,7 @@ export default class Contacts extends Component {
               return back;
             })
             .catch((e) => {
-              console.error(e);
+              console.error("Orus fetch: ", e);
               window.Swal.fire(
                 "Fallo de conexion",
                 "Verifique la conexion al servidor",
@@ -261,13 +261,14 @@ export default class Contacts extends Component {
       },
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
-        window.Swal.fire(
-          "Contacto eliminado con exito",
-          "",
-          "success"
-        ).then((res) => this.getContacts());
+        window.Swal.fire({
+          icon: "success",
+          title: "Contacto eliminado con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getContacts());
       } else if (result && !result.dismiss) {
-        console.log("Orus: ", result);
+        console.log("Orus res: ", result);
         window.Swal.fire(
           "Error",
           "Se perdio la conexion con el servidor",

@@ -68,7 +68,7 @@ export default class Routers extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, logOut } = this.props;
 
     return (
       <div className="wrapper">
@@ -77,7 +77,7 @@ export default class Routers extends Component {
           companyName={this.state.company}
           user={data}
           page={this.handlePage}
-          logOut={this.props.logOut}
+          logOut={logOut}
           active={this.state.page}
         />
         <div className="content-wrapper">

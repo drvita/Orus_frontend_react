@@ -191,11 +191,12 @@ export default class ListAbonos extends Component {
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
         console.log("Abono eliminado");
-        window.Swal.fire(
-          "Abono eliminado con exito",
-          "",
-          "success"
-        ).then((res) => this.getPayments());
+        window.Swal.fire({
+          icon: "success",
+          title: "Abono eliminado con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getPayments());
       } else if (result && !result.dismiss) {
         console.log("Orus res: ", result);
         window.Swal.fire(

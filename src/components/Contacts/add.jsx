@@ -10,9 +10,11 @@ import Telefono from "./add_telefonos";
 export default class ContactsAdd extends Component {
   constructor(props) {
     super(props);
+    //Recogemos valores de registro previo
+    let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
     this.state = {
       id: 0,
-      name: "",
+      name: contact && contact.name ? contact.name : "",
       validName: false,
       rfc: "",
       email: "",
@@ -291,13 +293,22 @@ export default class ContactsAdd extends Component {
 
     //Verificamos campos validos
     if (!validName) {
-      window.alert("El contacto ya esta registrado");
+      window.Swal.fire(
+        "Base de datos",
+        "El contacto ya esta registrado",
+        "warning"
+      );
       return false;
     }
     if (!validEmail) {
-      window.alert("El email ya esta registrado");
+      window.Swal.fire(
+        "Base de datos",
+        "El email ya esta registrado",
+        "warning"
+      );
       return false;
     }
+
     //Confirmación de almacenamiento
     window.Swal.fire({
       title: "Almacenamiento",
@@ -391,13 +402,20 @@ export default class ContactsAdd extends Component {
         if (data.data) {
           console.log("Contacto almacenado");
           localStorage.setItem("OrusContactNew", JSON.stringify({}));
-          window.Swal.fire(
-            id
+          localStorage.setItem(
+            "OrusContactInUse",
+            JSON.stringify({ id: data.data.id })
+          );
+          window.Swal.fire({
+            icon: "success",
+            title: id
               ? "Contacto actualizado con exito"
               : "Contacto almacenado con exito",
-            "",
-            "success"
-          ).then((res) => this.props.history.goBack());
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => {
+            this.props.history.goBack();
+          });
         } else {
           window.Swal.fire("Error", "al almacenar el contacto", "error");
           console.error("Orus res: ", data.message);

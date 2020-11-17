@@ -12,7 +12,7 @@ export default class BoxCut extends Component {
             <label>caja:</label> ${caja.toFixed(2)}
           </p>
           <p className="card-text">
-            <label>Venta:</label> ${ventas.toFixed(2)}
+            <label>Efectivo:</label> ${ventas.toFixed(2)}
           </p>
         </div>
         <div className="card-footer text-right">

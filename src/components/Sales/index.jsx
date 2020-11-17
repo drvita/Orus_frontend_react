@@ -35,7 +35,7 @@ export default class Contacts extends Component {
   }
   componentDidMount() {
     this.getPedidos();
-    moment.locale("es");
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
     localStorage.setItem(
       "OrusSales",
       JSON.stringify({
@@ -273,11 +273,12 @@ export default class Contacts extends Component {
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
         console.log("Venta eliminada");
-        window.Swal.fire(
-          "Venta eliminada con exito",
-          "",
-          "success"
-        ).then((res) => this.getPedidos());
+        window.Swal.fire({
+          icon: "success",
+          title: "Venta eliminada con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getPedidos());
       } else if (result && !result.dismiss) {
         console.log("Orus res: ", result);
         window.Swal.fire(

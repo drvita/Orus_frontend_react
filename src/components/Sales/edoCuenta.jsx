@@ -20,12 +20,16 @@ export default class edoCuenta extends Component {
             <label className="col-6">Descuento</label>
             <div className="col">
               <input
-                className="form-control text-right text-success"
+                className={
+                  pagado
+                    ? "form-control text-right text-success disabled"
+                    : "form-control text-right text-success"
+                }
                 type="number"
                 name="descuento"
                 min="0"
                 max={subtotal - descuento}
-                readOnly={pay ? false : true}
+                readOnly={pay && !pagado ? false : true}
                 value={descuento ? descuento.toFixed(2) : ""}
                 onChange={this.catchInputs}
               />

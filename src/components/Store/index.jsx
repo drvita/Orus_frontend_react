@@ -33,9 +33,8 @@ export default class Store extends Component {
   }
   componentDidMount() {
     this.getItems();
-    moment.locale("es");
     localStorage.setItem(
-      "OrusContacts",
+      "OrusStore",
       JSON.stringify({
         page: this.state.page,
         orderby: this.state.orderby,
@@ -49,7 +48,7 @@ export default class Store extends Component {
       console.log("Recargando productos");
       this.getItems();
       localStorage.setItem(
-        "OrusContacts",
+        "OrusStore",
         JSON.stringify({
           page: this.state.page,
           orderby: this.state.orderby,

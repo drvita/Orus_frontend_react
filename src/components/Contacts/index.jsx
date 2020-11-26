@@ -73,8 +73,6 @@ export default class Contacts extends Component {
         { name: "E-mail", type: "email", filter: true },
         { name: "Tipo", type: "type", filter: true },
         { name: "Telefono" },
-        { name: "Domicilio" },
-        { name: "Cumpleaños" },
         { name: "Actualizado", type: "updated_at", filter: true },
         { name: "Registrado", type: "created_at", filter: true },
       ];
@@ -146,16 +144,6 @@ export default class Contacts extends Component {
                       <td>
                         {contact.telefonos && contact.telefonos.t_movil
                           ? contact.telefonos.t_movil
-                          : "--"}
-                      </td>
-                      <td className="text-capitalize">
-                        {contact.domicilio && contact.domicilio.calle
-                          ? contact.domicilio.calle
-                          : "--"}
-                      </td>
-                      <td className="text-center">
-                        {contact.f_nacimiento
-                          ? moment(contact.f_nacimiento).format("D/MMM")
                           : "--"}
                       </td>
                       <td>{moment(contact.updated_at).fromNow()}</td>

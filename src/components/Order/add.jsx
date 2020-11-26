@@ -236,6 +236,7 @@ export default class OrderAdd extends Component {
                         edad={this.state.edad}
                         exam={this.state.exam}
                         page={this.changePage}
+                        datos={data}
                         select={true}
                         status={this.state.status}
                         ChangeInput={this.handleChangeInput}

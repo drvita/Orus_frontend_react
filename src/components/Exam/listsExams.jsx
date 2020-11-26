@@ -46,8 +46,8 @@ export default class ListsExams extends Component {
   }
 
   render() {
-    let { data, load, id, exam } = this.state,
-      { select } = this.props;
+    const { data, load, id, exam } = this.state,
+      { select, datos } = this.props;
 
     if (select) {
       return (
@@ -117,13 +117,25 @@ export default class ListsExams extends Component {
               />
 
               {exam.category_id ? (
-                <Recomendaciones
-                  category_id={exam.category_id}
-                  onChangeInput={this.handleChangeInput}
-                />
-              ) : (
-                ""
-              )}
+                <div className="row">
+                  <div className="col">
+                    <Recomendaciones
+                      category_id={exam.category_id}
+                      title="Recomendacion principal"
+                      data={datos}
+                      onChangeInput={this.handleChangeInput}
+                    />
+                  </div>
+                  <div className="col">
+                    <Recomendaciones
+                      category_id={exam.category_ii}
+                      title="Recomendacion adicional"
+                      data={datos}
+                      onChangeInput={this.handleChangeInput}
+                    />
+                  </div>
+                </div>
+              ) : null}
             </React.Fragment>
           ) : (
             <table className="table table-hover table-nowrap">

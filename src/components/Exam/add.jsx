@@ -87,6 +87,7 @@ export default class ExamAdd extends Component {
       d_fclod_time: "00:00",
       d_fcloi_time: "00:00",
       category_id: 0,
+      category_ii: 0,
       contact_id: contact && contact.id ? contact.id : 0,
       order_id: 0,
       status: 0,
@@ -110,7 +111,16 @@ export default class ExamAdd extends Component {
   }
 
   render() {
-    const { contact_id, id, order_id, edad, status, created_at } = this.state,
+    const {
+        contact_id,
+        id,
+        order_id,
+        edad,
+        status,
+        created_at,
+        category_id,
+        category_ii,
+      } = this.state,
       { data } = this.props,
       hoy = moment(Date.now()),
       registro = moment(created_at),
@@ -126,11 +136,24 @@ export default class ExamAdd extends Component {
             changePage={this.changePage}
           />
           {contact_id ? (
-            <Recomendaciones
-              category_id={this.state.category_id}
-              onChangeInput={this.handleChangeInput}
-              update={true}
-            />
+            <React.Fragment>
+              <Recomendaciones
+                category_id={category_id}
+                nameCategory="category_id"
+                title="Recomendacion principal"
+                data={data}
+                onChangeInput={this.handleChangeInput}
+                update={true}
+              />
+              <Recomendaciones
+                category_id={category_ii}
+                nameCategory="category_ii"
+                title="Recomendacion adicional"
+                data={data}
+                onChangeInput={this.handleChangeInput}
+                update={true}
+              />
+            </React.Fragment>
           ) : null}
         </div>
         <div className="col">

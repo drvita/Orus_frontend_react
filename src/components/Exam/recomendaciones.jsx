@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 
 export default class Recomendaciones extends Component {
   constructor(props) {
@@ -25,18 +25,47 @@ export default class Recomendaciones extends Component {
   }
 
   render() {
+    const { category_id, title } = this.props,
+      { category } = this.state,
+      slash = <span className="text-dark">/</span>;
+    let nameFullCategory = null;
+
+    if (category.depende_de) {
+      if (category.depende_de.depende_de) {
+        nameFullCategory = (
+          <React.Fragment>
+            {category.depende_de.depende_de.categoria}
+            {slash}
+            {category.depende_de.categoria}
+            {slash}
+            <strong>{category.categoria}</strong>
+          </React.Fragment>
+        );
+      } else {
+        nameFullCategory = (
+          <React.Fragment>
+            {category.depende_de.categoria}
+            {slash}
+            <strong>{category.categoria}</strong>
+          </React.Fragment>
+        );
+      }
+    } else {
+      nameFullCategory = <strong>{category.categoria}</strong>;
+    }
+
     return (
       <div className="card card-info card-outline mt-4">
         <div className="card-header">
           <h3 className="card-title">
             <i className="fas fa-thumbs-up mr-1"></i>
-            Recomendaci&oacute;n
+            {title}
           </h3>
         </div>
         <div className="card-body">
-          {!this.props.category_id ? (
+          {!category_id ? (
             this.state.category_list.length ? (
-              <React.Fragment>
+              <Fragment>
                 {this.state.category_list.length ? (
                   <div className="input-group mb-3">
                     <div className="input-group-prepend">
@@ -58,9 +87,7 @@ export default class Recomendaciones extends Component {
                       })}
                     </select>
                   </div>
-                ) : (
-                  ""
-                )}
+                ) : null}
 
                 {this.state.category_list_2.length ? (
                   <div className="input-group mb-3">
@@ -83,9 +110,7 @@ export default class Recomendaciones extends Component {
                       })}
                     </select>
                   </div>
-                ) : (
-                  ""
-                )}
+                ) : null}
 
                 {this.state.category_list_3.length ? (
                   <div className="input-group mb-3">
@@ -108,28 +133,16 @@ export default class Recomendaciones extends Component {
                       })}
                     </select>
                   </div>
-                ) : (
-                  ""
-                )}
-              </React.Fragment>
+                ) : null}
+              </Fragment>
             ) : (
               <div className="spinner-border text-primary" role="status">
                 <span className="sr-only">Loading...</span>
               </div>
             )
           ) : (
-            <React.Fragment>
-              <h5 className="card-title">
-                {this.state.category.depende_de
-                  ? this.state.category.depende_de.depende_de
-                    ? this.state.category.depende_de.depende_de.categoria +
-                      "/" +
-                      this.state.category.depende_de.categoria +
-                      "/"
-                    : this.state.category.depende_de.categoria + "/"
-                  : ""}
-                {this.state.category.categoria}
-              </h5>
+            <Fragment>
+              <h5 className="card-title text-info">{nameFullCategory}</h5>
               {this.props.update ? (
                 <p className="card-text">
                   <button
@@ -139,10 +152,8 @@ export default class Recomendaciones extends Component {
                     Cambiar
                   </button>
                 </p>
-              ) : (
-                ""
-              )}
-            </React.Fragment>
+              ) : null}
+            </Fragment>
           )}
         </div>
       </div>
@@ -151,6 +162,7 @@ export default class Recomendaciones extends Component {
 
   handleClickCategory = (e) => {
     e.preventDefault();
+    const { onChangeInput, nameCategory } = this.props;
     this.setState({
       category_id: 0,
       category_id_2: 0,
@@ -158,10 +170,12 @@ export default class Recomendaciones extends Component {
       category_list_2: [],
       category_list_3: [],
     });
-    this.props.onChangeInput("category_id", 0);
+    onChangeInput(nameCategory, 0);
   };
   handleCategoryChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target,
+      { onChangeInput, nameCategory } = this.props;
+
     if (name === "category_id") {
       if (value) {
         this.state.category_list.map((cat) => {
@@ -192,39 +206,31 @@ export default class Recomendaciones extends Component {
     });
 
     if (name === "category_id_3") {
-      this.props.onChangeInput("category_id", value * 1);
+      onChangeInput(nameCategory, value * 1);
     }
   };
   getCategories = () => {
-    //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/categories/1",
-      categoryid = "?categoryid=raiz";
+    //Variables
+    let { host, token } = this.props.data;
 
     if (
       typeof this.props.category_id === "number" &&
       this.props.category_id > 0
     ) {
       console.log("Descargando recomendacion");
-      url =
-        "http://" +
-        varLocalStorage.host +
-        "/api/categories/" +
-        this.props.category_id;
-      fetch(url, {
+      fetch("http://" + host + "/api/categories/" + this.props.category_id, {
         method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-            console.log("Error: ", res);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
           }
-          return res.json();
+          return response.json();
         })
         .then((cat) => {
           if (cat.data) {
@@ -233,23 +239,30 @@ export default class Recomendaciones extends Component {
               category: cat.data,
             });
           }
+        })
+        .catch((e) => {
+          console.error("Orus: " + e);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
         });
     } else {
       console.log("Descargando lista de recomendaciones");
-      fetch(url + categoryid, {
+      fetch("http://" + host + "/api/categories/1?categoryid=raiz", {
         method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
+          Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-            console.log("Error: ", res);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(response.statusText);
           }
-          return res.json();
+          return response.json();
         })
         .then((cat) => {
           if (cat.data) {
@@ -259,6 +272,14 @@ export default class Recomendaciones extends Component {
               meta: cat.meta,
             });
           }
+        })
+        .catch((e) => {
+          console.error("Orus: " + e);
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
         });
     }
   };

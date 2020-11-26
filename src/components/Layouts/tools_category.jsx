@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Pagination from "./pagination";
 
 export default class ToolsCategory extends Component {
   constructor(props) {
@@ -16,7 +17,15 @@ export default class ToolsCategory extends Component {
       category_id_3: 0,
       newItem: 0,
       page: 1,
+      host: props.data.host,
+      token: props.data.token,
+      load: true,
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
+  }
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
     this.getCategories();
@@ -29,30 +38,9 @@ export default class ToolsCategory extends Component {
   }
 
   render() {
-    let { category_list, meta } = this.state,
-      pages = [],
+    let { category_list, meta, load } = this.state,
       category_hijos = this.state.category_hijos,
       category_hijos_3 = this.state.category_hijos_3;
-    if (category_list.length && meta.total > 10) {
-      for (var i = 1; i <= meta.last_page; i++) {
-        pages.push(
-          <li
-            key={i}
-            className={
-              meta.current_page === i ? "page-item disabled" : "page-item"
-            }
-          >
-            <a
-              href={"#page" + i}
-              className="page-link"
-              onClick={this.handleChangePage.bind(this, i)}
-            >
-              {i}
-            </a>
-          </li>
-        );
-      }
-    }
 
     return (
       <div className="card card-primary card-outline">
@@ -67,7 +55,7 @@ export default class ToolsCategory extends Component {
               </tr>
             </thead>
             <tbody>
-              {category_list.length ? (
+              {!load ? (
                 category_list.map((cat) => {
                   let padre = "";
 
@@ -94,7 +82,7 @@ export default class ToolsCategory extends Component {
                         <button
                           className="btn btn-outline-light btn-sm"
                           onClick={(e) => {
-                            this.handleClickDelete(cat.id);
+                            this.handleClickDelete(cat.id, cat.categoria);
                           }}
                         >
                           <i className="fas fa-trash"></i>
@@ -113,7 +101,7 @@ export default class ToolsCategory extends Component {
                 </tr>
               )}
             </tbody>
-            {this.state.add ? (
+            {this.state.add && !load ? (
               <tfoot>
                 <tr>
                   <td>
@@ -189,7 +177,7 @@ export default class ToolsCategory extends Component {
                       className="btn btn-dark btn-sm"
                       onClick={this.handleClickSave}
                     >
-                      <i className="fas fa-check"></i>
+                      <i className="fas fa-save"></i>
                     </button>
                   </td>
                 </tr>
@@ -198,13 +186,10 @@ export default class ToolsCategory extends Component {
               <tfoot>
                 <tr>
                   <td colSpan="3">
-                    {Object.keys(meta).length && meta.total > 10 ? (
-                      <div className="btn-group">
-                        <ul className="pagination pagination-sm">{pages}</ul>
-                      </div>
-                    ) : (
-                      ""
-                    )}
+                    <Pagination
+                      meta={meta}
+                      handleChangePage={this.handleChangePage}
+                    />
                   </td>
                 </tr>
               </tfoot>
@@ -262,108 +247,183 @@ export default class ToolsCategory extends Component {
       page: id,
     });
   };
-  handleClickDelete = (id) => {
-    if (id) {
-      if (window.confirm("¿Realmente desea eliminar esta categoria?")) {
-        let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-        console.log("Enviando peticion de eliminado al API", id);
-        fetch("http://" + varLocalStorage.host + "/api/categories/" + id, {
-          method: "DELETE",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + varLocalStorage.token,
-          },
-        })
-          .then((res) => {
-            if (!res.ok) {
-              window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-            } else {
-              console.log("Categoria eliminada");
-              this.getCategories();
-              this.setState({
-                newItem: 0,
-                add: false,
-              });
-            }
+  handleClickDelete = (id, name) => {
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar la categoria " + name.toUpperCase() + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm && id) {
+          let { host, token } = this.state;
+
+          //Inicio de proceso de eliminción por API
+          console.log("Solicitud de eliminación de categoria por API");
+          return fetch("http://" + host + "/api/categories/" + id, {
+            method: "DELETE",
+            signal: this.signal,
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
           })
-          .catch((e) => {
-            console.log(e);
-          });
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
+            });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        console.log("Categoria eliminado");
+        window.Swal.fire({
+          icon: "success",
+          title: "Categoria eliminada con exito",
+          showConfirmButton: false,
+          timer: 1500,
+        }).then((res) => this.getCategories());
+      } else if (result && !result.dismiss) {
+        console.log("Orus res: ", result);
+        window.Swal.fire(
+          "Error",
+          "Se perdio la conexion con el servidor",
+          "error"
+        );
       }
-    }
+    });
   };
   handleClickSave = () => {
-    if (this.state.name.length > 3) {
-      if (window.confirm("¿Deseal almacenar esta categoria?")) {
-        //Variables en localStorage
-        let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-          body = {
-            name: this.state.name,
-            category_id: this.state.category_id_3
-              ? this.state.category_id_3
-              : this.state.category_id_2
-              ? this.state.category_id_2
-              : this.state.category_id,
-          };
-        console.log("Enviando categoria al API para almacenar");
-        fetch("http://" + varLocalStorage.host + "/api/categories", {
-          method: "POST",
-          body: JSON.stringify(body),
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + varLocalStorage.token,
-          },
-        })
-          .then((res) => {
-            if (!res.ok) {
-              window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-              console.log("Error en API", res);
-            }
-            return res.json();
-          })
-          .then((cat) => {
-            if (cat.data) {
-              console.log("Categoria almacenada");
-              this.setState({
-                newItem: cat.data.id,
-                name: "",
-                category_id: 0,
-                add: false,
-              });
-              this.getCategories();
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      }
-    } else {
-      window.alert("Debe de escribir el nombre de la categoria");
+    //Verificamos campos validos
+    if (this.state.name.length < 4) {
+      window.Swal.fire(
+        "Verificación",
+        "Debe de escribir el nombre de la categoria",
+        "warning"
+      );
       this.nameInput.focus();
+      return false;
     }
+
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de crear una nueva categoria?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Crear",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          //Variables
+          let { host, token } = this.state,
+            body = {
+              name: this.state.name,
+              category_id: this.state.category_id_3
+                ? this.state.category_id_3
+                : this.state.category_id_2
+                ? this.state.category_id_2
+                : this.state.category_id,
+            };
+
+          //Actualiza el pedido o creamos un pedido nuevo según el ID
+          console.log("Enviando datos a API para almacenar");
+          return fetch("http://" + host + "/api/categories", {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
+            });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+
+        if (data.data) {
+          console.log("Categoria almacenada");
+          window.Swal.fire({
+            icon: "success",
+            title: "Categoria almacenada con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => {
+            this.setState({
+              newItem: data.data.id,
+            });
+            this.getCategories();
+          });
+        } else {
+          window.Swal.fire("Error", "al almacenar la categoria", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
   };
   getCategories = () => {
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/categories",
+    let { host, token, load } = this.state,
+      url = "http://" + host + "/api/categories",
       categoryid = "&categoryid=raiz",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
+
+    //Mandamos señal de carga si no lo he hecho
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
+
     console.log("Descargando lista de categorias");
     fetch(url + page, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
+        Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-        return res.json();
+        return response.json();
       })
       .then((cat) => {
         if (cat.data) {
@@ -371,11 +431,21 @@ export default class ToolsCategory extends Component {
           this.setState({
             category_list: cat.data,
             meta: cat.meta,
+            newItem: 0,
+            add: false,
+            category_id: 0,
+            name: "",
+            load: false,
           });
         }
       })
       .catch((e) => {
-        console.log(e);
+        console.error("Orus: " + e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
       });
     //Category_select
     fetch(url + page + categoryid, {
@@ -383,14 +453,14 @@ export default class ToolsCategory extends Component {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
+        Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
-        return res.json();
+        return response.json();
       })
       .then((cat) => {
         if (cat.data) {
@@ -400,7 +470,12 @@ export default class ToolsCategory extends Component {
         }
       })
       .catch((e) => {
-        console.log(e);
+        console.error("Orus: " + e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
       });
   };
   handleClickAdd = () => {

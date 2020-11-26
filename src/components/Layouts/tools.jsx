@@ -24,14 +24,15 @@ export default class StoreAdd extends Component {
       server: varLocalStorage.host
         ? varLocalStorage.host
         : window.location.host.split(":")[0],
-      company: varLocalStorage.company? varLocalStorage.company : "",
-      email: varLocalStorage.email? varLocalStorage.email : "",
+      company: varLocalStorage.company ? varLocalStorage.company : "",
+      email: varLocalStorage.email ? varLocalStorage.email : "",
       name: varLocalStorage.name ? varLocalStorage.name : "",
       username: varLocalStorage.username ? varLocalStorage.username : "",
     });
   }
 
   render() {
+    const { data } = this.props;
     return (
       <div className="row">
         <div className="col-6">
@@ -81,7 +82,7 @@ export default class StoreAdd extends Component {
             </div>
           </div>
 
-          <Category />
+          <Category data={data} />
         </div>
         <div className="col-6">
           <div className="card card-primary card-outline">

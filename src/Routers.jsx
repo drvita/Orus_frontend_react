@@ -10,6 +10,7 @@ import Store from "./components/Store/index";
 import StoreAdd from "./components/Store/add";
 import Contacts from "./components/Contacts/index";
 import ContactsAdd from "./components/Contacts/add";
+import AddByContact from "./components/Contacts/addByContact";
 import Tools from "./components/Layouts/tools";
 import Exam from "./components/Exam/index";
 import ExamAdd from "./components/Exam/add";
@@ -134,6 +135,17 @@ export default class Routers extends Component {
                     />
                     <Route
                       extric
+                      path="/contactos/add"
+                      render={(props) => (
+                        <AddByContact
+                          {...props}
+                          data={data}
+                          page={this.handlePage}
+                        />
+                      )}
+                    />
+                    <Route
+                      extric
                       path="/contactos"
                       render={(props) => (
                         <Contacts
@@ -167,7 +179,7 @@ export default class Routers extends Component {
                       extric
                       path="/configuraciones"
                       render={(props) => (
-                        <Tools {...props} page={this.handlePage} />
+                        <Tools {...props} data={data} page={this.handlePage} />
                       )}
                     />
                     <Route

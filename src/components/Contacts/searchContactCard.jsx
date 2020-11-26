@@ -94,11 +94,7 @@ export default class searchContact extends Component {
                 )}
               </p>
               <p className="text-muted text-center">
-                {domicilio.calle ? (
-                  domicilio.calle
-                ) : (
-                  <span className="text-danger">Capture el domicilio</span>
-                )}
+                {domicilio && domicilio.calle ? domicilio.calle : null}
               </p>
 
               <ul className="list-group list-group-unbordered mb-3">

@@ -408,6 +408,7 @@ export default class ExamAdd extends Component {
               : "http://" + host + "/api/exams",
             method = id ? "PUT" : "POST";
           if (!body.category_id) delete body.category_id;
+          if (!body.category_ii) delete body.category_ii;
 
           //Crear o modificar examen
           console.log("Enviando datos del examen a la API");
@@ -559,6 +560,7 @@ export default class ExamAdd extends Component {
               d_fclod_time: data.data.d_fclod_time,
               d_fcloi_time: data.data.d_fcloi_time,
               category_id: data.data.category_id,
+              category_ii: data.data.category_ii,
               order_id: data.data.order_id ? data.data.order_id : 0,
               status: data.data.estado,
               created_at: data.data.created_at,

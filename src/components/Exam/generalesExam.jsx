@@ -27,17 +27,22 @@ export default class GeneralesExam extends Component {
           <div className="card-body">
             <div className="row">
               <div className="col-md-3">
-                <span className="label label-default">
-                  <i className="fas fa-desktop"></i> PC
-                </span>
+                <div className="custom-control custom-switch">
+                  <input
+                    name="pc"
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="pc"
+                    checked={this.props.pc}
+                    onChange={this.catchInputs}
+                  />
+                  <label className="custom-control-label" for="pc">
+                    <i className="fas fa-desktop"></i> PC
+                  </label>
+                </div>
+
                 <input
-                  name="pc"
-                  type="checkbox"
-                  checked={this.props.pc}
-                  onChange={this.catchInputs}
-                />
-                <input
-                  type="time"
+                  type="text"
                   name="pc_time"
                   className="form-control input-xs"
                   value={this.props.pc_time}
@@ -46,17 +51,22 @@ export default class GeneralesExam extends Component {
                 />
               </div>
               <div className="col-md-3">
-                <span className="label label-default">
-                  <i className="fas fa-tablet"></i> Tablet
-                </span>
+                <div className="custom-control custom-switch">
+                  <input
+                    name="tablet"
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="tablet"
+                    checked={this.props.tablet}
+                    onChange={this.catchInputs}
+                  />
+                  <label className="custom-control-label" for="tablet">
+                    <i className="fas fa-tablet-alt"></i> Tablet
+                  </label>
+                </div>
+
                 <input
-                  name="tablet"
-                  type="checkbox"
-                  checked={this.props.tablet}
-                  onChange={this.catchInputs}
-                />
-                <input
-                  type="time"
+                  type="text"
                   name="tablet_time"
                   className="form-control input-xs"
                   value={this.props.tablet_time}
@@ -65,17 +75,22 @@ export default class GeneralesExam extends Component {
                 />
               </div>
               <div className="col-md-3">
-                <span className="label label-default">
-                  <i className="fas fa-mobile"></i> Telefono
-                </span>
+                <div className="custom-control custom-switch">
+                  <input
+                    name="movil"
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="movil"
+                    checked={this.props.movil}
+                    onChange={this.catchInputs}
+                  />
+                  <label className="custom-control-label" for="movil">
+                    <i className="fas fa-mobile-alt"></i> Telefono
+                  </label>
+                </div>
+
                 <input
-                  name="movil"
-                  type="checkbox"
-                  checked={this.props.movil}
-                  onChange={this.catchInputs}
-                />
-                <input
-                  type="time"
+                  type="text"
                   name="movil_time"
                   className="form-control input-xs"
                   value={this.props.movil_time}
@@ -84,17 +99,22 @@ export default class GeneralesExam extends Component {
                 />
               </div>
               <div className="col-md-3">
-                <span className="label label-default">
-                  <i className="fa fa-laptop"></i> Laptop
-                </span>
+                <div className="custom-control custom-switch">
+                  <input
+                    name="lap"
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="lap"
+                    checked={this.props.lap}
+                    onChange={this.catchInputs}
+                  />
+                  <label className="custom-control-label" for="lap">
+                    <i className="fas fa-laptop"></i> Laptop
+                  </label>
+                </div>
+
                 <input
-                  name="lap"
-                  type="checkbox"
-                  checked={this.props.lap}
-                  onChange={this.catchInputs}
-                />
-                <input
-                  type="time"
+                  type="text"
                   name="lap_time"
                   className="form-control input-xs"
                   value={this.props.lap_time}
@@ -107,48 +127,64 @@ export default class GeneralesExam extends Component {
               <div className="col-md-6">
                 <ul className="list-group">
                   <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Frontal
-                    <span className="badge badge-pill">
+                    <div className="custom-control custom-switch">
                       <input
                         name="frontal"
                         type="checkbox"
+                        className="custom-control-input"
+                        id="frontal"
                         checked={this.props.frontal}
                         onChange={this.catchInputs}
                       />
-                    </span>
+                      <label className="custom-control-label" for="frontal">
+                        Frontal
+                      </label>
+                    </div>
                   </li>
                   <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Occipita
-                    <span className="badge badge-pill">
+                    <div className="custom-control custom-switch">
                       <input
                         name="occipital"
                         type="checkbox"
+                        className="custom-control-input"
+                        id="occipital"
                         checked={this.props.occipital}
                         onChange={this.catchInputs}
                       />
-                    </span>
+                      <label className="custom-control-label" for="occipital">
+                        Occipital
+                      </label>
+                    </div>
                   </li>
                   <li className="list-group-item d-flex justify-content-between align-items-center">
-                    General
-                    <span className="badge badge-pill">
+                    <div className="custom-control custom-switch">
                       <input
                         name="generality"
                         type="checkbox"
+                        className="custom-control-input"
+                        id="generality"
                         checked={this.props.generality}
                         onChange={this.catchInputs}
                       />
-                    </span>
+                      <label className="custom-control-label" for="generality">
+                        General
+                      </label>
+                    </div>
                   </li>
                   <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Cefalea
-                    <span className="badge badge-pill">
+                    <div className="custom-control custom-switch">
                       <input
                         name="cefalea"
                         type="checkbox"
+                        className="custom-control-input"
+                        id="cefalea"
                         checked={this.props.cefalea}
                         onChange={this.catchInputs}
                       />
-                    </span>
+                      <label className="custom-control-label" for="cefalea">
+                        Cefalea
+                      </label>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -157,24 +193,44 @@ export default class GeneralesExam extends Component {
                   <li className="list-group-item">
                     Temporal
                     <br />
-                    <i className="fa fa-eye"></i> Derecho
-                    <span className="badge badge-pill">
-                      <input
-                        name="temporaod"
-                        type="checkbox"
-                        checked={this.props.temporaod}
-                        onChange={this.catchInputs}
-                      />
-                    </span>
-                    <i className="fa fa-eye"></i> Izquierdo
-                    <span className="badge badge-pill">
-                      <input
-                        name="temporaoi"
-                        type="checkbox"
-                        checked={this.props.temporaoi}
-                        onChange={this.catchInputs}
-                      />
-                    </span>
+                    <div className="row mt-2">
+                      <div className="col">
+                        <div className="custom-control custom-switch">
+                          <input
+                            name="temporaod"
+                            type="checkbox"
+                            className="custom-control-input"
+                            id="temporaod"
+                            checked={this.props.temporaod}
+                            onChange={this.catchInputs}
+                          />
+                          <label
+                            className="custom-control-label"
+                            for="temporaod"
+                          >
+                            <i className="fa fa-eye"></i> Derecho
+                          </label>
+                        </div>
+                      </div>
+                      <div className="col">
+                        <div className="custom-control custom-switch">
+                          <input
+                            name="temporaoi"
+                            type="checkbox"
+                            className="custom-control-input"
+                            id="temporaoi"
+                            checked={this.props.temporaoi}
+                            onChange={this.catchInputs}
+                          />
+                          <label
+                            className="custom-control-label"
+                            for="temporaoi"
+                          >
+                            <i className="fa fa-eye"></i> Izquierdo
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </li>
                   <li className="list-group-item">
                     Frecuencia
@@ -190,17 +246,17 @@ export default class GeneralesExam extends Component {
                     </span>
                   </li>
                   <li className="list-group-item">
-                    Intensidad
-                    <span className="badge badge-pill">
-                      <input
-                        type="range"
-                        name="c_intensidad"
-                        min="0"
-                        max="4"
-                        value={this.props.c_intensidad}
-                        onChange={this.catchInputs}
-                      />
-                    </span>
+                    <label for="c_intensidad">Intensidad</label>
+                    <input
+                      type="range"
+                      name="c_intensidad"
+                      className="custom-range custom-range-info"
+                      id="c_intensidad"
+                      min="0"
+                      max="4"
+                      value={this.props.c_intensidad}
+                      onChange={this.catchInputs}
+                    />
                   </li>
                 </ul>
               </div>

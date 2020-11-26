@@ -38,10 +38,34 @@ export default class DiabetesExam extends Component {
               <div className="col-2">Rango de glucosa</div>
               <div className="col-3">Ultimo examen</div>
               <div className="col-2">
-                <i className="fa fa-eye"></i> Derecho
+                <div className="custom-control custom-switch">
+                  <input
+                    name="d_fclod"
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="d_fclod"
+                    checked={this.props.d_fclod}
+                    onChange={this.catchInputs}
+                  />
+                  <label className="custom-control-label" for="d_fclod">
+                    <i className="fa fa-eye"></i> Derecho
+                  </label>
+                </div>
               </div>
               <div className="col-2">
-                <i className="fa fa-eye"></i> Izquierdo
+                <div className="custom-control custom-switch">
+                  <input
+                    name="d_fcloi"
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="d_fcloi"
+                    checked={this.props.d_fcloi}
+                    onChange={this.catchInputs}
+                  />
+                  <label className="custom-control-label" for="d_fcloi">
+                    <i className="fa fa-eye"></i> Izquierdo
+                  </label>
+                </div>
               </div>
             </div>
             <div className="row">
@@ -74,13 +98,7 @@ export default class DiabetesExam extends Component {
               </div>
               <div className="col-md-2">
                 <input
-                  name="d_fclod"
-                  type="checkbox"
-                  checked={this.props.d_fclod}
-                  onChange={this.catchInputs}
-                />
-                <input
-                  type="time"
+                  type="text"
                   name="d_fclod_time"
                   className="form-control"
                   value={this.props.d_fclod_time}
@@ -90,13 +108,7 @@ export default class DiabetesExam extends Component {
               </div>
               <div className="col-md-2">
                 <input
-                  name="d_fcloi"
-                  type="checkbox"
-                  checked={this.props.d_fcloi}
-                  onChange={this.catchInputs}
-                />
-                <input
-                  type="time"
+                  type="text"
                   name="d_fcloi_time"
                   className="form-control"
                   value={this.props.d_fcloi_time}

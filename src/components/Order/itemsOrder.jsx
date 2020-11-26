@@ -16,6 +16,7 @@ export default class Items extends Component {
       descripcion: "",
       itemNew: false,
       itemsDb: [],
+      load: false,
     };
     this.total = 0;
   }
@@ -36,7 +37,7 @@ export default class Items extends Component {
   }
 
   render() {
-    let { itemNew, itemsDb } = this.state;
+    let { itemNew, itemsDb, load } = this.state;
     let { items } = this.props;
     this.total = 0;
 
@@ -138,7 +139,21 @@ export default class Items extends Component {
                   </button>
                 </td>
               </tr>
-              {itemsDb.length ? (
+
+              {load ? (
+                <tr>
+                  <td colSpan="5">
+                    <div className="text-center">
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ) : itemsDb.length ? (
                 <tr>
                   <td colSpan="5">
                     <div className="list-group">
@@ -158,16 +173,18 @@ export default class Items extends Component {
                               );
                             }}
                           >
-                            ({db.codigo}){db.producto} / {db.marca}
+                            <span className="text-primary">({db.codigo})</span>{" "}
+                            {db.producto}{" "}
+                            {db.marca ? (
+                              <span className="text-muted">/ {db.marca}</span>
+                            ) : null}
                           </a>
                         );
                       })}
                     </div>
                   </td>
                 </tr>
-              ) : (
-                <tr></tr>
-              )}
+              ) : null}
             </React.Fragment>
           ) : null}
           {items.length ? (
@@ -274,11 +291,9 @@ export default class Items extends Component {
     if (name === "cantidad") {
       value = value * 1;
       subtotal = this.state.precio * value;
-      console.log("cantidad ", value);
     } else if (name === "precio") {
       value = value * 1;
       subtotal = this.state.cantidad * value;
-      console.log("precio: ", value);
     } else if (name === "descripcion") {
       subtotal = this.state.subtotal;
     }
@@ -286,36 +301,65 @@ export default class Items extends Component {
       value = value * 1;
     }
     if (name === "producto" && value.length > 3 && !this.state.store_items_id) {
-      //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-        url = "http://" + varLocalStorage.host + "/api/store",
-        search = "?search=" + value;
-      //Realiza la peticion del usuario seun el id
-      console.log("Descargando datos del item");
-      fetch(url + search, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.log(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.data && data.data.length) {
-            console.log("Almacenando datos del item del DB");
-            this.setState({
-              itemsDb: data.data,
-            });
-          } else if (data.message) {
-            console.log("Error al almacenar items de la DB", data.message);
-          }
+      let { load } = this.state;
+
+      //Revisamos que ya este cargando
+      if (!load) {
+        this.setState({
+          load: true,
         });
+      }
+      if (this.timeSave) clearTimeout(this.timeSave);
+      this.timeSave = setTimeout(() => {
+        //Variables en localStorage
+        let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+          url = "http://" + varLocalStorage.host + "/api/store",
+          search = "?search=" + value,
+          pages = "&npages=6";
+        //Realiza la peticion del usuario seun el id
+        console.log("Descargando datos del item");
+        fetch(url + search + pages, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + varLocalStorage.token,
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(response.statusText);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("DAta finish", data);
+            if (data.data && data.data.length) {
+              console.log("Almacenando datos del item del DB");
+              this.setState({
+                itemsDb: data.data,
+              });
+            } else if (data.message) {
+              console.log(
+                "No hay articulos en la buscada de items",
+                data.message
+              );
+            }
+            this.setState({
+              load: false,
+            });
+          })
+          .catch((e) => {
+            console.error(e);
+            window.Swal.fire(
+              "Fallo de conexion",
+              "Verifique la conexion al servidor",
+              "error"
+            );
+            this.setState({
+              load: false,
+            });
+          });
+      }, 1500);
     }
 
     this.setState({

@@ -270,7 +270,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.lcgod}
+                  value={this.props.lcgod ? this.props.lcgod : ""}
                   onChange={this.catchInputs}
                 />
               </div>
@@ -286,7 +286,7 @@ export default class GraduacionExam extends Component {
                       : "form-control"
                   }
                   disabled={this.props.readOnly ? true : false}
-                  value={this.props.lcgoi}
+                  value={this.props.lcgoi ? this.props.lcgoi : ""}
                   onChange={this.catchInputs}
                 />
               </div>

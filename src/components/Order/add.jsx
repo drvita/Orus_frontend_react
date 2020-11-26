@@ -69,7 +69,7 @@ export default class OrderAdd extends Component {
   }
 
   render() {
-    let { contact_id, id, load, items, nota, status } = this.state,
+    const { contact_id, id, load, items, nota, status, edad } = this.state,
       { data } = this.props;
 
     return (
@@ -232,8 +232,8 @@ export default class OrderAdd extends Component {
                     </div>
                     <div className="tab-pane fade pt-4" id="exam">
                       <ListExam
-                        paciente={this.state.contact_id}
-                        edad={this.state.edad}
+                        paciente={contact_id}
+                        edad={edad}
                         exam={this.state.exam}
                         page={this.changePage}
                         datos={data}
@@ -391,6 +391,7 @@ export default class OrderAdd extends Component {
               inStorage: item.inStorage,
               session: item.session,
               out: item.out,
+              descripcion: item.descripcion,
               store_items_id: item.store_items_id,
             });
             return false;

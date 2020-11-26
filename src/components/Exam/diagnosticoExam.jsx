@@ -62,14 +62,19 @@ export default class DiagnosticoExam extends Component {
                 </select>
               </div>
               <div className="col-md-3">
-                Presbicie
-                <br />
-                <input
-                  name="presbicie"
-                  type="checkbox"
-                  checked={this.props.presbicie}
-                  onChange={this.catchInputs}
-                />
+                <div className="custom-control custom-switch">
+                  <input
+                    name="presbicie"
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="presbicie"
+                    checked={this.props.presbicie}
+                    onChange={this.catchInputs}
+                  />
+                  <label className="custom-control-label" for="presbicie">
+                    Presbicie
+                  </label>
+                </div>
               </div>
               <div className="col-md-3">
                 <i className="fa fa-eye"></i> <label>Derecho</label>

@@ -7,6 +7,8 @@ import moment from "moment";
 export default class ListsExams extends Component {
   constructor(props) {
     super(props);
+    //Variables en localStorage
+    let ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       id: 0,
       data: {
@@ -14,8 +16,11 @@ export default class ListsExams extends Component {
         meta: {},
       },
       exam: {},
+      examEdit: false,
       load: true,
       page: 0,
+      host: ls.host,
+      token: ls.token,
     };
   }
   componentDidMount() {
@@ -46,7 +51,7 @@ export default class ListsExams extends Component {
   }
 
   render() {
-    const { data, load, id, exam } = this.state,
+    const { data, load, id, exam, examEdit } = this.state,
       { select, datos } = this.props;
 
     if (select) {
@@ -112,13 +117,40 @@ export default class ListsExams extends Component {
                 lcmarca={exam.lcmarca}
                 lcgod={exam.lcgod}
                 lcgoi={exam.lcgoi}
-                readOnly={true}
-                onChangeInput={this.handleChangeInput}
+                readOnly={!examEdit}
+                onChangeInput={this.handleDataExam}
               />
+
+              <div className="row">
+                <div className="col text-right pt-2">
+                  <button
+                    className={examEdit ? "btn btn-dark" : "btn btn-info"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (examEdit) {
+                        this.handleSaveExam(exam);
+                      }
+                      this.setState({
+                        examEdit: !examEdit,
+                      });
+                    }}
+                  >
+                    {examEdit ? (
+                      <React.Fragment>
+                        <i className="fas fa-save mr-2"></i> Guardar
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment>
+                        <i className="fas fa-pencil-alt mr-2"></i> Editar
+                      </React.Fragment>
+                    )}
+                  </button>
+                </div>
+              </div>
 
               {exam.category_id ? (
                 <div className="row">
-                  <div className="col">
+                  <div className={exam.category_ii ? "col" : "col-6"}>
                     <Recomendaciones
                       category_id={exam.category_id}
                       title="Recomendacion principal"
@@ -126,14 +158,16 @@ export default class ListsExams extends Component {
                       onChangeInput={this.handleChangeInput}
                     />
                   </div>
-                  <div className="col">
-                    <Recomendaciones
-                      category_id={exam.category_ii}
-                      title="Recomendacion adicional"
-                      data={datos}
-                      onChangeInput={this.handleChangeInput}
-                    />
-                  </div>
+                  {exam.category_ii ? (
+                    <div className="col">
+                      <Recomendaciones
+                        category_id={exam.category_ii}
+                        title="Recomendacion adicional"
+                        data={datos}
+                        onChangeInput={this.handleChangeInput}
+                      />
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
             </React.Fragment>
@@ -323,6 +357,81 @@ export default class ListsExams extends Component {
     }
   }
 
+  handleSaveExam = (data) => {
+    const { id } = data,
+      { paciente, edad } = this.props;
+    delete data.id;
+    data.contact_id = paciente;
+    data.edad = edad;
+
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de actualizar el examen?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: "Actualizar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+      preConfirm: (confirm) => {
+        if (confirm) {
+          let { host, token } = this.state;
+
+          //Actualiza el examen según el ID
+          console.log("Enviando datos a API para almacenar");
+          return fetch("http://" + host + "/api/exams/" + id, {
+            method: "PUT",
+            body: JSON.stringify(data),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          })
+            .then(async (response) => {
+              let back = {};
+              if (response.status !== 204) back = await response.json();
+              if (!response.ok) {
+                throw new Error(back.message);
+              }
+              return back;
+            })
+            .catch((e) => {
+              console.error("Orus fetch", e);
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              );
+            });
+        }
+      },
+    }).then((result) => {
+      if (result && !result.dismiss && result.value) {
+        let data = result.value;
+
+        if (data.data) {
+          console.log("Examen almacenada");
+          window.Swal.fire({
+            icon: "success",
+            title: "Examen actualizado con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          window.Swal.fire("Error", "al almacenar el pedido", "error");
+          console.error("Orus res: ", data.message);
+        }
+      }
+    });
+  };
+  handleDataExam = (key, value) => {
+    let { exam } = this.state;
+    exam[key] = value;
+    this.setState({
+      exam,
+    });
+  };
   handleChangeInput = (key, value) => {
     this.props.ChangeInput(key, value);
   };
@@ -350,7 +459,7 @@ export default class ListsExams extends Component {
       preConfirm: (confirm) => {
         if (confirm) {
           //Variables en localStorage
-          let ls = JSON.parse(localStorage.getItem("OrusSystem")),
+          let { host, token } = this.state,
             { paciente } = this.props,
             body = {
               contact_id: paciente,
@@ -359,13 +468,13 @@ export default class ListsExams extends Component {
             };
           //Crear o modificar examen
           console.log("Enviando datos del pedido a la API");
-          return fetch("http://" + ls.host + "/api/orders", {
+          return fetch("http://" + host + "/api/orders", {
             method: "POST",
             body: JSON.stringify(body),
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer " + ls.token,
+              Authorization: "Bearer " + token,
             },
           })
             .then((response) => {
@@ -417,7 +526,7 @@ export default class ListsExams extends Component {
       preConfirm: (confirm) => {
         if (confirm) {
           //Variables en localStorage
-          let ls = JSON.parse(localStorage.getItem("OrusSystem")),
+          let { host, token } = this.state,
             { paciente, edad } = this.props,
             body = {
               contact_id: paciente,
@@ -425,13 +534,13 @@ export default class ListsExams extends Component {
             };
           //Crear examen
           console.log("Enviando datos del examen a la API");
-          return fetch("http://" + ls.host + "/api/exams", {
+          return fetch("http://" + host + "/api/exams", {
             method: "POST",
             body: JSON.stringify(body),
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: "Bearer " + ls.token,
+              Authorization: "Bearer " + token,
             },
           })
             .then((response) => {
@@ -472,13 +581,12 @@ export default class ListsExams extends Component {
     this.props.page(e);
   };
   getExams = () => {
-    const { load } = this.state;
+    const { load, host, token } = this.state;
     const { paciente } = this.props;
 
     if (paciente) {
       //Variables en localStorage
-      let ls = JSON.parse(localStorage.getItem("OrusSystem")),
-        url = "http://" + ls.host + "/api/exams",
+      const url = "http://" + host + "/api/exams",
         page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1",
         orderby = "&orderby=created_at&order=desc",
         client = "&paciente=" + paciente;
@@ -497,7 +605,7 @@ export default class ListsExams extends Component {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: "Bearer " + ls.token,
+          Authorization: "Bearer " + token,
         },
       })
         .then((res) => {

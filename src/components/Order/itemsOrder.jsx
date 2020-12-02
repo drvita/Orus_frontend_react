@@ -49,10 +49,10 @@ export default class Items extends Component {
               Cantidad
             </th>
             <th scope="col">Descripcion</th>
-            <th scope="col" style={{ width: 80 }}>
+            <th scope="col" className="text-center" style={{ width: 120 }}>
               Precio
             </th>
-            <th scope="col" style={{ width: 80 }}>
+            <th scope="col" className="text-center" style={{ width: 120 }}>
               Subtotal
             </th>
             <th scope="col" style={{ width: 60 }}></th>

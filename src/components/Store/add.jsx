@@ -34,7 +34,7 @@ export default class StoreAdd extends Component {
   }
 
   render() {
-    let { load } = this.state;
+    let { id, load } = this.state;
     return (
       <div className="row">
         <div className={this.state.id ? "col-5" : "col-6"}>
@@ -266,10 +266,18 @@ export default class StoreAdd extends Component {
                 </React.Fragment>
               )}
             </div>
-            <div className="card-footer">
+            <div className="card-footer text-right">
               <div className="row">
                 <div className="col-md-12">
-                  <div className="btn-group float-right" role="group">
+                  <div className="btn-group" role="group">
+                    <Link
+                      to="/almacen/registro"
+                      className="btn btn-dark"
+                      onClick={this.setNew}
+                    >
+                      <i className="fas fa-plus mr-1"></i>
+                      Nuevo
+                    </Link>
                     <Link
                       to="/almacen"
                       className="btn btn-dark"
@@ -277,8 +285,10 @@ export default class StoreAdd extends Component {
                         this.changePage("/almacen");
                       }}
                     >
-                      <i className="fas fa-ban mr-1"></i>
-                      Volver
+                      <i
+                        className={id ? "fas fa-ban mr-1" : "fas fa-undo mr-1"}
+                      ></i>
+                      {id ? "Cerrar" : "Cancelar"}
                     </Link>
                     <button type="submit" className="btn btn-primary">
                       <i className="fas fa-save mr-1"></i>
@@ -303,6 +313,21 @@ export default class StoreAdd extends Component {
     );
   }
 
+  setNew = (e) => {
+    this.setState({
+      id: 0,
+      code: "",
+      codebar: "",
+      grad: "",
+      brand: "",
+      name: "",
+      unit: "PZ",
+      cant: 1,
+      price: 1,
+      category_id: 1,
+      load: false,
+    });
+  };
   changePage = (e) => {
     this.props.page(e);
   };

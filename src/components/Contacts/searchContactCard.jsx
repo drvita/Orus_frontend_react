@@ -82,19 +82,21 @@ export default class searchContact extends Component {
               <h3 className="profile-username text-center text-capitalize">
                 {nombre}
               </h3>
-              <p className="text-muted text-center">
+              <h6 className="text-muted text-center">
                 {telefonos.t_movil ? (
-                  telefonos.t_movil
+                  <span>Movil: {telefonos.t_movil}</span>
                 ) : telefonos.t_casa ? (
-                  telefonos.t_casa
-                ) : telefonos.t_casa ? (
-                  telefonos.t_casa
+                  <span>Casa: {telefonos.t_casa}</span>
+                ) : telefonos.t_oficina ? (
+                  <span>Oficina: {telefonos.t_oficina}</span>
                 ) : (
                   <span className="text-danger">Capture el telefono</span>
                 )}
-              </p>
+              </h6>
               <p className="text-muted text-center">
-                {domicilio && domicilio.calle ? domicilio.calle : null}
+                {domicilio && domicilio.calle.length > 6
+                  ? domicilio.calle
+                  : null}
               </p>
 
               <ul className="list-group list-group-unbordered mb-3">

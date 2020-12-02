@@ -20,7 +20,7 @@ export default class Store extends Component {
       load: true,
       page: sdd ? sdd.page : 1,
       orderby: sdd ? sdd.orderby : "created_at",
-      order: sdd ? sdd.order : "asc",
+      order: sdd ? sdd.order : "desc",
       search: sdd ? sdd.search : "",
       host: props.data.host,
       token: props.data.token,
@@ -170,15 +170,21 @@ export default class Store extends Component {
           </table>
         </div>
         <div className="card-footer text-right">
-          <Link
-            to="/almacen/registro"
-            className="btn btn-outline-primary"
-            onClick={this.changePage}
-            id="/almacen/registro"
-          >
-            <i className="fas fa-plus mr-1"></i>
-            Nuevo producto
-          </Link>
+          <div className="row">
+            <div className="col-md-12">
+              <div className="btn-group" role="group">
+                <Link
+                  to="/almacen/registro"
+                  className="btn btn-outline-primary"
+                  onClick={this.changePage}
+                  id="/almacen/registro"
+                >
+                  <i className="fas fa-plus mr-1"></i>
+                  Nuevo producto
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

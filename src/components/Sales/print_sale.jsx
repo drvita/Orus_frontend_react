@@ -56,10 +56,10 @@ export default class printSale extends Component {
                 <h4 className="text-capitalize">
                   {client.nombre}
                   <br />
-                  {client.telefonos
-                    ? client.telefonos[0]
-                      ? client.telefonos[0]
-                      : client.telefonos[2]
+                  {client.telefonos && client.telefonos.t_movil
+                    ? client.telefonos.t_movil
+                      ? client.telefonos.t_movil
+                      : client.telefonos.t_casa
                     : "--"}
                 </h4>
               </div>

@@ -242,7 +242,9 @@ export default class SaleAdd extends Component {
               </div>
             ) : null}
           </div>
-          {id && contact_id ? <div className="col-3">{chat}</div> : null}
+          {id && contact_id ? (
+            <div className="col-3 d-print-none">{chat}</div>
+          ) : null}
         </div>
         <Print
           id="print_sale"

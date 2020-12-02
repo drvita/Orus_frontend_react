@@ -71,7 +71,9 @@ export default class OrderAdd extends Component {
   render() {
     const { contact_id, id, load, items, nota, status, edad } = this.state,
       { data } = this.props;
+    let showTabActive = true;
 
+    console.log("Estado: ", status);
     return (
       <div className="row">
         <div className="col-3">
@@ -85,10 +87,7 @@ export default class OrderAdd extends Component {
           {contact_id ? (
             <div className="card card-warning card-outline mt-4">
               <div className="card-body">
-                <Status
-                  status={this.state.status}
-                  ChangeInput={this.handleChangeInput}
-                />
+                <Status status={status} ChangeInput={this.handleChangeInput} />
               </div>
             </div>
           ) : null}
@@ -155,7 +154,7 @@ export default class OrderAdd extends Component {
                     <li className="nav-item">
                       <a
                         className={
-                          !this.state.status || this.state.status === 3
+                          (!status || status === 3) && showTabActive
                             ? "nav-link active"
                             : "nav-link"
                         }
@@ -164,6 +163,7 @@ export default class OrderAdd extends Component {
                       >
                         Nota
                       </a>
+                      {(showTabActive = !status || status === 3 ? false : true)}
                     </li>
                     <li className="nav-item">
                       <a className="nav-link" data-toggle="tab" href="#exam">
@@ -173,9 +173,9 @@ export default class OrderAdd extends Component {
                     <li className="nav-item">
                       <a
                         className={
-                          this.state.status === 1
+                          status === 1 && showTabActive
                             ? "nav-link active"
-                            : !this.state.status
+                            : !status
                             ? "nav-link disabled"
                             : "nav-link"
                         }
@@ -184,13 +184,14 @@ export default class OrderAdd extends Component {
                       >
                         Laboratorio
                       </a>
+                      {(showTabActive = status === 1 ? false : true)}
                     </li>
                     <li className="nav-item">
                       <a
                         className={
-                          this.state.status === 2
+                          status === 2
                             ? "nav-link active"
-                            : !this.state.status
+                            : !status || status === 1
                             ? "nav-link disabled"
                             : "nav-link"
                         }
@@ -199,25 +200,25 @@ export default class OrderAdd extends Component {
                       >
                         Bicelación
                       </a>
+                      {(showTabActive = status === 2 ? false : true)}
                     </li>
                     <li className="nav-item">
                       <a
                         className={
-                          this.state.status === 4
-                            ? "nav-link active"
-                            : "nav-link disabled"
+                          status === 4 ? "nav-link active" : "nav-link disabled"
                         }
                         data-toggle="tab"
                         href="#garantia"
                       >
                         Garantia
                       </a>
+                      {(showTabActive = status === 4 ? false : true)}
                     </li>
                   </ul>
                   <div className="tab-content" id="myTabContent">
                     <div
                       className={
-                        !this.state.status || this.state.status === 3
+                        !status || status === 3
                           ? "tab-pane fade pt-4 show active"
                           : "tab-pane fade pt-4"
                       }
@@ -225,7 +226,7 @@ export default class OrderAdd extends Component {
                     >
                       <Items
                         items={this.state.items}
-                        status={this.state.status}
+                        status={status}
                         session={this.state.session}
                         ChangeInput={this.handleChangeInput}
                       />
@@ -244,7 +245,7 @@ export default class OrderAdd extends Component {
                     </div>
                     <div
                       className={
-                        this.state.status === 1
+                        status === 1
                           ? "tab-pane fade pt-4 show active"
                           : "tab-pane fade pt-4"
                       }
@@ -255,13 +256,13 @@ export default class OrderAdd extends Component {
                         npedidolab={
                           this.state.npedidolab ? this.state.npedidolab : ""
                         }
-                        status={this.state.status}
+                        status={status}
                         ChangeInput={this.handleChangeInput}
                       />
                     </div>
                     <div
                       className={
-                        this.state.status === 2
+                        status === 2
                           ? "tab-pane fade pt-4 show active"
                           : "tab-pane fade pt-4"
                       }
@@ -276,14 +277,14 @@ export default class OrderAdd extends Component {
                     </div>
                     <div
                       className={
-                        this.state.status === 4
+                        status === 4
                           ? "tab-pane fade pt-4 show active"
                           : "tab-pane fade pt-4"
                       }
                       id="garantia"
                     >
                       <Garantia
-                        status={this.state.status}
+                        status={status}
                         ChangeInput={this.handleChangeInput}
                       />
                     </div>
@@ -334,7 +335,7 @@ export default class OrderAdd extends Component {
           </div>
         </div>
         {contact_id && id ? (
-          <div className="col-3">
+          <div className="col-3 d-print-none">
             <Chat data={data} table="orders" idRow={id} />
           </div>
         ) : null}

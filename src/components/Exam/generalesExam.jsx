@@ -36,7 +36,7 @@ export default class GeneralesExam extends Component {
                     checked={this.props.pc}
                     onChange={this.catchInputs}
                   />
-                  <label className="custom-control-label" for="pc">
+                  <label className="custom-control-label" htmlFor="pc">
                     <i className="fas fa-desktop"></i> PC
                   </label>
                 </div>
@@ -60,7 +60,7 @@ export default class GeneralesExam extends Component {
                     checked={this.props.tablet}
                     onChange={this.catchInputs}
                   />
-                  <label className="custom-control-label" for="tablet">
+                  <label className="custom-control-label" htmlFor="tablet">
                     <i className="fas fa-tablet-alt"></i> Tablet
                   </label>
                 </div>
@@ -84,7 +84,7 @@ export default class GeneralesExam extends Component {
                     checked={this.props.movil}
                     onChange={this.catchInputs}
                   />
-                  <label className="custom-control-label" for="movil">
+                  <label className="custom-control-label" htmlFor="movil">
                     <i className="fas fa-mobile-alt"></i> Telefono
                   </label>
                 </div>
@@ -108,7 +108,7 @@ export default class GeneralesExam extends Component {
                     checked={this.props.lap}
                     onChange={this.catchInputs}
                   />
-                  <label className="custom-control-label" for="lap">
+                  <label className="custom-control-label" htmlFor="lap">
                     <i className="fas fa-laptop"></i> Laptop
                   </label>
                 </div>
@@ -136,7 +136,7 @@ export default class GeneralesExam extends Component {
                         checked={this.props.frontal}
                         onChange={this.catchInputs}
                       />
-                      <label className="custom-control-label" for="frontal">
+                      <label className="custom-control-label" htmlFor="frontal">
                         Frontal
                       </label>
                     </div>
@@ -151,7 +151,10 @@ export default class GeneralesExam extends Component {
                         checked={this.props.occipital}
                         onChange={this.catchInputs}
                       />
-                      <label className="custom-control-label" for="occipital">
+                      <label
+                        className="custom-control-label"
+                        htmlFor="occipital"
+                      >
                         Occipital
                       </label>
                     </div>
@@ -166,7 +169,10 @@ export default class GeneralesExam extends Component {
                         checked={this.props.generality}
                         onChange={this.catchInputs}
                       />
-                      <label className="custom-control-label" for="generality">
+                      <label
+                        className="custom-control-label"
+                        htmlFor="generality"
+                      >
                         General
                       </label>
                     </div>
@@ -181,7 +187,7 @@ export default class GeneralesExam extends Component {
                         checked={this.props.cefalea}
                         onChange={this.catchInputs}
                       />
-                      <label className="custom-control-label" for="cefalea">
+                      <label className="custom-control-label" htmlFor="cefalea">
                         Cefalea
                       </label>
                     </div>
@@ -206,7 +212,7 @@ export default class GeneralesExam extends Component {
                           />
                           <label
                             className="custom-control-label"
-                            for="temporaod"
+                            htmlFor="temporaod"
                           >
                             <i className="fa fa-eye"></i> Derecho
                           </label>
@@ -224,7 +230,7 @@ export default class GeneralesExam extends Component {
                           />
                           <label
                             className="custom-control-label"
-                            for="temporaoi"
+                            htmlFor="temporaoi"
                           >
                             <i className="fa fa-eye"></i> Izquierdo
                           </label>
@@ -246,7 +252,7 @@ export default class GeneralesExam extends Component {
                     </span>
                   </li>
                   <li className="list-group-item">
-                    <label for="c_intensidad">Intensidad</label>
+                    <label htmlFor="c_intensidad">Intensidad</label>
                     <input
                       type="range"
                       name="c_intensidad"

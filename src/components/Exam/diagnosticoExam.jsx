@@ -71,7 +71,7 @@ export default class DiagnosticoExam extends Component {
                     checked={this.props.presbicie}
                     onChange={this.catchInputs}
                   />
-                  <label className="custom-control-label" for="presbicie">
+                  <label className="custom-control-label" htmlFor="presbicie">
                     Presbicie
                   </label>
                 </div>

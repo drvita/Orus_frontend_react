@@ -11,6 +11,7 @@ export default class searchContact extends Component {
       data: [],
       dataContact: {},
       load: false,
+      edad: 30,
     };
   }
   componentDidMount() {
@@ -57,16 +58,19 @@ export default class searchContact extends Component {
           </div>
         );
       } else if (Object.keys(this.state.dataContact).length) {
-        let {
+        const {
             nombre,
             telefonos,
             domicilio,
             id,
             f_nacimiento,
           } = this.state.dataContact,
-          edad = this.props.edad
-            ? this.props.edad + " años"
-            : moment(f_nacimiento).fromNow(true);
+          edad =
+            typeof this.props.edad === "number" && this.props.edad
+              ? this.props.edad + " años"
+              : f_nacimiento
+              ? moment(f_nacimiento).fromNow(true)
+              : 0;
 
         return (
           <div className="card card-danger card-outline">
@@ -100,15 +104,32 @@ export default class searchContact extends Component {
               </p>
 
               <ul className="list-group list-group-unbordered mb-3">
-                <li className="list-group-item">
+                <li className="list-group-item d-flex justify-content-between align-items-center">
                   <b>Edad:</b>
-                  <span className="float-right">
-                    {f_nacimiento ? edad : "--"}
-                  </span>
+
+                  {edad ? (
+                    <span className="badge badge-primary badge-pill">
+                      {edad}
+                    </span>
+                  ) : (
+                    <input
+                      type="number"
+                      name="edad"
+                      className="form-control"
+                      value={this.state.edad}
+                      onChange={this.handleSearcContact}
+                      onBlur={this.sendAge}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          this.sendAge(e);
+                        }
+                      }}
+                    />
+                  )}
                 </li>
-                <li className="list-group-item">
+                <li className="list-group-item d-flex justify-content-between align-items-center">
                   <b>#Contacto:</b>
-                  <span className="float-right">{id}</span>
+                  <span className="badge badge-primary badge-pill">{id}</span>
                 </li>
               </ul>
               {!this.props.status ? (
@@ -213,6 +234,14 @@ export default class searchContact extends Component {
     }
   }
 
+  sendAge = (e) => {
+    const { value } = e.target,
+      { id } = this.state.dataContact;
+
+    if (value > 0 && value < 110 && id) {
+      this.props.getIdContact(id, value * 1);
+    }
+  };
   getContact = (id) => {
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));

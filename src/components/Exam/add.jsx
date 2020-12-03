@@ -145,14 +145,16 @@ export default class ExamAdd extends Component {
                 onChangeInput={this.handleChangeInput}
                 update={true}
               />
-              <Recomendaciones
-                category_id={category_ii}
-                nameCategory="category_ii"
-                title="Recomendacion adicional"
-                data={data}
-                onChangeInput={this.handleChangeInput}
-                update={true}
-              />
+              {category_id ? (
+                <Recomendaciones
+                  category_id={category_ii}
+                  nameCategory="category_ii"
+                  title="Recomendacion adicional"
+                  data={data}
+                  onChangeInput={this.handleChangeInput}
+                  update={true}
+                />
+              ) : null}
             </React.Fragment>
           ) : null}
         </div>

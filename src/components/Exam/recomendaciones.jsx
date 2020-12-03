@@ -27,7 +27,7 @@ export default class Recomendaciones extends Component {
   render() {
     const { category_id, title } = this.props,
       { category } = this.state,
-      slash = <span className="text-dark">/</span>;
+      slash = <span className="text-dark"> / </span>;
     let nameFullCategory = null;
 
     if (category.depende_de) {

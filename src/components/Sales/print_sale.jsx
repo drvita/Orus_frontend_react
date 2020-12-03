@@ -12,6 +12,9 @@ export default class printSale extends Component {
       this.getContact(this.props.contact);
     }
   }
+  componentDidMount() {
+    this.getContact(this.props.contact);
+  }
 
   render() {
     const {
@@ -54,12 +57,16 @@ export default class printSale extends Component {
                 </h4>
                 <hr />
                 <h4 className="text-capitalize">
-                  {client.nombre}
+                  {client && client.nombre
+                    ? client.nombre
+                    : "Venta de mostrador"}
                   <br />
-                  {client.telefonos && client.telefonos.t_movil
+                  {client && client.telefonos
                     ? client.telefonos.t_movil
                       ? client.telefonos.t_movil
                       : client.telefonos.t_casa
+                      ? client.telefonos.t_casa
+                      : client.telefonos.t_oficina
                     : "--"}
                 </h4>
               </div>
@@ -166,7 +173,7 @@ export default class printSale extends Component {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Descargando contacto");
+        console.log("Descargando contacto: data", data);
         this.setState({
           dataContact: data.data,
         });

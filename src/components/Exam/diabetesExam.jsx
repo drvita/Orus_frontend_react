@@ -47,7 +47,7 @@ export default class DiabetesExam extends Component {
                     checked={this.props.d_fclod}
                     onChange={this.catchInputs}
                   />
-                  <label className="custom-control-label" for="d_fclod">
+                  <label className="custom-control-label" htmlFor="d_fclod">
                     <i className="fa fa-eye"></i> Derecho
                   </label>
                 </div>
@@ -62,7 +62,7 @@ export default class DiabetesExam extends Component {
                     checked={this.props.d_fcloi}
                     onChange={this.catchInputs}
                   />
-                  <label className="custom-control-label" for="d_fcloi">
+                  <label className="custom-control-label" htmlFor="d_fcloi">
                     <i className="fa fa-eye"></i> Izquierdo
                   </label>
                 </div>

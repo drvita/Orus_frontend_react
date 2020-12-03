@@ -59,7 +59,7 @@ export default class ListsExams extends Component {
         <React.Fragment>
           {id ? (
             <React.Fragment>
-              <div className="row mb-4">
+              <div className="row d-print-none mb-4">
                 <div className="col-2">
                   <div className="border border-info rounded p-2 d-flex justify-content-between align-items-center">
                     <span className="badge badge-pill badge-info mx-2">
@@ -68,7 +68,7 @@ export default class ListsExams extends Component {
                     <strong>{id}</strong>
                   </div>
                 </div>
-                <div className="col-3">
+                <div className="col">
                   <div className="border border-info rounded p-2 d-flex justify-content-between align-items-center">
                     <span className="badge badge-pill badge-info mx-2">
                       Estado
@@ -86,7 +86,7 @@ export default class ListsExams extends Component {
                     </strong>
                   </div>
                 </div>
-                <div className="col-2 text-right">
+                <div className="col-2 d-print-none text-right">
                   <button
                     className={
                       this.props.status
@@ -121,7 +121,7 @@ export default class ListsExams extends Component {
                 onChangeInput={this.handleDataExam}
               />
 
-              <div className="row">
+              <div className="row d-print-none">
                 <div className="col text-right pt-2">
                   <button
                     className={examEdit ? "btn btn-dark" : "btn btn-info"}

@@ -237,7 +237,7 @@ export default class GraduacionExam extends Component {
             </tr>
           </tbody>
         </table>
-        <ul className="list-group mt-4">
+        <ul className="list-group d-print-none mt-4">
           <li className="list-group-item">
             <div className="row">
               <div className="col-md-12">
@@ -258,7 +258,7 @@ export default class GraduacionExam extends Component {
               </div>
             </div>
             <div className="row">
-              <div className="col-md-4">
+              <div className="col">
                 <i className="fa fa-eye"></i> <label>Derecho</label>
                 <input
                   type="text"
@@ -274,7 +274,7 @@ export default class GraduacionExam extends Component {
                   onChange={this.catchInputs}
                 />
               </div>
-              <div className="col-md-4">
+              <div className="col">
                 <i className="fa fa-eye"></i> <label>Izquierdo</label>
                 <input
                   type="text"

@@ -85,7 +85,7 @@ export default class OrderAdd extends Component {
             changePage={this.changePage}
           />
           {contact_id ? (
-            <div className="card card-warning card-outline mt-4">
+            <div className="card card-warning card-outline d-print-none mt-4">
               <div className="card-body">
                 <Status status={status} ChangeInput={this.handleChangeInput} />
               </div>
@@ -306,7 +306,7 @@ export default class OrderAdd extends Component {
                 </div>
               )}
             </div>
-            <div className="card-footer text-right">
+            <div className="card-footer d-print-none text-right">
               <div className="btn-group" role="group">
                 <Link
                   to="/pedidos"

@@ -84,6 +84,15 @@ export default class Contacts extends Component {
             Listado de pedidos
           </h3>
           <div className="card-tools">
+            <Link
+              to="/pedidos/registro"
+              className="btn btn-outline-dark"
+              onClick={(e) => {
+                this.changePage("/pedidos/registro");
+              }}
+            >
+              <i className="fas fa-plus"></i>
+            </Link>
             <Filter
               search={this.state.search}
               status={this.state.status}

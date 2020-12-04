@@ -81,6 +81,14 @@ export default class Store extends Component {
             Productos en almacen
           </h3>
           <div className="card-tools">
+            <Link
+              to="/almacen/registro"
+              className="btn btn-outline-dark"
+              onClick={this.changePage}
+              id="/almacen/registro"
+            >
+              <i className="fas fa-plus"></i>
+            </Link>
             <Filter
               search={this.state.search}
               changeFilters={this.onchangeSearch}

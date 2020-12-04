@@ -73,7 +73,6 @@ export default class OrderAdd extends Component {
       { data } = this.props;
     let showTabActive = true;
 
-    console.log("Estado: ", status);
     return (
       <div className="row">
         <div className="col-3">
@@ -315,8 +314,12 @@ export default class OrderAdd extends Component {
                     this.changePage("/pedidos");
                   }}
                 >
-                  <i className="fas fa-ban mr-1"></i>
-                  <strong>Cancelar</strong>
+                  <i
+                    className={
+                      id ? "fas fa-arrow-left mr-2" : "fas fa-ban mr-2"
+                    }
+                  ></i>
+                  <strong>{id ? "Regresar" : "Cancelar"}</strong>
                 </Link>
                 <button
                   className={

@@ -88,6 +88,15 @@ export default class Contacts extends Component {
             Listado de notas
           </h3>
           <div className="card-tools">
+            <Link
+              to="/notas/registro"
+              className="btn btn-outline-dark"
+              onClick={(e) => {
+                this.changePage("/notas/registro");
+              }}
+            >
+              <i className="fas fa-plus"></i>
+            </Link>
             <Filter
               search={search}
               type={type}

@@ -326,7 +326,7 @@ export default class searchContact extends Component {
         url = "http://" + varLocalStorage.host + "/api/contacts",
         type = "&type=0",
         search = word ? `&search=${word}` : "",
-        page = "?page=1";
+        page = "?page=1&itemsPage=4";
       console.log("Descargando contactos de la API");
       //Realiza la peticion de los contactos
       fetch(url + page + search + type, {

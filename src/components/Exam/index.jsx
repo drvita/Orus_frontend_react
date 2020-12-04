@@ -89,6 +89,13 @@ export default class Exam extends Component {
             Examanes de la vista
           </h3>
           <div className="card-tools">
+            <Link
+              to="/consultorio/registro"
+              className="btn btn-outline-dark"
+              onClick={this.changePage}
+            >
+              <i className="fas fa-plus"></i>
+            </Link>
             <Filter
               search={this.state.search}
               status={this.state.status}
@@ -201,8 +208,8 @@ export default class Exam extends Component {
             onClick={this.changePage}
             id="/consultorio/registro"
           >
-            <i className="fas fa-plus" id="/consultorio/registro"></i>
-            &nbsp; Nuevo examen
+            <i className="fas fa-plus mr-2"></i>
+            Nuevo examen
           </Link>
         </div>
       </div>
@@ -232,9 +239,6 @@ export default class Exam extends Component {
       page: id,
       load: true,
     });
-  };
-  changePage = (e) => {
-    this.props.page(e.target.id);
   };
   handleDelete = (id, item) => {
     //Confirmación de eliminacion

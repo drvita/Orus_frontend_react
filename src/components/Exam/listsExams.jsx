@@ -73,7 +73,9 @@ export default class ListsExams extends Component {
                     <span className="badge badge-pill badge-info mx-2">
                       Estado
                     </span>
-                    <strong>{exam.estado}</strong>
+                    <strong>
+                      {exam.estado ? exam.estado : "En proceso..."}
+                    </strong>
                   </div>
                 </div>
                 <div className="col">
@@ -102,21 +104,21 @@ export default class ListsExams extends Component {
               </div>
 
               <Graduacion
-                esferaod={exam.esferaod}
-                esferaoi={exam.esferaoi}
-                cilindrod={exam.cilindrod}
-                cilindroi={exam.cilindroi}
-                ejeod={exam.ejeod}
-                ejeoi={exam.ejeoi}
-                adiciond={exam.adiciond}
-                adicioni={exam.adicioni}
-                dpod={exam.dpod}
-                dpoi={exam.dpoi}
-                alturaod={exam.alturaod}
-                alturaoi={exam.alturaoi}
-                lcmarca={exam.lcmarca}
-                lcgod={exam.lcgod}
-                lcgoi={exam.lcgoi}
+                esferaod={exam.esferaod ? exam.esferaod : 0}
+                esferaoi={exam.esferaoi ? exam.esferaoi : 0}
+                cilindrod={exam.cilindrod ? exam.cilindrod : 0}
+                cilindroi={exam.cilindroi ? exam.cilindroi : 0}
+                ejeod={exam.ejeod ? exam.ejeod : 0}
+                ejeoi={exam.ejeoi ? exam.ejeoi : 0}
+                adiciond={exam.adiciond ? exam.adiciond : 0}
+                adicioni={exam.adicioni ? exam.adicioni : 0}
+                dpod={exam.dpod ? exam.dpod : 0}
+                dpoi={exam.dpoi ? exam.dpoi : 0}
+                alturaod={exam.alturaod ? exam.alturaod : 0}
+                alturaoi={exam.alturaoi ? exam.alturaoi : 0}
+                lcmarca={exam.lcmarca ? exam.lcmarca : 0}
+                lcgod={exam.lcgod ? exam.lcgod : 0}
+                lcgoi={exam.lcgoi ? exam.lcgoi : 0}
                 readOnly={!examEdit}
                 onChangeInput={this.handleDataExam}
               />
@@ -565,11 +567,17 @@ export default class ListsExams extends Component {
         if (data.data) {
           console.log("Examen almacenado");
           localStorage.setItem("OrusContactNew", JSON.stringify({}));
-          window.Swal.fire(
-            "Examen creado con exito",
-            "",
-            "success"
-          ).then((res) => this.getExams());
+
+          window.Swal.fire({
+            icon: "success",
+            title: "Examen creado con exito",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then((res) => {
+            this.getExams();
+            this.props.ChangeInput("exam_id", data.data.id);
+            this.props.ChangeInput("exam", data.data);
+          });
         } else {
           window.Swal.fire("Error", "al almacenar el examen", "error");
           console.error("Orus res: ", data.message);

@@ -315,10 +315,10 @@ export default class Items extends Component {
         let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
           url = "http://" + varLocalStorage.host + "/api/store",
           search = "?search=" + value,
-          pages = "&npages=6";
+          itemsPage = "&itemsPage=6";
         //Realiza la peticion del usuario seun el id
         console.log("Descargando datos del item");
-        fetch(url + search + pages, {
+        fetch(url + search + itemsPage, {
           method: "GET",
           headers: {
             Accept: "application/json",
@@ -332,7 +332,6 @@ export default class Items extends Component {
             return response.json();
           })
           .then((data) => {
-            console.log("DAta finish", data);
             if (data.data && data.data.length) {
               console.log("Almacenando datos del item del DB");
               this.setState({

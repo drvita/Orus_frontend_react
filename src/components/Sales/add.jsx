@@ -27,6 +27,7 @@ export default class SaleAdd extends Component {
       total: 0,
       items: [],
       contact_id: contact && contact.id ? contact.id : 0,
+      cliente: {},
       order_id: 0,
       status: 0,
       usuario: "",
@@ -51,6 +52,7 @@ export default class SaleAdd extends Component {
   render() {
     let {
         contact_id,
+        cliente,
         subtotal,
         descuento,
         pagado,
@@ -201,7 +203,9 @@ export default class SaleAdd extends Component {
                         ? "btn btn-dark"
                         : "btn btn-dark disabled"
                     }
-                    onClick={this.printSale}
+                    onClick={(e) => {
+                      window.print();
+                    }}
                     disabled={contact_id && items.length ? false : true}
                   >
                     <i className="fas fa-print mr-2"></i>
@@ -248,7 +252,7 @@ export default class SaleAdd extends Component {
         </div>
         <Print
           id="print_sale"
-          folio={id}
+          folio={order_id ? "P-" + order_id : "V-" + id}
           date={date}
           items={items}
           descuento={descuento}
@@ -256,6 +260,7 @@ export default class SaleAdd extends Component {
           saldo={pay}
           abonado={pagado}
           contact={contact_id}
+          cliente={cliente}
         />
       </React.Fragment>
     );
@@ -448,6 +453,7 @@ export default class SaleAdd extends Component {
               subtotal: data.data.subtotal,
               total: data.data.total,
               contact_id: data.data.cliente.id,
+              cliente: data.data.cliente,
               usuario: data.data.created,
               date: data.data.created_at,
               status: !rol ? 0 : 1,

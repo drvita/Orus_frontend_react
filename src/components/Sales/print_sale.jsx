@@ -1,21 +1,7 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 export default class printSale extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      dataContact: [],
-    };
-  }
-  componentDidUpdate(props, state) {
-    if (props.contact !== this.props.contact) {
-      this.getContact(this.props.contact);
-    }
-  }
-  componentDidMount() {
-    this.getContact(this.props.contact);
-  }
-
   render() {
     const {
       items,
@@ -28,7 +14,7 @@ export default class printSale extends Component {
       id,
     } = this.props;
     let totalItems = 0,
-      client = this.state.dataContact;
+      client = this.props.cliente;
 
     return (
       <div className="d-none d-print-block" style={{ width: 340 }} id={id}>
@@ -36,12 +22,32 @@ export default class printSale extends Component {
           <div className="col">
             <div className="card m-0">
               <div className="card-body">
-                <h2 className="text-center">
+                <h4
+                  className="text-right"
+                  style={{ fontSize: 28, fontFamily: "sans-serif" }}
+                >
+                  <i>
+                    Folio: <strong>{folio}</strong>
+                  </i>
+                </h4>
+                <h6
+                  className="text-right mb-2"
+                  style={{ fontSize: 18, fontFamily: "sans-serif" }}
+                >
+                  <strong>{moment(date).format("LL")}</strong>
+                </h6>
+                <h2
+                  className="text-center"
+                  style={{ fontSize: 54, fontFamily: "sans-serif" }}
+                >
                   <center>
                     <strong>Óptica Madero</strong>
                   </center>
                 </h2>
-                <h4>
+                <h4
+                  className="text-center mb-4"
+                  style={{ fontSize: 22, fontFamily: "sans-serif" }}
+                >
                   <em>
                     Julio Cesar Cardenas Martinez
                     <br />
@@ -50,34 +56,35 @@ export default class printSale extends Component {
                     Av. Tecnologico 38-A, Vistahermosa, Colima, Col.
                   </em>
                 </h4>
-                <h4>
-                  <i>Folio: {folio}</i>
-                  <br />
-                  <i>Fecha: {date}</i>
-                </h4>
-                <hr />
-                <h4 className="text-capitalize">
+                <h4
+                  className="text-uppercase text-center mb-1"
+                  style={{ fontSize: 20, fontFamily: "sans-serif" }}
+                >
                   {client && client.nombre
                     ? client.nombre
                     : "Venta de mostrador"}
                   <br />
-                  {client && client.telefonos
-                    ? client.telefonos.t_movil
-                      ? client.telefonos.t_movil
-                      : client.telefonos.t_casa
-                      ? client.telefonos.t_casa
-                      : client.telefonos.t_oficina
-                    : "--"}
+                  <strong>
+                    <em style={{ fontSize: 24 }}>
+                      {client && client.telefonos
+                        ? client.telefonos.t_movil
+                          ? client.telefonos.t_movil
+                          : client.telefonos.t_casa
+                          ? client.telefonos.t_casa
+                          : client.telefonos.t_oficina
+                        : "--"}
+                    </em>
+                  </strong>
                 </h4>
               </div>
             </div>
           </div>
         </div>
         <div className="row">
-          <div className="col">
-            <center>
-              <h2 className="text-center">Pedido</h2>
-            </center>
+          <div className="col text-center">
+            <h2 style={{ fontSize: 36, fontFamily: "sans-serif" }}>
+              <strong>Pedido</strong>
+            </h2>
           </div>
         </div>
         <div className="row">
@@ -85,14 +92,14 @@ export default class printSale extends Component {
             <table className="table">
               <thead>
                 <tr>
-                  <th>
-                    <h4>Cant</h4>
+                  <th style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+                    Cant
                   </th>
-                  <th>
-                    <h4>Descripcion</h4>
+                  <th style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+                    Descripcion
                   </th>
-                  <th>
-                    <h4>Precio</h4>
+                  <th style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+                    Precio
                   </th>
                 </tr>
               </thead>
@@ -100,15 +107,18 @@ export default class printSale extends Component {
                 {items.map((item, index) => {
                   totalItems += item.cantidad * item.precio;
                   return (
-                    <tr key={index}>
-                      <td>
-                        <h5>{item.cantidad}</h5>
+                    <tr key={index} className="text-capitalize">
+                      <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
+                        {item.cantidad}
                       </td>
-                      <td>
-                        <h4>{item.producto}</h4>
+                      <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
+                        {item.producto}
                       </td>
-                      <td className="text-right">
-                        <h5>{item.precio.toFixed(2)}</h5>
+                      <td
+                        className="text-right"
+                        style={{ fontSize: 24, fontFamily: "sans-serif" }}
+                      >
+                        {item.precio.toFixed(2)}
                       </td>
                     </tr>
                   );
@@ -116,44 +126,40 @@ export default class printSale extends Component {
               </tbody>
               <tfoot>
                 <tr>
-                  <td
-                    className="text-right"
-                    colSpan="3"
-                    style={{ textAlign: "right" }}
-                  >
-                    <h4>
-                      Subtotal: <label>$ {totalItems.toFixed(2)}</label>
-                    </h4>
-                    <h4>
-                      Descuento: <label>$ {descuento.toFixed(2)}</label>
-                    </h4>
-                    <h4>
+                  <td className="text-right" colSpan="3">
+                    {descuento ? (
+                      <React.Fragment>
+                        <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+                          Subtotal: <label>$ {totalItems.toFixed(2)}</label>
+                        </h4>
+                        <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+                          Descuento: <label>$ {descuento.toFixed(2)}</label>
+                        </h4>
+                      </React.Fragment>
+                    ) : null}
+                    <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
                       Total: <label>$ {total.toFixed(2)}</label>
                     </h4>
-                    <h4>
-                      Abonado: <label>$ {abonado.toFixed(2)}</label>
-                    </h4>
-                    <h4>
-                      Saldo: <label>$ {saldo.toFixed(2)}</label>
-                    </h4>
+                    {abonado ? (
+                      <React.Fragment>
+                        <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+                          Abonado: <label>$ {abonado.toFixed(2)}</label>
+                        </h4>
+                        <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+                          Saldo: <label>$ {saldo.toFixed(2)}</label>
+                        </h4>
+                      </React.Fragment>
+                    ) : null}
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
         </div>
-        <div className="row">
-          <div className="col">
-            <hr />
-            <div className="card">
-              <div className="card-body text-center">
-                <h4>
-                  Armazones usados, viejos y/o resecos son responsabilidad del
-                  cliente
-                </h4>
-              </div>
-            </div>
-          </div>
+        <div className="text-center">
+          <em style={{ fontSize: 22, fontFamily: "sans-serif" }}>
+            Armazones usados, viejos y/o resecos son responsabilidad del cliente
+          </em>
         </div>
       </div>
     );

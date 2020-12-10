@@ -1,24 +1,8 @@
 import React, { Component } from "react";
 
 export default class printPay extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      dataContact: [],
-    };
-  }
-  componentDidMount() {
-    this.getContact(this.props.contact);
-  }
-  componentDidUpdate(props, state) {
-    if (props.contact !== this.props.contact) {
-      this.getContact(this.props.contact);
-    }
-  }
-
   render() {
-    const { id } = this.props;
-    let client = this.state.dataContact;
+    const { id, client } = this.props;
 
     return (
       <div className="d-none d-print-block" style={{ width: 340 }} id={id}>
@@ -26,12 +10,12 @@ export default class printPay extends Component {
           <div className="col">
             <div className="card m-0">
               <div className="card-body">
-                <h2 className="text-center">
+                <h1 className="text-center">
                   <center>
                     <strong>Óptica Madero</strong>
                   </center>
-                </h2>
-                <h4>
+                </h1>
+                <h3>
                   <em>
                     Julio Cesar Cardenas Martinez
                     <br />
@@ -39,10 +23,10 @@ export default class printPay extends Component {
                     <br />
                     Av. Tecnologico 38-A, Vistahermosa, Colima, Col.
                   </em>
-                </h4>
+                </h3>
                 <hr />
-                <h4 className="text-capitalize">
-                  {client.nombre}
+                <h4 className="text-uppercase">
+                  {client && client.nombre ? client.nombre.toUpperCase() : null}
                   <br />
                   {client.telefonos
                     ? client.telefonos[0]
@@ -64,30 +48,4 @@ export default class printPay extends Component {
       </div>
     );
   }
-
-  getContact = (id) => {
-    if (id) {
-      //Variables en localStorage
-      let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-      //Realiza busqueda de contacto
-      fetch("http://" + varLocalStorage.host + "/api/contacts/" + id, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("Descargando contacto");
-          this.setState({
-            dataContact: data.data,
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-  };
 }

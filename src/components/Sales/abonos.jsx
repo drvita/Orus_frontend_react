@@ -24,7 +24,7 @@ export default class ListAbonos extends Component {
 
   render() {
     let { abonos, total, load } = this.state;
-    let { id, date, contact, order, pay, user, sale } = this.props;
+    const { id, date, contact, order, pay, user, sale, cliente } = this.props;
 
     return (
       <React.Fragment>
@@ -140,7 +140,13 @@ export default class ListAbonos extends Component {
           handleChange={this.handleChange}
           handleLoad={this.handleLoad}
         />
-        <Print folio={id} date={date} contact={contact} id="print_pay" />
+        <Print
+          folio={id}
+          date={date}
+          contact={contact}
+          client={cliente}
+          id="print_pay"
+        />
       </React.Fragment>
     );
   }

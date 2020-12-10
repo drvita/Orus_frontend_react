@@ -59,23 +59,25 @@ class Menu extends Component {
               role="menu"
               data-accordion="false"
             >
-              <li className="nav-item has-treeview">
-                <Link
-                  to="/"
-                  className={
-                    active === "dashboard" ? "nav-link active" : "nav-link"
-                  }
-                  onClick={(e) => {
-                    this.changePage("/");
-                  }}
-                >
-                  <i className="nav-icon fas fa-tachometer-alt"></i>
-                  <p>
-                    Dashboard
-                    <i className="right fas fa-angle-left"></i>
-                  </p>
-                </Link>
-              </li>
+              {user.rol !== 2 ? (
+                <li className="nav-item has-treeview">
+                  <Link
+                    to="/"
+                    className={
+                      active === "dashboard" ? "nav-link active" : "nav-link"
+                    }
+                    onClick={(e) => {
+                      this.changePage("/");
+                    }}
+                  >
+                    <i className="nav-icon fas fa-tachometer-alt"></i>
+                    <p>
+                      Dashboard
+                      <i className="right fas fa-angle-left"></i>
+                    </p>
+                  </Link>
+                </li>
+              ) : null}
               <li className="nav-item has-treeview">
                 <Link
                   to="/contactos"
@@ -93,68 +95,60 @@ class Menu extends Component {
                   </p>
                 </Link>
               </li>
-              {user.rol === 2 || !user.rol ? (
-                <li className="nav-item has-treeview">
-                  <Link
-                    to="/consultorio"
-                    className={
-                      active === "consultorio" ? "nav-link active" : "nav-link"
-                    }
-                    onClick={(e) => {
-                      this.changePage("/consultorio");
-                    }}
-                  >
-                    <i className="nav-icon fas fa-notes-medical"></i>
-                    <p>
-                      Consultorio
-                      <i className="right fas fa-angle-left"></i>
-                    </p>
-                  </Link>
-                </li>
-              ) : null}
+              <li className="nav-item has-treeview">
+                <Link
+                  to="/consultorio"
+                  className={
+                    active === "consultorio" ? "nav-link active" : "nav-link"
+                  }
+                  onClick={(e) => {
+                    this.changePage("/consultorio");
+                  }}
+                >
+                  <i className="nav-icon fas fa-notes-medical"></i>
+                  <p>
+                    Examenes
+                    <i className="right fas fa-angle-left"></i>
+                  </p>
+                </Link>
+              </li>
 
               {user.rol <= 1 ? (
-                <li className="nav-item has-treeview">
-                  <Link
-                    to="/pedidos"
-                    className={
-                      active === "pedidos" ? "nav-link active" : "nav-link"
-                    }
-                    onClick={(e) => {
-                      this.changePage("/pedidos");
-                    }}
-                  >
-                    <i className="nav-icon fas fa-clipboard-list"></i>
-                    <p>
-                      Pedidos
-                      <i className="right fas fa-angle-left"></i>
-                    </p>
-                  </Link>
-                </li>
-              ) : null}
-
-              {user.rol <= 1 ? (
-                <li className="nav-item has-treeview">
-                  <Link
-                    to="/notas"
-                    className={
-                      active === "notas" ? "nav-link active" : "nav-link"
-                    }
-                    onClick={(e) => {
-                      this.changePage("/Ventas");
-                    }}
-                  >
-                    <i className="nav-icon fas fa-cash-register"></i>
-                    <p>
-                      Ventas
-                      <i className="right fas fa-angle-left"></i>
-                    </p>
-                  </Link>
-                </li>
-              ) : null}
-
-              {!user.rol ? (
                 <React.Fragment>
+                  <li className="nav-item has-treeview">
+                    <Link
+                      to="/pedidos"
+                      className={
+                        active === "pedidos" ? "nav-link active" : "nav-link"
+                      }
+                      onClick={(e) => {
+                        this.changePage("/pedidos");
+                      }}
+                    >
+                      <i className="nav-icon fas fa-clipboard-list"></i>
+                      <p>
+                        Pedidos
+                        <i className="right fas fa-angle-left"></i>
+                      </p>
+                    </Link>
+                  </li>
+                  <li className="nav-item has-treeview">
+                    <Link
+                      to="/notas"
+                      className={
+                        active === "notas" ? "nav-link active" : "nav-link"
+                      }
+                      onClick={(e) => {
+                        this.changePage("/Ventas");
+                      }}
+                    >
+                      <i className="nav-icon fas fa-cash-register"></i>
+                      <p>
+                        Ventas
+                        <i className="right fas fa-angle-left"></i>
+                      </p>
+                    </Link>
+                  </li>
                   <li className="nav-item has-treeview">
                     <Link
                       to="/almacen"
@@ -172,6 +166,11 @@ class Menu extends Component {
                       </p>
                     </Link>
                   </li>
+                </React.Fragment>
+              ) : null}
+
+              {!user.rol ? (
+                <React.Fragment>
                   <li className="nav-item has-treeview">
                     <Link
                       to="/usuarios"

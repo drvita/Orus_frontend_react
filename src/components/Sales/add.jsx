@@ -11,9 +11,12 @@ import Chat from "../Layouts/messenger";
 export default class SaleAdd extends Component {
   constructor(props) {
     super(props);
-    let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    const contact = JSON.parse(localStorage.getItem("OrusContactInUse")),
+      id = this.props.match.params.id,
+      contact_id = id ? 0 : 1;
+
     this.state = {
-      id: 0,
+      id: id,
       session:
         Math.random().toString(36).substring(2, 16) +
         Math.random().toString(36).substring(2, 16) +
@@ -26,7 +29,7 @@ export default class SaleAdd extends Component {
       subtotal: 0,
       total: 0,
       items: [],
-      contact_id: contact && contact.id ? contact.id : 0,
+      contact_id: contact && contact.id ? contact.id : contact_id,
       cliente: {},
       order_id: 0,
       status: 0,
@@ -45,7 +48,7 @@ export default class SaleAdd extends Component {
     this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    let id = this.props.match.params.id;
+    let { id } = this.state;
     this.getSales(id);
   }
 
@@ -237,6 +240,7 @@ export default class SaleAdd extends Component {
                     abonos={pagado * 1}
                     sale={id * 1}
                     contact={contact_id}
+                    cliente={cliente}
                     pay={pay * 1}
                     order={order_id * 1}
                     user={this.props.data.name}
@@ -266,16 +270,6 @@ export default class SaleAdd extends Component {
     );
   }
 
-  printSale = () => {
-    let content = document.getElementById("print_sale"),
-      pri = document.getElementById("ifmcontentstoprint").contentWindow;
-
-    pri.document.open();
-    pri.document.write(content.innerHTML);
-    pri.document.close();
-    pri.focus();
-    pri.print();
-  };
   handleChangeInput = (key, value) => {
     let subtotal = 0;
     if (key === "items") {

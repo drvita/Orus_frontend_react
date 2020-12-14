@@ -35,7 +35,7 @@ export default class Categories extends Component {
           <div className="col">
             <Catalogo
               data={this.props.data}
-              category="raiz"
+              category={0}
               categoryName="category_id1"
               categoryDataName="category_hijos1"
               categorySelect={this.handleChangeState}

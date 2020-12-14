@@ -4,6 +4,7 @@ import Pagination from "../Layouts/pagination";
 export default class CategoryList extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       meta: {},
       add: false,
@@ -51,10 +52,10 @@ export default class CategoryList extends Component {
               {!load && category_raiz ? (
                 <React.Fragment>
                   <tr
-                    className={category_id === 0 ? "table-success" : ""}
+                    className={category_id === category ? "table-success" : ""}
                     onClick={(e) => {
                       this.setState({
-                        category_id: 0,
+                        category_id: parseInt(category) ? category : 0,
                       });
                       categorySelect({
                         [categoryName]: 0,
@@ -95,6 +96,9 @@ export default class CategoryList extends Component {
                             href={"#select!" + cat.id}
                             onClick={(e) => {
                               e.preventDefault();
+                              this.setState({
+                                category_id: cat.id,
+                              });
                             }}
                           >
                             {cat.categoria}
@@ -295,7 +299,11 @@ export default class CategoryList extends Component {
             { category } = this.props,
             body = {
               name,
-              category_id: category_id ? category_id : category,
+              category_id: parseInt(category_id)
+                ? parseInt(category_id)
+                : parseInt(category)
+                ? parseInt(category)
+                : "",
             };
 
           //Actualiza el pedido o creamos un pedido nuevo según el ID
@@ -329,8 +337,9 @@ export default class CategoryList extends Component {
       },
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
-        let data = result.value,
-          { category_raiz } = this.state;
+        const data = result.value,
+          { category_raiz, category_id } = this.state,
+          { category } = this.props;
 
         if (data.data) {
           console.log("Categoria almacenada");
@@ -339,9 +348,19 @@ export default class CategoryList extends Component {
             title: "Categoria almacenada con exito",
             showConfirmButton: false,
             timer: 1500,
-          }).then((res) => {
+          }).then(async (res) => {
             //Resultado actualizando datos
-            category_raiz.push(data.data);
+            if (parseInt(category) === category_id) {
+              category_raiz.push(data.data);
+            } else {
+              await category_raiz.find((cat) => {
+                if (cat.id === category_id) {
+                  cat.hijos.push(data.data);
+                  return cat;
+                } else return false;
+              });
+            }
+
             this.setState({
               category_raiz,
               name: "",
@@ -365,7 +384,7 @@ export default class CategoryList extends Component {
       //Variables en localStorage
       const { host, token, page, load } = this.state,
         url = "http://" + host + "/api/categories",
-        categoryid = "&categoryid=" + category,
+        categoryid = category ? "&categoryid=" + category : "&categoryid=raiz",
         ppage = page > 0 ? "?page=" + page : "?page=1";
 
       //Mandamos señal de carga si no lo he hecho
@@ -392,7 +411,7 @@ export default class CategoryList extends Component {
         .then((cat) => {
           this.setState({
             category_raiz: cat.data !== null ? cat.data : [],
-            category_id: 0,
+            category_id: category,
             load: false,
           });
         })
@@ -407,7 +426,7 @@ export default class CategoryList extends Component {
     } else {
       this.setState({
         category_raiz: CategoryData ? CategoryData : [],
-        category_id: 0,
+        category_id: category,
         load: false,
       });
     }

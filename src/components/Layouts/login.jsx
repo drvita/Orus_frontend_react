@@ -170,10 +170,12 @@ export default class Main extends Component {
   }
   handleLogin = (e) => {
     e.preventDefault();
-    let { host, username, password } = this.state;
-    this.setState({
-      load: true,
-    });
+    const { host, username, password, load } = this.state;
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
 
     if (host) {
       //Manejamos el inicio de sesion aqui, declaramos primero las variables
@@ -201,6 +203,7 @@ export default class Main extends Component {
             let back = {};
             if (response.status !== 204) back = await response.json();
             if (!response.ok) {
+              console.error(response, back);
               throw new Error(back.message);
             }
             return back;
@@ -213,8 +216,7 @@ export default class Main extends Component {
               console.error("Login: Sin acceso", data);
               if (data.message) {
                 window.Swal.fire("Session", data.message, "error");
-              }
-              if (data.errors) {
+              } else if (data.errors) {
                 window.Swal.fire("Session", data.errors, "error");
               }
               this.setState({

@@ -88,6 +88,8 @@ export default class ExamAdd extends Component {
       d_fcloi_time: "00:00",
       category_id: 0,
       category_ii: 0,
+      item1: 0,
+      item2: 0,
       contact_id: contact && contact.id ? contact.id : 0,
       order_id: 0,
       status: 0,
@@ -120,11 +122,16 @@ export default class ExamAdd extends Component {
         created_at,
         category_id,
         category_ii,
+        cilindrod,
+        cilindroi,
+        esferaod,
+        esferaoi,
       } = this.state,
       { data } = this.props,
       hoy = moment(Date.now()),
       registro = moment(created_at),
       toDay = moment(hoy).isSame(registro, "day");
+
     return (
       <form className="row">
         <div className="col-3">
@@ -135,27 +142,8 @@ export default class ExamAdd extends Component {
             getIdContact={this.getIdContact}
             changePage={this.changePage}
           />
-          {contact_id ? (
-            <React.Fragment>
-              <Recomendaciones
-                category_id={category_id}
-                nameCategory="category_id"
-                title="Recomendacion principal"
-                data={data}
-                onChangeInput={this.handleChangeInput}
-                update={true}
-              />
-              {category_id ? (
-                <Recomendaciones
-                  category_id={category_ii}
-                  nameCategory="category_ii"
-                  title="Recomendacion adicional"
-                  data={data}
-                  onChangeInput={this.handleChangeInput}
-                  update={true}
-                />
-              ) : null}
-            </React.Fragment>
+          {contact_id && order_id ? (
+            <Chat data={data} table="orders" idRow={order_id} />
           ) : null}
         </div>
         <div className="col">
@@ -264,10 +252,10 @@ export default class ExamAdd extends Component {
                       >
                         <div className="card-body">
                           <Graduacion
-                            esferaod={this.state.esferaod}
-                            esferaoi={this.state.esferaoi}
-                            cilindrod={this.state.cilindrod}
-                            cilindroi={this.state.cilindroi}
+                            esferaod={esferaod}
+                            esferaoi={esferaoi}
+                            cilindrod={cilindrod}
+                            cilindroi={cilindroi}
                             ejeod={this.state.ejeod}
                             ejeoi={this.state.ejeoi}
                             adiciond={this.state.adiciond}
@@ -289,6 +277,63 @@ export default class ExamAdd extends Component {
                       observaciones={this.state.observaciones}
                       onChangeInput={this.handleChangeInput}
                     />
+
+                    <div className="card">
+                      <div className="card-header" id="heading9">
+                        <h2 className="mb-0">
+                          <button
+                            className="btn btn-link btn-block text-left text-info collapsed"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#caja9"
+                            aria-expanded="false"
+                            aria-controls="caja9"
+                          >
+                            Recomendaciones
+                          </button>
+                        </h2>
+                      </div>
+                      <div id="caja9" className="collapse p-2">
+                        <div className="row">
+                          <div className="col">
+                            <Recomendaciones
+                              category_id={parseInt(category_id)}
+                              esferaod={esferaod}
+                              esferaoi={esferaoi}
+                              cilindrod={cilindrod}
+                              cilindroi={cilindroi}
+                              nameCategory="category_id"
+                              nameItem="item1"
+                              title="Recomendacion principal"
+                              data={data}
+                              onChangeInput={(obj) => {
+                                if (typeof obj === "object") {
+                                  this.setState(obj);
+                                }
+                              }}
+                              update={true}
+                            />
+                          </div>
+                          {category_id ? (
+                            <div className="col">
+                              <Recomendaciones
+                                category_id={parseInt(category_ii)}
+                                nameCategory="category_ii"
+                                nameItem="item2"
+                                title="Recomendacion adicional"
+                                data={data}
+                                onChangeInput={(obj) => {
+                                  if (typeof obj === "object") {
+                                    this.setState(obj);
+                                  }
+                                }}
+                                update={true}
+                              />
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
                   </React.Fragment>
                 ) : (
                   <div className="card">
@@ -345,11 +390,6 @@ export default class ExamAdd extends Component {
             </div>
           </div>
         </div>
-        {contact_id && order_id ? (
-          <div className="col-3">
-            <Chat data={data} table="orders" idRow={order_id} />
-          </div>
-        ) : null}
       </form>
     );
   }
@@ -563,6 +603,8 @@ export default class ExamAdd extends Component {
               d_fcloi_time: data.data.d_fcloi_time,
               category_id: data.data.category_id,
               category_ii: data.data.category_ii,
+              item1: data.data.item1,
+              item2: data.data.item2,
               order_id: data.data.order_id ? data.data.order_id : 0,
               status: data.data.estado,
               created_at: data.data.created_at,

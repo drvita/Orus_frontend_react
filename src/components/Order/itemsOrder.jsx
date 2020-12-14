@@ -153,7 +153,7 @@ export default class Items extends Component {
                     </div>
                   </td>
                 </tr>
-              ) : itemsDb.length ? (
+              ) : itemsDb && itemsDb.length ? (
                 <tr>
                   <td colSpan="5">
                     <div className="list-group">
@@ -173,11 +173,27 @@ export default class Items extends Component {
                               );
                             }}
                           >
-                            <span className="text-primary">({db.codigo})</span>{" "}
-                            {db.producto}{" "}
-                            {db.marca ? (
-                              <span className="text-muted">/ {db.marca}</span>
-                            ) : null}
+                            <div
+                              className="text-truncate"
+                              style={{ maxWidth: "90%" }}
+                            >
+                              <span className="text-primary mr-2 text-uppercase">
+                                ({db.codigo})
+                              </span>
+                              <label className="text-dark text-capitalize ml-2 mr-2">
+                                {db.producto}
+                              </label>
+                              {db.marca ? (
+                                <span className="text-muted text-capitalize">
+                                  / {db.marca.marca}
+                                </span>
+                              ) : null}
+                              {db.proveedor ? (
+                                <span className="text-muted text-capitaliz">
+                                  / {db.proveedor.nombre}
+                                </span>
+                              ) : null}
+                            </div>
                           </a>
                         );
                       })}
@@ -312,9 +328,9 @@ export default class Items extends Component {
       if (this.timeSave) clearTimeout(this.timeSave);
       this.timeSave = setTimeout(() => {
         //Variables en localStorage
-        let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+        const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
           url = "http://" + varLocalStorage.host + "/api/store",
-          search = "?search=" + value,
+          search = "?search=" + value.replace("+", "%2b"),
           itemsPage = "&itemsPage=6";
         //Realiza la peticion del usuario seun el id
         console.log("Descargando datos del item");

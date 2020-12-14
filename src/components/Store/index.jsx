@@ -62,13 +62,13 @@ export default class Store extends Component {
   render() {
     let { items, load } = this.state,
       dataHeaders = [
-        { name: "Codigo", type: "code", filter: true },
+        { name: "Codigo" },
         { name: "Marca", type: "brand", filter: true },
         { name: "Producto", type: "name", filter: true },
         { name: "PS" },
         { name: "UND" },
         { name: "Precio", type: "price", filter: true },
-        { name: "Categoria" },
+        { name: "Proveedor", type: "contact_id ", filter: true },
         { name: "Actualizado", type: "updated_at", filter: true },
         { name: "Registrado", type: "created_at", filter: true },
       ];
@@ -113,7 +113,11 @@ export default class Store extends Component {
               {load ? (
                 <tr>
                   <td colSpan="10" className="text-center">
-                    <div className="spinner-border text-primary" role="status">
+                    <span className="text-primary">Cargando productos</span>
+                    <div
+                      className="spinner-border text-primary ml-4"
+                      role="status"
+                    >
                       <span className="sr-only">Loading...</span>
                     </div>
                   </td>
@@ -121,12 +125,19 @@ export default class Store extends Component {
               ) : Object.keys(items.data).length ? (
                 items.data.map((item) => {
                   return (
-                    <tr key={item.id}>
+                    <tr
+                      key={item.id}
+                      onClick={(e) => {
+                        this.props.history.push("/almacen/registro/" + item.id);
+                      }}
+                    >
                       <td>
-                        <span className="text-primary">{item.codigo}</span>
+                        <span className="text-primary text-uppercase">
+                          {item.codigo}
+                        </span>
                       </td>
                       <td className="text-uppercase">
-                        {item.marca ? item.marca : "sin marca"}
+                        {item.marca !== null ? item.marca.marca : "--"}
                       </td>
                       <td>
                         <Link to={"/almacen/registro/" + item.id}>
@@ -147,7 +158,9 @@ export default class Store extends Component {
                         </span>
                       </td>
                       <td className="text-right">$ {item.precio.toFixed(2)}</td>
-                      <td>{item.categoria.categoria}</td>
+                      <td className="text-capitalize">
+                        {item.proveedor !== null ? item.proveedor.nombre : "--"}
+                      </td>
                       <td className="text-capitalize">
                         {moment(item.updated_at).fromNow()}
                       </td>
@@ -231,7 +244,7 @@ export default class Store extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          let { host, token } = this.state;
+          const { host, token } = this.state;
 
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación de producto por API");
@@ -283,10 +296,10 @@ export default class Store extends Component {
   };
   getItems() {
     //Variables
-    let { load, orderby, order, search, page, host, token } = this.state,
+    const { load, orderby, order, search, page, host, token } = this.state,
       url = "http://" + host + "/api/store",
       ordenar = `&orderby=${orderby}&order=${order}`,
-      buscar = search ? `&search=${search}` : "",
+      buscar = search ? `&search=${search.replace("+", "%2b")}` : "",
       pagina = page > 0 ? "?page=" + page : "?page=1";
 
     //Mandamos señal de carga si no lo he hecho
@@ -321,8 +334,7 @@ export default class Store extends Component {
             load: false,
           });
         } else {
-          console.error("Orus: ", data.message);
-          window.Swal.fire("Error", "Al descargar pedidos", "error");
+          console.error("Orus: ", data.message, data.errors);
           this.setState({
             load: false,
           });

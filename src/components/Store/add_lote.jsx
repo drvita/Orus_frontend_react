@@ -92,6 +92,7 @@ class StoreLote extends Component {
               {load ? (
                 <tr>
                   <td colSpan="6" className="text-center">
+                    <span className="text-primary mr-4">Cargando lotes</span>
                     <div className="spinner-border text-primary" role="status">
                       <span className="sr-only">Loading...</span>
                     </div>

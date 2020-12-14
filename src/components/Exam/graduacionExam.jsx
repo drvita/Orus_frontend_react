@@ -2,6 +2,8 @@ import React, { Component } from "react";
 
 export default class GraduacionExam extends Component {
   render() {
+    const { readOnly } = this.props;
+
     return (
       <React.Fragment>
         <table className="table table-bordered table-hover">
@@ -30,12 +32,12 @@ export default class GraduacionExam extends Component {
                   max="20"
                   step=".25"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.esferaod ? this.props.esferaod : 0}
+                  disabled={readOnly ? true : false}
+                  value={
+                    this.props.esferaod ? this.props.esferaod.toFixed(2) : ""
+                  }
                   onChange={this.catchInputs}
                 />
               </td>
@@ -47,12 +49,12 @@ export default class GraduacionExam extends Component {
                   max="0"
                   step=".25"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.cilindrod ? this.props.cilindrod : 0}
+                  disabled={readOnly ? true : false}
+                  value={
+                    this.props.cilindrod ? this.props.cilindrod.toFixed(2) : ""
+                  }
                   onChange={this.catchInputs}
                 />
               </td>
@@ -64,13 +66,11 @@ export default class GraduacionExam extends Component {
                   max="180"
                   step="1"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
+                  disabled={readOnly ? true : false}
                   placeholder="°"
-                  value={this.props.ejeod ? this.props.ejeod : 0}
+                  value={this.props.ejeod ? this.props.ejeod.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -82,12 +82,12 @@ export default class GraduacionExam extends Component {
                   max="3"
                   step=".25"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.adiciond ? this.props.adiciond : 0}
+                  disabled={readOnly ? true : false}
+                  value={
+                    this.props.adiciond ? this.props.adiciond.toFixed(2) : ""
+                  }
                   onChange={this.catchInputs}
                 />
               </td>
@@ -99,12 +99,10 @@ export default class GraduacionExam extends Component {
                   max="80"
                   step=".1"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.dpod ? this.props.dpod : 0}
+                  disabled={readOnly ? true : false}
+                  value={this.props.dpod ? this.props.dpod.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -116,12 +114,12 @@ export default class GraduacionExam extends Component {
                   max="80"
                   step=".1"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.alturaod ? this.props.alturaod : 0}
+                  disabled={readOnly ? true : false}
+                  value={
+                    this.props.alturaod ? this.props.alturaod.toFixed(2) : ""
+                  }
                   onChange={this.catchInputs}
                 />
               </td>
@@ -139,12 +137,12 @@ export default class GraduacionExam extends Component {
                   max="20"
                   step=".25"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.esferaoi ? this.props.esferaoi : 0}
+                  disabled={readOnly ? true : false}
+                  value={
+                    this.props.esferaoi ? this.props.esferaoi.toFixed(2) : ""
+                  }
                   onChange={this.catchInputs}
                 />
               </td>
@@ -156,12 +154,12 @@ export default class GraduacionExam extends Component {
                   max="0"
                   step=".25"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.cilindroi ? this.props.cilindroi : 0}
+                  disabled={readOnly ? true : false}
+                  value={
+                    this.props.cilindroi ? this.props.cilindroi.toFixed(2) : ""
+                  }
                   onChange={this.catchInputs}
                 />
               </td>
@@ -173,13 +171,11 @@ export default class GraduacionExam extends Component {
                   max="180"
                   step="1"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
+                  disabled={readOnly ? true : false}
                   placeholder="°"
-                  value={this.props.ejeoi ? this.props.ejeoi : 0}
+                  value={this.props.ejeoi ? this.props.ejeoi.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -191,12 +187,12 @@ export default class GraduacionExam extends Component {
                   max="3"
                   step=".25"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.adicioni ? this.props.adicioni : 0}
+                  disabled={readOnly ? true : false}
+                  value={
+                    this.props.adicioni ? this.props.adicioni.toFixed(2) : ""
+                  }
                   onChange={this.catchInputs}
                 />
               </td>
@@ -208,12 +204,10 @@ export default class GraduacionExam extends Component {
                   max="80"
                   step=".1"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.dpoi ? this.props.dpoi : 0}
+                  disabled={readOnly ? true : false}
+                  value={this.props.dpoi ? this.props.dpoi.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -225,12 +219,12 @@ export default class GraduacionExam extends Component {
                   max="80"
                   step=".1"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
-                  value={this.props.alturaoi ? this.props.alturaoi : 0}
+                  disabled={readOnly ? true : false}
+                  value={
+                    this.props.alturaoi ? this.props.alturaoi.toFixed(2) : ""
+                  }
                   onChange={this.catchInputs}
                 />
               </td>
@@ -247,11 +241,9 @@ export default class GraduacionExam extends Component {
                   name="lcmarca"
                   maxLength="70"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
+                  disabled={readOnly ? true : false}
                   value={this.props.lcmarca}
                   onChange={this.catchInputs}
                 />
@@ -265,11 +257,9 @@ export default class GraduacionExam extends Component {
                   name="lcgod"
                   maxLength="30"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
+                  disabled={readOnly ? true : false}
                   value={this.props.lcgod ? this.props.lcgod : ""}
                   onChange={this.catchInputs}
                 />
@@ -281,11 +271,9 @@ export default class GraduacionExam extends Component {
                   name="lcgoi"
                   maxLength="30"
                   className={
-                    this.props.readOnly
-                      ? "form-control disabled"
-                      : "form-control"
+                    readOnly ? "form-control disabled" : "form-control"
                   }
-                  disabled={this.props.readOnly ? true : false}
+                  disabled={readOnly ? true : false}
                   value={this.props.lcgoi ? this.props.lcgoi : ""}
                   onChange={this.catchInputs}
                 />
@@ -298,11 +286,16 @@ export default class GraduacionExam extends Component {
   }
 
   catchInputs = (e) => {
-    const { name } = e.target,
-      value =
-        e.target.type === "checkbox"
-          ? e.target.checked
-          : e.target.value.toLowerCase();
-    this.props.onChangeInput(name, value);
+    const { name, type, value, checked } = e.target;
+    let val = value;
+
+    if (type === "checkbox") val = checked;
+    if (type === "text") val = value.toLowerCase();
+    if (type === "number") {
+      val = parseFloat(value);
+      val = val.toFixed(2);
+      val = parseFloat(val);
+    }
+    this.props.onChangeInput(name, val);
   };
 }

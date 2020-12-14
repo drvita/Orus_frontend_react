@@ -13,6 +13,11 @@ export default class Recomendaciones extends Component {
       category_id_3: 0,
       category: {},
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
+  }
+  componentWillUnmount() {
+    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
     this.getCategories();
@@ -25,44 +30,36 @@ export default class Recomendaciones extends Component {
   }
 
   render() {
-    const { category_id, title } = this.props,
-      { category } = this.state,
-      slash = <span className="text-dark"> / </span>;
-    let nameFullCategory = null;
+    const {
+        category_id,
+        title,
+        esferaod,
+        esferaoi,
+        cilindrod,
+        cilindroi,
+      } = this.props,
+      { category } = this.state;
+    let code = category_id ? this.handleCodeName(category) : "",
+      gradod = "+000000",
+      gradoi = "+000000";
 
-    if (category.depende_de) {
-      if (category.depende_de.depende_de) {
-        nameFullCategory = (
-          <React.Fragment>
-            {category.depende_de.depende_de.categoria}
-            {slash}
-            {category.depende_de.categoria}
-            {slash}
-            <strong>{category.categoria}</strong>
-          </React.Fragment>
-        );
-      } else {
-        nameFullCategory = (
-          <React.Fragment>
-            {category.depende_de.categoria}
-            {slash}
-            <strong>{category.categoria}</strong>
-          </React.Fragment>
-        );
-      }
-    } else {
-      nameFullCategory = <strong>{category.categoria}</strong>;
+    if (cilindrod && esferaod) {
+      gradod = esferaod > 0 ? "+" : "";
+      gradod +=
+        esferaod.toFixed(2).toString().replace(".", "") +
+        cilindrod.toFixed(2).toString().replace("-", "").replace(".", "");
+    }
+    if (cilindroi && esferaoi) {
+      gradoi = esferaoi > 0 ? "+" : "";
+      gradoi +=
+        esferaoi.toFixed(2).toString().replace(".", "") +
+        cilindroi.toFixed(2).toString().replace("-", "").replace(".", "");
     }
 
     return (
-      <div className="card card-info card-outline mt-4">
-        <div className="card-header">
-          <h3 className="card-title">
-            <i className="fas fa-thumbs-up mr-1"></i>
-            {title}
-          </h3>
-        </div>
+      <div className="card">
         <div className="card-body">
+          <h3 className="card-title text-success m-2">{title}</h3>
           {!category_id ? (
             this.state.category_list.length ? (
               <Fragment>
@@ -121,7 +118,9 @@ export default class Recomendaciones extends Component {
                       name="category_id_3"
                       className="custom-select"
                       value={this.state.category_id_3}
-                      onChange={this.handleCategoryChange}
+                      onChange={(e) => {
+                        this.handleCategoryChange(e, gradod, gradoi);
+                      }}
                     >
                       <option value="0">Seleccione el tratamiento</option>
                       {this.state.category_list_3.map((cat) => {
@@ -142,9 +141,24 @@ export default class Recomendaciones extends Component {
             )
           ) : (
             <Fragment>
-              <h5 className="card-title text-info">{nameFullCategory}</h5>
-              {this.props.update ? (
+              {code + gradod === code + gradoi ? (
                 <p className="card-text">
+                  <label>Lente</label>: {code + gradod}
+                </p>
+              ) : (
+                <div className="row card-text">
+                  <div className="col">
+                    <label>Lente Derecho</label>
+                    <br /> {code + gradod}
+                  </div>
+                  <div className="col">
+                    <label>Lente Izquierdo</label>
+                    <br /> {code + gradoi}
+                  </div>
+                </div>
+              )}
+              {this.props.update ? (
+                <p className="card-text text-right">
                   <button
                     className="btn btn-outline-info btn-sm card-link mt-2"
                     onClick={this.handleClickCategory}
@@ -160,6 +174,50 @@ export default class Recomendaciones extends Component {
     );
   }
 
+  getCodeCategory = (code) => {
+    switch (code) {
+      case "monofocales":
+        return "MF";
+      case "bifocales":
+        return "BF";
+      case "progresivo basico":
+        return "PB";
+      case "progresivo digital":
+        return "PD";
+      case "plastico":
+        return "CR";
+      case "policarbonato":
+        return "PL";
+      case "hi-index":
+        return "HI";
+      case "antirreflejantes":
+        return "AR";
+      case "photo":
+        return "PH";
+      case "ar & photo":
+        return "ARPH";
+      case "blanco":
+        return "BL";
+      default:
+        return "";
+    }
+  };
+  handleCodeName = (category) => {
+    let code = "";
+    if (category.depende_de) {
+      if (category.depende_de.depende_de) {
+        code = this.getCodeCategory(category.depende_de.depende_de.categoria);
+        code += this.getCodeCategory(category.depende_de.categoria);
+        code += this.getCodeCategory(category.categoria);
+      } else {
+        code = this.getCodeCategory(category.depende_de.categoria);
+        code += this.getCodeCategory(category.categoria);
+      }
+    } else {
+      code = this.getCodeCategory(category.categoria);
+    }
+    return code;
+  };
   handleClickCategory = (e) => {
     e.preventDefault();
     const { onChangeInput, nameCategory } = this.props;
@@ -170,9 +228,11 @@ export default class Recomendaciones extends Component {
       category_list_2: [],
       category_list_3: [],
     });
-    onChangeInput(nameCategory, 0);
+    onChangeInput({
+      [nameCategory]: 0,
+    });
   };
-  handleCategoryChange = (e) => {
+  handleCategoryChange = (e, gradod, gradoi) => {
     const { name, value } = e.target,
       { onChangeInput, nameCategory } = this.props;
 
@@ -202,24 +262,25 @@ export default class Recomendaciones extends Component {
     }
 
     this.setState({
-      [name]: value * 1,
+      [name]: parseInt(value),
     });
 
     if (name === "category_id_3") {
-      onChangeInput(nameCategory, value * 1);
+      onChangeInput({
+        [nameCategory]: parseInt(value),
+      });
     }
   };
   getCategories = () => {
     //Variables
-    let { host, token } = this.props.data;
+    const { host, token } = this.props.data,
+      { category_id } = this.props;
 
-    if (
-      typeof this.props.category_id === "number" &&
-      this.props.category_id > 0
-    ) {
-      console.log("Descargando recomendacion");
-      fetch("http://" + host + "/api/categories/" + this.props.category_id, {
+    if (category_id) {
+      console.log("Descargando categoria para recomendacion");
+      fetch("http://" + host + "/api/categories/" + category_id, {
         method: "GET",
+        signal: this.signal,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -249,9 +310,10 @@ export default class Recomendaciones extends Component {
           );
         });
     } else {
-      console.log("Descargando lista de recomendaciones");
+      console.log("Descargando lista de recomendaciones raiz");
       fetch("http://" + host + "/api/categories/1?categoryid=raiz", {
         method: "GET",
+        signal: this.signal,
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

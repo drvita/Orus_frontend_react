@@ -156,6 +156,10 @@ export default class ListsExams extends Component {
                     <Recomendaciones
                       category_id={exam.category_id}
                       title="Recomendacion principal"
+                      esferaod={exam.esferaod ? exam.esferaod : 0}
+                      esferaoi={exam.esferaoi ? exam.esferaoi : 0}
+                      cilindrod={exam.cilindrod ? exam.cilindrod : 0}
+                      cilindroi={exam.cilindroi ? exam.cilindroi : 0}
                       data={datos}
                       onChangeInput={this.handleChangeInput}
                     />
@@ -165,6 +169,10 @@ export default class ListsExams extends Component {
                       <Recomendaciones
                         category_id={exam.category_ii}
                         title="Recomendacion adicional"
+                        esferaod={exam.esferaod ? exam.esferaod : 0}
+                        esferaoi={exam.esferaoi ? exam.esferaoi : 0}
+                        cilindrod={exam.cilindrod ? exam.cilindrod : 0}
+                        cilindroi={exam.cilindroi ? exam.cilindroi : 0}
                         data={datos}
                         onChangeInput={this.handleChangeInput}
                       />

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
-import SalesOutStock from "../Sales/salesOutStock";
+//import SalesOutStock from "../Sales/salesOutStock";
 import ReportPays from "../Sales/reportPays";
 import Caja from "./cash";
 import DateUser from "./dateUser";
@@ -32,7 +32,6 @@ export default class Dashboard extends Component {
             date={date}
             changeState={this.changeState}
           />
-          {!data.rol ? <SalesOutStock data={data} /> : null}
         </div>
         <div className="col">
           <Caja

@@ -13,7 +13,7 @@ export default class SaleAdd extends Component {
     super(props);
     const contact = JSON.parse(localStorage.getItem("OrusContactInUse")),
       id = this.props.match.params.id,
-      contact_id = id ? 0 : 1;
+      contact_id = id ? 0 : 2;
 
     this.state = {
       id: id,

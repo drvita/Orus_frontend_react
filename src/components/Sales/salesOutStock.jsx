@@ -64,12 +64,11 @@ export default class SalesOutStock extends Component {
   getStockOut = () => {
     //Variables en localStorage
     let { host, token } = this.state,
-      url = "http://" + host + "/api/salesItems",
-      stock = "?stock=false";
+      url = "http://" + host + "/api/salesItems";
 
     //Realiza la peticion de los productos faltantes
     console.log("Descargando stock faltante");
-    fetch(url + stock, {
+    fetch(url, {
       method: "GET",
       signal: this.signal,
       headers: {
@@ -78,12 +77,13 @@ export default class SalesOutStock extends Component {
         Authorization: "Bearer " + token,
       },
     })
-      .then((res) => {
-        if (!res.ok && res.status !== 401) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.error("Orus: ", res);
+      .then(async (response) => {
+        let back = {};
+        if (response.status !== 204) back = await response.json();
+        if (!response.ok) {
+          throw new Error(back.message);
         }
-        return res.json();
+        return back;
       })
       .then((data) => {
         console.log("Almacenando datos de stock");
@@ -92,6 +92,14 @@ export default class SalesOutStock extends Component {
             stock: data.data,
           });
         }
+      })
+      .catch((e) => {
+        console.error("Orus fetch", e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
       });
   };
 }

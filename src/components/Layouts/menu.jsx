@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 class Menu extends Component {
   render() {
-    let { companyName, user, active } = this.props,
-      avatar = "/img/avatars/avatar5.png";
+    const { companyName, user, active } = this.props;
+    let avatar = "/img/avatars/avatar5.png";
     if (user.rol === 1) avatar = "/img/avatars/avatar2.png";
     if (!user.rol) avatar = "/img/avatars/avatar3.png";
     if (user.idUser === 2) avatar = "/img/avatars/avatar4.png";
@@ -60,7 +60,7 @@ class Menu extends Component {
               data-accordion="false"
             >
               {user.rol !== 2 ? (
-                <li className="nav-item has-treeview">
+                <li className="nav-item">
                   <Link
                     to="/"
                     className={
@@ -78,7 +78,7 @@ class Menu extends Component {
                   </Link>
                 </li>
               ) : null}
-              <li className="nav-item has-treeview">
+              <li className="nav-item">
                 <Link
                   to="/contactos"
                   className={
@@ -95,7 +95,7 @@ class Menu extends Component {
                   </p>
                 </Link>
               </li>
-              <li className="nav-item has-treeview">
+              <li className="nav-item">
                 <Link
                   to="/consultorio"
                   className={
@@ -115,7 +115,7 @@ class Menu extends Component {
 
               {user.rol <= 1 ? (
                 <React.Fragment>
-                  <li className="nav-item has-treeview">
+                  <li className="nav-item">
                     <Link
                       to="/pedidos"
                       className={
@@ -132,14 +132,14 @@ class Menu extends Component {
                       </p>
                     </Link>
                   </li>
-                  <li className="nav-item has-treeview">
+                  <li className="nav-item">
                     <Link
                       to="/notas"
                       className={
                         active === "notas" ? "nav-link active" : "nav-link"
                       }
                       onClick={(e) => {
-                        this.changePage("/Ventas");
+                        this.changePage("/notas");
                       }}
                     >
                       <i className="nav-icon fas fa-cash-register"></i>
@@ -149,13 +149,25 @@ class Menu extends Component {
                       </p>
                     </Link>
                   </li>
-                  <li className="nav-item has-treeview">
-                    <Link
-                      to="/almacen"
+                </React.Fragment>
+              ) : null}
+
+              {!user.rol ? (
+                <React.Fragment>
+                  <li
+                    className={
+                      active === "almacen"
+                        ? "nav-item has-treeview menu-open"
+                        : "nav-item has-treeview "
+                    }
+                  >
+                    <a
+                      href="#a!"
                       className={
                         active === "almacen" ? "nav-link active" : "nav-link"
                       }
                       onClick={(e) => {
+                        e.preventDefault();
                         this.changePage("/almacen");
                       }}
                     >
@@ -164,14 +176,47 @@ class Menu extends Component {
                         Almacen
                         <i className="right fas fa-angle-left"></i>
                       </p>
-                    </Link>
+                    </a>
+                    <ul className="nav nav-treeview">
+                      <li className="nav-item">
+                        <Link
+                          to="/almacen"
+                          className="nav-link"
+                          onClick={(e) => {
+                            this.changePage("/almacen");
+                          }}
+                        >
+                          <i className="fas fa-angle-right nav-icon"></i>
+                          <p>Listado</p>
+                        </Link>
+                      </li>
+                      <li className="nav-item">
+                        <Link
+                          to="/almacen/categorias"
+                          className="nav-link"
+                          onClick={(e) => {
+                            this.changePage("/almacen/categorias");
+                          }}
+                        >
+                          <i className="fas fa-angle-right nav-icon"></i>
+                          <p>Categorias</p>
+                        </Link>
+                      </li>
+                      <li className="nav-item">
+                        <Link
+                          to="/almacen/marcas"
+                          className="nav-link"
+                          onClick={(e) => {
+                            this.changePage("/almacen/marcas");
+                          }}
+                        >
+                          <i className="fas fa-angle-right nav-icon"></i>
+                          <p>Marcas</p>
+                        </Link>
+                      </li>
+                    </ul>
                   </li>
-                </React.Fragment>
-              ) : null}
-
-              {!user.rol ? (
-                <React.Fragment>
-                  <li className="nav-item has-treeview">
+                  <li className="nav-item">
                     <Link
                       to="/usuarios"
                       className={
@@ -188,7 +233,7 @@ class Menu extends Component {
                       </p>
                     </Link>
                   </li>
-                  <li className="nav-item has-treeview">
+                  <li className="nav-item">
                     <Link
                       to="/configuraciones"
                       className={
@@ -210,7 +255,7 @@ class Menu extends Component {
                 </React.Fragment>
               ) : null}
 
-              <li className="nav-item has-treeview">
+              <li className="nav-item">
                 <Link to="/" className="nav-link" onClick={this.handleLogOut}>
                   <i className="nav-icon fas fa-sign-out-alt"></i>
                   <p>Cerrar sesion</p>

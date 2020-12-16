@@ -70,7 +70,7 @@ export default class GraduacionExam extends Component {
                   }
                   disabled={readOnly ? true : false}
                   placeholder="°"
-                  value={this.props.ejeod ? this.props.ejeod.toFixed(2) : ""}
+                  value={this.props.ejeod ? parseInt(this.props.ejeod) : ""}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -95,14 +95,14 @@ export default class GraduacionExam extends Component {
                 <input
                   type="number"
                   name="dpod"
-                  min="0"
+                  min="40"
                   max="80"
                   step=".1"
                   className={
                     readOnly ? "form-control disabled" : "form-control"
                   }
                   disabled={readOnly ? true : false}
-                  value={this.props.dpod ? this.props.dpod.toFixed(2) : ""}
+                  value={this.props.dpod ? this.props.dpod.toFixed(1) : ""}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -111,14 +111,14 @@ export default class GraduacionExam extends Component {
                   type="number"
                   name="alturaod"
                   min="0"
-                  max="80"
+                  max="35"
                   step=".1"
                   className={
                     readOnly ? "form-control disabled" : "form-control"
                   }
                   disabled={readOnly ? true : false}
                   value={
-                    this.props.alturaod ? this.props.alturaod.toFixed(2) : ""
+                    this.props.alturaod ? this.props.alturaod.toFixed(1) : ""
                   }
                   onChange={this.catchInputs}
                 />
@@ -175,7 +175,7 @@ export default class GraduacionExam extends Component {
                   }
                   disabled={readOnly ? true : false}
                   placeholder="°"
-                  value={this.props.ejeoi ? this.props.ejeoi.toFixed(2) : ""}
+                  value={this.props.ejeoi ? parseInt(this.props.ejeoi) : ""}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -200,14 +200,14 @@ export default class GraduacionExam extends Component {
                 <input
                   type="number"
                   name="dpoi"
-                  min="0"
+                  min="40"
                   max="80"
                   step=".1"
                   className={
                     readOnly ? "form-control disabled" : "form-control"
                   }
                   disabled={readOnly ? true : false}
-                  value={this.props.dpoi ? this.props.dpoi.toFixed(2) : ""}
+                  value={this.props.dpoi ? this.props.dpoi.toFixed(1) : ""}
                   onChange={this.catchInputs}
                 />
               </td>
@@ -216,14 +216,14 @@ export default class GraduacionExam extends Component {
                   type="number"
                   name="alturaoi"
                   min="0"
-                  max="80"
+                  max="35"
                   step=".1"
                   className={
                     readOnly ? "form-control disabled" : "form-control"
                   }
                   disabled={readOnly ? true : false}
                   value={
-                    this.props.alturaoi ? this.props.alturaoi.toFixed(2) : ""
+                    this.props.alturaoi ? this.props.alturaoi.toFixed(1) : ""
                   }
                   onChange={this.catchInputs}
                 />
@@ -292,9 +292,13 @@ export default class GraduacionExam extends Component {
     if (type === "checkbox") val = checked;
     if (type === "text") val = value.toLowerCase();
     if (type === "number") {
-      val = parseFloat(value);
-      val = val.toFixed(2);
-      val = parseFloat(val);
+      if (name === "ejeod" || name === "ejeoi") {
+        val = parseInt(value);
+      } else {
+        val = parseFloat(value);
+        val = val.toFixed(2);
+        val = parseFloat(val);
+      }
     }
     this.props.onChangeInput(name, val);
   };

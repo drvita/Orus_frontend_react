@@ -148,7 +148,7 @@ export default class StoreAdd extends Component {
               </h3>
             </div>
             <div className="card-body">
-              {category_list1.length && !load ? (
+              {category_list1 && category_list1.length && !load ? (
                 <React.Fragment>
                   <div className="row">
                     <div className="col">
@@ -156,6 +156,7 @@ export default class StoreAdd extends Component {
                         <small className="mr-2">
                           <label>Categoria</label>
                         </small>
+
                         <InputCategory
                           data={this.props.data}
                           category={category_id1}
@@ -178,7 +179,9 @@ export default class StoreAdd extends Component {
                           }}
                         />
 
-                        {category_id1 && category_list2.length ? (
+                        {category_id1 &&
+                        category_list2 &&
+                        category_list2.length ? (
                           <InputCategory
                             data={this.props.data}
                             category={category_id2}
@@ -199,7 +202,9 @@ export default class StoreAdd extends Component {
                           />
                         ) : null}
 
-                        {category_id2 && category_list3.length ? (
+                        {category_id2 &&
+                        category_list3 &&
+                        category_list3.length ? (
                           <InputCategory
                             data={this.props.data}
                             category={category_id3}
@@ -218,7 +223,9 @@ export default class StoreAdd extends Component {
                           />
                         ) : null}
 
-                        {category_id3 && category_list4.length ? (
+                        {category_id3 &&
+                        category_list4 &&
+                        category_list4.length ? (
                           <InputCategory
                             data={this.props.data}
                             category={category_id4}
@@ -731,9 +738,6 @@ export default class StoreAdd extends Component {
           "Verifique la conexion al servidor",
           "error"
         );
-        this.setState({
-          load: false,
-        });
       });
   };
   handleSave = async (e) => {
@@ -839,9 +843,9 @@ export default class StoreAdd extends Component {
             price,
             category_id,
             grad,
+            brand_id: brand_id ? brand_id : "",
+            contact_id: supplier ? supplier : "",
           };
-          if (brand_id) body.brand_id = brand_id;
-          if (supplier) body.contact_id = supplier;
 
           //Actualiza el pedido o creamos un pedido nuevo según el ID
           console.log("Enviando datos del producto a API");
@@ -934,11 +938,34 @@ export default class StoreAdd extends Component {
               category_id2 = 0,
               category_id3 = 0,
               category_id4 = 0;
-            if (data.data.categoria.depende_de !== null) {
-              if (data.data.categoria.depende_de.depende_de !== null) {
+
+            if (data.data.categoria && data.data.categoria.depende_de) {
+              console.log(
+                "CAT principal",
+                "Nombre: " + data.data.categoria.categoria,
+                "Hijos: " + data.data.categoria.hijos.length,
+                "Padre: ",
+                data.data.categoria.depende_de
+              );
+
+              if (
+                data.data.categoria.depende_de &&
+                data.data.categoria.depende_de.depende_de
+              ) {
+                console.log(
+                  "CAT second",
+                  data.data.categoria.depende_de.categoria,
+                  data.data.categoria.depende_de.hijos
+                );
                 if (
-                  data.data.categoria.depende_de.depende_de.depende_de !== null
+                  data.data.categoria.depende_de.depende_de &&
+                  data.data.categoria.depende_de.depende_de.depende_de
                 ) {
+                  console.log(
+                    "CAT 4to",
+                    data.data.categoria.depende_de.depende_de.categoria,
+                    data.data.categoria.depende_de.depende_de.hijos
+                  );
                   category_id1 =
                     data.data.categoria.depende_de.depende_de.depende_de.id;
                   category_id2 = data.data.categoria.depende_de.depende_de.id;
@@ -951,6 +978,11 @@ export default class StoreAdd extends Component {
                     data.data.categoria.depende_de.depende_de.hijos;
                   category_list4 = data.data.categoria.depende_de.hijos;
                 } else {
+                  console.log(
+                    "CAT 3er",
+                    data.data.categoria.depende_de.depende_de.categoria,
+                    data.data.categoria.depende_de.depende_de.hijos
+                  );
                   category_id1 = data.data.categoria.depende_de.depende_de.id;
                   category_id2 = data.data.categoria.depende_de.id;
                   category_id3 = data.data.categoria.id;
@@ -968,6 +1000,7 @@ export default class StoreAdd extends Component {
             } else {
               category_id1 = data.data.categoria.id;
             }
+
             this.setState({
               id: data.data.id,
               code: data.data.codigo,

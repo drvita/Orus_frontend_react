@@ -99,13 +99,14 @@ export default class printSale extends Component {
                     Descripcion
                   </th>
                   <th style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                    Precio
+                    Total
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((item, index) => {
-                  totalItems += item.cantidad * item.precio;
+                  const total = parseFloat(item.cantidad * item.precio);
+                  totalItems += total;
                   return (
                     <tr key={index} className="text-capitalize">
                       <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
@@ -118,7 +119,7 @@ export default class printSale extends Component {
                         className="text-right"
                         style={{ fontSize: 24, fontFamily: "sans-serif" }}
                       >
-                        {item.precio.toFixed(2)}
+                        {total.toFixed(2)}
                       </td>
                     </tr>
                   );

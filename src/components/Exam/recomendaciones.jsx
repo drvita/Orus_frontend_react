@@ -11,7 +11,7 @@ export default class Recomendaciones extends Component {
       category_id: 0,
       category_id_2: 0,
       category_id_3: 0,
-      category: {},
+      category: [],
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -23,16 +23,8 @@ export default class Recomendaciones extends Component {
     this.getCategories();
   }
   componentDidUpdate(props, state) {
-    if (
-      props.category_id &&
-      this.props.category_id &&
-      props.category_id !== this.props.category_id
-    ) {
-      console.log(
-        "Recargando recomendacion",
-        props.category_id,
-        this.props.category_id
-      );
+    if (props.category_id !== this.props.category_id) {
+      console.log("Recargando recomendacion");
       this.getCategories();
     }
   }
@@ -212,18 +204,21 @@ export default class Recomendaciones extends Component {
   };
   handleCodeName = (category) => {
     let code = "";
-    if (category.depende_de) {
-      if (category.depende_de.depende_de) {
-        code = this.getCodeCategory(category.depende_de.depende_de.categoria);
-        code += this.getCodeCategory(category.depende_de.categoria);
-        code += this.getCodeCategory(category.categoria);
+
+    if (category) {
+      if (category.depende_de) {
+        if (category.depende_de.depende_de) {
+          code = this.getCodeCategory(category.depende_de.depende_de.categoria);
+          code += this.getCodeCategory(category.depende_de.categoria);
+          code += this.getCodeCategory(category.categoria);
+        } else {
+          code = this.getCodeCategory(category.depende_de.categoria);
+          code += this.getCodeCategory(category.categoria);
+        }
       } else {
-        code = this.getCodeCategory(category.depende_de.categoria);
-        code += this.getCodeCategory(category.categoria);
+        code = this.getCodeCategory(category.categoria);
       }
-    } else {
-      code = this.getCodeCategory(category.categoria);
-    }
+    } else code = "ERRORN";
     return code;
   };
   handleClickCategory = (e) => {
@@ -282,8 +277,9 @@ export default class Recomendaciones extends Component {
   getCategories = () => {
     //Variables
     const { host, token } = this.props.data,
-      { category_id } = this.props;
+      { category_id, nameCategory } = this.props;
 
+    console.log("Tipo de descarga", nameCategory, category_id);
     if (category_id) {
       console.log("Descargando categoria para recomendacion");
       fetch("http://" + host + "/api/categories/" + category_id, {
@@ -306,6 +302,7 @@ export default class Recomendaciones extends Component {
             console.log("Recomendacion descargada");
             this.setState({
               category: cat.data,
+              category_id,
             });
           }
         })
@@ -340,6 +337,7 @@ export default class Recomendaciones extends Component {
             this.setState({
               category_list: cat.data.hijos,
               meta: cat.meta,
+              category_id: 0,
             });
           }
         })

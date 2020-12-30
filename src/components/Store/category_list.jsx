@@ -34,7 +34,13 @@ export default class CategoryList extends Component {
 
   render() {
     const { category_raiz, category_id, name, add, meta, load } = this.state,
-      { categoryName, categoryDataName, categorySelect, category } = this.props;
+      {
+        categoryName,
+        categoryDataName,
+        categorySelect,
+        category,
+        last,
+      } = this.props;
 
     return (
       <div className="card card-primary card-outline">
@@ -81,14 +87,25 @@ export default class CategoryList extends Component {
                         }
                         style={{ cursor: "pointer" }}
                         onClick={(e) => {
-                          categorySelect({
-                            [categoryName]: cat.id,
-                            [categoryDataName]: cat.hijos,
-                            category_id: cat.id,
-                          });
-                          this.setState({
-                            category_id: cat.id,
-                          });
+                          if (last) {
+                            this.setState({
+                              category_id: parseInt(category) ? category : 0,
+                            });
+                            categorySelect({
+                              [categoryName]: 0,
+                              [categoryDataName]: [],
+                              category_id: category,
+                            });
+                          } else {
+                            categorySelect({
+                              [categoryName]: cat.id,
+                              [categoryDataName]: cat.hijos,
+                              category_id: cat.id,
+                            });
+                            this.setState({
+                              category_id: cat.id,
+                            });
+                          }
                         }}
                       >
                         <td className="text-capitalize">

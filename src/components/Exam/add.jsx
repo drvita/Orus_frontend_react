@@ -318,6 +318,10 @@ export default class ExamAdd extends Component {
                             <div className="col">
                               <Recomendaciones
                                 category_id={parseInt(category_ii)}
+                                esferaod={esferaod}
+                                esferaoi={esferaoi}
+                                cilindrod={cilindrod}
+                                cilindroi={cilindroi}
                                 nameCategory="category_ii"
                                 nameItem="item2"
                                 title="Recomendacion adicional"

@@ -50,6 +50,7 @@ export default class Categories extends Component {
                 categoryName="category_id2"
                 categoryDataName="category_hijos2"
                 categorySelect={this.handleChangeState}
+                last={category_id1 === 2 ? true : false}
               />
             </div>
           ) : null}
@@ -74,6 +75,7 @@ export default class Categories extends Component {
                 categoryName="category_id4"
                 categoryDataName="category_hijos4"
                 categorySelect={this.handleChangeState}
+                last={true}
               />
             </div>
           ) : null}

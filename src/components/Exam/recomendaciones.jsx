@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import Codestring from "../Layouts/codeLentString";
 
 export default class Recomendaciones extends Component {
   constructor(props) {
@@ -55,6 +56,7 @@ export default class Recomendaciones extends Component {
         esferaoi.toFixed(2).toString().replace(".", "") +
         cilindroi.toFixed(2).toString().replace("-", "").replace(".", "");
     }
+    //console.log("Graduacion", title, esferaod, esferaod >= -3, esferaod <= 3);
 
     return (
       <div className="card">
@@ -86,7 +88,7 @@ export default class Recomendaciones extends Component {
                   </div>
                 ) : null}
 
-                {this.state.category_list_2.length ? (
+                {this.state.category_id && this.state.category_list_2.length ? (
                   <div className="input-group mb-3">
                     <div className="input-group-prepend">
                       <span className="input-group-text">Material</span>
@@ -109,7 +111,9 @@ export default class Recomendaciones extends Component {
                   </div>
                 ) : null}
 
-                {this.state.category_list_3.length ? (
+                {this.state.category_id &&
+                this.state.category_id_2 &&
+                this.state.category_list_3.length ? (
                   <div className="input-group mb-3">
                     <div className="input-group-prepend">
                       <span className="input-group-text">Tratamiento</span>
@@ -174,49 +178,20 @@ export default class Recomendaciones extends Component {
     );
   }
 
-  getCodeCategory = (code) => {
-    switch (code) {
-      case "monofocales":
-        return "MF";
-      case "bifocales":
-        return "BF";
-      case "progresivo basico":
-        return "PB";
-      case "progresivo digital":
-        return "PD";
-      case "plastico":
-        return "CR";
-      case "policarbonato":
-        return "PL";
-      case "hi-index":
-        return "HI";
-      case "antirreflejantes":
-        return "AR";
-      case "photo":
-        return "PH";
-      case "ar & photo":
-        return "ARPH";
-      case "blanco":
-        return "BL";
-      default:
-        return "";
-    }
-  };
   handleCodeName = (category) => {
     let code = "";
-
     if (category) {
       if (category.depende_de) {
         if (category.depende_de.depende_de) {
-          code = this.getCodeCategory(category.depende_de.depende_de.categoria);
-          code += this.getCodeCategory(category.depende_de.categoria);
-          code += this.getCodeCategory(category.categoria);
+          code = Codestring(category.depende_de.depende_de.categoria);
+          code += Codestring(category.depende_de.categoria);
+          code += Codestring(category.categoria);
         } else {
-          code = this.getCodeCategory(category.depende_de.categoria);
-          code += this.getCodeCategory(category.categoria);
+          code = Codestring(category.depende_de.categoria);
+          code += Codestring(category.categoria);
         }
       } else {
-        code = this.getCodeCategory(category.categoria);
+        code = Codestring(category.categoria);
       }
     } else code = "ERRORN";
     return code;
@@ -242,9 +217,11 @@ export default class Recomendaciones extends Component {
     if (name === "category_id") {
       if (value) {
         this.state.category_list.map((cat) => {
-          if (cat.id === value * 1) {
+          if (cat.id === parseInt(value)) {
             this.setState({
+              category_id_3: 0,
               category_list_2: cat.hijos,
+              category_list_3: [],
             });
           }
           return null;
@@ -277,9 +254,9 @@ export default class Recomendaciones extends Component {
   getCategories = () => {
     //Variables
     const { host, token } = this.props.data,
-      { category_id, nameCategory } = this.props;
+      { category_id } = this.props;
 
-    console.log("Tipo de descarga", nameCategory, category_id);
+    //console.log("Tipo de descarga", nameCategory, category_id);
     if (category_id) {
       console.log("Descargando categoria para recomendacion");
       fetch("http://" + host + "/api/categories/" + category_id, {

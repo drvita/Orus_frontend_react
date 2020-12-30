@@ -369,7 +369,7 @@ export default class ContactsAdd extends Component {
             method = id ? "PUT" : "POST";
 
           //Enviamos datos al API
-          console.log("Enviando datos del pedido a la API");
+          console.log("Enviando datos del contacto a la API");
           return fetch(url, {
             method: method,
             body: JSON.stringify(body),

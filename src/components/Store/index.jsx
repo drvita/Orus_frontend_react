@@ -159,7 +159,11 @@ export default class Store extends Component {
                       </td>
                       <td className="text-right">$ {item.precio.toFixed(2)}</td>
                       <td className="text-capitalize">
-                        {item.proveedor !== null ? item.proveedor.nombre : "--"}
+                        {item.proveedor !== null
+                          ? item.proveedor.nombre.split(" ").length
+                            ? item.proveedor.nombre.split(" ")[0]
+                            : item.proveedor.nombre
+                          : "--"}
                       </td>
                       <td className="text-capitalize">
                         {moment(item.updated_at).fromNow()}

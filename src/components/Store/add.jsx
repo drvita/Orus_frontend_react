@@ -4,6 +4,7 @@ import StoreLote from "./add_lote";
 import InputCategory from "./input_category";
 import Suppliers from "./input_suppliers";
 import Brands from "./input_brand";
+import Codestring from "../Layouts/codeLentString";
 
 export default class StoreAdd extends Component {
   constructor(props) {
@@ -332,7 +333,7 @@ export default class StoreAdd extends Component {
                         </div>
                       </div>
                       <div className="row">
-                        {category_id1 === 1 ? (
+                        {category_id1 === 1 && category_id2 === 5 ? (
                           <div className="col-3">
                             <small>
                               <label>Graduacion</label>
@@ -553,7 +554,7 @@ export default class StoreAdd extends Component {
     stringcode +=
       this.category2.current !== null
         ? " " +
-          this.getCodeString(
+          Codestring(
             this.category2.current.options[
               this.category2.current.selectedIndex
             ].text.trim()
@@ -577,52 +578,24 @@ export default class StoreAdd extends Component {
     stringcode += " " + grad.toString();
     return stringcode.toLowerCase();
   };
-  getCodeString = (string) => {
-    switch (string) {
-      case "monofocales":
-        return "MF";
-      case "bifocales":
-        return "BF";
-      case "progresivo basico":
-        return "PB";
-      case "progresivo digital":
-        return "PD";
-      case "plastico":
-        return "CR";
-      case "policarbonato":
-        return "PL";
-      case "hi-index":
-        return "HI";
-      case "antirreflejantes":
-        return "AR";
-      case "photo":
-        return "PH";
-      case "ar & photo":
-        return "ARPH";
-      case "blanco":
-        return "BL";
-      default:
-        return "";
-    }
-  };
   handleCodeLent = (grad) => {
     let stringcode =
       this.category2.current !== null
-        ? this.getCodeString(
+        ? Codestring(
             this.category2.current.options[this.category2.current.selectedIndex]
               .text
           )
         : "";
     stringcode +=
       this.category3.current !== null
-        ? this.getCodeString(
+        ? Codestring(
             this.category3.current.options[this.category3.current.selectedIndex]
               .text
           )
         : "";
     stringcode +=
       this.category4.current !== null
-        ? this.getCodeString(
+        ? Codestring(
             this.category4.current.options[this.category4.current.selectedIndex]
               .text
           )
@@ -940,32 +913,14 @@ export default class StoreAdd extends Component {
               category_id4 = 0;
 
             if (data.data.categoria && data.data.categoria.depende_de) {
-              console.log(
-                "CAT principal",
-                "Nombre: " + data.data.categoria.categoria,
-                "Hijos: " + data.data.categoria.hijos.length,
-                "Padre: ",
-                data.data.categoria.depende_de
-              );
-
               if (
                 data.data.categoria.depende_de &&
                 data.data.categoria.depende_de.depende_de
               ) {
-                console.log(
-                  "CAT second",
-                  data.data.categoria.depende_de.categoria,
-                  data.data.categoria.depende_de.hijos
-                );
                 if (
                   data.data.categoria.depende_de.depende_de &&
                   data.data.categoria.depende_de.depende_de.depende_de
                 ) {
-                  console.log(
-                    "CAT 4to",
-                    data.data.categoria.depende_de.depende_de.categoria,
-                    data.data.categoria.depende_de.depende_de.hijos
-                  );
                   category_id1 =
                     data.data.categoria.depende_de.depende_de.depende_de.id;
                   category_id2 = data.data.categoria.depende_de.depende_de.id;
@@ -978,11 +933,6 @@ export default class StoreAdd extends Component {
                     data.data.categoria.depende_de.depende_de.hijos;
                   category_list4 = data.data.categoria.depende_de.hijos;
                 } else {
-                  console.log(
-                    "CAT 3er",
-                    data.data.categoria.depende_de.depende_de.categoria,
-                    data.data.categoria.depende_de.depende_de.hijos
-                  );
                   category_id1 = data.data.categoria.depende_de.depende_de.id;
                   category_id2 = data.data.categoria.depende_de.id;
                   category_id3 = data.data.categoria.id;
@@ -999,7 +949,16 @@ export default class StoreAdd extends Component {
               }
             } else {
               category_id1 = data.data.categoria.id;
+              //Lista
+              category_list2 = data.data.categoria.hijos;
             }
+            /*console.log(
+              "CAT principal",
+              "Nombre: " + data.data.categoria.categoria,
+              "Hijos: " + data.data.categoria.hijos.length,
+              "Padre: ",
+              data.data.categoria.depende_de
+            );*/
 
             this.setState({
               id: data.data.id,

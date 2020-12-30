@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import Easycontact from "./easyContact";
 import moment from "moment";
 //import "moment/locale/es";
 
@@ -193,7 +194,11 @@ export default class searchContact extends Component {
                     <li key={contact.id} className="list-group-item">
                       <a
                         href="#contact"
-                        className="text-muted text-capitalize"
+                        className={
+                          !contact.id
+                            ? "text-danger text-capitalize"
+                            : "text-muted text-capitalize"
+                        }
                         onClick={(e) => {
                           this.handleClickContact(e, contact.id);
                         }}
@@ -202,21 +207,26 @@ export default class searchContact extends Component {
                         {contact.nombre}
                       </a>
                       {!contact.id ? (
-                        <p>
-                          <Link
-                            to="/contactos/registro/"
-                            className="btn btn-primary"
-                            onClick={(e) => {
-                              this.handleChangePage("/contactos/registro/");
-                            }}
-                          >
-                            <i className="fas fa-user mr-1"></i>
-                            <b>Agregar nuevo paciente</b>
-                          </Link>
-                        </p>
-                      ) : (
-                        ""
-                      )}
+                        <Easycontact
+                          name={this.state.contacto}
+                          setContac={(id, date) => {
+                            let edad =
+                              moment(date)
+                                .fromNow(true)
+                                .replace(/[a-zA-ZñÑ]/gi, "") * 1;
+                            this.setState({
+                              contacto: "",
+                              data: [],
+                              dataContact: {},
+                            });
+                            localStorage.setItem(
+                              "OrusContactInUse",
+                              JSON.stringify({})
+                            );
+                            this.props.getIdContact(id, edad);
+                          }}
+                        />
+                      ) : null}
                     </li>
                   );
                 })}
@@ -289,7 +299,7 @@ export default class searchContact extends Component {
     }
   };
   handleClickContact = (e, id) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     this.state.data.map((contact) => {
       if (contact.id === id) {
         this.setState({
@@ -379,9 +389,12 @@ export default class searchContact extends Component {
     }, 1500);
   };
   handleSearcContact = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    let val = value;
+    if (type === "number") val = parseInt(value);
+    if (type === "text") val = value.toLowerCase();
     this.setState({
-      [name]: value,
+      [name]: val,
     });
   };
 }

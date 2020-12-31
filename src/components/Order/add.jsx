@@ -100,9 +100,9 @@ export default class OrderAdd extends Component {
                     <div className="col-2">
                       <div className="border border-warning rounded p-2 d-flex justify-content-between align-items-center">
                         <span className="badge badge-pill badge-warning mx-2">
-                          Folio
+                          Pedido
                         </span>
-                        <strong>
+                        <strong className="text-primary">
                           {this.state.id ? this.state.id : "Nuevo"}
                         </strong>
                       </div>
@@ -120,14 +120,15 @@ export default class OrderAdd extends Component {
                       </div>
                     </div>
                     <div className="col-2">
-                      <div className="border border-warning rounded p-2 d-flex justify-content-between align-items-center">
+                      <div className="border border-success rounded p-2 d-flex justify-content-between align-items-center">
                         <span className="badge badge-pill badge-success mx-2">
-                          Nota
+                          Venta
                         </span>
                         <strong>
                           {this.state.nota ? (
                             <Link
                               to={"/notas/registro/" + this.state.nota}
+                              className="text-dark"
                               onClick={(e) => {
                                 this.changePage("/notas/registro");
                               }}

@@ -108,12 +108,12 @@ export default class SaleAdd extends Component {
                       <div className="col-2">
                         <div className="border border-success rounded p-2 d-flex justify-content-between align-items-center">
                           <span className="badge badge-pill badge-success mx-2">
-                            Folio
+                            Venta
                           </span>
                           <strong>{id ? id : "Nuevo"}</strong>
                         </div>
                       </div>
-                      <div className="col-4">
+                      <div className="col">
                         <div className="border border-success rounded p-2 d-flex justify-content-between align-items-center">
                           <span className="badge badge-pill badge-success mx-2">
                             Creador
@@ -125,27 +125,27 @@ export default class SaleAdd extends Component {
                           </strong>
                         </div>
                       </div>
-                      <div className="col-2">
-                        <div className="border border-success rounded p-2 d-flex justify-content-between align-items-center">
-                          <span className="badge badge-pill badge-warning mx-2">
-                            Pedido
-                          </span>
-                          <strong>
-                            {order_id ? (
-                              <Link
-                                to={"/pedidos/registro/" + order_id}
-                                onClick={(e) => {
-                                  this.changePage("/pedidos/registro");
-                                }}
-                              >
-                                {order_id}
-                              </Link>
-                            ) : (
-                              "--"
-                            )}
-                          </strong>
+                      {order_id ? (
+                        <div className="col-2">
+                          <div className="border border-success rounded p-2 d-flex justify-content-between align-items-center">
+                            <span className="badge badge-pill badge-warning mx-2">
+                              Pedido
+                            </span>
+                            <strong>
+                              {order_id ? (
+                                <Link
+                                  to={"/pedidos/registro/" + order_id}
+                                  onClick={(e) => {
+                                    this.changePage("/pedidos/registro");
+                                  }}
+                                >
+                                  {order_id}
+                                </Link>
+                              ) : null}
+                            </strong>
+                          </div>
                         </div>
-                      </div>
+                      ) : null}
                       <div className="col">
                         <div className="border border-success rounded p-2 d-flex justify-content-between align-items-center">
                           <span className="badge badge-pill badge-success mx-2">
@@ -160,6 +160,7 @@ export default class SaleAdd extends Component {
                       status={status && this.total === pagado ? true : false}
                       session={session}
                       ChangeInput={this.handleChangeInput}
+                      addCancel={order_id ? true : false}
                     />
                   </React.Fragment>
                 ) : load ? (

@@ -252,7 +252,7 @@ export default class Items extends Component {
         <tfoot>
           <tr>
             <td className="text-right" colSpan="2">
-              {!this.props.status ? (
+              {!this.props.status && !this.props.addCancel ? (
                 <button
                   className={
                     this.props.status
@@ -266,9 +266,7 @@ export default class Items extends Component {
                     className={itemNew ? "fas fa-times-circle" : "fas fa-plus"}
                   ></i>
                 </button>
-              ) : (
-                ""
-              )}
+              ) : null}
             </td>
             <th scope="row" className="text-right">
               Subtotal
@@ -389,9 +387,6 @@ export default class Items extends Component {
 
     item.inStorage = item.out >= item.cantidad ? 1 : 0;
     item.out = item.out >= item.cantidad ? 0 : item.cantidad - item.out;
-    item.producto = item.descripcion
-      ? item.producto + "  (" + item.descripcion + ")"
-      : item.producto;
 
     delete item.itemNew;
     delete item.itemsDb;

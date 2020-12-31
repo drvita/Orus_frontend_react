@@ -125,12 +125,7 @@ export default class Store extends Component {
               ) : Object.keys(items.data).length ? (
                 items.data.map((item) => {
                   return (
-                    <tr
-                      key={item.id}
-                      onClick={(e) => {
-                        this.props.history.push("/almacen/registro/" + item.id);
-                      }}
-                    >
+                    <tr key={item.id}>
                       <td>
                         <span className="text-primary text-uppercase">
                           {item.codigo}

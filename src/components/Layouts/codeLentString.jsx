@@ -33,14 +33,18 @@ export default (string) => {
       return "BI";
     case "monofocal drivesafe":
     case "monofocal-drivesafe":
+    case "monofocal digital drivesafe":
+    case "monofocal digital DriveSafe":
       return "MDSF";
     case "monofocal superb":
     case "monofocal-superb":
+    case "monofocal digital superb":
       return "MDSU";
     case "monofocal individual":
     case "monofocal-individual":
+    case "monofocal digital individual":
       return "MDIN";
     default:
-      return "";
+      return "XX";
   }
 };

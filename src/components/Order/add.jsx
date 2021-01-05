@@ -323,6 +323,16 @@ export default class OrderAdd extends Component {
                   <strong>{id ? "Regresar" : "Cancelar"}</strong>
                 </Link>
                 <button
+                  className="btn btn-dark"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.print();
+                  }}
+                >
+                  <i className="fas fa-print mr-2"></i>
+                  Imprimir
+                </button>
+                <button
                   className={
                     contact_id && items.length
                       ? "btn btn-warning"

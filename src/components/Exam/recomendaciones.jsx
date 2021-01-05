@@ -59,7 +59,7 @@ export default class Recomendaciones extends Component {
     //console.log("Graduacion", title, esferaod, esferaod >= -3, esferaod <= 3);
 
     return (
-      <div className="card">
+      <div className="card d-print-none">
         <div className="card-body">
           <h3 className="card-title text-success m-2">{title}</h3>
           {!category_id ? (

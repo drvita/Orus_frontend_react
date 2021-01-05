@@ -3,7 +3,7 @@ import React, { Component } from "react";
 export default class ObservacionesExam extends Component {
   render() {
     return (
-      <div className="card">
+      <div className="card d-print-none">
         <div className="card-header" id="heading8">
           <h2 className="mb-0">
             <button

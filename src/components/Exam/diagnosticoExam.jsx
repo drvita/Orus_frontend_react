@@ -3,7 +3,7 @@ import React, { Component } from "react";
 export default class DiagnosticoExam extends Component {
   render() {
     return (
-      <div className="card">
+      <div className="card d-print-none">
         <div className="card-header" id="heading6">
           <h2 className="mb-0">
             <button

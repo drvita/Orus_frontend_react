@@ -133,198 +133,188 @@ export default class ExamAdd extends Component {
       toDay = moment(hoy).isSame(registro, "day");
 
     return (
-      <form className="row">
-        <div className="col-3">
-          <SearchContact
-            contact={contact_id}
-            edad={edad}
-            status={status || id ? !toDay : true || order_id ? false : true}
-            getIdContact={this.getIdContact}
-            changePage={this.changePage}
-          />
-          {contact_id && order_id ? (
-            <Chat data={data} table="orders" idRow={order_id} />
-          ) : null}
+      <React.Fragment>
+        <div className="row mb-2 d-none d-print-block">
+          <div className="col">
+            <h5>
+              Optica Madero
+              <br />
+              <small>312 312 5353</small>
+            </h5>
+          </div>
         </div>
-        <div className="col">
-          <div className="card card-info card-outline">
-            <div className="card-header">
-              <h3 className="card-title">
-                <i className="fas fa-notes-medical mr-1"></i>
-                {this.state.id ? "Examen" : "Nuevo examen"}
-              </h3>
-            </div>
-            <div className="card-body">
-              <div className="accordion" id="accordionExample">
-                {contact_id ? (
-                  <React.Fragment>
-                    <Generales
-                      pc={this.state.pc}
-                      tablet={this.state.tablet}
-                      movil={this.state.movil}
-                      lap={this.state.lap}
-                      lap_time={this.state.lap_time}
-                      pc_time={this.state.pc_time}
-                      tablet_time={this.state.tablet_time}
-                      movil_time={this.state.movil_time}
-                      cefalea={this.state.cefalea}
-                      c_frecuencia={this.state.c_frecuencia}
-                      c_intensidad={this.state.c_intensidad}
-                      frontal={this.state.frontal}
-                      temporal={this.state.temporal}
-                      occipital={this.state.occipital}
-                      generality={this.state.generality}
-                      temporaoi={this.state.temporaoi}
-                      temporaod={this.state.temporaod}
-                      onChangeInput={this.handleChangeInput}
-                    />
+        <form className="row">
+          <div className="col-3">
+            <SearchContact
+              contact={contact_id}
+              edad={edad}
+              status={status || id ? !toDay : true || order_id ? false : true}
+              getIdContact={this.getIdContact}
+              changePage={this.changePage}
+            />
+            {contact_id && order_id ? (
+              <Chat data={data} table="orders" idRow={order_id} />
+            ) : null}
+          </div>
+          <div className="col">
+            <div className="card card-info card-outline">
+              <div className="card-header">
+                <h3 className="card-title">
+                  <i className="fas fa-notes-medical mr-1"></i>
+                  {this.state.id ? "Examen" : "Nuevo examen"}
+                </h3>
+              </div>
+              <div className="card-body">
+                <div className="accordion" id="accordionExample">
+                  {contact_id ? (
+                    <React.Fragment>
+                      <Generales
+                        pc={this.state.pc}
+                        tablet={this.state.tablet}
+                        movil={this.state.movil}
+                        lap={this.state.lap}
+                        lap_time={this.state.lap_time}
+                        pc_time={this.state.pc_time}
+                        tablet_time={this.state.tablet_time}
+                        movil_time={this.state.movil_time}
+                        cefalea={this.state.cefalea}
+                        c_frecuencia={this.state.c_frecuencia}
+                        c_intensidad={this.state.c_intensidad}
+                        frontal={this.state.frontal}
+                        temporal={this.state.temporal}
+                        occipital={this.state.occipital}
+                        generality={this.state.generality}
+                        temporaoi={this.state.temporaoi}
+                        temporaod={this.state.temporaod}
+                        onChangeInput={this.handleChangeInput}
+                      />
 
-                    <Interrogatorios
-                      interrogatorio={this.state.interrogatorio}
-                      coa={this.state.coa}
-                      aopp={this.state.aopp}
-                      aopf={this.state.aopf}
-                      onChangeInput={this.handleChangeInput}
-                    />
+                      <Interrogatorios
+                        interrogatorio={this.state.interrogatorio}
+                        coa={this.state.coa}
+                        aopp={this.state.aopp}
+                        aopf={this.state.aopf}
+                        onChangeInput={this.handleChangeInput}
+                      />
 
-                    <KeraRet
-                      keratometriaoi={this.state.keratometriaoi}
-                      keratometriaod={this.state.keratometriaod}
-                      rsoi={this.state.rsoi}
-                      rsod={this.state.rsod}
-                      onChangeInput={this.handleChangeInput}
-                    />
+                      <KeraRet
+                        keratometriaoi={this.state.keratometriaoi}
+                        keratometriaod={this.state.keratometriaod}
+                        rsoi={this.state.rsoi}
+                        rsod={this.state.rsod}
+                        onChangeInput={this.handleChangeInput}
+                      />
 
-                    <Diabetes
-                      d_time={this.state.d_time}
-                      d_media={this.state.d_media}
-                      d_test={this.state.d_test}
-                      d_fclod={this.state.d_fclod}
-                      d_fclod_time={this.state.d_fclod_time}
-                      d_fcloi={this.state.d_fcloi}
-                      d_fcloi_time={this.state.d_fcloi_time}
-                      oftalmoscopia={this.state.oftalmoscopia}
-                      onChangeInput={this.handleChangeInput}
-                    />
+                      <Diabetes
+                        d_time={this.state.d_time}
+                        d_media={this.state.d_media}
+                        d_test={this.state.d_test}
+                        d_fclod={this.state.d_fclod}
+                        d_fclod_time={this.state.d_fclod_time}
+                        d_fcloi={this.state.d_fcloi}
+                        d_fcloi_time={this.state.d_fcloi_time}
+                        oftalmoscopia={this.state.oftalmoscopia}
+                        onChangeInput={this.handleChangeInput}
+                      />
 
-                    <Agudeza
-                      cvod={this.state.cvod}
-                      cvoi={this.state.cvoi}
-                      avslod={this.state.avslod}
-                      avsloi={this.state.avsloi}
-                      avcgaod={this.state.avcgaod}
-                      avcgaoi={this.state.avcgaoi}
-                      avfod={this.state.avfod}
-                      avfoi={this.state.avfoi}
-                      avf2o={this.state.avf2o}
-                      onChangeInput={this.handleChangeInput}
-                    />
+                      <Agudeza
+                        cvod={this.state.cvod}
+                        cvoi={this.state.cvoi}
+                        avslod={this.state.avslod}
+                        avsloi={this.state.avsloi}
+                        avcgaod={this.state.avcgaod}
+                        avcgaoi={this.state.avcgaoi}
+                        avfod={this.state.avfod}
+                        avfoi={this.state.avfoi}
+                        avf2o={this.state.avf2o}
+                        onChangeInput={this.handleChangeInput}
+                      />
 
-                    <Diagnostico
-                      diagnostico={this.state.diagnostico}
-                      presbicie={this.state.presbicie}
-                      piod={this.state.piod}
-                      pioi={this.state.pioi}
-                      txoftalmico={this.state.txoftalmico}
-                      onChangeInput={this.handleChangeInput}
-                    />
+                      <Diagnostico
+                        diagnostico={this.state.diagnostico}
+                        presbicie={this.state.presbicie}
+                        piod={this.state.piod}
+                        pioi={this.state.pioi}
+                        txoftalmico={this.state.txoftalmico}
+                        onChangeInput={this.handleChangeInput}
+                      />
 
-                    <div className="card">
-                      <div className="card-header" id="heading7">
-                        <h2 className="mb-0">
-                          <button
-                            className="btn btn-link btn-block text-left text-info collapsed"
-                            type="button"
-                            data-toggle="collapse"
-                            data-target="#caja7"
-                            aria-expanded="false"
-                            aria-controls="caja7"
-                          >
-                            Graduaci&oacute;n
-                          </button>
-                        </h2>
-                      </div>
-                      <div
-                        id="caja7"
-                        className="collapse"
-                        aria-labelledby="headingThree"
-                        data-parent="#accordionExample"
-                      >
-                        <div className="card-body">
-                          <Graduacion
-                            esferaod={esferaod}
-                            esferaoi={esferaoi}
-                            cilindrod={cilindrod}
-                            cilindroi={cilindroi}
-                            ejeod={this.state.ejeod}
-                            ejeoi={this.state.ejeoi}
-                            adiciond={this.state.adiciond}
-                            adicioni={this.state.adicioni}
-                            dpod={this.state.dpod}
-                            dpoi={this.state.dpoi}
-                            alturaod={this.state.alturaod}
-                            alturaoi={this.state.alturaoi}
-                            lcmarca={this.state.lcmarca}
-                            lcgod={this.state.lcgod}
-                            lcgoi={this.state.lcgoi}
-                            onChangeInput={this.handleChangeInput}
-                          />
+                      <div className="card">
+                        <div className="card-header d-print-none" id="heading7">
+                          <h2 className="mb-0">
+                            <button
+                              className="btn btn-link btn-block text-left text-info collapsed"
+                              type="button"
+                              data-toggle="collapse"
+                              data-target="#caja7"
+                              aria-expanded="false"
+                              aria-controls="caja7"
+                            >
+                              Graduaci&oacute;n
+                            </button>
+                          </h2>
                         </div>
-                      </div>
-                    </div>
-
-                    <Observaciones
-                      observaciones={this.state.observaciones}
-                      onChangeInput={this.handleChangeInput}
-                    />
-
-                    <div className="card">
-                      <div className="card-header" id="heading9">
-                        <h2 className="mb-0">
-                          <button
-                            className="btn btn-link btn-block text-left text-info collapsed"
-                            type="button"
-                            data-toggle="collapse"
-                            data-target="#caja9"
-                            aria-expanded="false"
-                            aria-controls="caja9"
-                          >
-                            Recomendaciones
-                          </button>
-                        </h2>
-                      </div>
-                      <div id="caja9" className="collapse p-2">
-                        <div className="row">
-                          <div className="col">
-                            <Recomendaciones
-                              category_id={parseInt(category_id)}
+                        <div
+                          id="caja7"
+                          className="collapse"
+                          aria-labelledby="headingThree"
+                          data-parent="#accordionExample"
+                        >
+                          <div className="card-body">
+                            <Graduacion
                               esferaod={esferaod}
                               esferaoi={esferaoi}
                               cilindrod={cilindrod}
                               cilindroi={cilindroi}
-                              nameCategory="category_id"
-                              nameItem="item1"
-                              title="Recomendacion principal"
-                              data={data}
-                              onChangeInput={(obj) => {
-                                if (typeof obj === "object") {
-                                  this.setState(obj);
-                                }
-                              }}
-                              update={true}
+                              ejeod={this.state.ejeod}
+                              ejeoi={this.state.ejeoi}
+                              adiciond={this.state.adiciond}
+                              adicioni={this.state.adicioni}
+                              dpod={this.state.dpod}
+                              dpoi={this.state.dpoi}
+                              alturaod={this.state.alturaod}
+                              alturaoi={this.state.alturaoi}
+                              lcmarca={this.state.lcmarca}
+                              lcgod={this.state.lcgod}
+                              lcgoi={this.state.lcgoi}
+                              onChangeInput={this.handleChangeInput}
                             />
                           </div>
-                          {category_id ? (
+                        </div>
+                      </div>
+
+                      <Observaciones
+                        observaciones={this.state.observaciones}
+                        onChangeInput={this.handleChangeInput}
+                      />
+
+                      <div className="card">
+                        <div className="card-header d-print-none" id="heading9">
+                          <h2 className="mb-0">
+                            <button
+                              className="btn btn-link btn-block text-left text-info collapsed"
+                              type="button"
+                              data-toggle="collapse"
+                              data-target="#caja9"
+                              aria-expanded="false"
+                              aria-controls="caja9"
+                            >
+                              Recomendaciones
+                            </button>
+                          </h2>
+                        </div>
+                        <div id="caja9" className="collapse p-2">
+                          <div className="row">
                             <div className="col">
                               <Recomendaciones
-                                category_id={parseInt(category_ii)}
+                                category_id={parseInt(category_id)}
                                 esferaod={esferaod}
                                 esferaoi={esferaoi}
                                 cilindrod={cilindrod}
                                 cilindroi={cilindroi}
-                                nameCategory="category_ii"
-                                nameItem="item2"
-                                title="Recomendacion adicional"
+                                nameCategory="category_id"
+                                nameItem="item1"
+                                title="Recomendacion principal"
                                 data={data}
                                 onChangeInput={(obj) => {
                                   if (typeof obj === "object") {
@@ -334,67 +324,111 @@ export default class ExamAdd extends Component {
                                 update={true}
                               />
                             </div>
-                          ) : null}
+                            {category_id ? (
+                              <div className="col">
+                                <Recomendaciones
+                                  category_id={parseInt(category_ii)}
+                                  esferaod={esferaod}
+                                  esferaoi={esferaoi}
+                                  cilindrod={cilindrod}
+                                  cilindroi={cilindroi}
+                                  nameCategory="category_ii"
+                                  nameItem="item2"
+                                  title="Recomendacion adicional"
+                                  data={data}
+                                  onChangeInput={(obj) => {
+                                    if (typeof obj === "object") {
+                                      this.setState(obj);
+                                    }
+                                  }}
+                                  update={true}
+                                />
+                              </div>
+                            ) : null}
+                          </div>
                         </div>
                       </div>
+                    </React.Fragment>
+                  ) : (
+                    <div className="card">
+                      <div className="card-body text-info">
+                        <i className="fas fa-exclamation-triangle mr-2"></i>
+                        <label>Elija primero un paciente</label>
+                      </div>
                     </div>
-                  </React.Fragment>
-                ) : (
-                  <div className="card">
-                    <div className="card-body text-info">
-                      <i className="fas fa-exclamation-triangle mr-2"></i>
-                      <label>Elija primero un paciente</label>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="card-footer text-right">
-              <div className="btn-group" role="group">
-                <Link
-                  to="/consultorio"
-                  className="btn btn-dark"
-                  onClick={(e) => {
-                    this.changePage("/consultorio");
-                  }}
-                >
-                  <i
+              <div className="card-footer text-right">
+                <div className="btn-group d-print-none" role="group">
+                  <Link
+                    to="/consultorio"
+                    className="btn btn-dark"
+                    onClick={(e) => {
+                      this.changePage("/consultorio");
+                    }}
+                  >
+                    <i
+                      className={
+                        id ? "fas fa-arrow-left mr-2" : "fas fa-ban mr-2"
+                      }
+                    ></i>
+                    <strong>{id ? "Regresar" : "Cancelar"}</strong>
+                  </Link>
+                  <button
+                    type="button"
+                    className="btn btn-dark"
+                    onClick={this.handleStatus}
+                  >
+                    <i
+                      className={
+                        this.state.status
+                          ? "fas fa-lock-open mr-1"
+                          : "fas fa-lock mr-1"
+                      }
+                    ></i>
+                    <strong>
+                      {this.state.status ? "Activar" : "Terminar"}
+                    </strong>
+                  </button>
+                  <button
+                    className="btn btn-dark"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.print();
+                    }}
+                  >
+                    <i className="fas fa-print mr-2"></i>
+                    Imprimir
+                  </button>
+                  <button
+                    type="button"
                     className={
-                      id ? "fas fa-arrow-left mr-2" : "fas fa-ban mr-2"
+                      contact_id ? "btn btn-info" : "btn btn-info disabled"
                     }
-                  ></i>
-                  <strong>{id ? "Regresar" : "Cancelar"}</strong>
-                </Link>
-                <button
-                  type="button"
-                  className="btn btn-dark"
-                  onClick={this.handleStatus}
-                >
-                  <i
-                    className={
-                      this.state.status
-                        ? "fas fa-lock-open mr-1"
-                        : "fas fa-lock mr-1"
-                    }
-                  ></i>
-                  <strong>{this.state.status ? "Activar" : "Terminar"}</strong>
-                </button>
-                <button
-                  type="button"
-                  className={
-                    contact_id ? "btn btn-info" : "btn btn-info disabled"
-                  }
-                  onClick={this.handleSave}
-                  disabled={contact_id ? "" : "disabled"}
-                >
-                  <i className="fas fa-save mr-1"></i>
-                  <strong>Guardar</strong>
-                </button>
+                    onClick={this.handleSave}
+                    disabled={contact_id ? "" : "disabled"}
+                  >
+                    <i className="fas fa-save mr-1"></i>
+                    <strong>Guardar</strong>
+                  </button>
+                </div>
+                <div className="d-none d-print-block">
+                  <p className="card-text">
+                    Julio Cárdenas Martinez
+                    <br />
+                    Optometrista contactologo
+                    <br />
+                    UAG
+                    <br />
+                    CED PROF. 2413419
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </React.Fragment>
     );
   }
 

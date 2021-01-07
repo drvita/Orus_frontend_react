@@ -260,7 +260,19 @@ export default class ExamAdd extends Component {
                           aria-labelledby="headingThree"
                           data-parent="#accordionExample"
                         >
-                          <div className="card-body">
+                          <div className="card-body p-1">
+                            <div className="d-none d-print-block mb-2">
+                              <div className="row border">
+                                <div className="col-3">
+                                  <label>Diagnostico</label>
+                                </div>
+                                <div className="col">
+                                  <p className="card-text">
+                                    {this.state.diagnostico}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
                             <Graduacion
                               esferaod={esferaod}
                               esferaoi={esferaoi}

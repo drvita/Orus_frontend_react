@@ -31,7 +31,7 @@ export default class messenger extends Component {
       user = data.idUser;
 
     return (
-      <div className="card direct-chat direct-chat-primary">
+      <div className="card direct-chat direct-chat-primary d-print-none">
         <div className="card-header">
           <h3 className="card-title">
             <i className="fas fa-comments mr-1"></i>

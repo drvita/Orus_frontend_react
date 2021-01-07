@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import Codestring from "../Layouts/codeLentString";
+//import Codestring from "../Layouts/codeLentString";
 
 export default class Recomendaciones extends Component {
   constructor(props) {
@@ -40,23 +40,26 @@ export default class Recomendaciones extends Component {
         cilindroi,
       } = this.props,
       { category } = this.state;
-    let code = category_id ? this.handleCodeName(category) : "",
+    let code =
+        category_id && Object.keys(category).length
+          ? this.handleCodeName(category)
+          : "XX",
       gradod = "+000000",
       gradoi = "+000000";
 
-    if (cilindrod && esferaod) {
+    if (cilindrod || esferaod) {
       gradod = esferaod > 0 ? "+" : "";
       gradod +=
         esferaod.toFixed(2).toString().replace(".", "") +
         cilindrod.toFixed(2).toString().replace("-", "").replace(".", "");
     }
-    if (cilindroi && esferaoi) {
+    if (cilindroi || esferaoi) {
       gradoi = esferaoi > 0 ? "+" : "";
       gradoi +=
         esferaoi.toFixed(2).toString().replace(".", "") +
         cilindroi.toFixed(2).toString().replace("-", "").replace(".", "");
     }
-    //console.log("Graduacion", title, esferaod, esferaod >= -3, esferaod <= 3);
+    //console.log("GRAD CIL: ", cilindrod, cilindroi);
 
     return (
       <div className="card d-print-none">
@@ -78,11 +81,21 @@ export default class Recomendaciones extends Component {
                     >
                       <option value="0">Seleccione el tipo</option>
                       {this.state.category_list.map((cat) => {
-                        return (
-                          <option value={cat.id} key={cat.id}>
-                            {cat.categoria}
-                          </option>
-                        );
+                        if (
+                          cat.meta &&
+                          cat.meta.rangoInf <= esferaod &&
+                          esferaod <= cat.meta.rangoSup &&
+                          cat.meta.rangoInf <= esferaoi &&
+                          esferaoi <= cat.meta.rangoSup &&
+                          cat.meta.cil <= cilindrod &&
+                          cat.meta.cil <= cilindroi
+                        ) {
+                          return (
+                            <option value={cat.id} key={cat.id}>
+                              {cat.categoria}
+                            </option>
+                          );
+                        } else return false;
                       })}
                     </select>
                   </div>
@@ -101,11 +114,20 @@ export default class Recomendaciones extends Component {
                     >
                       <option value="0">Seleccione el material</option>
                       {this.state.category_list_2.map((cat) => {
-                        return (
-                          <option value={cat.id} key={cat.id}>
-                            {cat.categoria}
-                          </option>
-                        );
+                        console.log("Material: ", cat);
+                        if (
+                          cat.meta &&
+                          cat.meta.rangoInf <= esferaod &&
+                          esferaod <= cat.meta.rangoSup &&
+                          cat.meta.rangoInf <= esferaoi &&
+                          esferaoi <= cat.meta.rangoSup
+                        ) {
+                          return (
+                            <option value={cat.id} key={cat.id}>
+                              {cat.categoria}
+                            </option>
+                          );
+                        } else return false;
                       })}
                     </select>
                   </div>
@@ -180,20 +202,18 @@ export default class Recomendaciones extends Component {
 
   handleCodeName = (category) => {
     let code = "";
-    if (category) {
-      if (category.depende_de) {
-        if (category.depende_de.depende_de) {
-          code = Codestring(category.depende_de.depende_de.categoria);
-          code += Codestring(category.depende_de.categoria);
-          code += Codestring(category.categoria);
-        } else {
-          code = Codestring(category.depende_de.categoria);
-          code += Codestring(category.categoria);
-        }
+    if (category.depende_de) {
+      if (category.depende_de.depende_de) {
+        code = category.depende_de.depende_de.meta.code;
+        code += category.depende_de.meta.code;
+        code += category.meta.code;
       } else {
-        code = Codestring(category.categoria);
+        code = category.depende_de.meta.code;
+        code += category.meta.code;
       }
-    } else code = "ERRORN";
+    } else {
+      code = category.meta.code;
+    }
     return code;
   };
   handleClickCategory = (e) => {
@@ -293,7 +313,7 @@ export default class Recomendaciones extends Component {
         });
     } else {
       console.log("Descargando lista de recomendaciones raiz");
-      fetch("http://" + host + "/api/categories/1?categoryid=raiz", {
+      fetch("http://" + host + "/api/categories/1", {
         method: "GET",
         signal: this.signal,
         headers: {

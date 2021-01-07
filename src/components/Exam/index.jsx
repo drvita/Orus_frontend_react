@@ -176,10 +176,10 @@ export default class Exam extends Component {
                       <td>
                         {exam.alturaod}/{exam.alturaoi}
                       </td>
-                      <td>{moment(exam.created_at, "YYYY-MM-DD").fromNow()}</td>
                       <td>
                         {moment(exam.updated_at, "YYYY-MM-DD").format("ll")}
                       </td>
+                      <td>{moment(exam.created_at, "YYYY-MM-DD").fromNow()}</td>
                       <Actions
                         id={exam.id}
                         item={exam.paciente.nombre}

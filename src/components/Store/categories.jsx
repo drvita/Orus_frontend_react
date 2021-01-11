@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-//import moment from "moment";
-//import "moment/locale/es";
 import Catalogo from "./category_list";
 
 export default class Categories extends Component {

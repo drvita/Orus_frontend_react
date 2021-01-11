@@ -10,6 +10,7 @@ import Store from "./components/Store/index";
 import StoreAdd from "./components/Store/add";
 import Categories from "./components/Store/categories";
 import Brands from "./components/Store/brands";
+import Inventory from "./components/Store/inventory";
 import Contacts from "./components/Contacts/index";
 import ContactsAdd from "./components/Contacts/add";
 import AddByContact from "./components/Contacts/addByContact";
@@ -135,6 +136,17 @@ export default class Routers extends Component {
                       path="/almacen/marcas"
                       render={(props) => (
                         <Brands {...props} data={data} page={this.handlePage} />
+                      )}
+                    />
+                    <Route
+                      extric
+                      path="/almacen/inventario"
+                      render={(props) => (
+                        <Inventory
+                          {...props}
+                          data={data}
+                          page={this.handlePage}
+                        />
                       )}
                     />
                     <Route

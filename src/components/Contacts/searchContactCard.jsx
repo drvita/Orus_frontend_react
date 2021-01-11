@@ -133,10 +133,6 @@ export default class searchContact extends Component {
                   <span className="badge badge-primary badge-pill">{id}</span>
                 </li>
               </ul>
-              <div className="d-none d-print-block">
-                <label className="mr-2">Fecha:</label>
-                {moment().format("lll")}
-              </div>
               {!this.props.status ? (
                 <div className="btn-group btn-block" role="group">
                   <button

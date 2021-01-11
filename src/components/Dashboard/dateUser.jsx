@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from "moment";
-import "moment/locale/es";
 
 export default class DateUser extends Component {
   constructor(props) {

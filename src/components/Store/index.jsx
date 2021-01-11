@@ -101,7 +101,7 @@ export default class Store extends Component {
           </div>
         </div>
         <div className="card-body table-responsive p-0">
-          <table className="table table-bordered table-hover table-nowrap">
+          <table className="table table-sm table-bordered table-hover">
             <Header
               orderby={this.state.orderby}
               order={this.state.order}

@@ -12,6 +12,7 @@ import Diagnostico from "./diagnosticoExam";
 import Graduacion from "./graduacionExam";
 import Observaciones from "./observacionesExam";
 import Chat from "../Layouts/messenger";
+import PrintExam from "./print_exam";
 
 export default class ExamAdd extends Component {
   constructor(props) {
@@ -134,15 +135,6 @@ export default class ExamAdd extends Component {
 
     return (
       <React.Fragment>
-        <div className="row mb-2 d-none d-print-block">
-          <div className="col">
-            <h5>
-              Optica Madero
-              <br />
-              <small>312 312 5353</small>
-            </h5>
-          </div>
-        </div>
         <form className="row">
           <div className="col-3">
             <SearchContact
@@ -157,7 +149,26 @@ export default class ExamAdd extends Component {
             ) : null}
           </div>
           <div className="col">
-            <div className="card card-info card-outline">
+            <PrintExam
+              esferaod={esferaod}
+              esferaoi={esferaoi}
+              cilindrod={cilindrod}
+              cilindroi={cilindroi}
+              ejeod={this.state.ejeod}
+              ejeoi={this.state.ejeoi}
+              adiciond={this.state.adiciond}
+              adicioni={this.state.adicioni}
+              dpod={this.state.dpod}
+              dpoi={this.state.dpoi}
+              alturaod={this.state.alturaod}
+              alturaoi={this.state.alturaoi}
+              lcmarca={this.state.lcmarca}
+              lcgod={this.state.lcgod}
+              lcgoi={this.state.lcgoi}
+              diagnostico={this.state.diagnostico}
+              presbicie={this.state.presbicie}
+            />
+            <div className="card card-info card-outline d-print-none">
               <div className="card-header">
                 <h3 className="card-title">
                   <i className="fas fa-notes-medical mr-1"></i>
@@ -424,17 +435,6 @@ export default class ExamAdd extends Component {
                     <i className="fas fa-save mr-1"></i>
                     <strong>Guardar</strong>
                   </button>
-                </div>
-                <div className="d-none d-print-block">
-                  <p className="card-text">
-                    Julio Cárdenas Martinez
-                    <br />
-                    Optometrista contactologo
-                    <br />
-                    UAG
-                    <br />
-                    CED PROF. 2413419
-                  </p>
                 </div>
               </div>
             </div>

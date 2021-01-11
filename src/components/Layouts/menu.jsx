@@ -187,7 +187,7 @@ class Menu extends Component {
                           }}
                         >
                           <i className="fas fa-angle-right nav-icon"></i>
-                          <p>Listado</p>
+                          <p>Productos</p>
                         </Link>
                       </li>
                       <li className="nav-item">
@@ -212,6 +212,18 @@ class Menu extends Component {
                         >
                           <i className="fas fa-angle-right nav-icon"></i>
                           <p>Marcas</p>
+                        </Link>
+                      </li>
+                      <li className="nav-item">
+                        <Link
+                          to="/almacen/inventario"
+                          className="nav-link"
+                          onClick={(e) => {
+                            this.changePage("/almacen/marcas");
+                          }}
+                        >
+                          <i className="fas fa-angle-right nav-icon"></i>
+                          <p>Inventario</p>
                         </Link>
                       </li>
                     </ul>

@@ -333,7 +333,7 @@ export default class StoreAdd extends Component {
                         </div>
                       </div>
                       <div className="row">
-                        {category_id1 === 1 && category_id2 === 5 ? (
+                        {category_id1 === 1 ? (
                           <div className="col-3">
                             <small>
                               <label>Graduacion</label>
@@ -815,7 +815,7 @@ export default class StoreAdd extends Component {
             cant,
             price,
             category_id,
-            grad,
+            grad: grad ? grad : "+000000",
             brand_id: brand_id ? brand_id : "",
             contact_id: supplier ? supplier : "",
           };

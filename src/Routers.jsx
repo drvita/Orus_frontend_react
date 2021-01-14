@@ -22,11 +22,11 @@ import OrderAdd from "./components/Order/add";
 import Sales from "./components/Sales/index";
 import SalesAdd from "./components/Sales/add";
 import Dashboard from "./components/Dashboard/index";
+import NotifyAllShow from "./components/Layouts/notifyAll";
 
 export default class Routers extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       page: this.handleTitleSection(window.location.pathname),
       company: props.data.company,
@@ -44,8 +44,7 @@ export default class Routers extends Component {
 
     if (
       rol === 1 &&
-      (dir.match(/^\/consultorio/g) ||
-        dir.match(/^\/usuarios/g) ||
+      (dir.match(/^\/usuarios/g) ||
         dir.match(/^\/almacen/g) ||
         dir.match(/^\/configuraciones/g))
     ) {
@@ -61,14 +60,9 @@ export default class Routers extends Component {
     ) {
       window.location.href = "/";
     }
-    //Verificamos la sesion del usuario
-    this.verifyUser();
   }
-  componentDidUpdate(props, state) {
-    if (this.state.page !== state.page) {
-      //Se verifica cada que se cambia de pagina
-      this.verifyUser();
-    }
+  componentDidUpdate() {
+    console.log("Recargando router: ", window.location.pathname);
   }
 
   render() {
@@ -77,7 +71,7 @@ export default class Routers extends Component {
 
     return (
       <div className="wrapper">
-        <Navtop />
+        <Navtop logOut={logOut} data={data} />
         <Menu
           companyName={this.state.company}
           user={data}
@@ -255,6 +249,18 @@ export default class Routers extends Component {
 
                     <Route
                       extric
+                      path="/notificaciones"
+                      render={(props) => (
+                        <NotifyAllShow
+                          {...props}
+                          data={data}
+                          page={this.handlePage}
+                        />
+                      )}
+                    />
+
+                    <Route
+                      extric
                       path="/"
                       render={(props) => (
                         <Dashboard
@@ -275,43 +281,6 @@ export default class Routers extends Component {
     );
   }
 
-  verifyUser = () => {
-    //Variables en localStorage
-    let { data, logOut } = this.props,
-      { host, isLogged, token } = data;
-
-    //Solo realizamos la verificacion si hay sesion
-    if (isLogged && host && token) {
-      console.log("Verificando usuario");
-      //Realizando verificación de usuarios
-      if (token !== "" && host !== "") {
-        fetch("http://" + host + "/api/user", {
-          method: "GET",
-          signal: this.signal,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-        })
-          .then((res) => {
-            if (!res.ok && token !== "") {
-              console.error("Usuario invalido:", res.statusText);
-              logOut();
-            }
-            return res.json();
-          })
-          .then((data) => {
-            if (!data.message) {
-              console.log("Usuario valido:", data.username);
-            }
-          });
-      }
-    } else {
-      console.error("La sesion ya no esta activa o se perdio el host");
-      logOut();
-    }
-  };
   handlePage = (title) => {
     let page = this.handleTitleSection(title);
     this.setState({

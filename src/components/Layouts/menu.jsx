@@ -10,7 +10,7 @@ class Menu extends Component {
     if (user.idUser === 2) avatar = "/img/avatars/avatar4.png";
 
     return (
-      <aside className="main-sidebar sidebar-dark-primary elevation-4">
+      <aside className="main-sidebar sidebar-dark-primary">
         <Link
           to="/"
           className="brand-link"

@@ -74,7 +74,7 @@ export default class ListsExams extends Component {
                       Estado
                     </span>
                     <strong>
-                      {exam.estado ? exam.estado : "En proceso..."}
+                      {exam.estado ? "Terminado" : "En proceso..."}
                     </strong>
                   </div>
                 </div>
@@ -124,6 +124,51 @@ export default class ListsExams extends Component {
               />
 
               <div className="row d-print-none">
+                <div className="col p-2">
+                  <div className="card">
+                    <div className="card-body">
+                      <label className="card-title text-success">
+                        Observaciones
+                      </label>
+                      <p className="card-text text-muted text-uppercase">
+                        {exam.observaciones ? exam.observaciones : "--"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {exam.category_id ? (
+                  <React.Fragment>
+                    <div className="col p-2">
+                      <Recomendaciones
+                        category_id={exam.category_id}
+                        title="Recomendacion principal"
+                        esferaod={exam.esferaod ? exam.esferaod : 0}
+                        esferaoi={exam.esferaoi ? exam.esferaoi : 0}
+                        cilindrod={exam.cilindrod ? exam.cilindrod : 0}
+                        cilindroi={exam.cilindroi ? exam.cilindroi : 0}
+                        data={datos}
+                        onChangeInput={this.handleChangeInput}
+                      />
+                    </div>
+                    {exam.category_ii ? (
+                      <div className="col p-2">
+                        <Recomendaciones
+                          category_id={exam.category_ii}
+                          title="Recomendacion adicional"
+                          esferaod={exam.esferaod ? exam.esferaod : 0}
+                          esferaoi={exam.esferaoi ? exam.esferaoi : 0}
+                          cilindrod={exam.cilindrod ? exam.cilindrod : 0}
+                          cilindroi={exam.cilindroi ? exam.cilindroi : 0}
+                          data={datos}
+                          onChangeInput={this.handleChangeInput}
+                        />
+                      </div>
+                    ) : null}
+                  </React.Fragment>
+                ) : null}
+              </div>
+
+              <div className="row d-print-none">
                 <div className="col text-right pt-2">
                   <button
                     className={examEdit ? "btn btn-dark" : "btn btn-info"}
@@ -149,37 +194,6 @@ export default class ListsExams extends Component {
                   </button>
                 </div>
               </div>
-
-              {exam.category_id ? (
-                <div className="row">
-                  <div className={exam.category_ii ? "col" : "col-6"}>
-                    <Recomendaciones
-                      category_id={exam.category_id}
-                      title="Recomendacion principal"
-                      esferaod={exam.esferaod ? exam.esferaod : 0}
-                      esferaoi={exam.esferaoi ? exam.esferaoi : 0}
-                      cilindrod={exam.cilindrod ? exam.cilindrod : 0}
-                      cilindroi={exam.cilindroi ? exam.cilindroi : 0}
-                      data={datos}
-                      onChangeInput={this.handleChangeInput}
-                    />
-                  </div>
-                  {exam.category_ii ? (
-                    <div className="col">
-                      <Recomendaciones
-                        category_id={exam.category_ii}
-                        title="Recomendacion adicional"
-                        esferaod={exam.esferaod ? exam.esferaod : 0}
-                        esferaoi={exam.esferaoi ? exam.esferaoi : 0}
-                        cilindrod={exam.cilindrod ? exam.cilindrod : 0}
-                        cilindroi={exam.cilindroi ? exam.cilindroi : 0}
-                        data={datos}
-                        onChangeInput={this.handleChangeInput}
-                      />
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
             </React.Fragment>
           ) : (
             <table className="table table-hover table-nowrap">

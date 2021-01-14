@@ -16,6 +16,7 @@ export default class OrderAdd extends Component {
     super(props);
     //Recogemos valores de registro previo
     let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    console.log("Contacto en uso: ", contact.exam_id ? "Si" : "No");
     this.state = {
       id: 0,
       session:
@@ -34,7 +35,7 @@ export default class OrderAdd extends Component {
       contact_id: contact && contact.id ? contact.id : 0,
       usuario: "",
       edad: 0,
-      exam_id: 0,
+      exam_id: contact && contact.exam_id ? contact.exam_id : 0,
       exam: {},
       status: 0,
       date: Date.now(),
@@ -50,26 +51,80 @@ export default class OrderAdd extends Component {
     this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    let id = this.props.match.params.id;
+    const id = this.props.match.params.id,
+      { exam_id, exam } = this.state;
 
     if (id) {
-      moment.locale("es");
       this.getOrder(id);
     } else {
+      if (exam_id && !exam.id) {
+        this.getExamById(exam_id);
+      }
       this.setState({
         load: false,
       });
     }
+    //localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
-  componentDidUpdate(props, state) {
-    //console.log("Renderizando Add en items", state.load, this.state.load);
-    if (state.load !== this.state.load && this.state.load === true) {
-      //this.getOrder();
-    }
-  }
+  getExamById = (id) => {
+    //host y token
+    const { host, token } = this.state;
+    //Realiza la peticion del examen por el id
+    console.log("Descargando examen");
+    fetch("http://" + host + "/api/exams/" + id, {
+      method: "GET",
+      signal: this.signal,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.data) {
+          console.log("Almacenando examenes");
+          this.setState({
+            exam: data.data,
+          });
+        } else {
+          console.error("Orus: ", data.message);
+          window.Swal.fire("Error", "Al descargar el examen", "error");
+          this.setState({
+            load: false,
+          });
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
+        this.setState({
+          load: false,
+        });
+      });
+  };
 
   render() {
-    const { contact_id, id, load, items, nota, status, edad } = this.state,
+    const {
+        contact_id,
+        id,
+        load,
+        items,
+        nota,
+        status,
+        edad,
+        exam_id,
+        exam,
+      } = this.state,
       { data } = this.props;
     let showTabActive = true;
 
@@ -235,7 +290,9 @@ export default class OrderAdd extends Component {
                       <ListExam
                         paciente={contact_id}
                         edad={edad}
-                        exam={this.state.exam}
+                        exam={
+                          exam_id && exam.id && exam_id === exam.id ? exam : {}
+                        }
                         page={this.changePage}
                         datos={data}
                         select={true}
@@ -390,12 +447,12 @@ export default class OrderAdd extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          let { host, token } = this.state,
+          const { host, token } = this.state,
             url = id
               ? "http://" + host + "/api/orders/" + id
               : "http://" + host + "/api/orders",
-            method = id ? "PUT" : "POST",
-            body = {},
+            method = id ? "PUT" : "POST";
+          let body = {},
             items = [];
 
           this.state.items.map((item) => {

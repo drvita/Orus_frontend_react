@@ -208,20 +208,10 @@ export default class Main extends Component {
             }
             return back;
           })
-          .then((data) => {
-            if (data.data) {
+          .then((response) => {
+            if (response.data) {
               console.log("Loggin: realizado con exito");
-              this.props.loginFunction(data);
-            } else {
-              console.error("Login: Sin acceso", data);
-              if (data.message) {
-                window.Swal.fire("Session", data.message, "error");
-              } else if (data.errors) {
-                window.Swal.fire("Session", data.errors, "error");
-              }
-              this.setState({
-                load: false,
-              });
+              this.props.loginFunction(response);
             }
           })
           .catch((message) => {

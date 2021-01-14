@@ -236,8 +236,8 @@ export default class Inventory extends Component {
                   )}
                 </React.Fragment>
               ) : (
-                <div class="alert alert-warning text-light" role="alert">
-                  <h4 class="alert-heading">
+                <div className="alert alert-warning text-light" role="alert">
+                  <h4 className="alert-heading">
                     <i className="fas fa-exclamation"></i> Seleccion.
                   </h4>
                   <hr />

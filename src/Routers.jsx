@@ -71,7 +71,7 @@ export default class Routers extends Component {
 
     return (
       <div className="wrapper">
-        <Navtop logOut={logOut} data={data} />
+        <Navtop logOut={logOut} data={data} page={this.handlePage} />
         <Menu
           companyName={this.state.company}
           user={data}
@@ -80,7 +80,7 @@ export default class Routers extends Component {
           active={page}
         />
         <div className="content-wrapper">
-          <Breadcrumb title={this.state.page} />
+          <Breadcrumb title={page} />
           <div className="content">
             <div className="container-fluid">
               <div className="row">

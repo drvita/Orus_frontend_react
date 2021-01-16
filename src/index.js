@@ -85,7 +85,6 @@ class App extends Component {
       host: this.state.host,
       company: this.state.company,
     };
-    console.log("La session ha sido cerrada");
     localStorage.setItem("OrusSystem", JSON.stringify(session));
     window.location.href = "/";
   };

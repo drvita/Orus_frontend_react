@@ -135,7 +135,7 @@ export default class Items extends Component {
                     className="btn btn-outline-dark btn-sm"
                     onClick={this.addItem}
                   >
-                    <i className="fas fa-plus"></i>
+                    <i className="fas fa-save"></i>
                   </button>
                 </td>
               </tr>
@@ -256,15 +256,15 @@ export default class Items extends Component {
                 <button
                   className={
                     this.props.status
-                      ? "btn btn-outline-success btn-sm disabled"
-                      : "btn btn-outline-success btn-sm"
+                      ? "btn btn-outline-warning btn-sm disabled"
+                      : itemNew
+                      ? "btn btn-outline-dark btn-sm"
+                      : "btn btn-outline-primary btn-sm"
                   }
                   disabled={this.props.status ? true : false}
                   onClick={this.handleNewItem}
                 >
-                  <i
-                    className={itemNew ? "fas fa-times-circle" : "fas fa-plus"}
-                  ></i>
+                  <i className={itemNew ? "fas fa-undo" : "fas fa-plus"}></i>
                 </button>
               ) : null}
             </td>

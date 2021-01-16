@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from "moment";
-import "moment/locale/es";
 
 export default class Breadcrumb extends Component {
   constructor(props) {
@@ -15,8 +14,10 @@ export default class Breadcrumb extends Component {
       });
     }, 60000);
   }
+
   render() {
     const { title } = this.props;
+    const { date } = this.state;
     return (
       <div className="content-header">
         <div className="container-fluid">
@@ -25,7 +26,7 @@ export default class Breadcrumb extends Component {
               <h1 className="m-0 text-dark text-capitalize">{title}</h1>
             </div>
             <div className="col">
-              <h6 className="text-dark text-right">{this.state.date}</h6>
+              <h6 className="text-dark text-right">{date}</h6>
             </div>
           </div>
         </div>

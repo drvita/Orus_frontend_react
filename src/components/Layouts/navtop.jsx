@@ -3,7 +3,7 @@ import Notify from "./notify";
 
 export default class Navtop extends Component {
   render() {
-    const { logOut, data } = this.props;
+    const { logOut, data, page } = this.props;
     return (
       <nav className="main-header navbar navbar-expand navbar-dark navbar-lightblue">
         <ul className="navbar-nav">
@@ -33,7 +33,7 @@ export default class Navtop extends Component {
               <div className="dropdown-divider"></div>
             </div>
           </li>
-          <Notify logOut={logOut} data={data} />
+          <Notify logOut={logOut} data={data} page={page} />
         </ul>
       </nav>
     );

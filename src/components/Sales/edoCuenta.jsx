@@ -30,7 +30,7 @@ export default class edoCuenta extends Component {
                 min="0"
                 max={subtotal - descuento}
                 readOnly={pay && !pagado ? false : true}
-                value={descuento ? descuento.toFixed(2) : ""}
+                value={descuento ? parseInt(descuento) : ""}
                 onChange={this.catchInputs}
               />
             </div>

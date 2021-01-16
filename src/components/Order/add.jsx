@@ -64,54 +64,7 @@ export default class OrderAdd extends Component {
         load: false,
       });
     }
-    //localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
-  getExamById = (id) => {
-    //host y token
-    const { host, token } = this.state;
-    //Realiza la peticion del examen por el id
-    console.log("Descargando examen");
-    fetch("http://" + host + "/api/exams/" + id, {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.data) {
-          console.log("Almacenando examenes");
-          this.setState({
-            exam: data.data,
-          });
-        } else {
-          console.error("Orus: ", data.message);
-          window.Swal.fire("Error", "Al descargar el examen", "error");
-          this.setState({
-            load: false,
-          });
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-        this.setState({
-          load: false,
-        });
-      });
-  };
 
   render() {
     const {
@@ -370,6 +323,10 @@ export default class OrderAdd extends Component {
                   className="btn btn-dark"
                   onClick={(e) => {
                     this.changePage("/pedidos");
+                    localStorage.setItem(
+                      "OrusContactInUse",
+                      JSON.stringify({})
+                    );
                   }}
                 >
                   <i
@@ -414,6 +371,52 @@ export default class OrderAdd extends Component {
     );
   }
 
+  getExamById = (id) => {
+    //host y token
+    const { host, token } = this.state;
+    //Realiza la peticion del examen por el id
+    console.log("Descargando examen");
+    fetch("http://" + host + "/api/exams/" + id, {
+      method: "GET",
+      signal: this.signal,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.data) {
+          console.log("Almacenando examenes");
+          this.setState({
+            exam: data.data,
+          });
+        } else {
+          console.error("Orus: ", data.message);
+          window.Swal.fire("Error", "Al descargar el examen", "error");
+          this.setState({
+            load: false,
+          });
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
+        this.setState({
+          load: false,
+        });
+      });
+  };
   handleChangeInput = (key, value) => {
     this.setState({
       [key]: value,
@@ -515,6 +518,7 @@ export default class OrderAdd extends Component {
 
         if (data.data) {
           console.log("Pedido almacenada");
+          localStorage.setItem("OrusContactInUse", JSON.stringify({}));
           window.Swal.fire({
             icon: "success",
             title: id

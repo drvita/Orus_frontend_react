@@ -22,6 +22,7 @@ export default class Notify extends Component {
   render() {
     const { notifications, rol } = this.state,
       countNotify = notifications ? notifications.length : 0;
+
     return (
       <li className="nav-item dropdown">
         <a className="nav-link" data-toggle="dropdown" href="#end">
@@ -40,11 +41,13 @@ export default class Notify extends Component {
             let title = "general",
               icon = "fa-file",
               time = moment(notify.created_at).fromNow(),
-              url = "#end";
+              url = "#end",
+              page = "/";
             if (notiFyType[2] === "ExamNotification") {
               if (rol === 2) {
                 title = "Examen creado";
                 url = "/consultorio/registro/" + notify.data.id;
+                page = "/consultorio";
               } else {
                 title = "Examen actualizado";
                 url = "/pedidos/registro";
@@ -55,6 +58,7 @@ export default class Notify extends Component {
                     exam_id: notify.data.id,
                   })
                 );
+                page = "/pedidos";
               }
               icon = "fa-file-alt";
             }
@@ -64,7 +68,10 @@ export default class Notify extends Component {
                 to={url}
                 className="dropdown-item"
                 key={notify.id}
-                onClick={(e) => this.handleClickRead(e, notify.id)}
+                onClick={(e) => {
+                  this.props.page(page);
+                  this.handleClickRead(e, notify.id);
+                }}
               >
                 <i className={"fas " + icon + " mr-1"}></i> {title}
                 <span className="float-right text-muted text-sm">{time}</span>
@@ -77,13 +84,22 @@ export default class Notify extends Component {
               <a
                 href="#end"
                 className="dropdown-item dropdown-footer"
-                onClick={(e) => this.handleClickRead(e, -1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  this.handleClickRead(e, -1);
+                }}
               >
                 Marcar como leído.
               </a>
             </React.Fragment>
           ) : null}
-          <Link to="/notificaciones" className="dropdown-item dropdown-footer">
+          <Link
+            to="/notificaciones"
+            className="dropdown-item dropdown-footer"
+            onClick={(e) => {
+              this.props.page("/notificaciones");
+            }}
+          >
             Ver todas
           </Link>
         </div>
@@ -155,18 +171,19 @@ export default class Notify extends Component {
         })
           .then((res) => {
             if (!res.ok && token !== "") {
-              console.error("Usuario invalido:", res.statusText);
-              logOut();
+              console.error("Usuario invalido:", res);
             }
             return res.json();
           })
           .then((data) => {
-            if (data.data && !data.data.message) {
+            if (data.exception || data.message) {
+              logOut();
+            } else {
+              console.log("Usuario validado: ", data.data.username);
               this.setState({
-                notifications: data.data.notifications,
+                notifications: data.data ? data.data.unreadNotifications : [],
                 rol: data.data.rol,
               });
-              console.log("Usuario valido:", data.data.username);
             }
           });
       }

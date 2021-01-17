@@ -134,7 +134,7 @@ export default class searchContact extends Component {
                 </li>
               </ul>
               {!this.props.status ? (
-                <div className="btn-group btn-block" role="group">
+                <div className="btn-group btn-block d-print-none" role="group">
                   <button
                     type="button"
                     className="btn btn-dark"
@@ -276,6 +276,7 @@ export default class searchContact extends Component {
           dataContact: data.data,
           load: false,
         });
+        localStorage.setItem("OrusContactInUse", JSON.stringify(data.data));
       })
       .catch((e) => {
         console.log(e);

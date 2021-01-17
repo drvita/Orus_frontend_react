@@ -17,7 +17,7 @@ import PrintExam from "./print_exam";
 export default class ExamAdd extends Component {
   constructor(props) {
     super(props);
-    let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    const contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
     this.state = {
       id: 0,
       edad: 0,
@@ -58,6 +58,8 @@ export default class ExamAdd extends Component {
       ejeod: 0,
       adicioni: 0,
       adiciond: 0,
+      adicion_media_od: 0,
+      adicion_media_oi: 0,
       dpoi: 0,
       dpod: 0,
       avfoi: "",
@@ -127,6 +129,21 @@ export default class ExamAdd extends Component {
         cilindroi,
         esferaod,
         esferaoi,
+        ejeod,
+        ejeoi,
+        adiciond,
+        adicioni,
+        adicion_media_od,
+        adicion_media_oi,
+        dpod,
+        dpoi,
+        alturaod,
+        alturaoi,
+        lcmarca,
+        lcgod,
+        lcgoi,
+        diagnostico,
+        presbicie,
       } = this.state,
       { data } = this.props,
       hoy = moment(Date.now()),
@@ -136,7 +153,7 @@ export default class ExamAdd extends Component {
     return (
       <React.Fragment>
         <form className="row">
-          <div className="col-3">
+          <div className="col-3 d-print-none">
             <SearchContact
               contact={contact_id}
               edad={edad}
@@ -154,19 +171,21 @@ export default class ExamAdd extends Component {
               esferaoi={esferaoi}
               cilindrod={cilindrod}
               cilindroi={cilindroi}
-              ejeod={this.state.ejeod}
-              ejeoi={this.state.ejeoi}
-              adiciond={this.state.adiciond}
-              adicioni={this.state.adicioni}
-              dpod={this.state.dpod}
-              dpoi={this.state.dpoi}
-              alturaod={this.state.alturaod}
-              alturaoi={this.state.alturaoi}
-              lcmarca={this.state.lcmarca}
-              lcgod={this.state.lcgod}
-              lcgoi={this.state.lcgoi}
-              diagnostico={this.state.diagnostico}
-              presbicie={this.state.presbicie}
+              ejeod={ejeod}
+              ejeoi={ejeoi}
+              adiciond={adiciond}
+              adicioni={adicioni}
+              adicion_media_od={adicion_media_od}
+              adicion_media_oi={adicion_media_oi}
+              dpod={dpod}
+              dpoi={dpoi}
+              alturaod={alturaod}
+              alturaoi={alturaoi}
+              lcmarca={lcmarca}
+              lcgod={lcgod}
+              lcgoi={lcgoi}
+              diagnostico={diagnostico}
+              presbicie={presbicie}
             />
             <div className="card card-info card-outline d-print-none">
               <div className="card-header">
@@ -289,17 +308,19 @@ export default class ExamAdd extends Component {
                               esferaoi={esferaoi}
                               cilindrod={cilindrod}
                               cilindroi={cilindroi}
-                              ejeod={this.state.ejeod}
-                              ejeoi={this.state.ejeoi}
-                              adiciond={this.state.adiciond}
-                              adicioni={this.state.adicioni}
-                              dpod={this.state.dpod}
-                              dpoi={this.state.dpoi}
-                              alturaod={this.state.alturaod}
-                              alturaoi={this.state.alturaoi}
-                              lcmarca={this.state.lcmarca}
-                              lcgod={this.state.lcgod}
-                              lcgoi={this.state.lcgoi}
+                              ejeod={ejeod}
+                              ejeoi={ejeoi}
+                              adiciond={adiciond}
+                              adicioni={adicioni}
+                              adicion_media_od={adicion_media_od}
+                              adicion_media_oi={adicion_media_oi}
+                              dpod={dpod}
+                              dpoi={dpoi}
+                              alturaod={alturaod}
+                              alturaoi={alturaoi}
+                              lcmarca={lcmarca}
+                              lcgod={lcgod}
+                              lcgoi={lcgoi}
                               onChangeInput={this.handleChangeInput}
                             />
                           </div>
@@ -475,9 +496,13 @@ export default class ExamAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    let { host, token, id } = this.state;
+    let { host, token, id, cilindrod, cilindroi, ejeod, ejeoi } = this.state;
 
     //Verificar si los datos son validos.
+    if ((cilindrod < 0 && !ejeod) || (cilindroi < 0 && !ejeoi)) {
+      window.Swal.fire("Verificación", "El campo CILINDRO esta vacio", "error");
+      return false;
+    }
 
     //Confirmación de almacenamiento
     window.Swal.fire({
@@ -622,6 +647,8 @@ export default class ExamAdd extends Component {
               ejeod: data.data.ejeod,
               adicioni: data.data.adicioni,
               adiciond: data.data.adiciond,
+              adicion_media_od: data.data.adicion_media_od,
+              adicion_media_oi: data.data.adicion_media_oi,
               dpoi: data.data.dpoi,
               dpod: data.data.dpod,
               avfoi: data.data.avfoi,

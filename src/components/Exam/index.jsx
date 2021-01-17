@@ -75,6 +75,7 @@ export default class Exam extends Component {
         { name: "Cilindro" },
         { name: "Eje" },
         { name: "Adicion" },
+        { name: "Ad Media" },
         { name: "D/P" },
         { name: "Altura" },
         { name: "Actualizado", type: "updated_at", filter: true },
@@ -169,6 +170,9 @@ export default class Exam extends Component {
                       </td>
                       <td>
                         {exam.adiciond}/{exam.adicioni}
+                      </td>
+                      <td>
+                        {exam.adicion_media_od}/{exam.adicion_media_oi}
                       </td>
                       <td>
                         {exam.dpod}/{exam.dpoi}

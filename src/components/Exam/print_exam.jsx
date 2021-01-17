@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import moment from "moment";
 import Graduacion from "./graduacionExam";
+import Contacto from "../Contacts/contactDataVertical";
 
 export default class printExam extends Component {
   render() {
@@ -13,6 +14,8 @@ export default class printExam extends Component {
       ejeoi,
       adiciond,
       adicioni,
+      adicion_media_od,
+      adicion_media_oi,
       dpod,
       dpoi,
       alturaod,
@@ -30,7 +33,10 @@ export default class printExam extends Component {
               <small>312 312 5353</small>
             </h5>
           </div>
-          <div className="col-3">{moment().format("LLL")}</div>
+          <div className="col-3 text-right">{moment().format("LLL")}</div>
+        </div>
+        <div className="row">
+          <Contacto />
         </div>
         <div className="row">
           <div className="col">
@@ -53,6 +59,8 @@ export default class printExam extends Component {
               ejeoi={ejeoi}
               adiciond={adiciond}
               adicioni={adicioni}
+              adicion_media_od={adicion_media_od}
+              adicion_media_oi={adicion_media_oi}
               dpod={dpod}
               dpoi={dpoi}
               alturaod={alturaod}

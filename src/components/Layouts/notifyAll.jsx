@@ -7,6 +7,7 @@ export default class NotifyAll extends Component {
     this.state = {
       notifications: [],
       rol: 0,
+      load: true,
     };
   }
   componentDidMount() {
@@ -14,7 +15,7 @@ export default class NotifyAll extends Component {
   }
 
   render() {
-    const { notifications } = this.state;
+    const { notifications, load } = this.state;
     return (
       <div className="card">
         <div className="card-header">
@@ -24,39 +25,45 @@ export default class NotifyAll extends Component {
           </h5>
         </div>
         <div className="card-body">
-          {notifications.length ? (
-            <div className="list-group">
-              {notifications.map((notify) => {
-                const type = notify.type.split("\\");
-                let url = "";
-                if (type.length === 3 && type[2] === "ExamNotification") {
-                  url = "/consultorio/registro/" + notify.data.id;
-                }
-                return (
-                  <a
-                    href={url}
-                    className={
-                      notify.read_at
-                        ? "list-group-item list-group-item-action flex-column align-items-start"
-                        : "list-group-item list-group-item-action flex-column align-items-start active"
+          {!load ? (
+            <React.Fragment>
+              {notifications.length ? (
+                <div className="list-group">
+                  {notifications.map((notify) => {
+                    const type = notify.type.split("\\");
+                    let url = "";
+                    if (type.length === 3 && type[2] === "ExamNotification") {
+                      url = "/consultorio/registro/" + notify.data.id;
                     }
-                    key={notify.id}
-                    onClick={(e) => this.handleClickViewNotify(e, url)}
-                  >
-                    <div className="d-flex w-100 justify-content-between">
-                      <h5 className="mb-1">{type[2]}</h5>
-                      <small>{moment(notify.created_at).fromNow()}</small>
-                    </div>
-                    <p className="mb-1 text-capitalize">
-                      <strong>{notify.data.paciente}</strong>
-                    </p>
-                    <small className="text-capitalize">
-                      {notify.data.user}
-                    </small>
-                  </a>
-                );
-              })}
-            </div>
+                    return (
+                      <a
+                        href={url}
+                        className={
+                          notify.read_at
+                            ? "list-group-item list-group-item-action flex-column align-items-start"
+                            : "list-group-item list-group-item-action flex-column align-items-start active"
+                        }
+                        key={notify.id}
+                        onClick={(e) => this.handleClickViewNotify(e, url)}
+                      >
+                        <div className="d-flex w-100 justify-content-between">
+                          <h5 className="mb-1">{type[2]}</h5>
+                          <small>{moment(notify.created_at).fromNow()}</small>
+                        </div>
+                        <p className="mb-1 text-capitalize">
+                          <strong>{notify.data.paciente}</strong>
+                        </p>
+                        <small className="text-capitalize">
+                          {notify.data.user}
+                        </small>
+                      </a>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="card-text">No existen notificaciones aun</p>
+              )}
+            </React.Fragment>
           ) : (
             <div className="card-text text-center">
               <div className="spinner-border text-primary" role="status">
@@ -102,10 +109,14 @@ export default class NotifyAll extends Component {
           this.setState({
             notifications: notify.data ? notify.data.notifications : [],
             rol: notify.data.rol,
+            load: false,
           });
         })
         .catch((e) => {
           console.error("Orus fetch", e);
+          this.setState({
+            load: false,
+          });
           window.Swal.fire(
             "Fallo de conexion",
             "Verifique la conexion al servidor",

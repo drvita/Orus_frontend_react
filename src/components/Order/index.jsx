@@ -34,6 +34,7 @@ export default class Contacts extends Component {
   }
   componentDidMount() {
     this.getPedidos();
+    console.log("[Orders] Eliminando datos de contacto en uso");
     localStorage.setItem("OrusContactInUse", JSON.stringify({}));
     localStorage.setItem(
       "OrusOrder",
@@ -379,26 +380,29 @@ export default class Contacts extends Component {
       })
       .then((data) => {
         if (data.data) {
-          console.log("Mostrando lista de pedidos");
+          console.log("[Order] Almacenando pedidos en state");
           this.setState({
             pedidos: data,
             load: false,
           });
         } else {
-          console.error("Orus: ", data.message);
-          window.Swal.fire("Error", "Al descargar pedidos", "error");
+          console.error("[Order] Error en los datos de pedido \n", data);
+          window.Swal.fire(
+            "Error",
+            "al almacenar los datos de pedido",
+            "error"
+          );
           this.setState({
             load: false,
           });
         }
       })
       .catch((e) => {
-        console.error("Orus: " + e);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
+        console.error(
+          "[Order] Error con el servidor al descargar pedidos \n",
+          e
         );
+        window.Swal.fire("Servidor", "Verifique la conexion", "error");
         this.setState({
           load: false,
         });

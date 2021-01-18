@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Easycontact from "./easyContact";
 import moment from "moment";
-//import "moment/locale/es";
 
 export default class searchContact extends Component {
   constructor(props) {
@@ -217,6 +216,9 @@ export default class searchContact extends Component {
                               data: [],
                               dataContact: {},
                             });
+                            console.log(
+                              "[Contact][search] Almacenando datos de contacto en local storage (222)"
+                            );
                             localStorage.setItem(
                               "OrusContactInUse",
                               JSON.stringify({})
@@ -276,6 +278,9 @@ export default class searchContact extends Component {
           dataContact: data.data,
           load: false,
         });
+        console.log(
+          "[Contact][search] Almacenando datos de contacto en local storage (284)"
+        );
         localStorage.setItem("OrusContactInUse", JSON.stringify(data.data));
       })
       .catch((e) => {
@@ -293,6 +298,7 @@ export default class searchContact extends Component {
         data: [],
         dataContact: {},
       });
+      console.log("[Contact][search] Eliminando datos local storage (302)");
       localStorage.setItem("OrusContactInUse", JSON.stringify({}));
       this.props.getIdContact(0);
     }
@@ -311,6 +317,9 @@ export default class searchContact extends Component {
             .fromNow(true)
             .replace(/[a-zA-ZñÑ]/gi, "") * 1;
         this.props.getIdContact(id, edad);
+        console.log(
+          "[Contact][search] Almacenando datos de contacto en local storage (323)"
+        );
         localStorage.setItem("OrusContactInUse", JSON.stringify({ id }));
         return false;
       } else {
@@ -371,6 +380,9 @@ export default class searchContact extends Component {
               ],
               load: false,
             });
+            console.log(
+              "[Contact][search] Almacenando datos de contacto en local storage (387)"
+            );
             localStorage.setItem(
               "OrusContactInUse",
               JSON.stringify({ name: word.toLowerCase() })

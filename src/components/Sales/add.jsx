@@ -14,6 +14,10 @@ export default class SaleAdd extends Component {
     const contact = JSON.parse(localStorage.getItem("OrusContactInUse")),
       id = this.props.match.params.id,
       contact_id = id ? 0 : 2;
+    console.log(
+      "[Sales] Contacto en uso: ",
+      contact && contact.id ? "Si" : "No"
+    );
 
     this.state = {
       id: id,
@@ -50,6 +54,7 @@ export default class SaleAdd extends Component {
   componentDidMount() {
     let { id } = this.state;
     this.getSales(id);
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
 
   render() {

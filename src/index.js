@@ -21,16 +21,17 @@ class App extends Component {
       host: storage ? storage.host : window.location.hostname,
       company: storage ? storage.company : "Optica Madero",
     };
+    console.log("[Orus] Navegador:\n", navigator.userAgent);
   }
   componentDidMount() {
     /*Almacenamos el state en el storage*/
-    console.log("Cargando data a storage");
+    console.log("[Orus] Cargando datos de sesion en localStorage");
     localStorage.setItem("OrusSystem", JSON.stringify(this.state));
   }
   componentDidUpdate() {
     //Cada que el componnte es redenrizado almacenamos la variables del
     //state en localstorage
-    console.log("Actualizando data a storage");
+    console.log("[Orus] Actualizando datos de sesion en localStorage");
     localStorage.setItem("OrusSystem", JSON.stringify(this.state));
   }
 
@@ -85,7 +86,7 @@ class App extends Component {
       host: this.state.host,
       company: this.state.company,
     };
-    localStorage.setItem("OrusSystem", JSON.stringify(session));
+
     if ("serviceWorker" in navigator && "PushManager" in window) {
       console.log("[ORUS] Verificando permisos de Push");
       if (Notification.permission !== "denied") {
@@ -98,6 +99,17 @@ class App extends Component {
         });
       }
     }
+
+    localStorage.setItem("OrusSystem", JSON.stringify(session));
+    localStorage.removeItem("OrusContactInUse");
+    localStorage.removeItem("OrusContacts");
+    localStorage.removeItem("OrusNotify");
+    localStorage.removeItem("OrusOrder");
+    localStorage.removeItem("OrusSales");
+    localStorage.removeItem("OrusExam");
+    localStorage.removeItem("OrusStore");
+    localStorage.removeItem("OrusUsers");
+
     window.location.href = "/";
   };
 }

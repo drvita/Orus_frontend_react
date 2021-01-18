@@ -16,7 +16,11 @@ export default class OrderAdd extends Component {
     super(props);
     //Recogemos valores de registro previo
     let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
-    console.log("Contacto en uso: ", contact.exam_id ? "Si" : "No");
+    console.log(
+      "[Order] Contacto en uso: ",
+      contact && contact.id ? "Si" : "No"
+    );
+
     this.state = {
       id: 0,
       session:
@@ -64,6 +68,7 @@ export default class OrderAdd extends Component {
         load: false,
       });
     }
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
 
   render() {
@@ -321,13 +326,7 @@ export default class OrderAdd extends Component {
                 <Link
                   to="/pedidos"
                   className="btn btn-dark"
-                  onClick={(e) => {
-                    this.changePage("/pedidos");
-                    localStorage.setItem(
-                      "OrusContactInUse",
-                      JSON.stringify({})
-                    );
-                  }}
+                  onClick={(e) => this.changePage("/pedidos")}
                 >
                   <i
                     className={
@@ -429,6 +428,8 @@ export default class OrderAdd extends Component {
     });
   };
   changePage = (e) => {
+    console.log("[Order][form] Eliminando datos en contacto en uso (431)");
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
     this.props.page(e);
   };
   handleSave = (e) => {
@@ -517,7 +518,8 @@ export default class OrderAdd extends Component {
         let data = result.value;
 
         if (data.data) {
-          console.log("Pedido almacenada");
+          console.log("[Order] Pedido almacenado con exito");
+          console.log("[Order] Eliminando datos de contacto en uso");
           localStorage.setItem("OrusContactInUse", JSON.stringify({}));
           window.Swal.fire({
             icon: "success",

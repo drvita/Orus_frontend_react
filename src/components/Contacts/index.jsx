@@ -46,6 +46,8 @@ export default class Contacts extends Component {
         business: this.state.business,
       })
     );
+    console.log("[Contacts] Eliminando datos de contacto en uso");
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {

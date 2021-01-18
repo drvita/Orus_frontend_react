@@ -45,6 +45,7 @@ export default class Exam extends Component {
         date: this.state.date,
       })
     );
+    console.log("[Exams] Eliminando datos de contacto en uso");
     localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
   componentDidUpdate(props, state) {

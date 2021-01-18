@@ -44,6 +44,8 @@ export default class Users extends Component {
         rol: this.state.rol,
       })
     );
+    console.log("[Users] Eliminando datos de contacto en uso");
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {

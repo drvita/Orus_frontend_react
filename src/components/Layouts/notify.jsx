@@ -59,13 +59,6 @@ export default class Notify extends Component {
               } else {
                 title = "Examen actualizado";
                 url = "/pedidos/registro";
-                localStorage.setItem(
-                  "OrusContactInUse",
-                  JSON.stringify({
-                    id: notify.data.contact_id,
-                    exam_id: notify.data.id,
-                  })
-                );
                 page = "/pedidos";
               }
               icon = "fa-file-alt";
@@ -79,6 +72,16 @@ export default class Notify extends Component {
                 onClick={(e) => {
                   this.props.page(page);
                   this.handleClickRead(e, notify.id);
+                  console.log(
+                    "[Notify] estableciendo datos de contacto en uso"
+                  );
+                  localStorage.setItem(
+                    "OrusContactInUse",
+                    JSON.stringify({
+                      id: notify.data.contact_id,
+                      exam_id: notify.data.id,
+                    })
+                  );
                 }}
               >
                 <i className={"fas " + icon + " mr-1"}></i> {title}

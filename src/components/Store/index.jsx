@@ -41,6 +41,8 @@ export default class Store extends Component {
         search: this.state.search,
       })
     );
+    console.log("[Store] Eliminando datos de contacto en uso");
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {

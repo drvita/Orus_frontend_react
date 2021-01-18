@@ -18,6 +18,10 @@ export default class ExamAdd extends Component {
   constructor(props) {
     super(props);
     const contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    console.log(
+      "[Order] Contacto en uso: ",
+      contact && contact.id ? "Si" : "No"
+    );
     this.state = {
       id: 0,
       edad: 0,
@@ -113,6 +117,7 @@ export default class ExamAdd extends Component {
     if (id) {
       this.getExam(id);
     }
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
 
   render() {

@@ -35,6 +35,7 @@ export default class Contacts extends Component {
   }
   componentDidMount() {
     this.getPedidos();
+    console.log("[Sales] Eliminando datos de contacto en uso");
     localStorage.setItem("OrusContactInUse", JSON.stringify({}));
     localStorage.setItem(
       "OrusSales",

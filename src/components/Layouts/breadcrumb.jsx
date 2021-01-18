@@ -8,7 +8,7 @@ export default class Breadcrumb extends Component {
       date: moment().format("LLLL"),
     };
     setInterval(() => {
-      console.log("Actualizando hora de sistema");
+      console.log("[ORUS] Actualizando hora de sistema");
       this.setState({
         date: moment().format("LLLL"),
       });

@@ -114,7 +114,6 @@ export default class Recomendaciones extends Component {
                     >
                       <option value="0">Seleccione el material</option>
                       {this.state.category_list_2.map((cat) => {
-                        console.log("Material: ", cat);
                         if (
                           cat.meta &&
                           cat.meta.rangoInf <= esferaod &&

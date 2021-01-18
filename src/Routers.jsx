@@ -61,9 +61,6 @@ export default class Routers extends Component {
       window.location.href = "/";
     }
   }
-  componentDidUpdate() {
-    console.log("Recargando router: ", window.location.pathname);
-  }
 
   render() {
     const { data, logOut } = this.props,

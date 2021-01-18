@@ -86,6 +86,18 @@ class App extends Component {
       company: this.state.company,
     };
     localStorage.setItem("OrusSystem", JSON.stringify(session));
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      console.log("[ORUS] Verificando permisos de Push");
+      if (Notification.permission !== "denied") {
+        const title = "Orus bot",
+          options = {
+            body: `Sesion cerrada correctamente`,
+          };
+        navigator.serviceWorker.getRegistration().then(function (reg) {
+          reg.showNotification(title, options);
+        });
+      }
+    }
     window.location.href = "/";
   };
 }

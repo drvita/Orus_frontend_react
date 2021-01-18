@@ -4,14 +4,14 @@ import moment from "moment";
 export default class NotifyAll extends Component {
   constructor(props) {
     super(props);
+    //Variables en localStorage
+    let notify = JSON.parse(localStorage.getItem("OrusNotify"));
     this.state = {
-      notifications: [],
-      rol: 0,
-      load: true,
+      notifications: notify.notifications.length ? notify.notifications : [],
+      rol: notify ? notify.rol : -1,
+      count: notify ? notify.count : 0,
+      load: false,
     };
-  }
-  componentDidMount() {
-    this.verifyUser();
   }
 
   render() {
@@ -44,10 +44,12 @@ export default class NotifyAll extends Component {
                             : "list-group-item list-group-item-action flex-column align-items-start active"
                         }
                         key={notify.id}
-                        onClick={(e) => this.handleClickViewNotify(e, url)}
+                        onClick={(e) =>
+                          this.handleClickViewNotify(e, url, notify.id)
+                        }
                       >
                         <div className="d-flex w-100 justify-content-between">
-                          <h5 className="mb-1">{type[2]}</h5>
+                          <h5 className="mb-1">{type[2] === "" ? "" : ""}</h5>
                           <small>{moment(notify.created_at).fromNow()}</small>
                         </div>
                         <p className="mb-1 text-capitalize">
@@ -61,7 +63,7 @@ export default class NotifyAll extends Component {
                   })}
                 </div>
               ) : (
-                <p className="card-text">No existen notificaciones aun</p>
+                <p className="card-text">Sin notificaciones</p>
               )}
             </React.Fragment>
           ) : (
@@ -76,13 +78,54 @@ export default class NotifyAll extends Component {
     );
   }
 
-  handleClickViewNotify = (e, url) => {
-    const { page } = this.props;
+  handleClickViewNotify = (e, url, id) => {
+    const { page } = this.props,
+      seccion = url.split("/");
     e.preventDefault();
-    page("/consultorio");
-    if (url) this.props.history.push(url);
+
+    //Constantes
+    const { host, token } = this.props.data;
+
+    console.log("Enviando datos de leidos");
+    fetch("http://" + host + "/api/user/readAllNotifications", {
+      method: "POST",
+      body: JSON.stringify({
+        id,
+      }),
+      signal: this.signal,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then(async (response) => {
+        let back = {};
+        if (response.status !== 204) back = await response.json();
+        if (!response.ok) {
+          throw new Error(back.message);
+        }
+        return back;
+      })
+      .then((notify) => {
+        if (notify.success) {
+          console.log("[Orus] Notificaciones leeidas");
+        } else {
+          console.log("[Orus] Sin notificaciones");
+        }
+        page(seccion[1]);
+        if (url) this.props.history.push(url);
+      })
+      .catch((e) => {
+        console.error("[Orus] Notify error \n", e);
+        window.Swal.fire(
+          "Notificaciones",
+          "Verifique la conexion al servidor",
+          "error"
+        );
+      });
   };
-  verifyUser = () => {
+  checkNotify = () => {
     //Constantes de logueo
     const { data } = this.props,
       { host, token } = data;
@@ -113,12 +156,12 @@ export default class NotifyAll extends Component {
           });
         })
         .catch((e) => {
-          console.error("Orus fetch", e);
+          console.error("[Orus] User session in API error \n", e);
           this.setState({
             load: false,
           });
           window.Swal.fire(
-            "Fallo de conexion",
+            "Notificaciones",
             "Verifique la conexion al servidor",
             "error"
           );

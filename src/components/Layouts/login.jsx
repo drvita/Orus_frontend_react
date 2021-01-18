@@ -164,7 +164,7 @@ export default class Main extends Component {
     if (regexUser.test(username) && regexPass.test(password)) {
       return true;
     } else {
-      alert("Los datos ingresados no son validos");
+      window.Swal.fire("Inicio de sesion", "Los datos no son validos", "error");
       return false;
     }
   }
@@ -189,7 +189,7 @@ export default class Main extends Component {
 
       //Si los datos de usuario son correctos manda la informacion al servidor
       if (valid) {
-        console.log("Enviado credenciales al servidor");
+        console.log("[Login] Enviado credenciales al servidor");
         fetch("http://" + host + "/api/users/login", {
           method: "POST",
           body: JSON.stringify(body),
@@ -210,15 +210,29 @@ export default class Main extends Component {
           })
           .then((response) => {
             if (response.data) {
-              console.log("Loggin: realizado con exito");
+              console.log("[Login] Credenciales validadas");
+              if ("serviceWorker" in navigator && "PushManager" in window) {
+                console.log("[ORUS] Verificando permisos de Push");
+                if (Notification.permission !== "denied") {
+                  const title = "Orus bot",
+                    options = {
+                      body: `Sesion iniciada: ${response.data.username}`,
+                    };
+                  navigator.serviceWorker
+                    .getRegistration()
+                    .then(function (reg) {
+                      reg.showNotification(title, options);
+                    });
+                }
+              }
               this.props.loginFunction(response);
             }
           })
           .catch((message) => {
-            console.error("Orus fetch: ", message);
+            console.error("[Login] Error al inicias sesion \n", message);
             window.Swal.fire(
-              "Fallo de servidor",
-              "Los datos no son correctos",
+              "Inicio de sesion",
+              "Hubo un error al validar las credenciales con el servidor",
               "error"
             );
             this.setState({
@@ -231,7 +245,7 @@ export default class Main extends Component {
         });
       }
     } else {
-      console.error("No existe un valor para host");
+      console.error("[Login] No existe un valor para host");
       this.setState({
         hostShow: true,
         load: false,

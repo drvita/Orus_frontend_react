@@ -145,7 +145,23 @@ export default class Exam extends Component {
                       }
                     >
                       <td>
-                        <Link to={"/consultorio/registro/" + exam.id}>
+                        <Link
+                          to={"/consultorio/registro/" + exam.id}
+                          onClick={(e) => {
+                            //e.preventDefault();
+                            console.log(
+                              "[Exams] Almacenando datos de paciente en local storage"
+                            );
+                            localStorage.setItem(
+                              "OrusContactInUse",
+                              JSON.stringify({
+                                id: exam.paciente.id,
+                                nombre: exam.paciente.nombre,
+                              })
+                            );
+                            return true;
+                          }}
+                        >
                           <span className="badge badge-danger text-capitalize p-1">
                             {exam.paciente.nombre}
                             <i className="fas fa-pencil-alt ml-1"></i>

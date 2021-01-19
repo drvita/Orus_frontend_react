@@ -117,7 +117,6 @@ export default class ExamAdd extends Component {
     if (id) {
       this.getExam(id);
     }
-    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
 
   render() {
@@ -414,6 +413,13 @@ export default class ExamAdd extends Component {
                     to="/consultorio"
                     className="btn btn-dark"
                     onClick={(e) => {
+                      console.log(
+                        "[Exams] Eliminando usuario en uso de localStorage"
+                      );
+                      localStorage.setItem(
+                        "OrusContactInUse",
+                        JSON.stringify({})
+                      );
                       this.changePage("/consultorio");
                     }}
                   >
@@ -564,7 +570,7 @@ export default class ExamAdd extends Component {
       if (result && !result.dismiss && result.value) {
         let data = result.value;
         if (data.data) {
-          console.log("Examen almacenado");
+          console.log("[Exams] Examen almacenado correctamente");
           window.Swal.fire({
             icon: "success",
             title: id
@@ -573,9 +579,11 @@ export default class ExamAdd extends Component {
             showConfirmButton: false,
             timer: 1500,
           }).then((res) => this.props.history.goBack());
+          console.log("[Exams] Eliminando usuario en uso de localStorage");
+          localStorage.setItem("OrusContactInUse", JSON.stringify({}));
         } else {
           window.Swal.fire("Error", "al almacenar el examen", "error");
-          console.error("Orus res: ", data.message);
+          console.error("[Exams] Error al almacenar datos de examen", data);
         }
       }
     });

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import "moment/locale/es";
 import SearchContact from "../Contacts/searchContactCard";
 import Items from "./itemsOrder";
 import ListExam from "../Exam/listsExams";
@@ -88,7 +87,7 @@ export default class OrderAdd extends Component {
 
     return (
       <div className="row">
-        <div className="col-3">
+        <div className="col-2">
           <SearchContact
             contact={contact_id}
             edad={this.state.edad}
@@ -362,7 +361,7 @@ export default class OrderAdd extends Component {
           </div>
         </div>
         {contact_id && id ? (
-          <div className="col-3 d-print-none">
+          <div className="col-2 d-print-none">
             <Chat data={data} table="orders" idRow={id} />
           </div>
         ) : null}

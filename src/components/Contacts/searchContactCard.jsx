@@ -71,6 +71,16 @@ export default class searchContact extends Component {
               : f_nacimiento
               ? moment(f_nacimiento).fromNow(true)
               : 0;
+        console.log(
+          "[Contact][search] Almacenando datos de contacto en local storage"
+        );
+        localStorage.setItem(
+          "OrusContactInUse",
+          JSON.stringify({
+            id,
+            nombre,
+          })
+        );
 
         return (
           <div className="card card-danger card-outline">
@@ -217,7 +227,7 @@ export default class searchContact extends Component {
                               dataContact: {},
                             });
                             console.log(
-                              "[Contact][search] Almacenando datos de contacto en local storage (222)"
+                              "[Contact][search] Almacenando datos de contacto en local storage"
                             );
                             localStorage.setItem(
                               "OrusContactInUse",
@@ -279,7 +289,7 @@ export default class searchContact extends Component {
           load: false,
         });
         console.log(
-          "[Contact][search] Almacenando datos de contacto en local storage (284)"
+          "[Contact][search] Almacenando datos de contacto en local storage"
         );
         localStorage.setItem("OrusContactInUse", JSON.stringify(data.data));
       })
@@ -298,7 +308,7 @@ export default class searchContact extends Component {
         data: [],
         dataContact: {},
       });
-      console.log("[Contact][search] Eliminando datos local storage (302)");
+      console.log("[Contact][search] Eliminando datos local storage");
       localStorage.setItem("OrusContactInUse", JSON.stringify({}));
       this.props.getIdContact(0);
     }
@@ -318,7 +328,7 @@ export default class searchContact extends Component {
             .replace(/[a-zA-ZñÑ]/gi, "") * 1;
         this.props.getIdContact(id, edad);
         console.log(
-          "[Contact][search] Almacenando datos de contacto en local storage (323)"
+          "[Contact][search] Almacenando datos de contacto en local storage"
         );
         localStorage.setItem("OrusContactInUse", JSON.stringify({ id }));
         return false;
@@ -381,7 +391,7 @@ export default class searchContact extends Component {
               load: false,
             });
             console.log(
-              "[Contact][search] Almacenando datos de contacto en local storage (387)"
+              "[Contact][search] Almacenando datos de contacto en local storage"
             );
             localStorage.setItem(
               "OrusContactInUse",

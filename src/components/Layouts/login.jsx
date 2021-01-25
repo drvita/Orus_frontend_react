@@ -201,16 +201,18 @@ export default class Main extends Component {
         })
           .then(async (response) => {
             let back = {};
-            if (response.status !== 204) back = await response.json();
+
+            if (response.status !== 204 && response.status)
+              back = await response.json();
             if (!response.ok) {
-              console.error(response, back);
+              console.error("[Login] error response\n", response, back);
               throw new Error(back.message);
             }
             return back;
           })
           .then((response) => {
             if (response.data) {
-              console.log("[Login] Credenciales validadas");
+              console.log("[Login] Credenciales validadas", response);
               if ("serviceWorker" in navigator && "PushManager" in window) {
                 console.log("[ORUS] Verificando permisos de Push");
                 if (Notification.permission !== "denied") {
@@ -229,10 +231,13 @@ export default class Main extends Component {
             }
           })
           .catch((message) => {
-            console.error("[Login] Error al inicias sesion \n", message);
+            console.error(
+              "[Login] Error de conexion con el servidor\n",
+              message
+            );
             window.Swal.fire(
               "Inicio de sesion",
-              "Hubo un error al validar las credenciales con el servidor",
+              "Error de conexion con el servidor",
               "error"
             );
             this.setState({
@@ -254,6 +259,7 @@ export default class Main extends Component {
   };
   catchInputs = (e) => {
     const { name, value } = e.target;
+    //console.log(name, ":", value);
     this.setState({
       [name]: value,
     });

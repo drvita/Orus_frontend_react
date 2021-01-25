@@ -90,7 +90,7 @@ export default class OrderAdd extends Component {
         <div className="col-2">
           <SearchContact
             contact={contact_id}
-            edad={this.state.edad}
+            edad={parseInt(this.state.edad)}
             status={nota ? true : status}
             getIdContact={this.getIdContact}
             changePage={this.changePage}
@@ -421,13 +421,14 @@ export default class OrderAdd extends Component {
     });
   };
   getIdContact = (contact_id, edad) => {
+    console.log("Edad change: ", contact_id, edad);
     this.setState({
       contact_id,
       edad,
     });
   };
   changePage = (e) => {
-    console.log("[Order][form] Eliminando datos en contacto en uso (431)");
+    console.log("[Order][form] Eliminando datos en contacto en uso");
     localStorage.setItem("OrusContactInUse", JSON.stringify({}));
     this.props.page(e);
   };

@@ -11,7 +11,7 @@ export default class searchContact extends Component {
       data: [],
       dataContact: {},
       load: false,
-      edad: 30,
+      edad: 0,
     };
   }
   componentDidMount() {
@@ -64,13 +64,13 @@ export default class searchContact extends Component {
             domicilio,
             id,
             f_nacimiento,
+            email,
           } = this.state.dataContact,
-          edad =
-            typeof this.props.edad === "number" && this.props.edad
-              ? this.props.edad + " años"
-              : f_nacimiento
-              ? moment(f_nacimiento).fromNow(true)
-              : 0;
+          edad = this.props.edad
+            ? this.props.edad + " años"
+            : f_nacimiento
+            ? moment(f_nacimiento).fromNow()
+            : 0;
         console.log(
           "[Contact][search] Almacenando datos de contacto en local storage"
         );
@@ -115,7 +115,7 @@ export default class searchContact extends Component {
 
               <ul className="list-group list-group-unbordered mb-3">
                 <li className="list-group-item d-flex justify-content-between align-items-center">
-                  <b>Edad:</b>
+                  <b className="mr-4">Edad:</b>
 
                   {edad ? (
                     <span className="badge badge-primary badge-pill">
@@ -126,7 +126,7 @@ export default class searchContact extends Component {
                       type="number"
                       name="edad"
                       className="form-control"
-                      value={this.state.edad}
+                      value={this.state.edad ? this.state.edad : ""}
                       onChange={this.handleSearcContact}
                       onBlur={this.sendAge}
                       onKeyPress={(e) => {
@@ -135,6 +135,26 @@ export default class searchContact extends Component {
                         }
                       }}
                     />
+                  )}
+                </li>
+                {f_nacimiento ? (
+                  <li className="list-group-item d-flex justify-content-between align-items-center">
+                    <b>Fecha de nacimiento:</b>
+                    <span className="badge badge-primary badge-pill">
+                      {moment(f_nacimiento).format("L")}
+                    </span>
+                  </li>
+                ) : null}
+                <li className="list-group-item d-flex justify-content-between align-items-center">
+                  <b>E-mail:</b>
+                  {email ? (
+                    <span className="badge badge-primary badge-pill">
+                      {email}
+                    </span>
+                  ) : (
+                    <span className="badge badge-warning badge-pill">
+                      No se ha capturado
+                    </span>
                   )}
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
@@ -259,7 +279,7 @@ export default class searchContact extends Component {
       { id } = this.state.dataContact;
 
     if (value > 0 && value < 110 && id) {
-      this.props.getIdContact(id, value * 1);
+      this.props.getIdContact(id, parseInt(value));
     }
   };
   getContact = (id) => {
@@ -414,6 +434,7 @@ export default class searchContact extends Component {
     let val = value;
     if (type === "number") val = parseInt(value);
     if (type === "text") val = value.toLowerCase();
+
     this.setState({
       [name]: val,
     });

@@ -118,14 +118,14 @@ export default class StoreAdd extends Component {
 
     if (
       this.category1.current !== null &&
-      this.category1.current.value * 1 === 2
+      parseInt(this.category1.current.value) === 2
     ) {
       if (name.length <= 3) {
         nameValue = this.handleCodeString(codeValue);
       }
     } else if (
       this.category1.current !== null &&
-      this.category1.current.value * 1 === 1
+      parseInt(this.category1.current.value) === 1
     ) {
       if (code.length <= 3) {
         codeValue = this.handleCodeLent(grad);
@@ -550,15 +550,12 @@ export default class StoreAdd extends Component {
   }
 
   handleNameLent = (grad) => {
-    let stringcode = "lente";
+    let stringcode = "";
     stringcode +=
       this.category2.current !== null
-        ? " " +
-          Codestring(
-            this.category2.current.options[
-              this.category2.current.selectedIndex
-            ].text.trim()
-          )
+        ? this.category2.current.options[
+            this.category2.current.selectedIndex
+          ].text.trim()
         : "";
     stringcode +=
       this.category3.current !== null
@@ -983,7 +980,7 @@ export default class StoreAdd extends Component {
               load: false,
             });
           } else {
-            console.error("Orus: ", data.message);
+            console.error("[Store] add - ", data.message);
             window.Swal.fire(
               "Error",
               "Error en el sistema, comuniquese con el administrador de sistema",

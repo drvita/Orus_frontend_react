@@ -564,7 +564,7 @@ export default class OrderAdd extends Component {
         })
         .then((data) => {
           if (!data.message) {
-            console.log("Mostrando datos del pedido");
+            console.log("[Order] Mostrando datos del pedido", data.data.examen);
             this.setState({
               id,
               session: data.data.session,

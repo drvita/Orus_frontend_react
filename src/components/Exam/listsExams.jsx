@@ -112,6 +112,8 @@ export default class ListsExams extends Component {
                 ejeoi={exam.ejeoi ? exam.ejeoi : 0}
                 adiciond={exam.adiciond ? exam.adiciond : 0}
                 adicioni={exam.adicioni ? exam.adicioni : 0}
+                adicion_media_od={exam.adicion_media_od}
+                adicion_media_oi={exam.adicion_media_oi}
                 dpod={exam.dpod ? exam.dpod : 0}
                 dpoi={exam.dpoi ? exam.dpoi : 0}
                 alturaod={exam.alturaod ? exam.alturaod : 0}

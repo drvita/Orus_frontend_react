@@ -129,9 +129,7 @@ export default class ListsExams extends Component {
                 <div className="col p-2">
                   <div className="card">
                     <div className="card-body">
-                      <label className="card-title text-success">
-                        Observaciones
-                      </label>
+                      <label className="card-title">Observaciones</label>
                       <p className="card-text text-muted text-uppercase">
                         {exam.observaciones ? exam.observaciones : "--"}
                       </p>

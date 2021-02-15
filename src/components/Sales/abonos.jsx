@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from "moment";
-import "moment/locale/es";
 import AddAbono from "./abonoAdd";
 import Print from "./print_pay";
 
@@ -24,7 +23,17 @@ export default class ListAbonos extends Component {
 
   render() {
     let { abonos, total, load } = this.state;
-    const { id, date, contact, order, pay, user, sale, cliente } = this.props;
+    const {
+      id,
+      date,
+      contact,
+      order,
+      pay,
+      user,
+      sale,
+      cliente,
+      data,
+    } = this.props;
 
     return (
       <React.Fragment>
@@ -137,6 +146,7 @@ export default class ListAbonos extends Component {
           saleId={sale}
           contactId={contact}
           order={order}
+          data={data}
           handleChange={this.handleChange}
           handleLoad={this.handleLoad}
         />
@@ -306,7 +316,7 @@ export default class ListAbonos extends Component {
       })
       .then((data) => {
         if (data.meta && data.meta.total) {
-          console.log("Almacenando abonos");
+          console.log("[Payments] Almacenando abonos");
           let total = 0;
           for (var i = 0; i < data.data.length; i++) {
             total += data.data[i].total;

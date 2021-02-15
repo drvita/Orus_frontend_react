@@ -22,7 +22,7 @@ export default class ReportPay extends Component {
   }
   componentDidUpdate(props, state) {
     if (props.date !== this.props.date || props.user !== this.props.user) {
-      console.log("Recarga datos de char");
+      console.log("[reportPays] Recarga datos de char");
       this.getSaleDay();
     }
   }
@@ -34,7 +34,9 @@ export default class ReportPay extends Component {
       <div className="card card-success card-outline">
         <div className="card-header">
           <h3 className="card-title text-success">
-            {data.rol ? "Mis ventas del dia" : "Ventas del dia"}
+            {data.rol
+              ? "Mis ventas del dia por metodo de pago"
+              : "Ventas del dia por metodo de pago"}
           </h3>
         </div>
         <div className="card-body">
@@ -108,7 +110,7 @@ export default class ReportPay extends Component {
           if (this.char) this.char.destroy();
 
           if (!data.message) {
-            console.log("Mostrando datos de la venta del dia");
+            console.log("[ReportPay] Mostrando datos de la venta del dia");
             if (data && data.length) {
               await data.map((mp) => {
                 labels.push(this.SetMethodPayment(mp.metodopago));
@@ -130,7 +132,10 @@ export default class ReportPay extends Component {
               efectivo,
             });
           } else {
-            console.error("Error al cargar la venta del dia", data.message);
+            console.error(
+              "[ORUS] Error al cargar la venta del dia",
+              data.message
+            );
             labels = ["No hay datos"];
             values = [100];
           }

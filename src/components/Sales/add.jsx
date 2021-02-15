@@ -243,12 +243,13 @@ export default class SaleAdd extends Component {
                     Ultimos Abonos
                   </h5>
                   <Abonos
-                    abonos={pagado * 1}
-                    sale={id * 1}
+                    abonos={parseInt(pagado)}
+                    sale={parseInt(id)}
                     contact={contact_id}
                     cliente={cliente}
-                    pay={pay * 1}
-                    order={order_id * 1}
+                    pay={parseInt(pay)}
+                    order={parseInt(order_id)}
+                    data={data}
                     user={this.props.data.name}
                     handleChange={this.handleChangeInput}
                   />

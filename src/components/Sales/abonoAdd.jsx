@@ -7,11 +7,28 @@ export default class AddAbono extends Component {
     this.state = {
       metodopago: 1,
       total: 0,
-      banco: "",
+      bank_id: 0,
       auth: "",
+      details: "",
+      listBank: [],
+      token: props.data.token,
+      host: props.data.host,
     };
+    this.controller = new AbortController();
+    this.signal = this.controller.signal;
   }
+  componentDidMount() {
+    this.getBaks();
+  }
+  componentDidUpdate(props, state) {
+    if (this.state.listBank === undefined || !this.state.listBank.length) {
+      this.getBaks();
+    }
+  }
+
   render() {
+    const { listBank, metodopago, total, bank_id, auth, details } = this.state;
+
     return (
       <div className="modal" tabIndex="-1" role="dialog" id="abonos">
         <div className="modal-dialog">
@@ -56,7 +73,7 @@ export default class AddAbono extends Component {
                   <select
                     name="metodopago"
                     className="custom-select"
-                    value={this.state.metodopago}
+                    value={metodopago}
                     onChange={this.onChangeValue}
                   >
                     <option value="1">Efectivo</option>
@@ -76,28 +93,55 @@ export default class AddAbono extends Component {
                     max={this.props.pay}
                     className="form-control text-right"
                     name="total"
-                    value={this.state.total ? this.state.total : ""}
+                    value={total ? total : ""}
                     onChange={this.onChangeValue}
                   />
                 </div>
               </div>
 
-              {this.state.metodopago !== 1 ? (
+              {metodopago !== 1 ? (
                 <div className="row mb-2">
                   <div className="col">
-                    <label>Banco</label>
-                    <input
-                      type="text"
-                      name="banco"
-                      className="form-control"
-                      value={
-                        this.state.metodopago === 4
-                          ? "La marina"
-                          : this.state.banco
-                      }
-                      disabled={this.state.metodopago === 4 ? true : false}
-                      onChange={this.onChangeValue}
-                    />
+                    {metodopago &&
+                    metodopago !== 4 &&
+                    listBank &&
+                    listBank.length ? (
+                      <React.Fragment>
+                        <label>Banco</label>
+                        <select
+                          name="bank_id"
+                          className="custom-select text-uppercase"
+                          value={bank_id}
+                          onChange={this.onChangeValue}
+                        >
+                          <option value="0">Seleccione un banco</option>
+                          {listBank.map((bank) => {
+                            return (
+                              <option
+                                key={bank.id}
+                                value={bank.id}
+                                className="text-uppercase"
+                              >
+                                {bank.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </React.Fragment>
+                    ) : !metodopago ? (
+                      <React.Fragment>
+                        <label>Espesifique</label>
+                        <input
+                          type="text"
+                          name="details"
+                          className="form-control"
+                          value={details}
+                          onChange={this.onChangeValue}
+                        />
+                      </React.Fragment>
+                    ) : (
+                      <h4>LA MARINA</h4>
+                    )}
                   </div>
                   <div className="col">
                     <label>N. Autorización</label>
@@ -105,7 +149,7 @@ export default class AddAbono extends Component {
                       type="text"
                       name="auth"
                       className="form-control"
-                      value={this.state.auth}
+                      value={auth}
                       onChange={this.onChangeValue}
                     />
                   </div>
@@ -136,6 +180,45 @@ export default class AddAbono extends Component {
     );
   }
 
+  getBaks = () => {
+    const { host, token } = this.state,
+      type = "?name=bank";
+
+    //Peticion ajax de listado de bancos
+    console.log("[Add pay]Descargando listado de bancos");
+    fetch("http://" + host + "/api/config" + type, {
+      method: "GET",
+      signal: this.signal,
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then(async (response) => {
+        let back = {};
+        if (response.status !== 204) back = await response.json();
+        if (!response.ok) {
+          throw new Error(back.message);
+        }
+        return back;
+      })
+      .then((data) => {
+        if (data.meta && data.meta.total) {
+          console.log("[Add pay] Listado de bancos descargado");
+          this.setState({
+            listBank: data.data,
+          });
+        }
+      })
+      .catch((e) => {
+        console.error("[Orus system] ", e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
+      });
+  };
   handlePay = (e) => {
     e.preventDefault();
 
@@ -152,16 +235,22 @@ export default class AddAbono extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          let body = this.state,
+          let body = {
+              metodopago: this.state.metodopago,
+              total: this.state.total,
+              bank_id: this.state.bank_id,
+              auth: this.state.auth,
+              details: this.state.details,
+              //Agregamos parametros de identificación
+              sale_id: this.props.saleId,
+              contact_id: this.props.contactId,
+              order_id: this.props.order,
+            },
             ls = JSON.parse(localStorage.getItem("OrusSystem")),
             url = "http://" + ls.host + "/api/payments";
 
-          //Agregamos parametros de identificación
-          body["sale_id"] = this.props.saleId;
-          body["contact_id"] = this.props.contactId;
-          body["order_id"] = this.props.order;
-
-          //this.props.handleLoad(true);
+          //Si la variable banco no esta definida la eliminamos no puede ir en cero
+          if (!body["bank_id"]) delete body["bank_id"];
 
           //Actualiza el pedido o creamos un pedido nuevo según el ID
           console.log("Enviando datos del pago a API para almacenar");
@@ -197,7 +286,7 @@ export default class AddAbono extends Component {
         let data = result.value;
 
         if (data.data) {
-          console.log("Abono almacenado");
+          console.log("[abonodAdd] Abono almacenado");
           this.props.handleChange(this.state.total);
           this.setState({
             metodopago: 1,
@@ -221,11 +310,11 @@ export default class AddAbono extends Component {
   onChangeValue = (e) => {
     let { name, value, type } = e.target;
     if (name === "total") {
-      value = value * 1;
+      value = parseInt(value);
       if (value > this.props.pay) value = this.props.pay;
       else if (value < 0) value = 0;
     }
-    if (name === "metodopago" || type === "number") value = value * 1;
+    if (name === "metodopago" || type === "number") value = parseInt(value);
     this.setState({
       [name]: value,
     });

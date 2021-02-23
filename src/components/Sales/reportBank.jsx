@@ -88,17 +88,13 @@ export default class ReportBank extends Component {
           Authorization: "Bearer " + token,
         },
       })
-        .then((res) => {
-          if (!res.ok) {
-            window.Swal.fire({
-              title: "Error!",
-              text: "Ups!\n Hubo un error al descargar las ventas",
-              icon: "error",
-              confirmButtonText: "Ok",
-            });
-            console.log(res);
+        .then(async (response) => {
+          let back = {};
+          if (response.status !== 204) back = await response.json();
+          if (!response.ok) {
+            throw new Error(back.message);
           }
-          return res.json();
+          return back;
         })
         .then(async (data) => {
           if (!data.message) {
@@ -106,13 +102,15 @@ export default class ReportBank extends Component {
             this.setState({
               data,
             });
+          } else {
+            throw new Error(data.message);
           }
         })
         .catch((e) => {
-          console.error("[ORUS] " + e);
+          console.error("[reportBank] " + e);
           window.Swal.fire({
             title: "Error!",
-            text: "Ups!\n Hubo un error de usuario, intentelo mas tarde",
+            text: "Ups!\n Hubo un error en la consulta, revise la conexion",
             icon: "error",
             confirmButtonText: "Ok",
           });

@@ -81,6 +81,19 @@ export default class Recomendaciones extends Component {
                     >
                       <option value="0">Seleccione el tipo</option>
                       {this.state.category_list.map((cat) => {
+                        console.log(cat.categoria);
+                        console.log(
+                          "[DEBUG] Cil-der: ",
+                          cat.meta.rangoInf,
+                          cilindrod,
+                          cat.meta.cil
+                        );
+                        console.log(
+                          "[DEBUG] Cil-izq: ",
+                          cat.meta.rangoInf,
+                          cilindroi,
+                          cat.meta.cil
+                        );
                         if (
                           cat.meta &&
                           cat.meta.rangoInf <= esferaod &&
@@ -90,6 +103,7 @@ export default class Recomendaciones extends Component {
                           cat.meta.cil <= cilindrod &&
                           cat.meta.cil <= cilindroi
                         ) {
+                          console.log("[DEBUG] OK");
                           return (
                             <option value={cat.id} key={cat.id}>
                               {cat.categoria}

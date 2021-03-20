@@ -205,8 +205,19 @@ export default class Main extends Component {
             if (response.status !== 204 && response.status)
               back = await response.json();
             if (!response.ok) {
-              console.error("[Login] error response\n", response, back);
-              throw new Error(back.message);
+              console.error("[Login] error status\n", response);
+              if (response.status === 401) {
+                window.Swal.fire(
+                  "Inicio de sesion",
+                  "Las credenciales no son correctas",
+                  "error"
+                );
+                this.setState({
+                  load: false,
+                });
+              } else {
+                throw new Error(back.errors);
+              }
             }
             return back;
           })

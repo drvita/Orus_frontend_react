@@ -44,13 +44,17 @@ export default class Notify extends Component {
         <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <span className="dropdown-header">{countNotify} Notificaciones</span>
           <div className="dropdown-divider"></div>
-          {notifications.map((notify) => {
+          {notifications.map((notify, index) => {
             const notiFyType = notify.type.split("\\", 3);
             let title = "general",
               icon = "fa-file",
               time = moment(notify.created_at).fromNow(),
               url = "#end",
               page = "/";
+
+            //Cortamos si son más de 10 notificaciones
+            if (index > 10) return false;
+
             if (notiFyType[2] === "ExamNotification") {
               if (rol === 2) {
                 title = "Examen creado";
@@ -63,7 +67,7 @@ export default class Notify extends Component {
               }
               icon = "fa-file-alt";
             }
-            //console.log("Notify:", notify.read_at);
+            //console.log("Notify num:", index);
             return (
               <Link
                 to={url}

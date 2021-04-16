@@ -7,7 +7,9 @@ export default class contactDataVertical extends Component {
     return (
       <div className="col">
         <label>Nombre de paciente: </label>
-        <span className="ml-2 text-capitalize">{contact.nombre}</span>
+        <h3 className="ml-2 text-capitalize">
+          <i className="fas fa-user"></i> {contact.nombre}
+        </h3>
       </div>
     );
   }

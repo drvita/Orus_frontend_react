@@ -72,7 +72,7 @@ export default class ReportPay extends Component {
 
     if (token && host) {
       //Realiza la peticion del pedido
-      console.log("Solicitando datos a la API");
+      console.log("[ReportPay] Solicitando datos a la API");
       fetch(url + saleDay + saleUser, {
         method: "GET",
         signal: this.signal,
@@ -110,7 +110,7 @@ export default class ReportPay extends Component {
           if (this.char) this.char.destroy();
 
           if (!data.message) {
-            console.log("[ReportPay] Mostrando datos de la venta del dia");
+            console.log("[ReportPay] Almacenando datos de la venta del dia");
             if (data && data.length) {
               await data.map((mp) => {
                 labels.push(this.SetMethodPayment(mp.metodopago));

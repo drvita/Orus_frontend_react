@@ -27,15 +27,15 @@ export default class printExam extends Component {
       <div className="card d-none d-print-block">
         <div className="row">
           <div className="col">
-            <h5>
+            <h4>
               Optica Madero
               <br />
               <small>312 312 5353</small>
-            </h5>
+            </h4>
           </div>
           <div className="col-3 text-right">{moment().format("LLL")}</div>
         </div>
-        <div className="row">
+        <div className="row pt-4">
           <Contacto />
         </div>
         <div className="row">
@@ -70,9 +70,8 @@ export default class printExam extends Component {
         </div>
         <div className="row">
           <div className="col">
-            <p className="card-text text-center">
-              Julio Cárdenas Martinez
-              <br />
+            <p className="card-text text-center mt-4 pt-4">
+              <h4>Julio Cárdenas Martinez</h4>
               Optometrista contactologo
               <br />
               UAG

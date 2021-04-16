@@ -16,7 +16,7 @@ export default class statusOrder extends Component {
               <option value="0">En proceso</option>
               <option value="1">Laboratorio</option>
               <option value="2">Bicelación</option>
-              <option value="3">Terminado</option>
+              <option value="3">Entregado</option>
               <option value="4">Garantia</option>
             </select>
           </div>

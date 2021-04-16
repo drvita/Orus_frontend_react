@@ -13,7 +13,7 @@ export default class Contacts extends Component {
     //Variables en localStorage
     let sdd = JSON.parse(localStorage.getItem("OrusSales"));
     this.state = {
-      pedidos: {
+      ventas: {
         data: [],
         meta: {},
       },
@@ -68,14 +68,13 @@ export default class Contacts extends Component {
   }
 
   render() {
-    let { pedidos, load, search, type, date } = this.state,
+    let { ventas, load, search, type, date } = this.state,
       dataHeaders = [
         { name: "Folio", type: "id", filter: true },
+        { name: "Pedido", type: "pedido", filter: false },
         { name: "Cliente" },
-        { name: "Sub-total" },
-        { name: "Descuento" },
         { name: "Total", type: "total", filter: true },
-        { name: "Abonos" },
+        { name: "Abonado" },
         { name: "Por pagar" },
         { name: "Actualizado", type: "updated_at", filter: true },
         { name: "Registrado", type: "created_at", filter: true },
@@ -86,7 +85,7 @@ export default class Contacts extends Component {
         <div className="card-header">
           <h3 className="card-title text-success">
             <i className="fas fa-cash-register mr-1"></i>
-            Listado de notas
+            Listado de ventas
           </h3>
           <div className="card-tools">
             <Link
@@ -106,7 +105,7 @@ export default class Contacts extends Component {
               handleChangePage={this.handleChangePage}
             />
             <Pagination
-              meta={pedidos.meta}
+              meta={ventas.meta}
               handleChangePage={this.handleChangePage}
             />
           </div>
@@ -135,50 +134,51 @@ export default class Contacts extends Component {
                     </span>
                   </td>
                 </tr>
-              ) : Object.keys(pedidos.data).length ? (
-                pedidos.data.map((pedido) => {
+              ) : Object.keys(ventas.data).length ? (
+                ventas.data.map((venta) => {
                   return (
-                    <tr key={pedido.id}>
+                    <tr key={venta.id}>
                       <td>
                         <span className="badge badge-success text-capitalize">
-                          {pedido.id}
+                          {venta.id}
                         </span>
                       </td>
+                      <td>
+                        {venta.pedido ? (
+                          <span className="badge badge-warning text-capitalize">
+                            {venta.pedido}
+                          </span>
+                        ) : (
+                          "--"
+                        )}
+                      </td>
                       <td className="text-uppercase">
-                        <Link to={"/notas/registro/" + pedido.id}>
+                        <Link to={"/notas/registro/" + venta.id}>
                           <span className="badge badge-danger text-capitalize p-1">
-                            {pedido.cliente.nombre}
+                            {venta.cliente.nombre}
                             <i className="fas fa-pencil-alt ml-1"></i>
                           </span>
                         </Link>
                       </td>
+                      <td className="text-right">$ {venta.total.toFixed(2)}</td>
                       <td className="text-right">
-                        $ {pedido.subtotal.toFixed(2)}
+                        $ {venta.pagado.toFixed(2)}
                       </td>
                       <td className="text-right">
-                        $ {pedido.descuento.toFixed(2)}
-                      </td>
-                      <td className="text-right">
-                        $ {pedido.total.toFixed(2)}
-                      </td>
-                      <td className="text-right">
-                        $ {pedido.pagado.toFixed(2)}
-                      </td>
-                      <td className="text-right">
-                        {pedido.total - pedido.pagado <= 0 ? (
+                        {venta.total - venta.pagado <= 0 ? (
                           <label className="text-success">
                             <i className="fas fa-check"></i>
                           </label>
                         ) : (
-                          "$ " + (pedido.total - pedido.pagado).toFixed(2)
+                          "$ " + (venta.total - venta.pagado).toFixed(2)
                         )}
                       </td>
-                      <td>{moment(pedido.updated_at).fromNow()}</td>
-                      <td>{moment(pedido.created_at).format("ll")}</td>
+                      <td>{moment(venta.updated_at).fromNow()}</td>
+                      <td>{moment(venta.created_at).format("ll")}</td>
                       <Actions
-                        id={pedido.id}
-                        item={pedido.cliente.nombre}
-                        delete={pedido.pagado ? null : this.handleDelete}
+                        id={venta.id}
+                        item={venta.cliente.nombre}
+                        delete={venta.pagado ? null : this.handleDelete}
                         edit={"/notas/registro/"}
                       />
                     </tr>
@@ -203,7 +203,7 @@ export default class Contacts extends Component {
             }}
           >
             <i className="fas fa-plus mr-2"></i>
-            <strong>Nueva nota</strong>
+            <strong>Nueva venta</strong>
           </Link>
         </div>
       </div>
@@ -347,7 +347,7 @@ export default class Contacts extends Component {
       .then((data) => {
         console.log("Descargando ventas");
         this.setState({
-          pedidos: data,
+          ventas: data,
           load: false,
         });
       });

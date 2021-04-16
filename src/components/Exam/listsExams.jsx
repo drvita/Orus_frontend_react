@@ -88,6 +88,14 @@ export default class ListsExams extends Component {
                     </strong>
                   </div>
                 </div>
+                {exam.observaciones.length ? (
+                  <div className="col-1">
+                    <span className="badge badge-pill badge-danger mx-2">
+                      <i className="fas fa-eye mr-2"></i>
+                      Observaciones
+                    </span>
+                  </div>
+                ) : null}
                 <div className="col-2 d-print-none text-right">
                   <button
                     className={
@@ -127,7 +135,13 @@ export default class ListsExams extends Component {
 
               <div className="row d-print-none">
                 <div className="col p-2">
-                  <div className="card">
+                  <div
+                    className={
+                      exam.observaciones.length
+                        ? "card border border-danger rounded"
+                        : "card border border-info rounded"
+                    }
+                  >
                     <div className="card-body">
                       <label className="card-title">Observaciones</label>
                       <p className="card-text text-muted text-uppercase">

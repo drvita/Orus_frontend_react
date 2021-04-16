@@ -240,7 +240,7 @@ export default class Contacts extends Component {
       case 2:
         return <span className="text-primary text-uppercase">Bicelación</span>;
       case 3:
-        return <span className="text-success text-uppercase">Terminado</span>;
+        return <span className="text-success text-uppercase">Entregado</span>;
       case 4:
         return <span className="text-info text-uppercase">Garantia</span>;
       default:

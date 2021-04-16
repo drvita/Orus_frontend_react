@@ -8,6 +8,7 @@ export default class ReportBank extends Component {
       token: props.data.token,
       listBank: [],
       data: [],
+      load: false,
     };
     this.char = null;
     this.controller = new AbortController();
@@ -28,7 +29,7 @@ export default class ReportBank extends Component {
   }
 
   render() {
-    const { listBank, data } = this.state;
+    const { listBank, data, load } = this.state;
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
@@ -37,26 +38,47 @@ export default class ReportBank extends Component {
           </h3>
         </div>
         <div className="card-body">
-          <ul className="list-group">
-            {data.map((bank) => {
-              return (
-                <li
-                  className="list-group-item d-flex justify-content-between align-items-center"
-                  key={bank.bank_id}
-                >
-                  <label className="text-uppercase">
-                    {listBank.map((bankname) => {
-                      if (bankname.id === bank.bank_id) return bankname.name;
-                      else return null;
-                    })}
-                  </label>
-                  <span className="badge badge-primary badge-pill">
-                    $ {bank.total.toFixed(2)}
-                  </span>
+          {load ? (
+            <div>
+              <div className="spinner-border text-primary mr-4" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+              <span className="font-weight-light font-italic">
+                Espere cargando datos de banco
+              </span>
+            </div>
+          ) : (
+            <ul className="list-group">
+              {data.length ? (
+                data.map((bank) => {
+                  return (
+                    <li
+                      className="list-group-item d-flex justify-content-between align-items-center"
+                      key={bank.bank_id}
+                    >
+                      <label className="text-uppercase">
+                        {listBank.map((bankname) => {
+                          if (bankname.id === bank.bank_id)
+                            return bankname.name;
+                          else return null;
+                        })}
+                      </label>
+                      <span className="badge badge-primary badge-pill">
+                        $ {bank.total.toFixed(2)}
+                      </span>
+                    </li>
+                  );
+                })
+              ) : (
+                <li className="list-group-item d-flex justify-content-between align-items-center">
+                  <h6 className="text-warning">
+                    <i className="fas fa-info mr-2"></i>
+                    No hay datos para este dia
+                  </h6>
                 </li>
-              );
-            })}
-          </ul>
+              )}
+            </ul>
+          )}
         </div>
       </div>
     );
@@ -80,6 +102,9 @@ export default class ReportBank extends Component {
     if (token && host) {
       //Realiza la peticion del pedido
       console.log("Solicitando datos a la API");
+      this.setState({
+        load: true,
+      });
       fetch(url + saleDay + saleUser, {
         method: "GET",
         signal: this.signal,
@@ -98,9 +123,13 @@ export default class ReportBank extends Component {
         })
         .then(async (data) => {
           if (!data.message) {
-            console.log("[reportBank] Mostrando detalles bancarios");
+            console.log(
+              "[reportBank] Almacenando detalles bancarios",
+              data.data
+            );
             this.setState({
               data,
+              load: false,
             });
           } else {
             throw new Error(data.message);
@@ -113,6 +142,9 @@ export default class ReportBank extends Component {
             text: "Ups!\n Hubo un error en la consulta, revise la conexion",
             icon: "error",
             confirmButtonText: "Ok",
+          });
+          this.setState({
+            load: false,
           });
         });
     }

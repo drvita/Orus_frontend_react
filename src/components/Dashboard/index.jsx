@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
-//import SalesOutStock from "../Sales/salesOutStock";
+import PaymentsDetails from "../Sales/reportPaymentsDetails";
 import ReportPays from "../Sales/reportPays";
 import ReportBank from "../Sales/reportBank";
 import Caja from "./cash";
@@ -27,30 +27,13 @@ export default class Dashboard extends Component {
     return (
       <div className="content">
         <div className="row">
-          <div className="col">
+          <div className="col col-md-3 col-lg-3">
             <ReportPays
               data={data}
               user={user}
               date={date}
               changeState={this.changeState}
             />
-          </div>
-          <div className="col">
-            <Caja
-              data={data}
-              user={user}
-              date={date}
-              changeState={this.changeState}
-            />
-          </div>
-          {!data.rol ? (
-            <div className="col-3">
-              <DateUser data={data} changeState={this.changeState} />
-            </div>
-          ) : null}
-        </div>
-        <div className="row">
-          <div className="col-4">
             <ReportBank
               data={data}
               user={user}
@@ -58,10 +41,32 @@ export default class Dashboard extends Component {
               changeState={this.changeState}
             />
           </div>
-          <div className="col-5"></div>
+          <div className="col">
+            <PaymentsDetails
+              data={data}
+              user={user}
+              date={date}
+              changeState={this.changeState}
+            />
+          </div>
           {!data.rol ? (
-            <div className="col-3">
-              <BoxCut caja={caja} ventas={ventas} />
+            <div className="col">
+              <div className="row">
+                <div className="col">
+                  <DateUser data={data} changeState={this.changeState} />
+                </div>
+                <div className="col">
+                  <BoxCut caja={caja} ventas={ventas} />
+                </div>
+              </div>
+              <div className="row">
+                <Caja
+                  data={data}
+                  user={user}
+                  date={date}
+                  changeState={this.changeState}
+                />
+              </div>
             </div>
           ) : null}
         </div>

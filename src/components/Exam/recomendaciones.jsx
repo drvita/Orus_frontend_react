@@ -62,7 +62,7 @@ export default class Recomendaciones extends Component {
     //console.log("GRAD CIL: ", cilindrod, cilindroi);
 
     return (
-      <div className="card d-print-none">
+      <div className="card border border-info rounded d-print-none">
         <div className="card-body">
           <h3 className="card-title text-success m-2">{title}</h3>
           {!category_id ? (

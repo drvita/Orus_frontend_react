@@ -44,7 +44,7 @@ export default class GraduacionExam extends Component {
                 <label>D</label>
                 <i className="fa fa-eye"></i>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="esferaod"
@@ -52,14 +52,17 @@ export default class GraduacionExam extends Component {
                   max="20"
                   step=".25"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={esferaod ? esferaod.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{esferaod.toFixed(2)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="cilindrod"
@@ -67,14 +70,17 @@ export default class GraduacionExam extends Component {
                   max="0"
                   step=".25"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={cilindrod ? cilindrod.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{cilindrod.toFixed(2)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="ejeod"
@@ -82,15 +88,18 @@ export default class GraduacionExam extends Component {
                   max="180"
                   step="1"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   placeholder="°"
                   value={ejeod ? parseInt(ejeod) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{parseInt(ejeod)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="adiciond"
@@ -98,14 +107,17 @@ export default class GraduacionExam extends Component {
                   max="3"
                   step=".25"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={adiciond ? adiciond.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{adiciond.toFixed(2)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="adicion_media_od"
@@ -113,14 +125,19 @@ export default class GraduacionExam extends Component {
                   max="3"
                   step=".25"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={adicion_media_od ? adicion_media_od.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">
+                  {adicion_media_od.toFixed(2)}
+                </h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="dpod"
@@ -128,14 +145,17 @@ export default class GraduacionExam extends Component {
                   max="80"
                   step=".1"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={dpod ? dpod.toFixed(1) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{dpod.toFixed(1)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="alturaod"
@@ -143,12 +163,15 @@ export default class GraduacionExam extends Component {
                   max="35"
                   step=".1"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={alturaod ? alturaod.toFixed(1) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{alturaod.toFixed(1)}</h5>
               </td>
             </tr>
             <tr>
@@ -156,7 +179,7 @@ export default class GraduacionExam extends Component {
                 <label>I</label>
                 <i className="fa fa-eye"></i>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="esferaoi"
@@ -164,14 +187,17 @@ export default class GraduacionExam extends Component {
                   max="20"
                   step=".25"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={esferaoi ? esferaoi.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{esferaoi.toFixed(2)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="cilindroi"
@@ -179,14 +205,17 @@ export default class GraduacionExam extends Component {
                   max="0"
                   step=".25"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={cilindroi ? cilindroi.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{cilindroi.toFixed(2)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="ejeoi"
@@ -194,15 +223,18 @@ export default class GraduacionExam extends Component {
                   max="180"
                   step="1"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   placeholder="°"
                   value={ejeoi ? parseInt(ejeoi) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{parseInt(ejeoi)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="adicioni"
@@ -210,14 +242,17 @@ export default class GraduacionExam extends Component {
                   max="3"
                   step=".25"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={adicioni ? adicioni.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{adicioni.toFixed(2)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="adicion_media_oi"
@@ -225,14 +260,19 @@ export default class GraduacionExam extends Component {
                   max="3"
                   step=".25"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={adicion_media_oi ? adicion_media_oi.toFixed(2) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">
+                  {adicion_media_oi.toFixed(2)}
+                </h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="dpoi"
@@ -240,14 +280,17 @@ export default class GraduacionExam extends Component {
                   max="80"
                   step=".1"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={dpoi ? dpoi.toFixed(1) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{dpoi.toFixed(1)}</h5>
               </td>
-              <td>
+              <td className="text-right">
                 <input
                   type="number"
                   name="alturaoi"
@@ -255,12 +298,15 @@ export default class GraduacionExam extends Component {
                   max="35"
                   step=".1"
                   className={
-                    readOnly ? "form-control disabled" : "form-control"
+                    readOnly
+                      ? "form-control d-print-none disabled"
+                      : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
                   value={alturaoi ? alturaoi.toFixed(1) : ""}
                   onChange={this.catchInputs}
                 />
+                <h5 className="d-none d-print-block">{alturaoi.toFixed(1)}</h5>
               </td>
             </tr>
           </tbody>

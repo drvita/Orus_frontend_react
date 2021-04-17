@@ -73,7 +73,10 @@ export default class ReportPaymentsDetails extends Component {
               ) : payments.length ? (
                 payments.map((pay) => {
                   return (
-                    <tr key={pay.id}>
+                    <tr
+                      key={pay.id}
+                      className={pay.metodo === 1 ? "text-success" : ""}
+                    >
                       <th className="text-uppercase">{pay.metodoname}</th>
                       <td className="text-capitalize">
                         {pay.sale.cliente.nombre}

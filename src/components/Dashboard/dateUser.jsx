@@ -24,7 +24,7 @@ export default class DateUser extends Component {
   render() {
     const { date, user, users } = this.state;
     return (
-      <div className="card">
+      <div className="card border border-info rounded">
         <div className="card-body bg-light">
           <div className="row mb-4">
             <h5 className="card-title text-secondary">Filtros</h5>
@@ -40,8 +40,6 @@ export default class DateUser extends Component {
                 onChange={this.changeState}
               />
             </div>
-          </div>
-          <div className="form-group row">
             <label className="col col-form-label">Usuario</label>
             <div className="col">
               <select

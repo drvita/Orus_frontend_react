@@ -60,7 +60,7 @@ export default class Cash extends Component {
                       <td>{moment(atm.created_at).format("LT")}</td>
                       <td>{atm.created_user}</td>
                       <td>{atm.tipo ? "Ingreso" : "Egreso"}</td>
-                      <td className="text-right">
+                      <td>
                         $
                         {atm.efectivo > 0
                           ? atm.efectivo.toFixed(2)

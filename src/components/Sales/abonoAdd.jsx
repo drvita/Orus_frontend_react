@@ -291,8 +291,10 @@ export default class AddAbono extends Component {
           this.setState({
             metodopago: 1,
             total: 0,
+            bank_id: 0,
             banco: "",
             auth: "",
+            details: "",
           });
           window.Swal.fire({
             icon: "success",
@@ -315,8 +317,18 @@ export default class AddAbono extends Component {
       else if (value < 0) value = 0;
     }
     if (name === "metodopago" || type === "number") value = parseInt(value);
-    this.setState({
-      [name]: value,
-    });
+
+    if (name === "metodopago" && value === 1) {
+      this.setState({
+        metodopago: 1,
+        bank_id: 0,
+        auth: "",
+        details: "",
+      });
+    } else {
+      this.setState({
+        [name]: value,
+      });
+    }
   };
 }

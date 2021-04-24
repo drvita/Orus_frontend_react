@@ -92,17 +92,6 @@ export default class SaleAdd extends Component {
               getIdContact={this.getIdContact}
               changePage={this.changePage}
             />
-
-            {contact_id && items.length ? (
-              <EdoCuenta
-                pay={pay}
-                descuento={descuento}
-                subtotal={subtotal}
-                total={this.total}
-                pagado={pagado}
-                catchInputs={this.catchInputs}
-              />
-            ) : null}
           </div>
           <div className="col">
             <div className="card card-success card-outline">
@@ -235,7 +224,7 @@ export default class SaleAdd extends Component {
                 </div>
               </div>
             </div>
-            {contact_id && id ? (
+            {contact_id && id && items.length ? (
               <div className="card card-success card-outline">
                 <div className="card-body">
                   <h5 className="card-title mb-4">
@@ -258,7 +247,19 @@ export default class SaleAdd extends Component {
             ) : null}
           </div>
           {id && contact_id ? (
-            <div className="col-3 d-print-none">{chat}</div>
+            <div className="col-3 d-print-none">
+              {items.length ? (
+                <EdoCuenta
+                  pay={pay}
+                  descuento={descuento}
+                  subtotal={subtotal}
+                  total={this.total}
+                  pagado={pagado}
+                  catchInputs={this.catchInputs}
+                />
+              ) : null}
+              {chat}
+            </div>
           ) : null}
         </div>
         <Print

@@ -65,12 +65,14 @@ export default class searchContact extends Component {
             id,
             f_nacimiento,
             email,
+            rfc,
           } = this.state.dataContact,
           edad = this.props.edad
             ? this.props.edad + " años"
             : f_nacimiento
             ? moment(f_nacimiento).fromNow()
-            : 0;
+            : 0,
+          domain = /.*@domain(.com)?/gim;
         console.log(
           "[Contact][search] Almacenando datos de contacto en local storage"
         );
@@ -96,72 +98,71 @@ export default class searchContact extends Component {
               <h3 className="profile-username text-center text-capitalize">
                 {nombre}
               </h3>
-              <h6 className="text-muted text-center">
-                {telefonos.t_movil ? (
-                  <span>Movil: {telefonos.t_movil}</span>
-                ) : telefonos.t_casa ? (
-                  <span>Casa: {telefonos.t_casa}</span>
-                ) : telefonos.t_oficina ? (
-                  <span>Oficina: {telefonos.t_oficina}</span>
-                ) : (
-                  <span className="text-danger">Capture el telefono</span>
-                )}
-              </h6>
-              <p className="text-muted text-center">
-                {domicilio && domicilio.calle.length > 6
-                  ? domicilio.calle
-                  : null}
-              </p>
-
-              <ul className="list-group list-group-unbordered mb-3">
-                <li className="list-group-item d-flex justify-content-between align-items-center">
-                  <b className="mr-4">Edad:</b>
-
-                  {edad ? (
-                    <span className="badge badge-primary badge-pill">
-                      {edad}
-                    </span>
-                  ) : (
-                    <input
-                      type="number"
-                      name="edad"
-                      className="form-control"
-                      value={this.state.edad ? this.state.edad : ""}
-                      onChange={this.handleSearcContact}
-                      onBlur={this.sendAge}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          this.sendAge(e);
-                        }
-                      }}
-                    />
-                  )}
-                </li>
-                {f_nacimiento ? (
+              {rfc !== "XAXX010101000" ? (
+                <React.Fragment>
+                  <h6 className="text-muted text-center">
+                    {telefonos.t_movil ? (
+                      <span>Movil: {telefonos.t_movil}</span>
+                    ) : telefonos.t_casa ? (
+                      <span>Casa: {telefonos.t_casa}</span>
+                    ) : telefonos.t_oficina ? (
+                      <span>Oficina: {telefonos.t_oficina}</span>
+                    ) : (
+                      <span className="text-danger">Capture el telefono</span>
+                    )}
+                  </h6>
+                  <p className="text-muted text-center">
+                    {domicilio && domicilio.calle.length > 6
+                      ? domicilio.calle
+                      : null}
+                  </p>
+                </React.Fragment>
+              ) : null}
+              {rfc !== "XAXX010101000" ? (
+                <ul className="list-group list-group-unbordered mb-3">
                   <li className="list-group-item d-flex justify-content-between align-items-center">
-                    <b>Fecha de nacimiento:</b>
-                    <span className="badge badge-primary badge-pill">
-                      {moment(f_nacimiento).format("L")}
-                    </span>
+                    <b className="mr-4">Edad:</b>
+
+                    {edad ? (
+                      <span className="badge badge-primary badge-pill">
+                        {edad.replace("hace", "")}
+                      </span>
+                    ) : (
+                      <span className="badge badge-warning badge-pill">
+                        <i className="fas fa-ban mr-2"></i> No capturado
+                      </span>
+                    )}
                   </li>
-                ) : null}
-                <li className="list-group-item d-flex justify-content-between align-items-center">
-                  <b>E-mail:</b>
-                  {email ? (
-                    <span className="badge badge-primary badge-pill">
-                      {email}
-                    </span>
-                  ) : (
-                    <span className="badge badge-warning badge-pill">
-                      No se ha capturado
-                    </span>
-                  )}
-                </li>
-                <li className="list-group-item d-flex justify-content-between align-items-center">
-                  <b>#Contacto:</b>
-                  <span className="badge badge-primary badge-pill">{id}</span>
-                </li>
-              </ul>
+                  {f_nacimiento ? (
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                      <b>Fecha de nacimiento:</b>
+                      <span className="badge badge-primary badge-pill">
+                        {moment(f_nacimiento).format("L")}
+                      </span>
+                    </li>
+                  ) : null}
+                  <li className="list-group-item d-flex justify-content-between align-items-center">
+                    <b>E-mail:</b>
+                    {email && !domain.exec(email) ? (
+                      <span className="badge badge-primary badge-pill">
+                        {email}
+                      </span>
+                    ) : (
+                      <span className="badge badge-warning badge-pill">
+                        <i className="fas fa-ban mr-2"></i> No capturado
+                      </span>
+                    )}
+                  </li>
+                  {rfc.length ? (
+                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                      <b>RFC:</b>
+                      <span className="badge badge-primary badge-pill">
+                        {rfc}
+                      </span>
+                    </li>
+                  ) : null}
+                </ul>
+              ) : null}
               {!this.props.status ? (
                 <div className="btn-group btn-block d-print-none" role="group">
                   <button
@@ -274,14 +275,6 @@ export default class searchContact extends Component {
     }
   }
 
-  sendAge = (e) => {
-    const { value } = e.target,
-      { id } = this.state.dataContact;
-
-    if (value > 0 && value < 110 && id) {
-      this.props.getIdContact(id, parseInt(value));
-    }
-  };
   getContact = (id) => {
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));

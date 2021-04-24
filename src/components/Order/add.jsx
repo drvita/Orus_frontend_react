@@ -95,13 +95,6 @@ export default class OrderAdd extends Component {
             getIdContact={this.getIdContact}
             changePage={this.changePage}
           />
-          {contact_id ? (
-            <div className="card card-warning card-outline d-print-none mt-4">
-              <div className="card-body">
-                <Status status={status} ChangeInput={this.handleChangeInput} />
-              </div>
-            </div>
-          ) : null}
         </div>
         <div className="col">
           <div className="card card-warning card-outline">
@@ -362,6 +355,16 @@ export default class OrderAdd extends Component {
         </div>
         {contact_id && id ? (
           <div className="col-2 d-print-none">
+            {contact_id ? (
+              <div className="card card-warning card-outline d-print-none">
+                <div className="card-body">
+                  <Status
+                    status={status}
+                    ChangeInput={this.handleChangeInput}
+                  />
+                </div>
+              </div>
+            ) : null}
             <Chat data={data} table="orders" idRow={id} />
           </div>
         ) : null}

@@ -4,6 +4,7 @@ import React, { Component, Fragment } from "react";
 export default class Recomendaciones extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       category_list: [],
       meta: {},
@@ -13,6 +14,9 @@ export default class Recomendaciones extends Component {
       category_id_2: 0,
       category_id_3: 0,
       category: [],
+      codesItems: {},
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -25,7 +29,7 @@ export default class Recomendaciones extends Component {
   }
   componentDidUpdate(props, state) {
     if (props.category_id !== this.props.category_id) {
-      console.log("Recargando recomendacion");
+      console.log("[Recomendaciones] Recargando recomendacion");
       this.getCategories();
     }
   }
@@ -38,28 +42,9 @@ export default class Recomendaciones extends Component {
         esferaoi,
         cilindrod,
         cilindroi,
+        handleCodesItems,
       } = this.props,
-      { category } = this.state;
-    let code =
-        category_id && Object.keys(category).length
-          ? this.handleCodeName(category)
-          : "XX",
-      gradod = "+000000",
-      gradoi = "+000000";
-
-    if (cilindrod || esferaod) {
-      gradod = esferaod > 0 ? "+" : "";
-      gradod +=
-        esferaod.toFixed(2).toString().replace(".", "") +
-        cilindrod.toFixed(2).toString().replace("-", "").replace(".", "");
-    }
-    if (cilindroi || esferaoi) {
-      gradoi = esferaoi > 0 ? "+" : "";
-      gradoi +=
-        esferaoi.toFixed(2).toString().replace(".", "") +
-        cilindroi.toFixed(2).toString().replace("-", "").replace(".", "");
-    }
-    //console.log("GRAD CIL: ", cilindrod, cilindroi);
+      { codesItems } = this.state;
 
     return (
       <div className="card border border-info rounded d-print-none">
@@ -81,19 +66,6 @@ export default class Recomendaciones extends Component {
                     >
                       <option value="0">Seleccione el tipo</option>
                       {this.state.category_list.map((cat) => {
-                        console.log(cat.categoria);
-                        console.log(
-                          "[DEBUG] Cil-der: ",
-                          cat.meta.rangoInf,
-                          cilindrod,
-                          cat.meta.cil
-                        );
-                        console.log(
-                          "[DEBUG] Cil-izq: ",
-                          cat.meta.rangoInf,
-                          cilindroi,
-                          cat.meta.cil
-                        );
                         if (
                           cat.meta &&
                           cat.meta.rangoInf <= esferaod &&
@@ -103,7 +75,6 @@ export default class Recomendaciones extends Component {
                           cat.meta.cil <= cilindrod &&
                           cat.meta.cil <= cilindroi
                         ) {
-                          console.log("[DEBUG] OK");
                           return (
                             <option value={cat.id} key={cat.id}>
                               {cat.categoria}
@@ -158,7 +129,11 @@ export default class Recomendaciones extends Component {
                       className="custom-select"
                       value={this.state.category_id_3}
                       onChange={(e) => {
-                        this.handleCategoryChange(e, gradod, gradoi);
+                        this.handleCategoryChange(
+                          e,
+                          codesItems.od,
+                          codesItems.oi
+                        );
                       }}
                     >
                       <option value="0">Seleccione el tratamiento</option>
@@ -180,22 +155,40 @@ export default class Recomendaciones extends Component {
             )
           ) : (
             <Fragment>
-              {code + gradod === code + gradoi ? (
+              {codesItems.code + codesItems.od ===
+              codesItems.code + codesItems.oi ? (
                 <p className="card-text">
-                  <label>Lente</label>: {code + gradod}
+                  <label>Lente</label>: {codesItems.code + codesItems.od}
                 </p>
               ) : (
                 <div className="row card-text">
                   <div className="col">
                     <label>Lente Derecho</label>
-                    <br /> {code + gradod}
+                    <br /> {codesItems.code + codesItems.od}
                   </div>
                   <div className="col">
                     <label>Lente Izquierdo</label>
-                    <br /> {code + gradoi}
+                    <br /> {codesItems.code + codesItems.oi}
                   </div>
                 </div>
               )}
+              {handleCodesItems ? (
+                <p className="card-text text-right">
+                  <button
+                    className="btn btn-info"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleCodesItems({
+                        code: codesItems.code,
+                        od: codesItems.od,
+                        oi: codesItems.oi,
+                      });
+                    }}
+                  >
+                    <i className="fas fa-check mr-2"></i>Siguiente
+                  </button>
+                </p>
+              ) : null}
               {this.props.update ? (
                 <p className="card-text text-right">
                   <button
@@ -285,8 +278,7 @@ export default class Recomendaciones extends Component {
     }
   };
   getCategories = () => {
-    //Variables
-    const { host, token } = this.props.data,
+    const { host, token } = this.state,
       { category_id } = this.props;
 
     //console.log("Tipo de descarga", nameCategory, category_id);
@@ -310,9 +302,50 @@ export default class Recomendaciones extends Component {
         .then((cat) => {
           if (cat.data) {
             console.log("Recomendacion descargada");
+            const {
+                category_id,
+                esferaod,
+                esferaoi,
+                cilindrod,
+                cilindroi,
+              } = this.props,
+              category = cat.data;
+            let code =
+                category_id && Object.keys(category).length
+                  ? this.handleCodeName(category)
+                  : "XX",
+              gradod = "+000000",
+              gradoi = "+000000";
+
+            if (cilindrod || esferaod) {
+              gradod = esferaod > 0 ? "+" : "";
+              gradod +=
+                esferaod.toFixed(2).toString().replace(".", "") +
+                cilindrod
+                  .toFixed(2)
+                  .toString()
+                  .replace("-", "")
+                  .replace(".", "");
+            }
+            if (cilindroi || esferaoi) {
+              gradoi = esferaoi > 0 ? "+" : "";
+              gradoi +=
+                esferaoi.toFixed(2).toString().replace(".", "") +
+                cilindroi
+                  .toFixed(2)
+                  .toString()
+                  .replace("-", "")
+                  .replace(".", "");
+            }
+            //console.log("[DEBUG FETCH] ", code, gradod, gradoi);
             this.setState({
               category: cat.data,
               category_id,
+              codesItems: {
+                code,
+                od: gradod,
+                oi: gradoi,
+              },
             });
           }
         })

@@ -6,7 +6,7 @@ export default class Items extends Component {
     this.state = {
       id: 0,
       store_items_id: 0,
-      session: "",
+      session: props.session ? props.session : "",
       cantidad: 1,
       precio: 0,
       subtotal: 0,
@@ -20,262 +20,291 @@ export default class Items extends Component {
     };
     this.total = 0;
   }
-  componentDidMount() {
-    this.setState({
-      session: this.props.session,
-    });
-  }
-  componentDidUpdate(props, state) {
-    if (this.state.itemNew && this.state.producto.length === 0) {
-      this.inputItem.focus();
-    }
-    /*
-    if (this.state.itemNew && this.state.cant === 1 && this.state.id) {
-      this.inputCant.focus();
-    }
-    */
-  }
 
   render() {
     let { itemNew, itemsDb, load } = this.state;
-    let { items } = this.props;
+    let { items, codes } = this.props;
     this.total = 0;
 
     return (
-      <table className="table table-sm table-striped  mt-2">
-        <thead>
-          <tr>
-            <th scope="col" style={{ width: 64 }}>
-              Cantidad
-            </th>
-            <th scope="col">Descripcion</th>
-            <th scope="col" className="text-center" style={{ width: 120 }}>
-              Precio
-            </th>
-            <th scope="col" className="text-center" style={{ width: 120 }}>
-              Subtotal
-            </th>
-            <th scope="col" style={{ width: 60 }}></th>
-          </tr>
-        </thead>
-        <tbody>
-          {itemNew ? (
-            <React.Fragment>
+      <div className="card">
+        <div className="card-header">
+          <h5>
+            <i className="fas fa-shopping-cart"></i> Pedido
+          </h5>
+        </div>
+        <div className="card-body table-responsive p-0">
+          <table className="table table-sm m-0">
+            <thead>
               <tr>
-                <td>
-                  <input
-                    className={
-                      this.state.store_items_id
-                        ? "form-control"
-                        : "form-control disabled"
-                    }
-                    disabled={this.state.store_items_id ? false : true}
-                    type="number"
-                    name="cantidad"
-                    ref={(input) => {
-                      this.inputCant = input;
-                    }}
-                    value={this.state.cantidad}
-                    onChange={this.catchInputs}
-                  />
-                </td>
-                <td>
-                  <input
-                    className={
-                      !this.state.store_items_id
-                        ? "form-control"
-                        : "form-control disabled"
-                    }
-                    disabled={!this.state.store_items_id ? false : true}
-                    type="text"
-                    name="producto"
-                    autoComplete="off"
-                    ref={(input) => {
-                      this.inputItem = input;
-                    }}
-                    value={this.state.producto}
-                    onChange={this.catchInputs}
-                  />
-                  {this.state.store_items_id ? (
-                    <input
-                      className="form-control"
-                      type="text"
-                      name="descripcion"
-                      placeholder="Detalles"
-                      value={this.state.descripcion}
-                      onChange={this.catchInputs}
-                    />
-                  ) : null}
-                </td>
-                <td>
-                  <input
-                    className={
-                      this.state.store_items_id
-                        ? "form-control"
-                        : "form-control disabled"
-                    }
-                    disabled={this.state.store_items_id ? false : true}
-                    type="number"
-                    name="precio"
-                    value={this.state.precio}
-                    onChange={this.catchInputs}
-                  />
-                </td>
-                <td>
-                  <input
-                    className="form-control disabled"
-                    type="number"
-                    name="subtotal"
-                    value={this.state.subtotal}
-                    readOnly={true}
-                  />
-                </td>
-                <td>
-                  <button
-                    className="btn btn-outline-dark btn-sm"
-                    onClick={this.addItem}
-                  >
-                    <i className="fas fa-save"></i>
-                  </button>
-                </td>
+                <th scope="col" style={{ width: 64 }}>
+                  Cantidad
+                </th>
+                <th scope="col">Descripcion</th>
+                <th scope="col" className="text-center" style={{ width: 120 }}>
+                  Precio
+                </th>
+                <th scope="col" className="text-center" style={{ width: 120 }}>
+                  Subtotal
+                </th>
+                <th scope="col" style={{ width: 60 }}></th>
               </tr>
-
-              {load ? (
-                <tr>
-                  <td colSpan="5">
-                    <div className="text-center">
-                      <div
-                        className="spinner-border text-primary"
-                        role="status"
+            </thead>
+            <tbody>
+              {itemNew ? (
+                <React.Fragment>
+                  <tr>
+                    <td>
+                      <input
+                        className={
+                          this.state.store_items_id
+                            ? "form-control"
+                            : "form-control disabled"
+                        }
+                        disabled={this.state.store_items_id ? false : true}
+                        type="number"
+                        name="cantidad"
+                        ref={(input) => {
+                          this.inputCant = input;
+                        }}
+                        value={this.state.cantidad}
+                        onChange={this.catchInputs}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className={
+                          !this.state.store_items_id
+                            ? "form-control"
+                            : "form-control disabled"
+                        }
+                        disabled={!this.state.store_items_id ? false : true}
+                        type="text"
+                        name="producto"
+                        autoComplete="off"
+                        ref={(input) => {
+                          this.inputItem = input;
+                        }}
+                        value={this.state.producto}
+                        onChange={this.catchInputs}
+                      />
+                      {this.state.store_items_id ? (
+                        <input
+                          className="form-control"
+                          type="text"
+                          name="descripcion"
+                          placeholder="Detalles"
+                          value={this.state.descripcion}
+                          onChange={this.catchInputs}
+                        />
+                      ) : null}
+                    </td>
+                    <td>
+                      <input
+                        className={
+                          this.state.store_items_id
+                            ? "form-control"
+                            : "form-control disabled"
+                        }
+                        disabled={this.state.store_items_id ? false : true}
+                        type="number"
+                        name="precio"
+                        value={this.state.precio}
+                        onChange={this.catchInputs}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="form-control disabled"
+                        type="number"
+                        name="subtotal"
+                        value={this.state.subtotal}
+                        readOnly={true}
+                      />
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-outline-dark btn-sm"
+                        onClick={this.addItem}
                       >
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ) : itemsDb && itemsDb.length ? (
-                <tr>
-                  <td colSpan="5">
-                    <div className="list-group">
-                      {itemsDb.map((db) => {
-                        return (
-                          <a
-                            className="list-group-item list-group-item-action"
-                            href={"#" + db.codigo}
-                            key={db.id}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              this.handelClickItemDb(
-                                db.id,
-                                db.producto,
-                                db.precio,
-                                db.cantidades
-                              );
-                            }}
+                        <i className="fas fa-save"></i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  {load ? (
+                    <tr>
+                      <td colSpan="5">
+                        <div className="text-center">
+                          <div
+                            className="spinner-border text-primary"
+                            role="status"
                           >
-                            <div
-                              className="text-truncate"
-                              style={{ maxWidth: "90%" }}
-                            >
-                              <span className="text-primary mr-2 text-uppercase">
-                                ({db.codigo})
-                              </span>
-                              <label className="text-dark text-capitalize ml-2 mr-2">
-                                {db.producto}
-                              </label>
-                              {db.marca ? (
-                                <span className="text-muted text-capitalize">
-                                  / {db.marca.marca}
-                                </span>
-                              ) : null}
-                              {db.proveedor ? (
-                                <span className="text-muted text-capitaliz">
-                                  / {db.proveedor.nombre}
-                                </span>
-                              ) : null}
-                            </div>
-                          </a>
-                        );
-                      })}
-                    </div>
+                            <span className="sr-only">Loading...</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : itemsDb && itemsDb.length ? (
+                    <tr>
+                      <td colSpan="5">
+                        <div className="list-group">
+                          {itemsDb.map((db) => {
+                            return (
+                              <a
+                                className="list-group-item list-group-item-action"
+                                href={"#" + db.codigo}
+                                key={db.id}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  this.handelClickItemDb(
+                                    db.id,
+                                    db.producto,
+                                    db.precio,
+                                    db.cantidades
+                                  );
+                                }}
+                              >
+                                <div
+                                  className="text-truncate"
+                                  style={{ maxWidth: "90%" }}
+                                >
+                                  <span className="text-primary mr-2 text-uppercase">
+                                    ({db.codigo})
+                                  </span>
+                                  <label className="text-dark text-capitalize ml-2 mr-2">
+                                    {db.producto}
+                                  </label>
+                                  {db.marca ? (
+                                    <span className="text-muted text-capitalize">
+                                      / {db.marca.marca}
+                                    </span>
+                                  ) : null}
+                                  {db.proveedor ? (
+                                    <span className="text-muted text-capitaliz">
+                                      / {db.proveedor.nombre}
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </a>
+                            );
+                          })}
+                        </div>
+                      </td>
+                    </tr>
+                  ) : null}
+                </React.Fragment>
+              ) : null}
+              {items.length ? (
+                items.map((item, index) => {
+                  this.total += item.subtotal * 1;
+                  return (
+                    <tr key={index}>
+                      <td className="text-right">{item.cantidad}</td>
+                      <td>
+                        <span
+                          className={
+                            !item.inStorage
+                              ? "badge badge-warning"
+                              : "badge badge-primary"
+                          }
+                        >
+                          {item.producto}
+                          {item.descripcion
+                            ? " (" + item.descripcion + ")"
+                            : null}
+                        </span>
+                      </td>
+                      <td className="text-right">$ {item.precio.toFixed(2)}</td>
+                      <td className="text-right">
+                        $ {item.subtotal.toFixed(2)}
+                      </td>
+                      <td className="d-print-none">
+                        <button
+                          className={
+                            this.props.status
+                              ? "btn btn-outline-light btn-sm disabled"
+                              : "btn btn-outline-light btn-sm"
+                          }
+                          disabled={this.props.status ? true : false}
+                          onClick={(e) => {
+                            if (!this.props.status) this.deleteItem(index);
+                          }}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td className="text-center" colSpan="5">
+                    No hay articulos cargados
                   </td>
                 </tr>
-              ) : null}
-            </React.Fragment>
-          ) : null}
-          {items.length ? (
-            items.map((item, index) => {
-              this.total += item.subtotal * 1;
-              return (
-                <tr key={index}>
-                  <td className="text-right">{item.cantidad}</td>
-                  <td>
-                    <span
-                      className={
-                        !item.inStorage
-                          ? "badge badge-warning"
-                          : "badge badge-primary"
-                      }
-                    >
-                      {item.producto}
-                      {item.descripcion ? " (" + item.descripcion + ")" : null}
-                    </span>
-                  </td>
-                  <td className="text-right">$ {item.precio.toFixed(2)}</td>
-                  <td className="text-right">$ {item.subtotal.toFixed(2)}</td>
-                  <td className="d-print-none">
+              )}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td className="text-right" colSpan="2">
+                  {!this.props.status && !this.props.addCancel ? (
                     <button
                       className={
                         this.props.status
-                          ? "btn btn-outline-light btn-sm disabled"
-                          : "btn btn-outline-light btn-sm"
+                          ? "btn btn-outline-warning btn-sm disabled"
+                          : itemNew
+                          ? "btn btn-outline-dark btn-sm"
+                          : "btn btn-outline-primary btn-sm"
                       }
                       disabled={this.props.status ? true : false}
-                      onClick={(e) => {
-                        if (!this.props.status) this.deleteItem(index);
-                      }}
+                      onClick={this.handleNewItem}
                     >
-                      <i className="fas fa-trash"></i>
+                      <i
+                        className={itemNew ? "fas fa-undo" : "fas fa-plus"}
+                      ></i>
                     </button>
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td className="text-center" colSpan="5">
-                No hay articulos cargados
-              </td>
-            </tr>
-          )}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td className="text-right" colSpan="2">
-              {!this.props.status && !this.props.addCancel ? (
-                <button
-                  className={
-                    this.props.status
-                      ? "btn btn-outline-warning btn-sm disabled"
-                      : itemNew
-                      ? "btn btn-outline-dark btn-sm"
-                      : "btn btn-outline-primary btn-sm"
-                  }
-                  disabled={this.props.status ? true : false}
-                  onClick={this.handleNewItem}
-                >
-                  <i className={itemNew ? "fas fa-undo" : "fas fa-plus"}></i>
-                </button>
-              ) : null}
-            </td>
-            <th scope="row" className="text-right">
-              Subtotal
-            </th>
-            <td className="text-right">$ {this.total.toFixed(2)}</td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
+                  ) : null}
+                </td>
+                <th scope="row" className="text-right">
+                  Subtotal
+                </th>
+                <td className="text-right">$ {this.total.toFixed(2)}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        {codes && codes.code ? (
+          <div className="card-footer">
+            {codes.od === codes.oi ? (
+              <div className="row">
+                <div className="col">
+                  <label className="m-2">
+                    <i className="fas fa-eye"></i> Graduacion
+                  </label>
+                  <span className="text">{codes.code + codes.od}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="row">
+                <div className="col">
+                  <label className="m-2">
+                    <i className="fas fa-eye"></i> Graduacion ojo derecho
+                  </label>
+                  <span className="text">{codes.code + codes.od}</span>
+                </div>
+                <div className="col">
+                  <label className="m-2">
+                    <i className="fas fa-eye"></i> Graduacion ojo izquierdo
+                  </label>
+                  <span className="text">{codes.code + codes.oi}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
     );
   }
 

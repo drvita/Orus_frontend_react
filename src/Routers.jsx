@@ -19,6 +19,7 @@ import Exam from "./components/Exam/index";
 import ExamAdd from "./components/Exam/add";
 import Order from "./components/Order/index";
 import OrderAdd from "./components/Order/add";
+import OrderAsistent from "./components/Order/asistent";
 import Sales from "./components/Sales/index";
 import SalesAdd from "./components/Sales/add";
 import Dashboard from "./components/Dashboard/index";
@@ -204,6 +205,18 @@ export default class Routers extends Component {
                       path="/configuraciones"
                       render={(props) => (
                         <Tools {...props} data={data} page={this.handlePage} />
+                      )}
+                    />
+
+                    <Route
+                      extric
+                      path="/pedidos/asistent"
+                      render={(props) => (
+                        <OrderAsistent
+                          {...props}
+                          data={data}
+                          page={this.handlePage}
+                        />
                       )}
                     />
                     <Route

@@ -73,15 +73,16 @@ export default class listExamsCustomer extends Component {
                       }
                     >
                       <td>
-                        {row.estado ? (
+                        <div className="icheck-primary">
                           <input
-                            className="form-check-input"
-                            type="radio"
-                            name="id"
-                            value={row.id}
-                            onClick={this.handleClickSelect}
+                            type="checkbox"
+                            name={"exam_" + row.id}
+                            id={"exam_" + row.id}
+                            onChange={(e) => this.handleClickSelect(row)}
+                            disabled={row.estado ? false : true}
                           />
-                        ) : null}
+                          <label htmlFor={"exam_" + row.id}></label>
+                        </div>
                       </td>
                       <th scope="row">
                         <span className="text">#{row.id}</span>
@@ -133,10 +134,10 @@ export default class listExamsCustomer extends Component {
     );
   }
 
-  handleClickSelect = (e) => {
-    const { value } = e.target;
-    console.log("[listExamsCustomer] Selecionado examen: ", parseInt(value));
-    this.props.ChangeInput("exam_id", value);
+  handleClickSelect = (exam) => {
+    const { ChangeInput } = this.props;
+    console.log("[listExamsCustomer] Selecionado examen: ", exam);
+    ChangeInput("exam", exam);
   };
   handleNewExam = (e) => {
     e.preventDefault();

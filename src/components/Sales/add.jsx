@@ -95,10 +95,10 @@ export default class SaleAdd extends Component {
           </div>
           <div className="col">
             <div className="card card-success card-outline">
-              <div className="card-body">
+              <div className="card-body p-0">
                 {contact_id && !load ? (
                   <React.Fragment>
-                    <div className="row mb-4">
+                    <div className="row mx-2 my-4">
                       <div className="col-2">
                         <div className="border border-success rounded p-2 d-flex justify-content-between align-items-center">
                           <span className="badge badge-pill badge-success mx-2">

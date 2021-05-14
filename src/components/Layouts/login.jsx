@@ -18,7 +18,7 @@ export default class Main extends Component {
   }
 
   render() {
-    let { load, username, password, hostShow, host } = this.state,
+    const { load, username, password, hostShow, host } = this.state,
       { company } = this.props;
     return (
       <div className="login-page">
@@ -133,7 +133,7 @@ export default class Main extends Component {
   pressEnter = (e) => {
     e.preventDefault();
     if (e.key === "Enter") {
-      let { host } = this.state;
+      const { host } = this.state;
       window.Swal.fire({
         icon: "success",
         title: "La conexion al servidor fue actualizada con exito: " + host,
@@ -145,7 +145,24 @@ export default class Main extends Component {
         });
         this.props.changeState("host", host);
       });
+    } else if (e.target && e.target.name !== "") {
+      this.catchInputs(e);
     }
+  };
+  catchInputs = (e) => {
+    const { name, value } = e.target,
+      { key } = e;
+    let val = "";
+
+    if (key) {
+      val = value + key;
+    } else {
+      val = value;
+    }
+
+    this.setState({
+      [name]: val,
+    });
   };
   showTools = (e) => {
     e.preventDefault();
@@ -156,7 +173,8 @@ export default class Main extends Component {
   validInputs() {
     //Valida los campos del formulario
     let { username, password } = this.state;
-    const regexUser = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+    const regexUser =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
       regexPass = /^(?=.*[A-Z])(?=.*[!@#$&.*])(?=.*[0-9])(?=.*[a-z]).{8,16}$/;
 
     username = username.replace(/\s/g, "").toLowerCase();
@@ -189,7 +207,7 @@ export default class Main extends Component {
 
       //Si los datos de usuario son correctos manda la informacion al servidor
       if (valid) {
-        console.log("[Login] Enviado credenciales al servidor");
+        console.log("[ORUS: login] Enviado credenciales al servidor");
         fetch("http://" + host + "/api/users/login", {
           method: "POST",
           body: JSON.stringify(body),
@@ -205,7 +223,6 @@ export default class Main extends Component {
             if (response.status !== 204 && response.status)
               back = await response.json();
             if (!response.ok) {
-              console.error("[Login] error status\n", response);
               if (response.status === 401) {
                 window.Swal.fire(
                   "Inicio de sesion",
@@ -223,7 +240,7 @@ export default class Main extends Component {
           })
           .then((response) => {
             if (response.data) {
-              console.log("[Login] Credenciales validadas", response);
+              console.log("[ORUS: Login] Credenciales validadas", response);
               if ("serviceWorker" in navigator && "PushManager" in window) {
                 console.log("[ORUS] Verificando permisos de Push");
                 if (Notification.permission !== "denied") {
@@ -243,7 +260,7 @@ export default class Main extends Component {
           })
           .catch((message) => {
             console.error(
-              "[Login] Error de conexion con el servidor\n",
+              "[ORUS: Login] Error de conexion con el servidor\n",
               message
             );
             window.Swal.fire(
@@ -261,18 +278,11 @@ export default class Main extends Component {
         });
       }
     } else {
-      console.error("[Login] No existe un valor para host");
+      console.error("[ORUS: Login] No existe un valor para host");
       this.setState({
         hostShow: true,
         load: false,
       });
     }
-  };
-  catchInputs = (e) => {
-    const { name, value } = e.target;
-    //console.log(name, ":", value);
-    this.setState({
-      [name]: value,
-    });
   };
 }

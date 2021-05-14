@@ -78,7 +78,7 @@ export default class Routers extends Component {
           active={page}
         />
         <div className="content-wrapper">
-          <Breadcrumb title={page} />
+          <Breadcrumb title={page} host={data.host} />
           <div className="content">
             <div className="container-fluid">
               <div className="row">

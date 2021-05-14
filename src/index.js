@@ -8,20 +8,20 @@ class App extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    let storage = JSON.parse(localStorage.getItem("OrusSystem"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     //Agregamos los datos a state
     this.state = {
-      isLogged: storage ? storage.isLogged : false,
-      token: storage ? storage.token : "",
-      idUser: storage ? storage.idUser : 0,
-      username: storage ? storage.username : "",
-      name: storage ? storage.name : "",
-      rol: storage ? storage.rol : 0,
-      email: storage ? storage.email : "",
-      host: storage ? storage.host : window.location.hostname,
-      company: storage ? storage.company : "Optica Madero",
+      isLogged: ls ? ls.isLogged : false,
+      token: ls ? ls.token : "",
+      idUser: ls ? ls.idUser : 0,
+      username: ls ? ls.username : "",
+      name: ls ? ls.name : "",
+      rol: ls ? ls.rol : 0,
+      email: ls ? ls.email : "",
+      host: ls ? ls.host : window.location.hostname,
+      company: ls ? ls.company : "Optica Madero",
     };
-    console.log("[Orus] Navegador:\n", navigator.userAgent);
+    console.log("[Orus] ", navigator.userAgent);
   }
   componentDidMount() {
     /*Almacenamos el state en el storage*/

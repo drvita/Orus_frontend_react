@@ -12,13 +12,18 @@ export default class examCustomer extends Component {
       id: props.id ? props.id : 0,
       exam: {},
       load: true,
-      examEdit: false,
+      examEdit: props.examEdit ? props.examEdit : false,
       host: ls.host,
       token: ls.token,
     };
   }
   componentDidMount() {
     this.getExam();
+  }
+  componentDidUpdate(props, state) {
+    if (props.id !== this.props.id) {
+      this.getExam();
+    }
   }
 
   render() {
@@ -61,24 +66,22 @@ export default class examCustomer extends Component {
             </div>
 
             <div className="row mt-2">
-              <div className="col">
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title badge badge-secondary m-2 mr-4">
-                      <i className="fas fa-info mr-2"></i>
-                      Observaciones
-                    </h5>
+              {exam.observaciones ? (
+                <div className="col">
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title badge badge-secondary m-2 mr-4">
+                        <i className="fas fa-info mr-2"></i>
+                        Observaciones
+                      </h5>
 
-                    {exam.observaciones ? (
                       <span className="text text-danger">
                         {exam.observaciones}
                       </span>
-                    ) : (
-                      <span className="text text-muted">Sin observaciones</span>
-                    )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : null}
             </div>
             <div className="row mt-2">
               <div className="col">
@@ -136,28 +139,8 @@ export default class examCustomer extends Component {
           </div>
           <div className="card-footer text-right">
             <div className="btn-group">
-              <button
-                className="btn btn-secondary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  this.setState({
-                    examEdit: !this.state.examEdit,
-                  });
-                }}
-              >
-                <i className={examEdit ? "fas fa-reply" : "fas fa-edit"}></i>{" "}
-                {examEdit ? "Cancelar" : "Editar"}
-              </button>
-              {examEdit ? (
-                <button
-                  className="btn btn-primary"
-                  onClick={this.handleSaveExam}
-                >
-                  <i className="fas fa-save mr-2"></i> Guardar
-                </button>
-              ) : null}
               <button className="btn btn-dark" onClick={this.handelChangeExam}>
-                <i className="fas fa-exchange-alt mr-2"></i> Cambiar
+                <i className="fas fa-window-close mr-2"></i> Cerrar
               </button>
             </div>
           </div>
@@ -201,7 +184,7 @@ export default class examCustomer extends Component {
   };
   handelChangeExam = () => {
     const { ChangeInput } = this.props;
-    ChangeInput("exam_id", 0);
+    ChangeInput("examEdit", false);
   };
   handelChangeCode = (codes) => {
     const { ChangeInput } = this.props;
@@ -296,18 +279,17 @@ export default class examCustomer extends Component {
     const { load, host, token } = this.state,
       { id } = this.props;
 
+    if (!id) return false;
     //Variables en localStorage
     const url = "http://" + host + "/api/exams/" + id;
-
     //Mandamos señal de carga si no lo he hecho
     if (!load) {
       this.setState({
         load: true,
       });
     }
-
     //Realiza la peticion de examenes a la API
-    console.log("[examCustomer] Descargando examen del paciente");
+    console.log("[examCustomer] Descargando examen del paciente", id);
     fetch(url, {
       method: "GET",
       headers: {
@@ -321,13 +303,12 @@ export default class examCustomer extends Component {
           this.setState({
             load: false,
           });
-          console.log("[examCustomer]", res);
         }
         return res.json();
       })
       .then((data) => {
         if (data.data) {
-          console.log("[examCustomer] Examen descargado con exito");
+          console.log("[examCustomer] Examen descargado con exito", data.data);
           this.setState({
             exam: data.data,
             load: false,

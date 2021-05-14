@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Easycontact from "./easyContact";
 import moment from "moment";
 
-export default class searchContact extends Component {
+export default class searchContactLine extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -74,7 +74,7 @@ export default class searchContact extends Component {
             : 0,
           domain = /.*@domain(.com)?/gim;
         console.log(
-          "[Contact][search] Almacenando datos de contacto en local storage"
+          "[searchContactCard] Almacenando datos de contacto en local storage"
         );
         localStorage.setItem(
           "OrusContactInUse",
@@ -86,15 +86,7 @@ export default class searchContact extends Component {
 
         return (
           <div className="card card-danger card-outline">
-            <div className="card-body box-profile">
-              <div className="text-center">
-                <img
-                  className="profile-user-img img-fluid img-circle"
-                  src="/img/avatars/no-avatar.png"
-                  alt="User Avatar"
-                />
-              </div>
-
+            <div className="card-body">
               <h3 className="profile-username text-center text-capitalize">
                 {nombre}
               </h3>

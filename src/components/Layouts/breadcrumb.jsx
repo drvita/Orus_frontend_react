@@ -16,17 +16,31 @@ export default class Breadcrumb extends Component {
   }
 
   render() {
-    const { title } = this.props;
-    const { date } = this.state;
+    const { title, host } = this.props,
+      { date } = this.state;
     return (
       <div className="content-header">
         <div className="container-fluid">
           <div className="row">
-            <div className="col-6">
-              <h1 className="m-0 text-dark text-capitalize">{title}</h1>
+            <div className="col">
+              <h1 className="m-0 text-dark text-capitalize">
+                <i className="fas fa-file mr-1"></i> {title}
+              </h1>
+            </div>
+            <div className="col text-center">
+              <span
+                className="badge badge-secondary ml-2"
+                alt="conectado a"
+                title="conectado a"
+              >
+                <i className="fas fa-server mr-1"></i>
+                {host}
+              </span>
             </div>
             <div className="col">
-              <h6 className="text-dark text-right">{date}</h6>
+              <h6 className="text-muted text-right">
+                <i className="fas fa-calendar mr-1"></i> {date}
+              </h6>
             </div>
           </div>
         </div>

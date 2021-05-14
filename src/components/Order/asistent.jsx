@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import SearchContact from "../Contacts/searchContactCard";
+import SearchContact from "../Contacts/searchContactLine";
 import ListExam from "../Exam/listExamsCustomer";
 import Exam from "../Exam/examCustomer";
 import Items from "./itemsOrder";
@@ -10,6 +9,7 @@ export default class Asistent extends Component {
     super(props);
     //Recogemos valores de registro previo
     let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     console.log(
       "[OrderAsitent] Contacto en uso: ",
       contact && contact.id ? "Si" : "No"
@@ -29,9 +29,11 @@ export default class Asistent extends Component {
       codes: {},
       edad: 0,
       exam_id: contact && contact.exam_id ? contact.exam_id : 0,
+      exam: {},
+      examEdit: false,
       load: true,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -44,77 +46,108 @@ export default class Asistent extends Component {
   }
 
   render() {
-    const { contact_id, items, edad, exam_id, codes } = this.state;
+    const {
+      contact_id,
+      items,
+      edad,
+      exam_id,
+      exam,
+      examEdit,
+      codes,
+    } = this.state;
 
     return (
-      <React.Fragment>
-        <div className="callout callout-warning">
-          <div className="row">
-            <div className="col-10">
-              <h5>
-                <i className="fas fa-clipboard-list mr-2"></i>Nuevo pedido
-              </h5>
-            </div>
-            <div className="col">
-              <div className="mailbox-controls text-right">
-                <div className="btn-group">
-                  <Link
-                    to="/pedidos"
-                    className="btn btn-default btn-sm"
-                    onClick={(e) => this.changePage("/pedidos")}
-                  >
-                    <i className="fas fa-reply mr-2"></i> Cancelar
-                  </Link>
-                  <button
-                    className={
-                      contact_id && exam_id && items.length
-                        ? "btn btn-warning btn-sm"
-                        : "btn btn-warning btn-sm disabled"
-                    }
-                    onClick={this.handleSave}
-                    disabled={
-                      contact_id && exam_id && items.length ? false : true
-                    }
-                  >
-                    <i className="fas fa-save mr-2"></i> Guardar
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="card card-warning card-outline">
+        <div className="card-header">
+          <h3 className="card-title">
+            <i className="fas fa-clipboard-list mr-1"></i>Nuevo pedido
+          </h3>
         </div>
-        <div className="row justify-content-md-center">
-          <div className="col-auto">
+        <div className="card-body">
+          <div className="form-group">
             <SearchContact
               contact={contact_id}
               edad={parseInt(this.state.edad)}
               getIdContact={this.getIdContact}
               changePage={this.changePage}
+              status={exam_id ? true : false}
             />
           </div>
           {contact_id ? (
             <React.Fragment>
               {exam_id ? (
-                codes.od && codes.oi ? (
-                  <div className="col-lg col-md-auto col-sm-auto">
-                    <Items
-                      items={this.state.items}
-                      session={this.state.session}
-                      codes={codes}
-                      ChangeInput={this.handleChangeInput}
-                    />
+                <React.Fragment>
+                  <div className="form-group">
+                    <div className="input-group">
+                      <div className="input-group-prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-notes-medical mr-2"></i> Examen:
+                        </span>
+                      </div>
+                      <input
+                        type="text"
+                        className="form-control text-capitalize"
+                        value={exam_id}
+                        readOnly={true}
+                      />
+                      <div className="float-right">
+                        <div className="btn-group btn-sm">
+                          <button
+                            type="button"
+                            className="btn btn-dark btn-sm"
+                            onClick={(e) =>
+                              this.handleChangeInput("exam_id", 0)
+                            }
+                          >
+                            <i className="fas fa-exchange-alt mr-1"></i>
+                            <b>Cambiar</b>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-warning btn-sm"
+                            onClick={(e) =>
+                              this.handleChangeInput("examEdit", true)
+                            }
+                            disabled={examEdit}
+                          >
+                            <i className="fas fa-edit mr-1"></i>
+                            <b>Editar</b>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  <div className="col-lg col-md-auto col-sm-auto">
-                    <Exam
-                      id={exam_id}
-                      paciente={contact_id}
-                      ChangeInput={this.handleChangeInput}
-                    />
-                  </div>
-                )
+                  {examEdit ? (
+                    <div className="form-group">
+                      <Exam
+                        id={exam_id}
+                        examEdit={true}
+                        ChangeInput={this.handleChangeInput}
+                      />
+                    </div>
+                  ) : (
+                    <React.Fragment>
+                      {exam.observaciones ? (
+                        <div className="form-group">
+                          <div className="callout callout-info">
+                            <h5>
+                              <i className="fas fa-info"></i> Observaciones:
+                            </h5>
+                            {exam.observaciones}
+                          </div>
+                        </div>
+                      ) : null}
+                      <Items
+                        items={this.state.items}
+                        session={this.state.session}
+                        codes={codes}
+                        ChangeInput={this.handleChangeInput}
+                      />
+                    </React.Fragment>
+                  )}
+                </React.Fragment>
               ) : (
-                <div className="col-lg col-md-auto col-sm-auto">
+                <div className="form-group">
                   <ListExam
                     paciente={contact_id}
                     edad={edad}
@@ -125,16 +158,48 @@ export default class Asistent extends Component {
             </React.Fragment>
           ) : null}
         </div>
-      </React.Fragment>
+        <div className="card-footer">
+          <div className="mailbox-controls text-right">
+            <div className="btn-group">
+              <a
+                href="#close"
+                className="btn btn-default btn-sm"
+                onClick={(e) => {
+                  const { handleChangeInput } = this.props;
+                  handleChangeInput("panel", 0);
+                }}
+              >
+                <i className="fas fa-reply mr-2"></i> Cancelar
+              </a>
+              <button
+                className={
+                  contact_id && exam_id && items.length
+                    ? "btn btn-warning btn-sm"
+                    : "btn btn-warning btn-sm disabled"
+                }
+                onClick={this.handleSave}
+                disabled={contact_id && exam_id && items.length ? false : true}
+              >
+                <i className="fas fa-save mr-2"></i> Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 
   handleChangeInput = (key, value) => {
-    if (key === "exam_id") {
-      this.setState({
-        exam_id: value,
-        codes: {},
-      });
+    if (key === "exam") {
+      if (value.category_id) {
+        this.getCategories(value);
+      } else {
+        this.setState({
+          exam_id: value.id,
+          exam: value,
+          codes: {},
+        });
+      }
     }
     if (key === "codes") {
       this.setState({
@@ -145,6 +210,91 @@ export default class Asistent extends Component {
         [key]: value,
       });
     }
+  };
+  getCategories = (exam) => {
+    const { host, token } = this.state;
+
+    console.log("[Asistent order] Descargando categoria para recomendacion");
+    fetch("http://" + host + "/api/categories/" + exam.category_id, {
+      method: "GET",
+      signal: this.signal,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response.json();
+      })
+      .then((cat) => {
+        if (cat.data) {
+          console.log("[Asistent order] Recomendacion descargada");
+          const {
+              category_id,
+              esferaod,
+              esferaoi,
+              cilindrod,
+              cilindroi,
+              id,
+            } = exam,
+            category = cat.data;
+          let code =
+              category_id && category.id ? this.handleCodeName(category) : "XX",
+            gradod = "+000000",
+            gradoi = "+000000";
+
+          if (cilindrod || esferaod) {
+            gradod = esferaod > 0 ? "+" : "";
+            gradod +=
+              esferaod.toFixed(2).toString().replace(".", "") +
+              cilindrod.toFixed(2).toString().replace("-", "").replace(".", "");
+          }
+          if (cilindroi || esferaoi) {
+            gradoi = esferaoi > 0 ? "+" : "";
+            gradoi +=
+              esferaoi.toFixed(2).toString().replace(".", "") +
+              cilindroi.toFixed(2).toString().replace("-", "").replace(".", "");
+          }
+          console.log("[DEBUG] fetch category ", code, gradod, gradoi);
+          this.setState({
+            exam_id: id,
+            exam,
+            codes: {
+              code,
+              od: gradod,
+              oi: gradoi,
+            },
+          });
+        }
+      })
+      .catch((e) => {
+        console.error("Orus: " + e);
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
+      });
+  };
+  handleCodeName = (category) => {
+    let code = "";
+    if (category.depende_de) {
+      if (category.depende_de.depende_de) {
+        code = category.depende_de.depende_de.meta.code;
+        code += category.depende_de.meta.code;
+        code += category.meta.code;
+      } else {
+        code = category.depende_de.meta.code;
+        code += category.meta.code;
+      }
+    } else {
+      code = category.meta.code;
+    }
+    return code;
   };
   getIdContact = (contact_id, edad) => {
     this.setState({
@@ -244,13 +394,8 @@ export default class Asistent extends Component {
             showConfirmButton: false,
             timer: 1500,
           }).then((res) => {
-            /*
-            this.setState({
-              id: data.data.id,
-              nota: data.data.nota.id,
-            });
-            */
-            this.props.history.push(`/pedidos/registro/${data.data.id}`);
+            const { handleChangeInput } = this.props;
+            handleChangeInput("panel", 0);
           });
         } else {
           window.Swal.fire("Error", "al almacenar el pedido", "error");

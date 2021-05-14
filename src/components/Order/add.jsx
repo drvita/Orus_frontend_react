@@ -14,7 +14,8 @@ export default class OrderAdd extends Component {
   constructor(props) {
     super(props);
     //Recogemos valores de registro previo
-    let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    const contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     console.log(
       "[Order] Contacto en uso: ",
       contact && contact.id ? "Si" : "No"
@@ -44,8 +45,8 @@ export default class OrderAdd extends Component {
       date: Date.now(),
       load: true,
       nota: 0,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -54,7 +55,7 @@ export default class OrderAdd extends Component {
     this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    const id = this.props.match.params.id,
+    const id = 0, //this.props.match.params.id,
       { exam_id, exam } = this.state;
 
     if (id) {

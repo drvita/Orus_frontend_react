@@ -1,422 +1,235 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import moment from "moment";
-import "moment/locale/es";
-import Header from "../Layouts/headerTable";
-import Filter from "./index_filter";
-import Pagination from "../Layouts/pagination";
-import Actions from "../Layouts/actionsTable";
+import Inbox from "./inbox";
+import Asistent from "./asistent";
+import Dashboard from "./addOrder";
+import Chat from "../Layouts/messenger";
+import Ws from "../Layouts/ws";
 
-export default class Contacts extends Component {
+export default class Index extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    let sdd = JSON.parse(localStorage.getItem("OrusOrder"));
+    const sdd = JSON.parse(localStorage.getItem("OrusOrderDashboard"));
     this.state = {
-      pedidos: {
-        data: [],
-        meta: {},
-      },
-      load: true,
-      page: sdd ? sdd.page : 1,
-      orderby: sdd ? sdd.orderby : "created_at",
-      order: sdd ? sdd.order : "desc",
-      search: sdd ? sdd.search : "",
+      orderId: sdd ? sdd.orderId : 0,
+      panel: sdd ? sdd.panel : 0,
       status: sdd ? sdd.status : "",
-      host: props.data.host,
-      token: props.data.token,
+      update: false,
+      editId: [],
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
-  }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
+    //Abrimos conexion con socket
+    this.ws = new Ws({
+      actions: [
+        {
+          si: "update",
+          so: (res) => {
+            const { editId, panel, orderId } = this.state,
+              array_editId = editId,
+              varorderId = !panel ? 0 : orderId;
+            let index = array_editId.indexOf(res.orderId);
+
+            if (res.panel === panel) {
+              if (index > -1) {
+                array_editId.splice(index, 1);
+              }
+              this.setState({
+                update: true,
+                editId: array_editId,
+                orderId: varorderId,
+              });
+            } else if (editId.length) {
+              if (index > -1) {
+                array_editId.splice(index, 1);
+              }
+              this.setState({
+                update: true,
+                editId: array_editId,
+                orderId: varorderId,
+              });
+            } else {
+              console.log("[DEBUG] WS no conecto con alguna accion");
+            }
+          },
+        },
+        {
+          si: "edit",
+          so: (res) => {
+            let array_editId = this.state.editId;
+            if (this.state.editId.indexOf(res.orderId) < 0) {
+              array_editId.push(res.orderId);
+              this.setState({
+                editId: array_editId,
+              });
+            }
+          },
+        },
+      ],
+      canal: "order",
+    });
   }
   componentDidMount() {
-    this.getPedidos();
-    console.log("[Orders] Eliminando datos de contacto en uso");
-    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-    localStorage.setItem(
-      "OrusOrder",
-      JSON.stringify({
-        page: this.state.page,
-        orderby: this.state.orderby,
-        order: this.state.order,
-        search: this.state.search,
-        status: this.state.status,
-      })
-    );
+    localStorage.setItem("OrusOrderDashboard", JSON.stringify(this.state));
   }
   componentDidUpdate(props, state) {
-    if (state.load === false && this.state.load === true) {
-      console.log("Recargando pedidos");
-      this.getPedidos();
-      localStorage.setItem(
-        "OrusOrder",
-        JSON.stringify({
-          page: this.state.page,
-          orderby: this.state.orderby,
-          order: this.state.order,
-          search: this.state.search,
-          status: this.state.status,
-        })
-      );
+    localStorage.setItem("OrusOrderDashboard", JSON.stringify(this.state));
+    if (!this.state.panel && state.panel !== this.state.panel) {
+      //Enviamos actualizacion al socket
+      this.ws.onMessage({
+        status: this.state.status,
+        orderId: this.state.orderId,
+        panel: this.state.panel,
+        action: "update",
+      });
+    } else if (this.state.panel === 3 && state.panel !== this.state.panel) {
+      //Enviamos actualizacion al socket
+      this.ws.onMessage({
+        status: this.state.status,
+        orderId: this.state.orderId,
+        panel: this.state.panel,
+        action: "edit",
+      });
     }
   }
 
   render() {
-    let { pedidos, load } = this.state,
-      dataHeaders = [
-        { name: "Folio", type: "id", filter: true },
-        { name: "Caja" },
-        { name: "Paciente", type: "contact_id", filter: true },
-        { name: "Detalles" },
-        { name: "Estado" },
-        { name: "Nota" },
-        { name: "Actualizado", type: "updated_at", filter: true },
-        { name: "Registrado", type: "created_at", filter: true },
-      ];
+    const { status, panel, orderId, update, editId } = this.state;
+    let showpanel = null;
+
+    switch (panel) {
+      case 1:
+        showpanel = <div className="text-center">Cargando examenes</div>;
+        break;
+      case 2:
+        showpanel = <Asistent handleChangeInput={this.handleChangeInput} />;
+        break;
+      case 3:
+        showpanel = (
+          <Dashboard
+            handleChangeInput={this.handleChangeInput}
+            orderId={orderId}
+          />
+        );
+        break;
+      default:
+        showpanel = (
+          <Inbox
+            status={status}
+            handleChangeInput={this.handleChangeInput}
+            update={update}
+            editId={editId}
+          />
+        );
+    }
 
     return (
-      <div className="card card-warning card-outline">
-        <div className="card-header">
-          <h3 className="card-title text-warning">
-            <i className="fas fa-clipboard-list mr-1"></i>
-            Listado de pedidos
-          </h3>
-          <div className="card-tools">
-            <div className="btn-group">
-              <Link
-                to="/pedidos/asistent"
-                className="btn btn-outline-dark"
-                onClick={(e) => {
-                  this.changePage("/pedidos/asistent");
-                }}
-              >
-                <i className="fas fa-hands-helping"></i>
-              </Link>
-              <Link
-                to="/pedidos/registro"
-                className="btn btn-outline-dark"
-                onClick={(e) => {
-                  this.changePage("/pedidos/registro");
-                }}
-              >
-                <i className="fas fa-plus"></i>
-              </Link>
-            </div>
-            <Filter
-              search={this.state.search}
-              status={this.state.status}
-              changeFilters={this.onchangeSearch}
-              handleChangePage={this.handleChangePage}
-            />
-            <Pagination
-              meta={pedidos.meta}
-              handleChangePage={this.handleChangePage}
-            />
-          </div>
-        </div>
-        <div className="card-body table-responsive p-0">
-          <table className="table table-sm table-bordered table-hover">
-            <Header
-              orderby={this.state.orderby}
-              order={this.state.order}
-              data={dataHeaders}
-              actions={true}
-              handleOrder={this.handleOrder}
-            />
-            <tbody>
-              {load ? (
-                <tr>
-                  <td colSpan="10" className="text-center">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : Object.keys(pedidos.data).length ? (
-                pedidos.data.map((pedido) => {
-                  return (
-                    <tr key={pedido.id}>
-                      <td>
-                        <span className="badge badge-warning text-capitalize">
-                          {pedido.id}
-                        </span>
-                      </td>
-                      <td className="text-uppercase">
-                        {pedido.estado === 2 ? (
-                          <span>
-                            {pedido.caja ? pedido.caja : "Sin asignar"}
-                          </span>
-                        ) : (
-                          "--"
-                        )}
-                      </td>
-                      <td>
-                        <Link to={"/pedidos/registro/" + pedido.id}>
-                          <span className="badge badge-danger text-capitalize p-1">
-                            {pedido.paciente.nombre}
-                            <i className="fas fa-pencil-alt ml-1"></i>
-                          </span>
-                        </Link>
-                      </td>
-                      <td className="text-uppercase">
-                        {pedido.estado === 1 ? (
-                          <div>
-                            <span className="text-danger mr-1">
-                              {pedido.laboratorio
-                                ? pedido.laboratorio.nombre
-                                : "Sin asignar"}
-                            </span>
-                            {pedido.laboratorio ? "/ " + pedido.folio_lab : ""}
-                          </div>
-                        ) : pedido.estado === 2 ? (
-                          <small>
-                            {pedido.observaciones
-                              ? pedido.observaciones
-                              : "sin observaciones"}
-                          </small>
-                        ) : !pedido.estado ? (
-                          <small>
-                            {pedido.examen
-                              ? pedido.examen.estado === "Terminado"
-                                ? "Examen completado"
-                                : "Examen no realizado"
-                              : "Examen no asignado"}
-                          </small>
-                        ) : (
-                          "--"
-                        )}
-                      </td>
-                      <td>{this.setStatusString(pedido.estado)}</td>
-                      <td className="text-right">
-                        {pedido.nota ? (
-                          <Link to={"/notas/registro/" + pedido.nota.id}>
-                            <span className="badge badge-success">
-                              {pedido.nota.id}
-                            </span>
-                          </Link>
-                        ) : (
-                          "--"
-                        )}
-                      </td>
-                      <td>{moment(pedido.updated_at).fromNow()}</td>
-                      <td>{moment(pedido.created_at).format("ll")}</td>
-                      <Actions
-                        id={pedido.id}
-                        item={pedido.paciente.nombre}
-                        delete={
-                          !pedido.estado && !pedido.nota
-                            ? this.handleDelete
-                            : null
-                        }
-                        edit={"/pedidos/registro/"}
-                      />
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <th colSpan="10" className="text-center">
-                    No hay datos para mostrar
-                  </th>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="card-footer text-right">
-          <Link
-            to="/pedidos/registro"
-            className="btn btn-outline-warning"
-            onClick={(e) => {
-              this.changePage("/pedidos/registro");
-            }}
+      <div className="row">
+        <div className="col-lg-3 col-md-4 col-sm-12">
+          <a
+            href="#new"
+            className="btn btn-primary btn-block"
+            onClick={(e) => this.handleShowPanel(e, 2)}
           >
-            <i className="fas fa-plus mr-2"></i>
-            <strong>Nuevo pedido</strong>
-          </Link>
+            <i className="mr-2 fas fa-hands-helping"></i>
+            Asistente de pedido
+          </a>
+          <a
+            href="#new"
+            className="mb-3 btn btn-outline-primary btn-block"
+            onClick={(e) => this.handleShowPanel(e, 3)}
+          >
+            <i className="mr-2 fas fa-plus"></i>
+            Pedido nuevo
+          </a>
+
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title">
+                <i className="mr-2 fas fa-filter"></i>Filtrado
+              </h5>
+            </div>
+            <div className="p-0 card-body">
+              <ul className="nav nav-pills flex-column">
+                <li className={panel === 1 ? "nav-item active" : "nav-item"}>
+                  <a
+                    href="#ex"
+                    className="nav-link text-info"
+                    onClick={(e) => this.handleShowPanel(e, 1)}
+                  >
+                    <i className="mr-2 fas fa-notes-medical"></i> Examenes sin
+                    pedido
+                  </a>
+                </li>
+                <li className={!panel ? "nav-item" : "nav-item active"}>
+                  <a
+                    href="#pe"
+                    className="nav-link text-warning"
+                    onClick={(e) => this.handleShowPanel(e, 0)}
+                  >
+                    <i className="mr-2 fas fa-clipboard-list"></i> Pedidos
+                  </a>
+                </li>
+                {!panel ? (
+                  <li className="p-2 nav-item">
+                    <div className="form-group row">
+                      <label className="col-sm-4 col-form-label">
+                        <i className="mr-2 fas fa-info-circle"></i>
+                        Estado
+                      </label>
+                      <div className="col-sm-8">
+                        <select
+                          className="form-control "
+                          name="status"
+                          value={status}
+                          onChange={this.handelChangeStatus}
+                        >
+                          <option value="">Todos</option>
+                          <option value="0">En proceso</option>
+                          <option value="1">Laboratorio</option>
+                          <option value="2">Bicelación</option>
+                          <option value="3">Terminado</option>
+                          <option value="4">Entregado</option>
+                          <option value="5">Garantia</option>
+                        </select>
+                      </div>
+                    </div>
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          </div>
+
+          {panel === 3 ? <Chat table="orders" idRow={orderId} /> : null}
         </div>
+        <div className="col-lg-9 col-md-8 col-sm-12">{showpanel}</div>
       </div>
     );
   }
 
-  setStatusString = (status) => {
-    switch (status) {
-      case 0:
-        return <span className="text-warning text-uppercase">En proceso</span>;
-      case 1:
-        return <span className="text-info text-uppercase">En laboratorio</span>;
-      case 2:
-        return <span className="text-primary text-uppercase">Bicelación</span>;
-      case 3:
-        return <span className="text-success text-uppercase">Entregado</span>;
-      case 4:
-        return <span className="text-info text-uppercase">Garantia</span>;
-      default:
-        return <span className="text-secondary text-uppercase">Baja</span>;
+  handleChangeInput = (key, value) => {
+    if (key === "orderId") {
+      this.setState({
+        orderId: value,
+        panel: 3,
+      });
+    } else {
+      this.setState({
+        [key]: value,
+      });
     }
   };
-  handleFilter = () => {
+  handleShowPanel = (e, s) => {
+    e.preventDefault();
     this.setState({
-      load: true,
-      page: 1,
+      panel: s,
     });
   };
-  onchangeSearch = (key, value) => {
+  handelChangeStatus = (e) => {
+    const { value } = e.target;
     this.setState({
-      [key]: value,
-    });
-  };
-  handleOrder = (item) => {
-    this.setState({
-      orderby: item,
-      order: this.state.order === "desc" ? "asc" : "desc",
-      load: true,
-    });
-  };
-  handleChangePage = (id) => {
-    this.setState({
-      page: id,
-      load: true,
+      status: parseInt(value) >= 0 ? parseInt(value) : "",
     });
   };
   changePage = (id) => {
     this.props.page(id);
   };
-  handleDelete = (id, name) => {
-    window.Swal.fire({
-      title: "Eliminar",
-      text: "¿Esta seguro de eliminar el pedido de " + name.toUpperCase() + "?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      confirmButtonText: "Eliminar",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          let { host, token } = this.state;
-
-          //Inicio de proceso de eliminción por API
-          console.log("Solicitud de eliminación de order por API");
-          return fetch("http://" + host + "/api/orders/" + id, {
-            method: "DELETE",
-            signal: this.signal,
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then(async (response) => {
-              let back = {};
-              if (response.status !== 204) back = await response.json();
-              if (!response.ok) {
-                throw new Error(back.message);
-              }
-              return back;
-            })
-            .catch((e) => {
-              console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
-        }
-      },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        console.log("Pedido eliminado");
-        window.Swal.fire({
-          icon: "success",
-          title: "Pedido eliminado con exito",
-          showConfirmButton: false,
-          timer: 1500,
-        }).then((res) => this.getPedidos());
-      } else if (result && !result.dismiss) {
-        console.log("Orus res: ", result);
-        window.Swal.fire(
-          "Error",
-          "Se perdio la conexion con el servidor",
-          "error"
-        );
-      }
-    });
-  };
-  getPedidos() {
-    //Variables en localStorage
-    let {
-        search,
-        status,
-        page,
-        order,
-        orderby,
-        host,
-        token,
-        load,
-      } = this.state,
-      url = "http://" + host + "/api/orders",
-      ordenar = `&orderby=${orderby}&order=${order}`,
-      buscar = search ? `&search=${search}` : "",
-      estado = status ? "&status=" + status : "",
-      pagina = page > 0 ? "?page=" + page : "?page=1";
-
-    //Mandamos señal de carga si no lo he hecho
-    if (!load) {
-      this.setState({
-        load: true,
-      });
-    }
-
-    //Realiza la peticion de los contactos
-    console.log("Descargando ventas de API");
-    fetch(url + pagina + ordenar + buscar + estado, {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.data) {
-          console.log("[Order] Almacenando pedidos en state");
-          this.setState({
-            pedidos: data,
-            load: false,
-          });
-        } else {
-          console.error("[Order] Error en los datos de pedido \n", data);
-          window.Swal.fire(
-            "Error",
-            "al almacenar los datos de pedido",
-            "error"
-          );
-          this.setState({
-            load: false,
-          });
-        }
-      })
-      .catch((e) => {
-        console.error(
-          "[Order] Error con el servidor al descargar pedidos \n",
-          e
-        );
-        window.Swal.fire("Servidor", "Verifique la conexion", "error");
-        this.setState({
-          load: false,
-        });
-      });
-  }
 }

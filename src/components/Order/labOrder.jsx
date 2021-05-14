@@ -13,7 +13,7 @@ export default class labOrder extends Component {
 
   render() {
     return (
-      <div className="row">
+      <div className="row m-2">
         <div className="col">
           <div className="border border-warning rounded p-2">
             <label>Laboratorio</label>
@@ -49,7 +49,7 @@ export default class labOrder extends Component {
               }
               disabled={this.props.status > 1 ? true : false}
               name="npedidolab"
-              value={this.props.npedidolab}
+              value={this.props.npedidolab ? this.props.npedidolab : ""}
               onChange={this.changeInput}
             />
           </div>

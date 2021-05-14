@@ -2,19 +2,18 @@ import React, { Component } from "react";
 
 export default class bicelacionOrder extends Component {
   render() {
+    const { status, ncaja, observaciones } = this.props;
     return (
-      <div className="row">
+      <div className="row m-2">
         <div className="col">
           <div className="border border-warning rounded p-2">
             <label htmlFor="lab">Caja</label>
             <input
               type="text"
-              className={
-                this.props.status > 2 ? "form-control disabled" : "form-control"
-              }
-              disabled={this.props.status > 2 ? true : false}
+              className={status > 2 ? "form-control disabled" : "form-control"}
+              disabled={status > 2 ? true : false}
               name="ncaja"
-              value={this.props.ncaja ? this.props.ncaja : ""}
+              value={ncaja ? ncaja : ""}
               onChange={this.changeInput}
             />
           </div>
@@ -24,11 +23,9 @@ export default class bicelacionOrder extends Component {
             <label>Observaciones</label>
             <textarea
               name="observaciones"
-              className={
-                this.props.status > 2 ? "form-control disabled" : "form-control"
-              }
-              disabled={this.props.status > 2 ? true : false}
-              value={this.props.observaciones ? this.props.observaciones : ""}
+              className={status > 2 ? "form-control disabled" : "form-control"}
+              disabled={status > 2 ? true : false}
+              value={observaciones ? observaciones : ""}
               onChange={this.changeInput}
             ></textarea>
           </div>
@@ -40,7 +37,7 @@ export default class bicelacionOrder extends Component {
   changeInput = (e) => {
     e.preventDefault();
     let { name, value } = e.target;
-    if (name === "caja") value = value * 1;
+    if (name === "caja") value = parseInt(value);
     this.props.ChangeInput(name, value);
   };
 }

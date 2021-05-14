@@ -5,20 +5,21 @@ import "moment/locale/es";
 export default class messenger extends Component {
   constructor(props) {
     super(props);
-
+    //Variables en localStorage
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       messages: [],
       message: "",
       load: true,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
+      user: ls.idUser,
     };
   }
   componentDidMount() {
     this.getMessengers();
   }
   componentDidUpdate(props, state) {
-    //window.$("#boxchat").scrollTop(window.$("#boxchat").prop("scrollHeight"));
     if (props.pagado !== this.props.pagado) {
       console.log("Recargando chat");
       this.getMessengers();
@@ -26,9 +27,8 @@ export default class messenger extends Component {
   }
 
   render() {
-    const { data } = this.props,
-      { messages, load, message } = this.state,
-      user = data.idUser;
+    const { messages, load, message, user } = this.state,
+      { idRow } = this.props;
 
     return (
       <div className="card direct-chat direct-chat-primary d-print-none">
@@ -36,6 +36,9 @@ export default class messenger extends Component {
           <h3 className="card-title">
             <i className="fas fa-comments mr-1"></i>
             Chat
+            <span className="badge badge-pill badge-secondary ml-1">
+              {idRow}
+            </span>
           </h3>
         </div>
 

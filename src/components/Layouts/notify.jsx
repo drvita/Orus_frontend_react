@@ -5,20 +5,24 @@ import { Link } from "react-router-dom";
 export default class Notify extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       notifications: [],
       rol: -1,
       count: 0,
+      host: ls.host ? ls.host : window.location.hostname,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
   }
   componentWillUnmount() {
     this.controller.abort(); // Cancelando cualquier carga de fetch
+    clearTimeout(this.timeOut);
   }
   componentDidMount() {
     this.verifyUser();
-    setInterval(() => {
+    this.timeOut = setTimeout(() => {
       console.log("[ORUS] Cron de verificacion de usuario");
       this.verifyUser();
     }, 60000);
@@ -89,7 +93,7 @@ export default class Notify extends Component {
                 }}
               >
                 <i className={"fas " + icon + " mr-1"}></i> {title}
-                <span className="float-right text-muted text-sm">{time}</span>
+                <span className="float-right text-sm text-muted">{time}</span>
               </Link>
             );
           })}
@@ -124,7 +128,7 @@ export default class Notify extends Component {
 
   handleClickRead = (e, id, notify) => {
     //Constantes
-    const { host, token } = this.props.data;
+    const { host, token } = this.state;
     if (id === -1) e.preventDefault();
 
     console.log("[ORUS] Marcando notificaciones como leidas");
@@ -162,75 +166,69 @@ export default class Notify extends Component {
   };
   verifyUser = () => {
     //Constantes de logueo
-    const { data, logOut } = this.props,
-      { host, isLogged, token } = data,
-      { count } = this.state;
+    const { logOut } = this.props,
+      { host, token, count } = this.state;
 
     //Solo realizamos la verificacion si hay sesion
-    if (isLogged && host && token) {
-      console.log("[ORUS] Verificando usuario");
-      //Realizando verificación de usuarios
-      if (token !== "" && host !== "") {
-        fetch("http://" + host + "/api/user", {
-          method: "GET",
-          signal: this.signal,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
+    console.log("[ORUS] Verificando usuario");
+    //Realizando verificación de usuarios
+    if (token !== "" && host !== "") {
+      fetch("http://" + host + "/api/user", {
+        method: "GET",
+        signal: this.signal,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      })
+        .then((res) => {
+          if (!res.ok && token !== "") {
+            console.error("[ORUS] Usuario invalido:", res);
+          }
+          return res.json();
         })
-          .then((res) => {
-            if (!res.ok && token !== "") {
-              console.error("[ORUS] Usuario invalido:", res);
-            }
-            return res.json();
-          })
-          .then((data) => {
-            if (data.exception || data.message) {
-              logOut();
-            } else {
-              console.log("[ORUS] Usuario validado: ", data.data.username);
-              console.log(
-                "[ORUS] Buscando notificaciones nuevas",
-                data.data.unreadNotifications.length
-              );
-              if (
-                data.data.unreadNotifications.length &&
-                data.data.unreadNotifications.length !== count
-              ) {
-                if ("serviceWorker" in navigator && "PushManager" in window) {
-                  console.log("[ORUS] Verificando permisos de Push");
-                  if (Notification.permission !== "denied") {
-                    const title = "Orus bot",
-                      options = {
-                        body: "Hay notificaciones nuevas",
-                      };
-                    navigator.serviceWorker
-                      .getRegistration()
-                      .then(function (reg) {
-                        reg.showNotification(title, options);
-                      });
-                  }
+        .then((data) => {
+          if (data.exception || data.message) {
+            logOut();
+          } else {
+            console.log("[ORUS] Usuario validado: ", data.data.username);
+            console.log(
+              "[ORUS] Buscando notificaciones nuevas",
+              data.data.unreadNotifications.length
+            );
+            if (
+              data.data.unreadNotifications.length &&
+              data.data.unreadNotifications.length !== count
+            ) {
+              if ("serviceWorker" in navigator && "PushManager" in window) {
+                console.log("[ORUS] Verificando permisos de Push");
+                if (Notification.permission !== "denied") {
+                  const title = "Orus bot",
+                    options = {
+                      body: "Hay notificaciones nuevas",
+                    };
+                  navigator.serviceWorker
+                    .getRegistration()
+                    .then(function (reg) {
+                      reg.showNotification(title, options);
+                    });
                 }
               }
-              this.setState({
-                notifications: data.data ? data.data.unreadNotifications : [],
-                rol: data.data.rol,
-                count: data.data.unreadNotifications.length,
-              });
             }
-          })
-          .catch((error) => {
-            console.error(
-              "[ORUS] Verificacion de usuario en Notify, error \n",
-              error
-            );
-          });
-      }
-    } else {
-      console.error("[ORUS] La sesion ya no esta activa o se perdio el host");
-      logOut();
+            this.setState({
+              notifications: data.data ? data.data.unreadNotifications : [],
+              rol: data.data.rol,
+              count: data.data.unreadNotifications.length,
+            });
+          }
+        })
+        .catch((error) => {
+          console.error(
+            "[ORUS] Verificacion de usuario en Notify, error \n",
+            error
+          );
+        });
     }
   };
 }

@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { loggin } from "../../redux/actions/login";
 
-class Menu extends Component {
+class MenuComponent extends Component {
   render() {
     const { companyName, user, active } = this.props;
     let avatar = "/img/avatars/avatar5.png";
@@ -29,7 +31,7 @@ class Menu extends Component {
           </span>
         </Link>
         <div className="sidebar">
-          <div className="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div className="pb-3 mt-3 mb-3 user-panel d-flex">
             <div className="image">
               <img
                 src={avatar}
@@ -286,6 +288,7 @@ class Menu extends Component {
 
   handleLogOut = (e) => {
     e.preventDefault();
+    const { loggin: _LOGOUT } = this.props;
     window.Swal.fire({
       title: "Session",
       text: "¿Esta seguro de cerrar la sesion?",
@@ -296,11 +299,21 @@ class Menu extends Component {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
-        this.props.logOut();
+        _LOGOUT({});
         this.changePage("/");
       }
     });
   };
 }
+const mapStateToProps = (state) => {
+    return {
+      isLogged: state.loggin_state.isLogged,
+      company: state.default_state.company,
+      host: state.default_state.host,
+    };
+  },
+  mapDispatchToProps = {
+    loggin,
+  };
 
-export default Menu;
+export default connect(mapStateToProps, mapDispatchToProps)(MenuComponent);

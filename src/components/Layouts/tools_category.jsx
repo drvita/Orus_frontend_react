@@ -4,6 +4,7 @@ import Pagination from "./pagination";
 export default class ToolsCategory extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       category_list: [],
       category_select: [],
@@ -17,8 +18,8 @@ export default class ToolsCategory extends Component {
       category_id_3: 0,
       newItem: 0,
       page: 1,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
       load: true,
     };
     this.controller = new AbortController();

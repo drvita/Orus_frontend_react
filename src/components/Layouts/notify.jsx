@@ -1,38 +1,37 @@
 import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { getNotifyUser, readNotifyUser } from "../../redux/user/actions";
 
-export default class Notify extends Component {
+class NotifyComponent extends Component {
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
-      notifications: [],
-      rol: -1,
-      count: 0,
-      host: ls.host ? ls.host : window.location.hostname,
-      token: ls.token,
+      rol: ls.rol,
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
+    this.timerNotify = null;
   }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
-    clearTimeout(this.timeOut);
-  }
+
   componentDidMount() {
-    this.verifyUser();
-    this.timeOut = setTimeout(() => {
-      console.log("[ORUS] Cron de verificacion de usuario");
-      this.verifyUser();
-    }, 60000);
+    const { isLogged } = this.props;
+
+    if (isLogged) {
+      this.props.getNotifyUser();
+      this.timerNotify = setInterval(() => {
+        this.props.getNotifyUser();
+      }, 60000);
+    }
   }
-  componentDidUpdate() {
-    localStorage.setItem("OrusNotify", JSON.stringify(this.state));
+
+  componentWillUnmount() {
+    if (this.timerNotify) clearInterval(this.timerNotify);
   }
 
   render() {
-    const { notifications, rol } = this.state,
+    const { notifications } = this.props,
+      { rol } = this.state,
       countNotify = notifications ? notifications.length : 0;
 
     return (
@@ -53,8 +52,8 @@ export default class Notify extends Component {
             let title = "general",
               icon = "fa-file",
               time = moment(notify.created_at).fromNow(),
-              url = "#end",
-              page = "/";
+              url = "#end";
+            //page = "/";
 
             //Cortamos si son más de 10 notificaciones
             if (index > 10) return false;
@@ -63,33 +62,23 @@ export default class Notify extends Component {
               if (rol === 2) {
                 title = "Examen creado";
                 url = "/consultorio/registro/" + notify.data.id;
-                page = "/consultorio";
+                //page = "/consultorio";
               } else {
                 title = "Examen actualizado";
                 url = "/pedidos/registro";
-                page = "/pedidos";
+                //page = "/pedidos";
               }
               icon = "fa-file-alt";
             }
-            //console.log("Notify num:", index);
+
             return (
               <Link
                 to={url}
                 className="dropdown-item"
                 key={notify.id}
                 onClick={(e) => {
-                  this.props.page(page);
+                  //this.props.page(page);
                   this.handleClickRead(e, notify.id);
-                  console.log(
-                    "[Notify] estableciendo datos de contacto en uso"
-                  );
-                  localStorage.setItem(
-                    "OrusContactInUse",
-                    JSON.stringify({
-                      id: notify.data.contact_id,
-                      exam_id: notify.data.id,
-                    })
-                  );
                 }}
               >
                 <i className={"fas " + icon + " mr-1"}></i> {title}
@@ -116,7 +105,7 @@ export default class Notify extends Component {
             to="/notificaciones"
             className="dropdown-item dropdown-footer"
             onClick={(e) => {
-              this.props.page("/notificaciones");
+              //this.props.page("/notificaciones");
             }}
           >
             Ver todas
@@ -126,109 +115,21 @@ export default class Notify extends Component {
     );
   }
 
-  handleClickRead = (e, id, notify) => {
-    //Constantes
-    const { host, token } = this.state;
+  handleClickRead = (e, id) => {
+    const { readNotifyUser } = this.props;
     if (id === -1) e.preventDefault();
-
-    console.log("[ORUS] Marcando notificaciones como leidas");
-    fetch("http://" + host + "/api/user/readAllNotifications", {
-      method: "POST",
-      body: JSON.stringify({
-        id,
-      }),
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then(async (response) => {
-        let back = {};
-        if (response.status !== 204) back = await response.json();
-        if (!response.ok) {
-          throw new Error(back.message);
-        }
-        return back;
-      })
-      .then((notify) => {
-        if (notify.success) {
-          console.log("[ORUS] Notificaciones leeidas");
-          this.verifyUser();
-        } else {
-          console.error("[ORUS] Sin notificaciones", notify);
-        }
-      })
-      .catch((e) => {
-        console.error("[ORUS] Notify error \n", e);
-      });
-  };
-  verifyUser = () => {
-    //Constantes de logueo
-    const { logOut } = this.props,
-      { host, token, count } = this.state;
-
-    //Solo realizamos la verificacion si hay sesion
-    console.log("[ORUS] Verificando usuario");
-    //Realizando verificación de usuarios
-    if (token !== "" && host !== "") {
-      fetch("http://" + host + "/api/user", {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok && token !== "") {
-            console.error("[ORUS] Usuario invalido:", res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.exception || data.message) {
-            logOut();
-          } else {
-            console.log("[ORUS] Usuario validado: ", data.data.username);
-            console.log(
-              "[ORUS] Buscando notificaciones nuevas",
-              data.data.unreadNotifications.length
-            );
-            if (
-              data.data.unreadNotifications.length &&
-              data.data.unreadNotifications.length !== count
-            ) {
-              if ("serviceWorker" in navigator && "PushManager" in window) {
-                console.log("[ORUS] Verificando permisos de Push");
-                if (Notification.permission !== "denied") {
-                  const title = "Orus bot",
-                    options = {
-                      body: "Hay notificaciones nuevas",
-                    };
-                  navigator.serviceWorker
-                    .getRegistration()
-                    .then(function (reg) {
-                      reg.showNotification(title, options);
-                    });
-                }
-              }
-            }
-            this.setState({
-              notifications: data.data ? data.data.unreadNotifications : [],
-              rol: data.data.rol,
-              count: data.data.unreadNotifications.length,
-            });
-          }
-        })
-        .catch((error) => {
-          console.error(
-            "[ORUS] Verificacion de usuario en Notify, error \n",
-            error
-          );
-        });
-    }
+    readNotifyUser({ id });
   };
 }
+const mapStateToProps = (state) => {
+    return {
+      notifications: state.logging.notifications,
+      isLogged: state.logging.isLogged,
+    };
+  },
+  mapDispatchToProps = {
+    getNotifyUser,
+    readNotifyUser,
+  };
+
+export default connect(mapStateToProps, mapDispatchToProps)(NotifyComponent);

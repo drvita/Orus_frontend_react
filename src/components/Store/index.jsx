@@ -11,6 +11,7 @@ export default class Store extends Component {
     super(props);
     //Variables en localStorage
     let sdd = JSON.parse(localStorage.getItem("OrusStore"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       items: {
         data: [],
@@ -21,8 +22,8 @@ export default class Store extends Component {
       orderby: sdd ? sdd.orderby : "created_at",
       order: sdd ? sdd.order : "desc",
       search: sdd ? sdd.search : "",
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;

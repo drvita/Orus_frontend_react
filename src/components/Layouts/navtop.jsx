@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import Notify from "./notify";
 
-export default class Navtop extends Component {
+export default class NavtopComponent extends Component {
   render() {
-    const { logOut, data, page } = this.props;
     return (
       <nav className="main-header navbar navbar-expand navbar-dark navbar-lightblue">
         <ul className="navbar-nav">
@@ -11,7 +10,7 @@ export default class Navtop extends Component {
             <a
               className="nav-link"
               data-widget="pushmenu"
-              href="#end"
+              href="#navbar"
               role="button"
               onClick={(e) => {
                 e.preventDefault();
@@ -33,9 +32,10 @@ export default class Navtop extends Component {
               <div className="dropdown-divider"></div>
             </div>
           </li>
-          <Notify logOut={logOut} data={data} page={page} />
+          <Notify />
         </ul>
       </nav>
     );
   }
 }
+

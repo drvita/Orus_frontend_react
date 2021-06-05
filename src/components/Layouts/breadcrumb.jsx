@@ -8,12 +8,18 @@ class BreadcrumbComponent extends Component {
     this.state = {
       date: moment().format("LLLL"),
     };
-    setInterval(() => {
+    this.timerNotify = null;
+  }
+  componentDidMount() {
+    this.timerNotify = setInterval(() => {
       console.log("[Orus System] Actualizando hora de sistema");
       this.setState({
         date: moment().format("LLLL"),
       });
     }, 60000);
+  }
+  componentWillUnmount() {
+    if (this.timerNotify) clearInterval(this.timerNotify);
   }
 
   render() {
@@ -71,9 +77,9 @@ class BreadcrumbComponent extends Component {
 }
 const mapStateToProps = (state) => {
   return {
-    company: state.default_state.company,
-    host: state.default_state.host,
-    name: state.loggin_state.username,
+    company: state.default.company,
+    host: state.default.host,
+    name: state.logging.username,
   };
 };
 export default connect(mapStateToProps)(BreadcrumbComponent);

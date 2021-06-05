@@ -49,16 +49,6 @@ export default class searchContact extends Component {
       if (this.state.dataContact && this.state.dataContact.id) {
         const { nombre, id, email } = this.state.dataContact,
           domain = /.*@domain(.com)?/gim;
-        console.log(
-          "[searchContactCard] Almacenando datos de contacto en local storage"
-        );
-        localStorage.setItem(
-          "OrusContactInUse",
-          JSON.stringify({
-            id,
-            nombre,
-          })
-        );
 
         return (
           <div className="input-group">
@@ -83,21 +73,18 @@ export default class searchContact extends Component {
                 <div className="btn-group btn-sm d-print-none">
                   <button
                     type="button"
-                    className="btn btn-dark btn-sm"
+                    className="btn btn-secondary btn-sm"
                     onClick={this.handleClickChange}
+                    title="Cambiar"
                   >
-                    <i className="fas fa-exchange-alt mr-1"></i>
-                    <b>Cambiar</b>
+                    <i className="fas fa-exchange-alt"></i>
                   </button>
                   <Link
                     to={"/contactos/registro/" + id}
                     className="btn btn-danger btn-sm"
-                    onClick={(e) => {
-                      this.handleChangePage("/contactos/registro/");
-                    }}
+                    title="Editar"
                   >
-                    <i className="fas fa-edit mr-1"></i>
-                    <b>Editar</b>
+                    <i className="fas fa-edit"></i>
                   </Link>
                 </div>
               ) : null}
@@ -222,17 +209,10 @@ export default class searchContact extends Component {
           dataContact: data.data,
           load: false,
         });
-        console.log(
-          "[Contact][search] Almacenando datos de contacto en local storage"
-        );
-        localStorage.setItem("OrusContactInUse", JSON.stringify(data.data));
       })
       .catch((e) => {
         console.log(e);
       });
-  };
-  handleChangePage = (page) => {
-    this.props.changePage(page);
   };
   handleClickChange = (e) => {
     e.preventDefault();

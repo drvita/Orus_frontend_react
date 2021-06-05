@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import moment from "moment";
 
 export default class listExamsCustomer extends Component {
@@ -118,15 +117,18 @@ export default class listExamsCustomer extends Component {
         </div>
         <div className="card-footer text-right">
           <div className="btn-group">
-            <Link to="/pedidos/registro" className="btn btn-default btn-sm">
-              <i className="fas fa-plus mr-2"></i> Sin examen
-            </Link>
             <button
-              className="btn btn-dark btn-sm"
+              className="btn btn-default btn-sm"
+              onClick={(e) => this.props.ChangeInput("exam", { id: 0 })}
+            >
+              <i className="fas fa-file-excel mr-1"></i> Sin examen
+            </button>
+            <button
+              className="btn btn-default btn-sm"
               onClick={this.handleNewExam}
               disabled={addExam}
             >
-              <i className="fas fa-plus mr-2"></i> Nuevo
+              <i className="fas fa-file-alt mr-1"></i> Nuevo
             </button>
           </div>
         </div>
@@ -136,7 +138,7 @@ export default class listExamsCustomer extends Component {
 
   handleClickSelect = (exam) => {
     const { ChangeInput } = this.props;
-    console.log("[listExamsCustomer] Selecionado examen: ", exam);
+    console.log("[listExamsCustomer] Selecionado examen: ");
     ChangeInput("exam", exam);
   };
   handleNewExam = (e) => {

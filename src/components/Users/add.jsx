@@ -8,6 +8,7 @@ import UserEmail from "./userEmailInput";
 export default class UserAdd extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       id: 0,
       rol: 1,
@@ -21,8 +22,8 @@ export default class UserAdd extends Component {
       created_at: "",
       session: {},
       load: false,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -318,16 +319,8 @@ export default class UserAdd extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          let {
-              host,
-              token,
-              id,
-              name,
-              username,
-              rol,
-              password,
-              email,
-            } = this.state,
+          let { host, token, id, name, username, rol, password, email } =
+              this.state,
             body = {
               name,
               username,

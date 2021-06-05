@@ -1,4 +1,4 @@
-import { CHANGE_HOST } from "../actions/default";
+import { TYPE } from "./types";
 
 const LS = localStorage.getItem("OrusSystem"),
   {
@@ -15,7 +15,7 @@ const LS = localStorage.getItem("OrusSystem"),
 
 const default_reducer = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
-    case CHANGE_HOST: {
+    case TYPE.CHANGE_HOST: {
       const LS = localStorage.getItem("OrusSystem"),
         {
           host: HOST = window.location.hostname,

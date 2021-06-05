@@ -4,9 +4,10 @@ import moment from "moment";
 export default class DateUser extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
       date: moment().format("YYYY-MM-DD"),
       user: !props.data.rol ? 0 : props.data.idUser,
       users: [],

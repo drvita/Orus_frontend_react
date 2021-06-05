@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { loggin } from "../../redux/actions/login";
-import { changeHost } from "../../redux/actions/default";
+import { loggin } from "../../redux/user/actions";
+import { changeHost } from "../../redux/default/actions";
 
 class LogginComponent extends Component {
   constructor(props) {
@@ -17,27 +17,31 @@ class LogginComponent extends Component {
     };
   }
 
-  componentDidMount(){
-    const {host: HOST} = this.props;
-    if(HOST){
+  componentDidMount() {
+    const { host: HOST } = this.props;
+    if (HOST) {
       this.setState({
         txtHost: HOST,
       });
     }
   }
 
-  componentDidUpdate(props, state){
-    const {errors: E_VIEJO = {}, changeHostStatus: H_STATUS_VIEJO } = props,
-      {errors: E_NEW = {}, changeHostStatus: H_STATUS_NEW } = this.props;
-    
-    if(E_VIEJO.errors !== E_NEW.errors && E_NEW.errors && E_NEW.errors.toString().length){
+  componentDidUpdate(props, state) {
+    const { errors: E_VIEJO = {}, changeHostStatus: H_STATUS_VIEJO } = props,
+      { errors: E_NEW = {}, changeHostStatus: H_STATUS_NEW } = this.props;
+
+    if (
+      E_VIEJO.errors !== E_NEW.errors &&
+      E_NEW.errors &&
+      E_NEW.errors.toString().length
+    ) {
       //Manejamos errores del handle de inicio de sesion
       //Solo quitamos el loadding
       this.setState({
         load: false,
       });
     }
-    if(H_STATUS_VIEJO !== H_STATUS_NEW && H_STATUS_NEW){
+    if (H_STATUS_VIEJO !== H_STATUS_NEW && H_STATUS_NEW) {
       //Manejamos el handle de cambio de host
       //Solo quitamos el loadding
       this.setState({
@@ -55,7 +59,12 @@ class LogginComponent extends Component {
         hostShow: HSHOW,
         error: E,
       } = this.state,
-      { company: COMPANY, errors: ERRORS, changeHostStatus: H_STATUS = null, host: H_NAME } = this.props;
+      {
+        company: COMPANY,
+        errors: ERRORS,
+        changeHostStatus: H_STATUS = null,
+        host: H_NAME,
+      } = this.props;
 
     return (
       <div className="login-page">
@@ -75,14 +84,17 @@ class LogginComponent extends Component {
           ) : H_STATUS ? (
             <div className="alert alert-success">
               <span>
-                <i className="mx-2 fas fa-info"></i> Direccion de servidor cambiada con exito [{H_NAME}]
+                <i className="mx-2 fas fa-info"></i> Direccion de servidor
+                cambiada con exito [{H_NAME}]
               </span>
             </div>
           ) : null}
 
           <div className="rounded shadow-lg card">
             <div className="card-body login-card-body">
-              <p className="login-box-msg text-uppercase"><span className="p-2 badge badge-secondary">{COMPANY}</span></p>
+              <p className="login-box-msg text-uppercase">
+                <span className="p-2 badge badge-secondary">{COMPANY}</span>
+              </p>
               <form onSubmit={this.handleLogin}>
                 <div
                   className={
@@ -207,25 +219,24 @@ class LogginComponent extends Component {
     e.preventDefault();
     if (e.key === "Enter") {
       const { txtHost } = this.state,
-        {0: PORT, 1: HOST} = txtHost.split(("://")),
-        {changeHost: _CHANGE_HOST} = this.props;
+        { 0: PORT, 1: HOST } = txtHost.split("://"),
+        { changeHost: _CHANGE_HOST } = this.props;
 
-        this.setState({
-          load: true,
-        });
-        
-      if(PORT && HOST){
+      this.setState({
+        load: true,
+      });
+
+      if (PORT && HOST) {
         _CHANGE_HOST({
           host: HOST,
           port: PORT,
         });
-      } else if(PORT && !HOST) {
+      } else if (PORT && !HOST) {
         _CHANGE_HOST({
           host: PORT,
           port: undefined,
         });
       }
-      
     } else if (e.target && e.target.name !== "") {
       this.catchInputs(e);
     }
@@ -237,7 +248,7 @@ class LogginComponent extends Component {
     let val = "";
 
     if (KEY) {
-      if(NAME === "txtHost") val = this.state.txtHost;
+      if (NAME === "txtHost") val = this.state.txtHost;
       val += KEY;
     } else {
       val = VALUE;
@@ -273,7 +284,7 @@ class LogginComponent extends Component {
           isValid: true,
         };
       } else {
-        console.error("[Orus System] Fallo validacion de password", P, body);
+        console.error("[Orus System] Fallo validacion de password");
         return {
           isValid: false,
           msg: "Los datos introducidos no son validos",
@@ -281,7 +292,7 @@ class LogginComponent extends Component {
         };
       }
     } else {
-      console.error("[Orus System] Fallo validacion de email", U, body);
+      console.error("[Orus System] Fallo validacion de email");
       return {
         isValid: false,
         msg: "Los datos introducidos no son validos",
@@ -326,10 +337,10 @@ class LogginComponent extends Component {
 
 const mapStateToProps = (state) => {
     return {
-      company: state.default_state.company,
-      host: state.default_state.host,
-      errors: state.loggin_state.errors,
-      changeHostStatus: state.default_state.success
+      company: state.default.company,
+      host: state.default.host,
+      errors: state.logging.errors,
+      changeHostStatus: state.default.success,
     };
   },
   mapDispatchToProps = {

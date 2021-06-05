@@ -18,8 +18,6 @@ import Tools from "./components/Layouts/tools";
 import Exam from "./components/Exam/index";
 import ExamAdd from "./components/Exam/add";
 import Order from "./components/Order/index";
-import OrderAdd from "./components/Order/add";
-import OrderAsistent from "./components/Order/asistent";
 import Sales from "./components/Sales/index";
 import SalesAdd from "./components/Sales/add";
 import Dashboard from "./components/Dashboard/index";
@@ -32,11 +30,6 @@ export default class Routers extends Component {
       page: this.handleTitleSection(window.location.pathname),
       company: props.data.company,
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
-  }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
 
   render() {
@@ -203,36 +196,8 @@ export default class Routers extends Component {
 
                       <Route
                         extric
-                        path="/pedidos/asistent"
-                        render={(props) => (
-                          <OrderAsistent
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
-                        extric
-                        path="/pedidos/registro/:id?"
-                        render={(props) => (
-                          <OrderAdd
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
-                        extric
                         path="/pedidos"
-                        render={(props) => (
-                          <Order
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
+                        render={(props) => <Order {...props} />}
                       />
 
                       <Route

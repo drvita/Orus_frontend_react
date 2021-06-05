@@ -5,12 +5,13 @@ import "moment/locale/es";
 export default class Cash extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       atms: [],
       efectivo: 0,
       tipo: 1,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;

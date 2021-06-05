@@ -14,10 +14,7 @@ export default class SaleAdd extends Component {
     const contact = JSON.parse(localStorage.getItem("OrusContactInUse")),
       id = this.props.match.params.id,
       contact_id = id ? 0 : 2;
-    console.log(
-      "[Sales] Contacto en uso: ",
-      contact && contact.id ? "Si" : "No"
-    );
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
 
     this.state = {
       id: id,
@@ -41,8 +38,8 @@ export default class SaleAdd extends Component {
       date: Date.now(),
       load: true,
       pagado: 0,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.total = 0;
     this.controller = new AbortController();

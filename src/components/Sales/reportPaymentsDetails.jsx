@@ -3,10 +3,11 @@ import React, { Component } from "react";
 export default class ReportPaymentsDetails extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
-      host: props.data.host,
-      rol: props.data.rol,
-      token: props.data.token,
+      host: ls.host,
+      rol: ls.rol,
+      token: ls.token,
       payments: [],
       meta: {},
       page: 1,

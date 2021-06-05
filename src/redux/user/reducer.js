@@ -1,9 +1,4 @@
-import {
-  TRY_LOGGIN,
-  LOGGIN_SUCCESS,
-  LOGGIN_ERROR,
-  LOGGIN_DELETE,
-} from "../actions/login";
+import { TYPE } from "./types";
 
 const LS = localStorage.getItem("OrusSystem"),
   {
@@ -24,11 +19,12 @@ const LS = localStorage.getItem("OrusSystem"),
     email: EMAIL,
     token: TOKEN,
     errors: {},
+    notifications: [],
   };
 
 const loggin_state = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
-    case LOGGIN_SUCCESS: {
+    case TYPE.LOGING_SUCCESS: {
       const LS = localStorage.getItem("OrusSystem"),
         { data, token } = action.payload,
         { ls = {} } = {
@@ -55,7 +51,7 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
         errors: {},
       };
     }
-    case LOGGIN_DELETE: {
+    case TYPE.LOGING_DELETE: {
       const LS = localStorage.getItem("OrusSystem"),
         { ls = {} } = {
           ls: JSON.parse(LS ? LS : "{}"),
@@ -81,20 +77,21 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
         errors: {},
       };
     }
-    case TRY_LOGGIN: {
-      console.log("[Orus System] Iniciando proceso de logging");
-      return {
-        ...state,
-      };
-    }
-    case LOGGIN_ERROR: {
+    case TYPE.LOGING_ERROR: {
       const errors = action.payload;
-      console.error("[Orus System] Renderizando errores");
       return {
         ...state,
         errors,
       };
     }
+    case TYPE.GET_NOTIFYS: {
+      const notifications = action.payload;
+      return {
+        ...state,
+        notifications,
+      };
+    }
+
     default:
       return {
         ...state,

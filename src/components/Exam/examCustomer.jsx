@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Graduacion from "../Exam/graduacionExam";
-import Recomendaciones from "../Exam/recomendaciones";
 import moment from "moment";
 
 export default class examCustomer extends Component {

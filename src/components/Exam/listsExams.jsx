@@ -8,7 +8,7 @@ export default class ListsExams extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    let ls = JSON.parse(localStorage.getItem("OrusSystem"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       id: 0,
       data: {
@@ -537,11 +537,9 @@ export default class ListsExams extends Component {
         if (data.data) {
           console.log("Orden almacenada");
           localStorage.setItem("OrusContactNew", JSON.stringify({}));
-          window.Swal.fire(
-            "Orden creada con exito",
-            "",
-            "success"
-          ).then((res) => this.getExams());
+          window.Swal.fire("Orden creada con exito", "", "success").then(
+            (res) => this.getExams()
+          );
         } else {
           window.Swal.fire("Error", "al almacenar la orden", "error");
           console.error("Orus res: ", data.message);

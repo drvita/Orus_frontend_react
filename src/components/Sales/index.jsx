@@ -250,7 +250,7 @@ export default class Contacts extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          let { host, token } = this.state;
+          const { host, token } = this.state;
 
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación de venta por API");
@@ -302,7 +302,7 @@ export default class Contacts extends Component {
   };
   getPedidos = () => {
     //Variables en localStorage
-    let { host, token, order, orderby, search, page, type, date, load } =
+    const { host, token, order, orderby, search, page, type, date, load } =
         this.state,
       url = "http://" + host + "/api/sales",
       ordenar = `&orderby=${orderby}&order=${order}`,

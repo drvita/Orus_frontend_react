@@ -5,7 +5,7 @@ export default class listExamsCustomer extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    let ls = JSON.parse(localStorage.getItem("OrusSystem"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       exams: {
         data: [],

@@ -94,7 +94,7 @@ export default class ReportBank extends Component {
   };
   getSaleDay = () => {
     //Variables en localStorage
-    let { host, token } = this.state,
+    const { host, token } = this.state,
       { date, user } = this.props,
       url = "http://" + host + "/api/bankdetails",
       saleDay = "?date=" + date,

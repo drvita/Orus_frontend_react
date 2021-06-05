@@ -4,13 +4,14 @@ import Suppliers from "./input_suppliers";
 export default class Brands extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       supplier: 0,
       brands: [],
       name: "",
       load: false,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
   }
 

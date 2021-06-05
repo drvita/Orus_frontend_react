@@ -3,16 +3,8 @@ import moment from "moment";
 
 export default class printSale extends Component {
   render() {
-    const {
-      items,
-      descuento,
-      total,
-      saldo,
-      abonado,
-      folio,
-      date,
-      id,
-    } = this.props;
+    const { items, descuento, total, saldo, abonado, folio, date, id } =
+      this.props;
     let totalItems = 0,
       client = this.props.cliente;
 
@@ -168,7 +160,7 @@ export default class printSale extends Component {
 
   getContact = (id) => {
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+    const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
     //Realiza busqueda de contacto
     fetch("http://" + varLocalStorage.host + "/api/contacts/" + id, {
       method: "GET",

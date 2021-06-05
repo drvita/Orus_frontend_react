@@ -259,9 +259,9 @@ export default class Inventory extends Component {
 
   getItems = (catid) => {
     //Variables en localStorage
-    const { data } = this.props,
+    const ls = JSON.parse(localStorage.getItem("OrusSystem")),
       { load } = this.state,
-      url = "http://" + data.host + "/api/store?cat=" + catid;
+      url = "http://" + ls.host + "/api/store?cat=" + catid;
 
     //Cargando
     if (!load) {
@@ -275,7 +275,7 @@ export default class Inventory extends Component {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer " + data.token,
+        Authorization: "Bearer " + ls.token,
       },
     })
       .then((response) => {
@@ -344,8 +344,8 @@ export default class Inventory extends Component {
   };
   getCategories = () => {
     //Variables en localStorage
-    const { data } = this.props,
-      url = "http://" + data.host + "/api/categories/1";
+    const ls = JSON.parse(localStorage.getItem("OrusSystem")),
+      url = "http://" + ls.host + "/api/categories/1";
 
     //Categories main
     fetch(url, {
@@ -353,7 +353,7 @@ export default class Inventory extends Component {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer " + data.token,
+        Authorization: "Bearer " + ls.token,
       },
     })
       .then((response) => {

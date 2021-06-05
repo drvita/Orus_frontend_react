@@ -268,7 +268,7 @@ class StoreLote extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          let ls = JSON.parse(localStorage.getItem("OrusSystem")),
+          const ls = JSON.parse(localStorage.getItem("OrusSystem")),
             { id, bill, cost, price, amount } = this.state,
             body = {
               bill,

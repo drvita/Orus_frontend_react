@@ -154,7 +154,9 @@ export default class Store extends Component {
                           {item.cantidades > 0 ? item.cantidades : 0}
                         </span>
                       </td>
-                      <td className="text-right">$ {item.precio.toFixed(2)}</td>
+                      <td className="text-right">
+                        $ {item.precio ? item.precio.toFixed(2) : ""}
+                      </td>
                       <td className="text-capitalize">
                         {item.proveedor !== null
                           ? item.proveedor.nombre.split(" ").length

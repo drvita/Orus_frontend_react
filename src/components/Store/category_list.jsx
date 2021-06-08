@@ -4,7 +4,7 @@ import Pagination from "../Layouts/pagination";
 export default class CategoryList extends Component {
   constructor(props) {
     super(props);
-
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       meta: {},
       add: false,
@@ -12,8 +12,8 @@ export default class CategoryList extends Component {
       category_raiz: [],
       category_id: props.category,
       page: 1,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
       load: true,
     };
     this.controller = new AbortController();
@@ -34,13 +34,8 @@ export default class CategoryList extends Component {
 
   render() {
     const { category_raiz, category_id, name, add, meta, load } = this.state,
-      {
-        categoryName,
-        categoryDataName,
-        categorySelect,
-        category,
-        last,
-      } = this.props;
+      { categoryName, categoryDataName, categorySelect, category, last } =
+        this.props;
 
     return (
       <div className="card card-primary card-outline">

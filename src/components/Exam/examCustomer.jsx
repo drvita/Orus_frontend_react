@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Graduacion from "../Exam/graduacionExam";
-import Recomendaciones from "../Exam/recomendaciones";
 import moment from "moment";
 
 export default class examCustomer extends Component {
@@ -12,17 +11,23 @@ export default class examCustomer extends Component {
       id: props.id ? props.id : 0,
       exam: {},
       load: true,
-      examEdit: props.examEdit ? props.examEdit : false,
+      examEdit: props.examEdit ? props.examEdit : true,
       host: ls.host,
       token: ls.token,
     };
   }
   componentDidMount() {
-    this.getExam();
+    const { exam, examEdit } = this.props;
+    //this.getExam();
+    this.setState({
+      exam,
+      examEdit,
+      load: false,
+    });
   }
   componentDidUpdate(props, state) {
     if (props.id !== this.props.id) {
-      this.getExam();
+      //this.getExam();
     }
   }
 
@@ -32,12 +37,7 @@ export default class examCustomer extends Component {
     if (exam.id) {
       return (
         <div className="card">
-          <div className="card-header bg-info">
-            <h5>
-              <i className="fas fa-notes-medical mr-2"></i>Examen
-            </h5>
-          </div>
-          <div className="card-body">
+          <div className="card-body card-info">
             <div className="row">
               <div className="col">
                 <b>
@@ -65,24 +65,17 @@ export default class examCustomer extends Component {
               </div>
             </div>
 
-            <div className="row mt-2">
-              {exam.observaciones ? (
-                <div className="col">
-                  <div className="card">
-                    <div className="card-body">
-                      <h5 className="card-title badge badge-secondary m-2 mr-4">
-                        <i className="fas fa-info mr-2"></i>
-                        Observaciones
-                      </h5>
-
-                      <span className="text text-danger">
-                        {exam.observaciones}
-                      </span>
-                    </div>
-                  </div>
+            {exam.observaciones ? (
+              <div className="form-group mt-2">
+                <div className="callout callout-info">
+                  <h5 className="text-info text-bold">
+                    <i className="fas fa-info"></i> Observaciones:
+                  </h5>
+                  {exam.observaciones}
                 </div>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
+
             <div className="row mt-2">
               <div className="col">
                 <Graduacion
@@ -108,7 +101,7 @@ export default class examCustomer extends Component {
                 />
               </div>
             </div>
-            {!examEdit && exam.category_id ? (
+            {/*!examEdit && exam.category_id ? (
               <div className="row mt-2">
                 <div className="col">
                   <Recomendaciones
@@ -135,14 +128,25 @@ export default class examCustomer extends Component {
                   </div>
                 ) : null}
               </div>
+                ) : null*/}
+            {examEdit ? (
+              <div className="text-right mt-2">
+                <div className="btn-group">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={this.handelChangeExam}
+                  >
+                    <i className="fas fa-times mr-1"></i> Cerrar
+                  </button>
+                  <button
+                    className="btn btn-info"
+                    onClick={this.handleSaveExam}
+                  >
+                    <i className="fas fa-save mr-1"></i> Guardar
+                  </button>
+                </div>
+              </div>
             ) : null}
-          </div>
-          <div className="card-footer text-right">
-            <div className="btn-group">
-              <button className="btn btn-dark" onClick={this.handelChangeExam}>
-                <i className="fas fa-window-close mr-2"></i> Cerrar
-              </button>
-            </div>
           </div>
         </div>
       );
@@ -256,17 +260,18 @@ export default class examCustomer extends Component {
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
         let data = result.value;
+        const { ChangeInput } = this.props;
 
         if (data.data) {
           console.log("[examCustomer] Examen almacenado con exito");
-          this.setState({
-            examEdit: false,
-          });
+
           window.Swal.fire({
             icon: "success",
             title: "Examen actualizado con exito",
             showConfirmButton: false,
             timer: 1500,
+          }).then((e) => {
+            ChangeInput("examEdit", false);
           });
         } else {
           window.Swal.fire("Error", "al almacenar el pedido", "error");
@@ -274,46 +279,5 @@ export default class examCustomer extends Component {
         }
       }
     });
-  };
-  getExam = () => {
-    const { load, host, token } = this.state,
-      { id } = this.props;
-
-    if (!id) return false;
-    //Variables en localStorage
-    const url = "http://" + host + "/api/exams/" + id;
-    //Mandamos señal de carga si no lo he hecho
-    if (!load) {
-      this.setState({
-        load: true,
-      });
-    }
-    //Realiza la peticion de examenes a la API
-    console.log("[examCustomer] Descargando examen del paciente", id);
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          this.setState({
-            load: false,
-          });
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.data) {
-          console.log("[examCustomer] Examen descargado con exito", data.data);
-          this.setState({
-            exam: data.data,
-            load: false,
-          });
-        }
-      });
   };
 }

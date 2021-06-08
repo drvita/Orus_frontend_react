@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from "moment";
-import "moment/locale/es";
 import PaymentsDetails from "../Sales/reportPaymentsDetails";
 import ReportPays from "../Sales/reportPays";
 import ReportBank from "../Sales/reportBank";
@@ -11,9 +10,10 @@ import BoxCut from "./boxCut";
 export default class Dashboard extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
       user: !props.data.rol ? "" : props.data.idUser,
       date: moment().format("YYYY-MM-DD"),
       caja: 0,

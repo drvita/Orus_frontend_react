@@ -1,4 +1,4 @@
-export default (string) => {
+export default function codeLentString(string) {
   switch (string) {
     case "monofocales":
       return "MF";
@@ -47,4 +47,4 @@ export default (string) => {
     default:
       return "XX";
   }
-};
+}

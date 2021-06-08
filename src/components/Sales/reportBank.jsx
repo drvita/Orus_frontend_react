@@ -3,9 +3,10 @@ import React, { Component } from "react";
 export default class ReportBank extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
       listBank: [],
       data: [],
       load: false,
@@ -93,7 +94,7 @@ export default class ReportBank extends Component {
   };
   getSaleDay = () => {
     //Variables en localStorage
-    let { host, token } = this.state,
+    const { host, token } = this.state,
       { date, user } = this.props,
       url = "http://" + host + "/api/bankdetails",
       saleDay = "?date=" + date,

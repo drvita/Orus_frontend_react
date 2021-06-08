@@ -23,17 +23,8 @@ export default class ListAbonos extends Component {
 
   render() {
     let { abonos, total, load } = this.state;
-    const {
-      id,
-      date,
-      contact,
-      order,
-      pay,
-      user,
-      sale,
-      cliente,
-      data,
-    } = this.props;
+    const { id, date, contact, order, pay, user, sale, cliente, data } =
+      this.props;
 
     return (
       <React.Fragment>
@@ -173,7 +164,7 @@ export default class ListAbonos extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm && id) {
-          let ls = JSON.parse(localStorage.getItem("OrusSystem"));
+          const ls = JSON.parse(localStorage.getItem("OrusSystem"));
 
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación de venta por API");
@@ -287,7 +278,7 @@ export default class ListAbonos extends Component {
   };
   getPayments = () => {
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+    const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
       order = "&order=desc",
       sale = "?sale=" + this.props.sale;
 

@@ -12,6 +12,7 @@ export default class Contacts extends Component {
     super(props);
     //Variables en localStorage
     let sdd = JSON.parse(localStorage.getItem("OrusContacts"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       contacts: {
         data: [],
@@ -24,8 +25,8 @@ export default class Contacts extends Component {
       search: sdd && sdd.search ? sdd.search : "",
       type: sdd && sdd.type ? sdd.type : "",
       business: sdd && sdd.business ? sdd.business : "",
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -269,17 +270,8 @@ export default class Contacts extends Component {
   };
   getContacts() {
     //Variables
-    let {
-        host,
-        token,
-        order,
-        orderby,
-        search,
-        page,
-        type,
-        business,
-        load,
-      } = this.state,
+    let { host, token, order, orderby, search, page, type, business, load } =
+        this.state,
       url = "http://" + host + "/api/contacts",
       ordenar = `&orderby=${orderby}&order=${order}`,
       buscar = search ? `&search=${search}` : "",

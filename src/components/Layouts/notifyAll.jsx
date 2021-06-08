@@ -84,9 +84,10 @@ export default class NotifyAll extends Component {
     e.preventDefault();
 
     //Constantes
-    const { host, token } = this.props.data;
+    const ls = JSON.parse(localStorage.getItem("OrusSystem")),
+      { host, token } = ls;
 
-    console.log("Enviando datos de leidos");
+    console.log("[Orus System] Enviando datos de leidos");
     fetch("http://" + host + "/api/user/readAllNotifications", {
       method: "POST",
       body: JSON.stringify({
@@ -127,8 +128,8 @@ export default class NotifyAll extends Component {
   };
   checkNotify = () => {
     //Constantes de logueo
-    const { data } = this.props,
-      { host, token } = data;
+    const ls = JSON.parse(localStorage.getItem("OrusSystem")),
+      { host, token } = ls;
 
     if (token !== "" && host !== "") {
       fetch("http://" + host + "/api/user", {

@@ -11,7 +11,8 @@ export default class Users extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    let sdd = JSON.parse(localStorage.getItem("OrusUsers"));
+    const sdd = JSON.parse(localStorage.getItem("OrusUsers"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       users: {
         data: [],
@@ -23,8 +24,8 @@ export default class Users extends Component {
       order: sdd ? sdd.order : "asc",
       search: sdd ? sdd.search : "",
       rol: sdd ? sdd.rol : "",
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;

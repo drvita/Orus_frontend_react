@@ -2,13 +2,12 @@ import React, { Component } from "react";
 import moment from "moment";
 import LabOrder from "./labOrder";
 import Bicelacion from "./bicelacionOrder";
+import Exam from "../Exam/examCustomer";
 import { Link } from "react-router-dom";
 
 export default class AddOrder extends Component {
   constructor(props) {
     super(props);
-    //Recogemos valores de registro previo
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       id: 0,
       paciente: {},
@@ -20,10 +19,7 @@ export default class AddOrder extends Component {
       exam: {},
       status: 0,
       created_at: null,
-      load: false,
       nota: 0,
-      host: ls.host,
-      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -32,23 +28,40 @@ export default class AddOrder extends Component {
     this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    this.getOrder();
+    const { order } = this.props;
+
+    this.setState({
+      id: order.id,
+      paciente: order.paciente,
+      lab_id: (order.examen && order.examen.id) ?? 0,
+      npedidolab: order.folio_lab,
+      observaciones: order.observaciones,
+      ncaja: order.caja,
+      items: order.productos,
+      exam: order.examen ?? {},
+      status: order.estado,
+      created_at: order.created_at,
+      nota: (order.nota && order.nota.id) ?? 0,
+      examShow: false,
+    });
   }
 
   render() {
     const {
-      id,
-      paciente,
-      lab_id,
-      npedidolab,
-      ncaja,
-      observaciones,
-      items,
-      nota,
-      status,
-      created_at,
-      load,
-    } = this.state;
+        id,
+        paciente,
+        lab_id,
+        npedidolab,
+        ncaja,
+        observaciones,
+        items,
+        exam,
+        nota,
+        status,
+        created_at,
+        examShow,
+      } = this.state,
+      { handleDeleteOrder: DORDER, loading: LOADING } = this.props;
 
     return (
       <div className="card card-warning card-outline">
@@ -162,42 +175,70 @@ export default class AddOrder extends Component {
           </div>
           <div className="text-center mailbox-controls with-border">
             <div className="btn-group">
-              <button
-                type="button"
-                className="btn btn-default btn-sm"
-                title="Delete"
-              >
-                <i className="far fa-trash-alt"></i>
-              </button>
+              {nota ? (
+                <Link
+                  to={"/notas/registro/" + nota}
+                  type="button"
+                  className="btn btn-default btn-sm text-success"
+                  title={"Ver nota: " + nota}
+                >
+                  <i className="fas fa-cash-register"></i>
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  title="Delete"
+                  onClick={(e) => DORDER(id)}
+                >
+                  <i className="far fa-trash-alt"></i>
+                </button>
+              )}
+
               {paciente.telefonos && paciente.telefonos.t_movil ? (
                 <a
                   target="_blank"
                   href={"https://wa.me/52" + paciente.telefonos.t_movil}
                   type="button"
                   className="btn btn-default btn-sm"
-                  title="WhatsApp"
+                  title="Abrir WhatsApp"
                   rel="noopener noreferrer"
                 >
                   <i className="fas fa-mobile-alt"></i>
                 </a>
               ) : null}
-              <Link
-                to={"/notas/registro/" + nota}
+              {exam.id ? (
+                <button
+                  type="button"
+                  className={
+                    exam.observaciones
+                      ? "btn btn-default btn-sm text-danger"
+                      : "btn btn-default btn-sm"
+                  }
+                  title={
+                    examShow
+                      ? "Cerrar examen"
+                      : "Ver examen: " + moment(exam.created_at).fromNow()
+                  }
+                  onClick={this.handleWhachExam}
+                >
+                  <i className="fas fa-notes-medical"></i>
+                </button>
+              ) : null}
+              {/*<button
                 type="button"
                 className="btn btn-default btn-sm"
-                title={"Ver nota: " + nota}
+                title="Imprimir pedido"
               >
-                <i className="fas fa-cash-register"></i>
-              </Link>
+                <i className="fas fa-print"></i>
+              </button>*/}
             </div>
-            <button
-              type="button"
-              className="btn btn-default btn-sm"
-              title="Print"
-            >
-              <i className="fas fa-print"></i>
-            </button>
           </div>
+          {examShow ? (
+            <div className="p-2 mailbox-read-message">
+              <Exam id={exam.id} examEdit={false} exam={exam} />
+            </div>
+          ) : null}
           <div className="p-0 mailbox-read-message">
             {status === 0 ? (
               <div className="m-2 form-group">
@@ -265,9 +306,10 @@ export default class AddOrder extends Component {
             <div className="btn-group">
               <a
                 href="#close"
-                className="btn btn-default btn-sm"
+                className="btn btn-secondary btn-sm"
                 onClick={(e) => {
                   const { handleChangeInput } = this.props;
+                  e.preventDefault();
                   handleChangeInput("panel", 0);
                 }}
               >
@@ -282,43 +324,32 @@ export default class AddOrder extends Component {
             </div>
           </div>
         </div>
-        {load ? (
-          <div className="overlay">
-            <i className="fas fa-2x fa-sync-alt"></i>
+        {LOADING ? (
+          <div className="overlay dark">
+            <i className="fas fa-2x fa-sync-alt fa-spin"></i>
           </div>
         ) : null}
       </div>
     );
   }
 
+  handleWhachExam = () => {
+    this.setState({
+      examShow: !this.state.examShow,
+    });
+  };
   handleChangeInput = (key, value) => {
     this.setState({
       [key]: value,
     });
   };
-  getIdContact = (contact_id, edad) => {
-    console.log("Edad change: ", contact_id, edad);
-    this.setState({
-      contact_id,
-      edad,
-    });
-  };
-  changePage = (e) => {
-    console.log("[Order][form] Eliminando datos en contacto en uso");
-    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-    this.props.page(e);
-  };
   handleSave = (e) => {
     e.preventDefault();
-    const { id } = this.state;
-
     //Verificamos campos validos
 
     window.Swal.fire({
       title: "Almacenamiento",
-      text: id
-        ? "¿Esta seguro de actualizar el pedido?"
-        : "¿Esta seguro de crear un nuevo pedido?",
+      text: "¿Esta seguro de actualizar el pedido?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#007bff",
@@ -327,17 +358,9 @@ export default class AddOrder extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          const {
-              npedidolab,
-              ncaja,
-              status,
-              lab_id,
-              observaciones,
-              host,
-              token,
-            } = this.state,
-            url = "http://" + host + "/api/orders/" + id,
-            method = "PUT";
+          const { id, npedidolab, ncaja, status, lab_id, observaciones } =
+              this.state,
+            { handleSaveOrder: _handleSaveOrder } = this.props;
           let body = {};
 
           body = {
@@ -355,122 +378,18 @@ export default class AddOrder extends Component {
             );
             return false;
           }
-          //Actualiza orden para actualizar
-          console.log("[addOrder] Enviando datos a API para almacenar orden");
-          return fetch(url, {
-            method: method,
-            body: JSON.stringify(body),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then(async (response) => {
-              let back = {};
-              if (response.status !== 204) back = await response.json();
-              if (!response.ok) {
-                throw new Error(back.message);
-              }
-              return back;
-            })
-            .catch((e) => {
-              console.error("[Orus fetch] ", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
-        }
-      },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        let data = result.value;
+          if (status === 2 && !ncaja) {
+            window.Swal.fire(
+              "Verificación",
+              "El numero de caja esta vacio",
+              "error"
+            );
+            return false;
+          }
 
-        if (data.data) {
-          console.log("[addOrder] Pedido almacenado con exito");
-          console.log("[addOrder] Eliminando datos de contacto en uso");
-          localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-          window.Swal.fire({
-            icon: "success",
-            title: id
-              ? "Pedido actualizado con exito"
-              : "Pedido almacenado con exito",
-            showConfirmButton: false,
-            timer: 1500,
-          }).then((res) => {
-            const { handleChangeInput } = this.props;
-            handleChangeInput("panel", 0);
-          });
-        } else {
-          window.Swal.fire("Error", "al almacenar el pedido", "error");
-          console.error("[Orus res] ", data.message);
+          _handleSaveOrder(body, id);
         }
-      }
-    });
-  };
-  getOrder = () => {
-    //Variables en state
-    const { host, token } = this.state;
-    const { orderId } = this.props;
-    //Realiza la peticion del pedido
-    this.setState({
-      load: true,
-    });
-    console.log("[addOrder] Solicitando datos de pedido a la API");
-    fetch("http://" + host + "/api/orders/" + orderId, {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + token,
       },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (!data.message) {
-          console.log("[addOrder] Mostrando datos del pedido");
-          this.setState({
-            id: orderId,
-            paciente: data.data.paciente,
-            session: data.data.session,
-            observaciones: data.data.observaciones,
-            lab_id: data.data.laboratorio ? data.data.laboratorio.id : 0,
-            npedidolab: data.data.folio_lab,
-            ncaja: data.data.caja,
-            items: data.data.productos,
-            status: data.data.estado,
-            usuario: data.data.created,
-            exam: data.data.examen ? data.data.examen : {},
-            date: data.data.created_at,
-            nota: data.data.nota ? data.data.nota.id : 0,
-            created_at: data.data.created_at,
-            load: false,
-          });
-        } else {
-          console.error("[Orus system]", data.message);
-          window.Swal.fire("Error", "Error al descargar los pedidos", "error");
-          this.setState({
-            load: false,
-          });
-        }
-      })
-      .catch((error) => {
-        console.log("[Orus system]", error);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-        this.setState({
-          load: false,
-        });
-      });
+    });
   };
 }

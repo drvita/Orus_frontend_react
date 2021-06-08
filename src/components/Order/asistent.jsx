@@ -9,7 +9,6 @@ export default class Asistent extends Component {
     super(props);
     //Recogemos valores de registro previo
     let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     console.log(
       "[OrderAsitent] Contacto en uso: ",
       contact && contact.id ? "Si" : "No"
@@ -28,33 +27,27 @@ export default class Asistent extends Component {
       items: [],
       codes: {},
       edad: 0,
-      exam_id: contact && contact.exam_id ? contact.exam_id : 0,
+      exam_id: null,
       exam: {},
       examEdit: false,
       load: true,
-      host: ls.host,
-      token: ls.token,
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
-  }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
     localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
+  componentDidUpdate(props, state) {
+    const { categories } = this.props;
+
+    if (props.categories.id !== categories.id) {
+      this.getCategories(categories, this.state.exam);
+    }
+  }
 
   render() {
-    const {
-      contact_id,
-      items,
-      edad,
-      exam_id,
-      exam,
-      examEdit,
-      codes,
-    } = this.state;
+    const { contact_id, items, edad, exam_id, exam, examEdit, codes } =
+        this.state,
+      { loading: LOADING } = this.props;
 
     return (
       <div className="card card-warning card-outline">
@@ -69,74 +62,78 @@ export default class Asistent extends Component {
               contact={contact_id}
               edad={parseInt(this.state.edad)}
               getIdContact={this.getIdContact}
-              changePage={this.changePage}
-              status={exam_id ? true : false}
+              status={exam_id !== null ? true : false}
             />
           </div>
           {contact_id ? (
             <React.Fragment>
-              {exam_id ? (
+              {exam_id !== null ? (
                 <React.Fragment>
-                  <div className="form-group">
-                    <div className="input-group">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-notes-medical mr-2"></i> Examen:
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control text-capitalize"
-                        value={exam_id}
-                        readOnly={true}
-                      />
-                      <div className="float-right">
-                        <div className="btn-group btn-sm">
-                          <button
-                            type="button"
-                            className="btn btn-dark btn-sm"
-                            onClick={(e) =>
-                              this.handleChangeInput("exam_id", 0)
-                            }
-                          >
-                            <i className="fas fa-exchange-alt mr-1"></i>
-                            <b>Cambiar</b>
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-warning btn-sm"
-                            onClick={(e) =>
-                              this.handleChangeInput("examEdit", true)
-                            }
-                            disabled={examEdit}
-                          >
-                            <i className="fas fa-edit mr-1"></i>
-                            <b>Editar</b>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                   {examEdit ? (
                     <div className="form-group">
                       <Exam
                         id={exam_id}
                         examEdit={true}
+                        exam={exam}
                         ChangeInput={this.handleChangeInput}
                       />
                     </div>
                   ) : (
                     <React.Fragment>
-                      {exam.observaciones ? (
-                        <div className="form-group">
-                          <div className="callout callout-info">
-                            <h5>
-                              <i className="fas fa-info"></i> Observaciones:
-                            </h5>
-                            {exam.observaciones}
+                      <div className="form-group">
+                        <div className="input-group">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text">
+                              <i className="fas fa-notes-medical mr-1"></i>{" "}
+                              Examen:
+                            </span>
+                          </div>
+                          <input
+                            type="text"
+                            className={
+                              exam_id
+                                ? exam.observaciones
+                                  ? "form-control text-right pr-2 bg-info text-bold"
+                                  : "form-control text-right pr-2"
+                                : "form-control text-center"
+                            }
+                            value={
+                              exam_id
+                                ? exam.observaciones
+                                  ? exam_id + " [Revise las observaciones]"
+                                  : exam_id
+                                : "Sin examen"
+                            }
+                            readOnly={true}
+                          />
+                          <div className="float-right">
+                            <div className="btn-group btn-sm">
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                onClick={(e) =>
+                                  this.handleChangeInput("exam_id", null)
+                                }
+                              >
+                                <i className="fas fa-exchange-alt"></i>
+                              </button>
+                              {exam.id ? (
+                                <button
+                                  type="button"
+                                  className="btn btn-info btn-sm"
+                                  onClick={(e) =>
+                                    this.handleChangeInput("examEdit", true)
+                                  }
+                                  disabled={examEdit}
+                                >
+                                  <i className="fas fa-edit"></i>
+                                </button>
+                              ) : null}
+                            </div>
                           </div>
                         </div>
-                      ) : null}
+                      </div>
+
                       <Items
                         items={this.state.items}
                         session={this.state.session}
@@ -158,41 +155,79 @@ export default class Asistent extends Component {
             </React.Fragment>
           ) : null}
         </div>
-        <div className="card-footer">
-          <div className="mailbox-controls text-right">
-            <div className="btn-group">
-              <a
-                href="#close"
-                className="btn btn-default btn-sm"
-                onClick={(e) => {
-                  const { handleChangeInput } = this.props;
-                  handleChangeInput("panel", 0);
-                }}
-              >
-                <i className="fas fa-reply mr-2"></i> Cancelar
-              </a>
-              <button
-                className={
-                  contact_id && exam_id && items.length
-                    ? "btn btn-warning btn-sm"
-                    : "btn btn-warning btn-sm disabled"
-                }
-                onClick={this.handleSave}
-                disabled={contact_id && exam_id && items.length ? false : true}
-              >
-                <i className="fas fa-save mr-2"></i> Guardar
-              </button>
+        {!examEdit ? (
+          <div className="card-footer">
+            <div className="mailbox-controls text-right">
+              <div className="btn-group">
+                <a
+                  href="#close"
+                  className="btn btn-dark btn-sm"
+                  onClick={(e) => {
+                    const { handleChangeInput: _handleChangeInput } =
+                      this.props;
+                    e.preventDefault();
+                    this.setState({
+                      contact_id: 0,
+                      items: [],
+                      codes: {},
+                      edad: 0,
+                      exam_id: null,
+                      exam: {},
+                      examEdit: false,
+                    });
+                    localStorage.setItem(
+                      "OrusContactInUse",
+                      JSON.stringify({
+                        id: 0,
+                      })
+                    );
+                    _handleChangeInput("panel", 0);
+                  }}
+                >
+                  <i className="fas fa-arrow-left mr-1"></i> Cerrar
+                </a>
+                <button
+                  className={
+                    contact_id && exam_id !== null && items.length
+                      ? "btn btn-warning btn-sm"
+                      : "btn btn-warning btn-sm disabled"
+                  }
+                  onClick={this.handleSave}
+                  disabled={
+                    contact_id && exam_id !== null && items.length
+                      ? false
+                      : true
+                  }
+                >
+                  <i className="fas fa-save mr-1"></i> Guardar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        ) : null}
+        {LOADING ? (
+          <div className="overlay dark">
+            <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+          </div>
+        ) : null}
       </div>
     );
   }
 
   handleChangeInput = (key, value) => {
+    const { handleGetCategories: _handleGetCategories } = this.props;
+
     if (key === "exam") {
       if (value.category_id) {
-        this.getCategories(value);
+        //this.getCategories(value);
+        _handleGetCategories(value.category_id);
+      }
+      if (!value.id) {
+        this.setState({
+          exam_id: 0,
+          exam: {},
+          codes: {},
+        });
       } else {
         this.setState({
           exam_id: value.id,
@@ -211,74 +246,37 @@ export default class Asistent extends Component {
       });
     }
   };
-  getCategories = (exam) => {
-    const { host, token } = this.state;
+  getCategories = (category, exam) => {
+    const { category_id, esferaod, esferaoi, cilindrod, cilindroi, id } = exam;
 
-    console.log("[Asistent order] Descargando categoria para recomendacion");
-    fetch("http://" + host + "/api/categories/" + exam.category_id, {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
+    console.log("[Asistent order] Recomendacion descargada");
+    let code =
+        category_id && category.id ? this.handleCodeName(category) : "XX",
+      gradod = "+000000",
+      gradoi = "+000000";
+
+    if (cilindrod || esferaod) {
+      gradod = esferaod > 0 ? "+" : "";
+      gradod +=
+        esferaod.toFixed(2).toString().replace(".", "") +
+        cilindrod.toFixed(2).toString().replace("-", "").replace(".", "");
+    }
+    if (cilindroi || esferaoi) {
+      gradoi = esferaoi > 0 ? "+" : "";
+      gradoi +=
+        esferaoi.toFixed(2).toString().replace(".", "") +
+        cilindroi.toFixed(2).toString().replace("-", "").replace(".", "");
+    }
+
+    this.setState({
+      exam_id: id,
+      exam,
+      codes: {
+        code,
+        od: gradod,
+        oi: gradoi,
       },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((cat) => {
-        if (cat.data) {
-          console.log("[Asistent order] Recomendacion descargada");
-          const {
-              category_id,
-              esferaod,
-              esferaoi,
-              cilindrod,
-              cilindroi,
-              id,
-            } = exam,
-            category = cat.data;
-          let code =
-              category_id && category.id ? this.handleCodeName(category) : "XX",
-            gradod = "+000000",
-            gradoi = "+000000";
-
-          if (cilindrod || esferaod) {
-            gradod = esferaod > 0 ? "+" : "";
-            gradod +=
-              esferaod.toFixed(2).toString().replace(".", "") +
-              cilindrod.toFixed(2).toString().replace("-", "").replace(".", "");
-          }
-          if (cilindroi || esferaoi) {
-            gradoi = esferaoi > 0 ? "+" : "";
-            gradoi +=
-              esferaoi.toFixed(2).toString().replace(".", "") +
-              cilindroi.toFixed(2).toString().replace("-", "").replace(".", "");
-          }
-          console.log("[DEBUG] fetch category ", code, gradod, gradoi);
-          this.setState({
-            exam_id: id,
-            exam,
-            codes: {
-              code,
-              od: gradod,
-              oi: gradoi,
-            },
-          });
-        }
-      })
-      .catch((e) => {
-        console.error("Orus: " + e);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-      });
+    });
   };
   handleCodeName = (category) => {
     let code = "";
@@ -302,12 +300,8 @@ export default class Asistent extends Component {
       edad,
     });
   };
-  changePage = (e) => {
-    console.log("[OrderAsitent] Eliminando datos en contacto en uso");
-    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-    this.props.page(e);
-  };
   handleSave = (e) => {
+    const { handleSaveOrder: _handleSaveOrder } = this.props;
     e.preventDefault();
     //Verificamos campos validos
 
@@ -322,9 +316,6 @@ export default class Asistent extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          const { host, token } = this.state,
-            url = "http://" + host + "/api/orders",
-            method = "POST";
           let body = {},
             items = [];
 
@@ -341,6 +332,7 @@ export default class Asistent extends Component {
             });
             return false;
           });
+
           body = {
             session: this.state.session,
             contact_id: this.state.contact_id,
@@ -348,60 +340,9 @@ export default class Asistent extends Component {
             status: 0,
           };
           if (this.state.exam_id) body.exam_id = parseInt(this.state.exam_id);
-
-          //Actualiza el pedido o creamos un pedido nuevo según el ID
-          console.log(
-            "[OrderAsitent] Enviando datos del pedido a API para almacenar"
-          );
-          return fetch(url, {
-            method: method,
-            body: JSON.stringify(body),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then(async (response) => {
-              let back = {};
-              if (response.status !== 204) back = await response.json();
-              if (!response.ok) {
-                throw new Error(back.message);
-              }
-              return back;
-            })
-            .catch((e) => {
-              console.error("[Orus fetch] ", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
+          _handleSaveOrder(body);
         }
       },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        let data = result.value;
-
-        if (data.data) {
-          console.log("[OrderAsitent] Pedido almacenado con exito");
-          console.log("[OrderAsitent] Eliminando datos de contacto en uso");
-          localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-          window.Swal.fire({
-            icon: "success",
-            title: "Pedido almacenado con exito",
-            showConfirmButton: false,
-            timer: 1500,
-          }).then((res) => {
-            const { handleChangeInput } = this.props;
-            handleChangeInput("panel", 0);
-          });
-        } else {
-          window.Swal.fire("Error", "al almacenar el pedido", "error");
-          console.error("[Orus res] ", data.message);
-        }
-      }
     });
   };
 }

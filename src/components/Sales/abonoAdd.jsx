@@ -4,6 +4,7 @@ import moment from "moment";
 export default class AddAbono extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       metodopago: 1,
       total: 0,
@@ -11,8 +12,8 @@ export default class AddAbono extends Component {
       auth: "",
       details: "",
       listBank: [],
-      token: props.data.token,
-      host: props.data.host,
+      token: ls.token,
+      host: ls.host,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;

@@ -10,6 +10,7 @@ export default class StoreAdd extends Component {
   constructor(props) {
     super(props);
     const id = this.props.match.params.id;
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       id: id ? id : 0,
       code: "",
@@ -32,8 +33,8 @@ export default class StoreAdd extends Component {
       category_list3: [],
       category_list4: [],
       load: false,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;

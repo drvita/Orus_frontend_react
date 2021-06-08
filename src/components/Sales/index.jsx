@@ -12,6 +12,7 @@ export default class Contacts extends Component {
     super(props);
     //Variables en localStorage
     let sdd = JSON.parse(localStorage.getItem("OrusSales"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       ventas: {
         data: [],
@@ -24,8 +25,8 @@ export default class Contacts extends Component {
       search: sdd ? sdd.search : "",
       type: sdd ? sdd.type : "",
       date: sdd ? sdd.date : "",
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -249,7 +250,7 @@ export default class Contacts extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          let { host, token } = this.state;
+          const { host, token } = this.state;
 
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación de venta por API");
@@ -301,17 +302,8 @@ export default class Contacts extends Component {
   };
   getPedidos = () => {
     //Variables en localStorage
-    let {
-        host,
-        token,
-        order,
-        orderby,
-        search,
-        page,
-        type,
-        date,
-        load,
-      } = this.state,
+    const { host, token, order, orderby, search, page, type, date, load } =
+        this.state,
       url = "http://" + host + "/api/sales",
       ordenar = `&orderby=${orderby}&order=${order}`,
       buscar = search ? `&search=${search}` : "",

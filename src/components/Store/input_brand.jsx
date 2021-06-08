@@ -3,10 +3,11 @@ import React, { Component } from "react";
 export default class InputBrand extends Component {
   constructor(props) {
     super(props);
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       brands: [],
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
   }
   componentDidMount() {

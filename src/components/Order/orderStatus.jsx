@@ -15,6 +15,7 @@ export default class OrderStatus extends Component {
     super(props);
     //Recogemos valores de registro previo
     let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     console.log(
       "[Order] Contacto en uso: ",
       contact && contact.id ? "Si" : "No"
@@ -44,8 +45,8 @@ export default class OrderStatus extends Component {
       date: Date.now(),
       load: true,
       nota: 0,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -71,17 +72,8 @@ export default class OrderStatus extends Component {
   }
 
   render() {
-    const {
-        contact_id,
-        id,
-        load,
-        items,
-        nota,
-        status,
-        edad,
-        exam_id,
-        exam,
-      } = this.state,
+    const { contact_id, id, load, items, nota, status, edad, exam_id, exam } =
+        this.state,
       { data } = this.props;
     let showTabActive = true;
 

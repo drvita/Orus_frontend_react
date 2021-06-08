@@ -10,7 +10,8 @@ export default class Exam extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    let sdd = JSON.parse(localStorage.getItem("OrusExam"));
+    const sdd = JSON.parse(localStorage.getItem("OrusExam"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       exams: {
         data: [],
@@ -23,8 +24,8 @@ export default class Exam extends Component {
       search: sdd && sdd.search ? sdd.search : "",
       status: sdd && sdd.status >= 0 ? sdd.status : "",
       date: sdd && sdd.date ? sdd.date : "",
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -330,17 +331,8 @@ export default class Exam extends Component {
   };
   getExams() {
     //Variables
-    let {
-        host,
-        token,
-        order,
-        orderby,
-        search,
-        page,
-        status,
-        load,
-        date,
-      } = this.state,
+    let { host, token, order, orderby, search, page, status, load, date } =
+        this.state,
       url = "http://" + host + "/api/exams",
       ordenar = `&orderby=${orderby}&order=${order}`,
       buscar = search ? `&search=${search}` : "",

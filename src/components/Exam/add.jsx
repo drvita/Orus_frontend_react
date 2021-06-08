@@ -18,6 +18,7 @@ export default class ExamAdd extends Component {
   constructor(props) {
     super(props);
     const contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     console.log(
       "[Order] Contacto en uso: ",
       contact && contact.id ? "Si" : "No"
@@ -102,8 +103,8 @@ export default class ExamAdd extends Component {
       status: 0,
       created_at: "",
       load: false,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;

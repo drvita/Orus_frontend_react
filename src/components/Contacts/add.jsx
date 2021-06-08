@@ -12,6 +12,7 @@ export default class ContactsAdd extends Component {
     super(props);
     //Recogemos valores de registro previo
     let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       id: 0,
       name: contact && contact.name ? contact.name : "",
@@ -31,8 +32,8 @@ export default class ContactsAdd extends Component {
       t_movil: "",
       business: false,
       load: false,
-      host: props.data.host,
-      token: props.data.token,
+      host: ls.host,
+      token: ls.token,
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;

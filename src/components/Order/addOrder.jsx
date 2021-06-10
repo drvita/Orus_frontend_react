@@ -3,6 +3,7 @@ import moment from "moment";
 import LabOrder from "./labOrder";
 import Bicelacion from "./bicelacionOrder";
 import Exam from "../Exam/examCustomer";
+import Items from "./itemsOrder";
 import { Link } from "react-router-dom";
 
 export default class AddOrder extends Component {
@@ -17,6 +18,7 @@ export default class AddOrder extends Component {
       ncaja: 0,
       items: [],
       exam: {},
+      codes: {},
       status: 0,
       created_at: null,
       nota: 0,
@@ -56,6 +58,7 @@ export default class AddOrder extends Component {
         observaciones,
         items,
         exam,
+        codes,
         nota,
         status,
         created_at,
@@ -241,29 +244,11 @@ export default class AddOrder extends Component {
           ) : null}
           <div className="p-0 mailbox-read-message">
             {status === 0 ? (
-              <div className="m-2 form-group">
-                <h5>
-                  <i className="mr-2 fas fa-shopping-cart"></i>Productos
-                </h5>
-                <div className="p-0 table-responsive">
-                  <table className="table">
-                    <tbody>
-                      {items.map((item, i) => {
-                        return (
-                          <tr key={i}>
-                            <th colSpan="row">{i}</th>
-                            <td>
-                              <span className="text text-uppercase">
-                                {item.producto}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <Items
+                items={items}
+                codes={codes}
+                ChangeInput={this.handleChangeInput}
+              />
             ) : null}
             {status === 1 ? (
               <LabOrder
@@ -313,13 +298,14 @@ export default class AddOrder extends Component {
                   handleChangeInput("panel", 0);
                 }}
               >
-                <i className="mr-2 fas fa-reply"></i> Cancelar
+                <i className="mr-1 fas fa-undo"></i>
+                {items.length ? "Cerrar" : "Cancelar"}
               </a>
               <button
                 className="btn btn-warning btn-sm"
                 onClick={this.handleSave}
               >
-                <i className="mr-2 fas fa-save"></i> Guardar
+                <i className="mr-1 fas fa-save"></i> Guardar
               </button>
             </div>
           </div>
@@ -358,16 +344,33 @@ export default class AddOrder extends Component {
       showLoaderOnConfirm: true,
       preConfirm: (confirm) => {
         if (confirm) {
-          const { id, npedidolab, ncaja, status, lab_id, observaciones } =
-              this.state,
+          const {
+              id,
+              npedidolab,
+              ncaja,
+              status,
+              lab_id,
+              observaciones,
+              items,
+            } = this.state,
             { handleSaveOrder: _handleSaveOrder } = this.props;
-          let body = {};
+          let body = {},
+            itemsToJson = [];
+
+          items.forEach((item) => {
+            itemsToJson.push({
+              ...item,
+              cant: item.cantidad,
+              price: item.precio,
+            });
+          });
 
           body = {
             npedidolab,
             ncaja,
             status,
             observaciones,
+            items: JSON.stringify(itemsToJson),
           };
           if (lab_id) body.lab_id = lab_id;
           if (status === 1 && !lab_id && toString(npedidolab).length) {

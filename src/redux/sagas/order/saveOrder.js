@@ -6,9 +6,16 @@ export default function* handleSaveOrder({ payload }) {
   try {
     const { order: ORDER = {}, id: ID = null, options: OPT = {} } = payload,
       url = getUrl("orders", ID),
-      method = ID ? "PUT" : "POST";
+      method = ID ? "PUT" : "POST",
+      result = yield call(api, url, method, ORDER);
 
-    yield call(api, url, method, ORDER);
+    if (result.message) throw new Error(result.message);
+
+    if (ID) console.log("[Orus System] Pedido actualizado con exito", ID);
+    else console.log("[Orus system] Pedido creado con exito", result.data.id);
+
+    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
+
     yield put(
       setMessageOrder([
         {

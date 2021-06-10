@@ -45,7 +45,7 @@ export default class Asistent extends Component {
   }
 
   render() {
-    const { contact_id, items, edad, exam_id, exam, examEdit, codes } =
+    const { contact_id, items, edad, exam_id, exam, examEdit, codes, session } =
         this.state,
       { loading: LOADING } = this.props;
 
@@ -60,7 +60,7 @@ export default class Asistent extends Component {
           <div className="form-group">
             <SearchContact
               contact={contact_id}
-              edad={parseInt(this.state.edad)}
+              edad={parseInt(edad)}
               getIdContact={this.getIdContact}
               status={exam_id !== null ? true : false}
             />
@@ -135,8 +135,8 @@ export default class Asistent extends Component {
                       </div>
 
                       <Items
-                        items={this.state.items}
-                        session={this.state.session}
+                        items={items}
+                        session={session}
                         codes={codes}
                         ChangeInput={this.handleChangeInput}
                       />
@@ -177,14 +177,13 @@ export default class Asistent extends Component {
                     });
                     localStorage.setItem(
                       "OrusContactInUse",
-                      JSON.stringify({
-                        id: 0,
-                      })
+                      JSON.stringify({})
                     );
                     _handleChangeInput("panel", 0);
                   }}
                 >
-                  <i className="fas fa-arrow-left mr-1"></i> Cerrar
+                  <i className="fas fa-arrow-left mr-1"></i>
+                  {items.length ? "Cancelar" : "Cerrar"}
                 </a>
                 <button
                   className={

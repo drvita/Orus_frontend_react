@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import AddModal from "./addItemModal";
 
 export default class Items extends Component {
   constructor(props) {
@@ -22,8 +23,8 @@ export default class Items extends Component {
   }
 
   render() {
-    let { itemNew, itemsDb, load } = this.state;
-    let { items, codes } = this.props;
+    const { itemNew, load } = this.state,
+      { items, codes } = this.props;
     this.total = 0;
 
     return (
@@ -51,171 +52,24 @@ export default class Items extends Component {
               </tr>
             </thead>
             <tbody>
-              {itemNew ? (
-                <React.Fragment>
-                  <tr>
-                    <td>
-                      <input
-                        className={
-                          this.state.store_items_id
-                            ? "form-control"
-                            : "form-control disabled"
-                        }
-                        disabled={this.state.store_items_id ? false : true}
-                        type="number"
-                        name="cantidad"
-                        ref={(input) => {
-                          this.inputCant = input;
-                        }}
-                        value={this.state.cantidad}
-                        onChange={this.catchInputs}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className={
-                          !this.state.store_items_id
-                            ? "form-control"
-                            : "form-control disabled"
-                        }
-                        disabled={!this.state.store_items_id ? false : true}
-                        type="text"
-                        name="producto"
-                        autoComplete="off"
-                        ref={(input) => {
-                          this.inputItem = input;
-                        }}
-                        value={this.state.producto}
-                        onChange={this.catchInputs}
-                      />
-                      {this.state.store_items_id ? (
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="descripcion"
-                          placeholder="Detalles"
-                          value={this.state.descripcion}
-                          onChange={this.catchInputs}
-                        />
-                      ) : null}
-                    </td>
-                    <td>
-                      <input
-                        className={
-                          this.state.store_items_id
-                            ? "form-control"
-                            : "form-control disabled"
-                        }
-                        disabled={this.state.store_items_id ? false : true}
-                        type="number"
-                        name="precio"
-                        value={this.state.precio}
-                        onChange={this.catchInputs}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        className="form-control disabled"
-                        type="number"
-                        name="subtotal"
-                        value={this.state.subtotal}
-                        readOnly={true}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-outline-dark btn-sm"
-                        onClick={this.addItem}
-                      >
-                        <i className="fas fa-save"></i>
-                      </button>
-                    </td>
-                  </tr>
-
-                  {load ? (
-                    <tr>
-                      <td colSpan="5">
-                        <div className="text-center">
-                          <div
-                            className="spinner-border text-primary"
-                            role="status"
-                          >
-                            <span className="sr-only">Loading...</span>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : itemsDb && itemsDb.length ? (
-                    <tr>
-                      <td colSpan="5">
-                        <div className="list-group">
-                          {itemsDb.map((db) => {
-                            return (
-                              <a
-                                className="list-group-item list-group-item-action"
-                                href={"#" + db.codigo}
-                                key={db.id}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  this.handelClickItemDb(
-                                    db.id,
-                                    db.producto,
-                                    db.precio,
-                                    db.cantidades
-                                  );
-                                }}
-                              >
-                                <div
-                                  className="text-truncate"
-                                  style={{ maxWidth: "90%" }}
-                                >
-                                  <span className="text-primary mr-2 text-uppercase">
-                                    ({db.codigo})
-                                  </span>
-                                  <label className="text-dark text-capitalize ml-2 mr-2">
-                                    {db.producto}
-                                  </label>
-                                  {db.marca ? (
-                                    <span className="text-muted text-capitalize">
-                                      / {db.marca.marca}
-                                    </span>
-                                  ) : null}
-                                  {db.proveedor ? (
-                                    <span className="text-muted text-capitaliz">
-                                      / {db.proveedor.nombre}
-                                    </span>
-                                  ) : null}
-                                </div>
-                              </a>
-                            );
-                          })}
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
-                </React.Fragment>
-              ) : null}
               {items.length ? (
                 items.map((item, index) => {
                   this.total += item.subtotal * 1;
                   return (
                     <tr key={index}>
                       <td className="text-right">{item.cantidad}</td>
-                      <td>
-                        <span
-                          className={
-                            !item.inStorage
-                              ? "badge badge-warning"
-                              : "badge badge-primary"
-                          }
-                        >
-                          {item.producto}
-                          {item.descripcion
-                            ? " (" + item.descripcion + ")"
-                            : null}
-                        </span>
+                      <td className="text-truncate">
+                        {!item.inStorage ? (
+                          <i className="text-warning fas fa-circle mr-1"></i>
+                        ) : null}
+                        {item.producto}
+                        {item.descripcion
+                          ? " (" + item.descripcion + ")"
+                          : null}
                       </td>
-                      <td className="text-right">$ {item.precio.toFixed(2)}</td>
+                      <td className="text-right">
+                        $ {parseFloat(item.precio).toFixed(2)}
+                      </td>
                       <td className="text-right">
                         $ {item.subtotal.toFixed(2)}
                       </td>
@@ -228,7 +82,8 @@ export default class Items extends Component {
                           }
                           disabled={this.props.status ? true : false}
                           onClick={(e) => {
-                            if (!this.props.status) this.deleteItem(index);
+                            if (!this.props.status)
+                              this.deleteItem(item.store_items_id);
                           }}
                         >
                           <i className="fas fa-trash"></i>
@@ -258,7 +113,11 @@ export default class Items extends Component {
                           : "btn btn-outline-primary btn-sm"
                       }
                       disabled={this.props.status ? true : false}
-                      onClick={this.handleNewItem}
+                      onClick={(e) => {
+                        this.setState({
+                          itemNew: !this.state.itemNew,
+                        });
+                      }}
                     >
                       <i
                         className={itemNew ? "fas fa-undo" : "fas fa-plus"}
@@ -304,149 +163,36 @@ export default class Items extends Component {
             )}
           </div>
         ) : null}
+        {load ? (
+          <div className="overlay dark">
+            <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+          </div>
+        ) : null}
+        {itemNew ? (
+          <AddModal
+            handleAddItem={this.handleAddItem}
+            handleCloseModal={(e) => {
+              this.setState({
+                itemNew: false,
+              });
+            }}
+          />
+        ) : null}
       </div>
     );
   }
 
-  handelClickItemDb = (id, producto, precio, cant) => {
-    if (id) {
-      this.setState({
-        id: 0,
-        store_items_id: id,
-        producto,
-        precio,
-        subtotal: this.state.cantidad * precio,
-        //Verificando que exitan los productos en almacen
-        inStorage: cant >= this.state.cantidad ? 1 : 0,
-        out: cant,
-        itemsDb: [],
-      });
-    }
-  };
   deleteItem = (id) => {
-    let { items } = this.props;
-    items.splice(id, 1);
-    this.props.ChangeInput("items", items);
+    const { items } = this.props;
+    const itemsToSave = items.filter((e) => e.store_items_id !== id);
+
+    this.props.ChangeInput("items", itemsToSave);
   };
-  catchInputs = (e) => {
-    let { name, value, type } = e.target,
-      subtotal = 0;
-    if (name === "cantidad") {
-      value = value * 1;
-      subtotal = this.state.precio * value;
-    } else if (name === "precio") {
-      value = value * 1;
-      subtotal = this.state.cantidad * value;
-    } else if (name === "descripcion") {
-      subtotal = this.state.subtotal;
+  handleAddItem = (item) => {
+    if (item) {
+      let { items } = this.props;
+      items.push(item);
+      this.props.ChangeInput("items", items);
     }
-    if (type === "number") {
-      value = value * 1;
-    }
-    if (name === "producto" && value.length > 3 && !this.state.store_items_id) {
-      let { load } = this.state;
-
-      //Revisamos que ya este cargando
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
-      if (this.timeSave) clearTimeout(this.timeSave);
-      this.timeSave = setTimeout(() => {
-        //Variables en localStorage
-        const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-          url = "http://" + varLocalStorage.host + "/api/store",
-          search = "?search=" + value.replace("+", "%2b"),
-          itemsPage = "&itemsPage=6";
-        //Realiza la peticion del usuario seun el id
-        console.log("Descargando datos del item");
-        fetch(url + search + itemsPage, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Authorization: "Bearer " + varLocalStorage.token,
-          },
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(response.statusText);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data.data && data.data.length) {
-              console.log("Almacenando datos del item del DB");
-              this.setState({
-                itemsDb: data.data,
-              });
-            } else if (data.message) {
-              console.log(
-                "No hay articulos en la buscada de items",
-                data.message
-              );
-            }
-            this.setState({
-              load: false,
-            });
-          })
-          .catch((e) => {
-            console.error(e);
-            window.Swal.fire(
-              "Fallo de conexion",
-              "Verifique la conexion al servidor",
-              "error"
-            );
-            this.setState({
-              load: false,
-            });
-          });
-      }, 1500);
-    }
-
-    this.setState({
-      [name]: value,
-      subtotal,
-    });
-  };
-  addItem = (e) => {
-    e.preventDefault();
-    let items = this.props.items,
-      item = this.state;
-
-    item.inStorage = item.out >= item.cantidad ? 1 : 0;
-    item.out = item.out >= item.cantidad ? 0 : item.cantidad - item.out;
-
-    delete item.itemNew;
-    delete item.itemsDb;
-    delete item.items;
-    items.push(item);
-
-    this.setState({
-      id: 0,
-      store_items_id: 0,
-      cantidad: 1,
-      producto: "",
-      precio: 0,
-      total: 0,
-      inStorage: 0,
-      out: 0,
-      itemNew: false,
-    });
-    this.props.ChangeInput("items", items);
-  };
-  handleNewItem = (e) => {
-    e.preventDefault();
-    this.setState({
-      itemNew: !this.state.itemNew,
-      store_items_id: 0,
-      cantidad: 1,
-      producto: "",
-      precio: 0,
-      subtotal: 0,
-      inStorage: 0,
-      out: 0,
-      itemsDb: [],
-    });
   };
 }

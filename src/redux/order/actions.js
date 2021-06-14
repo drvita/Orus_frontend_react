@@ -1,8 +1,9 @@
 import { TYPE } from "./types";
 //SAGAS
-export const getListOrder = (payload = {}) => ({
+export const getListOrder = (payload = {}, idOrder) => ({
   type: TYPE.SAGA_GET_LIST,
   payload,
+  idOrder,
 });
 export const deleteOrder = (payload = {}) => ({
   type: TYPE.SAGA_DELETE_ORDER,

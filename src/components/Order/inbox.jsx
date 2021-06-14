@@ -13,6 +13,16 @@ class inboxOrderComponent extends Component {
     this.timeSearch = null;
   }
 
+  componentDidMount() {
+    const { searchText: search } = this.props;
+
+    if (search) {
+      this.setState({
+        search,
+      });
+    }
+  }
+
   componentDidUpdate(props, state) {
     const { search } = this.state;
 

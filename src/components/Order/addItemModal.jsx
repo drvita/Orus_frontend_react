@@ -79,7 +79,7 @@ function AddItemModal(props) {
       <div className="modal-dialog modal-dialog-centered" role="document">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">
+            <h5 className="modal-title text-primary text-bold">
               <i className="fas fa-plus mr-1"></i>
               Agregar producto
             </h5>
@@ -135,6 +135,8 @@ function AddItemModal(props) {
                   >
                     <div className="list-group m-0 list-group-flush">
                       {items.map((i) => {
+                        const total = i.cantidades > 0 ? i.cantidades : 0;
+
                         return (
                           <a
                             key={i.id}
@@ -152,11 +154,17 @@ function AddItemModal(props) {
                               setSearch(i.producto);
                             }}
                           >
-                            <span className="text-truncate text-uppercase">
+                            <span className="text-truncate text-uppercase text-primary text-bold">
                               {i.producto}
                             </span>
-                            <span className="badge badge-secondary badge-pill">
-                              {i.cantidades > 0 ? i.cantidades : 0}
+                            <span
+                              className={
+                                total
+                                  ? "badge badge-primary badge-pill"
+                                  : "badge badge-warning badge-pill"
+                              }
+                            >
+                              {total}
                             </span>
                           </a>
                         );

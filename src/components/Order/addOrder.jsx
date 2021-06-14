@@ -12,6 +12,7 @@ export default class AddOrder extends Component {
     this.state = {
       id: 0,
       paciente: {},
+      session: null,
       lab_id: 0,
       npedidolab: "",
       observaciones: "",
@@ -26,15 +27,13 @@ export default class AddOrder extends Component {
     this.controller = new AbortController();
     this.signal = this.controller.signal;
   }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
-  }
   componentDidMount() {
     const { order } = this.props;
 
     this.setState({
       id: order.id,
       paciente: order.paciente,
+      session: order.session,
       lab_id: (order.examen && order.examen.id) ?? 0,
       npedidolab: order.folio_lab,
       observaciones: order.observaciones,
@@ -52,6 +51,7 @@ export default class AddOrder extends Component {
     const {
         id,
         paciente,
+        session,
         lab_id,
         npedidolab,
         ncaja,
@@ -247,6 +247,7 @@ export default class AddOrder extends Component {
               <Items
                 items={items}
                 codes={codes}
+                session={session}
                 ChangeInput={this.handleChangeInput}
               />
             ) : null}

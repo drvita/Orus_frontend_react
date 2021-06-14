@@ -117,6 +117,9 @@ export default class listExamsCustomer extends Component {
         </div>
         <div className="card-footer text-right">
           <div className="btn-group">
+            <button className="btn btn-default btn-sm" onClick={this.getExams}>
+              <i className="fas fa-sync mr-1"></i> Recargar
+            </button>
             <button
               className="btn btn-default btn-sm"
               onClick={(e) => this.props.ChangeInput("exam", { id: 0 })}

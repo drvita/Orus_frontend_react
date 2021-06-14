@@ -196,7 +196,7 @@ export default class Routers extends Component {
 
                       <Route
                         extric
-                        path="/pedidos"
+                        path="/pedidos/:id?"
                         render={(props) => <Order {...props} />}
                       />
 

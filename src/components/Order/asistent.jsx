@@ -183,7 +183,7 @@ export default class Asistent extends Component {
                   }}
                 >
                   <i className="fas fa-arrow-left mr-1"></i>
-                  {items.length ? "Cancelar" : "Cerrar"}
+                  {contact_id ? "Cancelar" : "Cerrar"}
                 </a>
                 <button
                   className={

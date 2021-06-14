@@ -6,15 +6,6 @@ export default class Items extends Component {
     super(props);
     this.state = {
       id: 0,
-      store_items_id: 0,
-      session: props.session ? props.session : "",
-      cantidad: 1,
-      precio: 0,
-      subtotal: 0,
-      inStorage: 0,
-      producto: "",
-      out: 0,
-      descripcion: "",
       itemNew: false,
       itemsDb: [],
       load: false,
@@ -24,15 +15,34 @@ export default class Items extends Component {
 
   render() {
     const { itemNew, load } = this.state,
-      { items, codes } = this.props;
+      { items, codes, session, status = true } = this.props;
     this.total = 0;
 
     return (
       <div className="card">
         <div className="card-header">
-          <h5>
+          <h3 className="card-title">
             <i className="fas fa-shopping-cart"></i> Pedido
-          </h5>
+          </h3>
+          <div className="card-tools">
+            {session && !itemNew ? (
+              <button
+                className={
+                  !status
+                    ? "btn btn-too btn-outline-secondary disabled"
+                    : "btn btn-too btn-primary text-bold"
+                }
+                disabled={!status ? true : false}
+                onClick={(e) => {
+                  this.setState({
+                    itemNew: !this.state.itemNew,
+                  });
+                }}
+              >
+                <i className="fas fa-plus mr-1"></i> Agregar
+              </button>
+            ) : null}
+          </div>
         </div>
         <div className="card-body table-responsive p-0">
           <table className="table table-sm m-0">
@@ -48,7 +58,9 @@ export default class Items extends Component {
                 <th scope="col" className="text-center" style={{ width: 120 }}>
                   Subtotal
                 </th>
-                <th scope="col" style={{ width: 60 }}></th>
+                <th scope="col" style={{ minWidth: "4rem", maxWidth: "8rem" }}>
+                  <span className="sr-only">acciones</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -73,12 +85,12 @@ export default class Items extends Component {
                       <td className="text-right">
                         $ {item.subtotal.toFixed(2)}
                       </td>
-                      <td className="d-print-none">
+                      <td className="d-print-none text-right">
                         <button
                           className={
                             this.props.status
-                              ? "btn btn-outline-light btn-sm disabled"
-                              : "btn btn-outline-light btn-sm"
+                              ? "btn btn-outline-secondary btn-sm disabled"
+                              : "btn btn-outline-danger btn-sm"
                           }
                           disabled={this.props.status ? true : false}
                           onClick={(e) => {
@@ -102,33 +114,13 @@ export default class Items extends Component {
             </tbody>
             <tfoot>
               <tr>
-                <td className="text-right" colSpan="2">
-                  {!this.props.status && !this.props.addCancel ? (
-                    <button
-                      className={
-                        this.props.status
-                          ? "btn btn-outline-warning btn-sm disabled"
-                          : itemNew
-                          ? "btn btn-outline-dark btn-sm"
-                          : "btn btn-outline-primary btn-sm"
-                      }
-                      disabled={this.props.status ? true : false}
-                      onClick={(e) => {
-                        this.setState({
-                          itemNew: !this.state.itemNew,
-                        });
-                      }}
-                    >
-                      <i
-                        className={itemNew ? "fas fa-undo" : "fas fa-plus"}
-                      ></i>
-                    </button>
-                  ) : null}
-                </td>
+                <td className="text-right" colSpan="2"></td>
                 <th scope="row" className="text-right">
-                  Subtotal
+                  Total
                 </th>
-                <td className="text-right">$ {this.total.toFixed(2)}</td>
+                <td className="text-right text-primary">
+                  <label>$ {this.total.toFixed(2)}</label>
+                </td>
                 <td></td>
               </tr>
             </tfoot>
@@ -191,7 +183,31 @@ export default class Items extends Component {
   handleAddItem = (item) => {
     if (item) {
       let { items } = this.props;
-      items.push(item);
+      const itemFound = items.findIndex(
+        (e) => e.store_items_id === item.store_items_id
+      );
+
+      if (itemFound !== -1) {
+        const cantidad = items[itemFound].cantidad + item.cantidad,
+          precio = item.precio,
+          subtotal = items[itemFound].precio * cantidad;
+
+        if (items[itemFound].precio === precio) {
+          items[itemFound].cantidad = cantidad;
+          items[itemFound].subtotal = subtotal;
+        } else {
+          items.push(item);
+        }
+      } else {
+        items.push(item);
+      }
+
+      console.log(
+        "[DEBUG] show item before add finish",
+        item,
+        items,
+        itemFound
+      );
       this.props.ChangeInput("items", items);
     }
   };

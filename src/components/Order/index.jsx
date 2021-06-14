@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
+//import { Link } from "react-router-dom";
 import Inbox from "./inbox";
 import Asistent from "./asistent";
 import AddOrder from "./addOrder";
@@ -16,25 +17,26 @@ class indexOrderComponent extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    const sdd = JSON.parse(localStorage.getItem("OrusOrderDashboard")),
+    const LS = localStorage.getItem("OrusSystem"),
+      { orders: ORDER = {} } = JSON.parse(LS ? LS : "{}"),
       {
-        status: STATUS,
-        page: PAGE,
-        search: SEARCH,
-        orderby: ORDERBY,
-        order: ORDER,
-        itemsPage: IP,
-      } = props;
+        orderBy: ORDERBY = "updated_at",
+        order: ORD = "desc",
+        search: SEARCH = "",
+        page: PAGE = 1,
+        status: STATUS = "",
+        itemsPage: IP = 10,
+      } = ORDER;
 
     this.state = {
-      panel: sdd ? sdd.panel : 0,
+      panel: 0,
       order: {},
       update: false,
       editId: [],
       options: {
         page: PAGE,
         orderby: ORDERBY,
-        order: ORDER,
+        order: ORD,
         search: SEARCH,
         status: STATUS,
         itemsPage: IP,
@@ -44,9 +46,10 @@ class indexOrderComponent extends Component {
   componentDidMount() {
     //localStorage.setItem("OrusOrderDashboard", JSON.stringify(this.state));
     const { options } = this.state,
-      { getListOrder: _getListOrder } = this.props;
+      { getListOrder: _getListOrder, match } = this.props,
+      { id } = match.params;
 
-    _getListOrder(options);
+    _getListOrder(options, parseInt(id));
   }
   componentDidUpdate(props, state) {
     const {
@@ -76,6 +79,7 @@ class indexOrderComponent extends Component {
           break;
         }
         case 3: {
+          this.props.history.push(`/pedidos/${ID}`);
           break;
         }
         default:
@@ -93,10 +97,13 @@ class indexOrderComponent extends Component {
               key: "orderId",
               val: 0,
             });
+            this.props.history.push("/pedidos");
           }
           break;
       }
     }
+
+    //console.log("[DEBUG] Component update in params:", ID, ORDERS);
     if (props.orderId !== ID && ID && ORDERS.length) {
       let order = {};
 
@@ -166,6 +173,7 @@ class indexOrderComponent extends Component {
     const { panel, update, editId, options, order } = this.state,
       {
         orderId,
+        search: SEARCH,
         orders: ORDERS_LIST,
         meta: META,
         loading: LOADING,
@@ -209,6 +217,7 @@ class indexOrderComponent extends Component {
             update={update}
             editId={editId}
             options={options}
+            searchText={SEARCH}
             loading={LOADING}
             handleSearchOrdes={this.handleSearchOrdes}
             handlePageOrder={this.handlePageOrder}

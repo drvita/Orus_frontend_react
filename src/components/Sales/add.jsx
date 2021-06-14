@@ -125,7 +125,7 @@ export default class SaleAdd extends Component {
                             <strong>
                               {order_id ? (
                                 <Link
-                                  to={"/pedidos/registro/" + order_id}
+                                  to={"/pedidos/" + order_id}
                                   onClick={(e) => {
                                     this.changePage("/pedidos/registro");
                                   }}
@@ -148,7 +148,7 @@ export default class SaleAdd extends Component {
                     </div>
                     <Items
                       items={items}
-                      status={status && this.total === pagado ? true : false}
+                      status={false}
                       session={session}
                       ChangeInput={this.handleChangeInput}
                       addCancel={order_id ? true : false}

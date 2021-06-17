@@ -1,13 +1,15 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 import moment from "moment";
 import "moment/locale/es";
 import Header from "../Layouts/headerTable";
 import Filter from "./index_filter";
 import Pagination from "../Layouts/pagination";
 import Actions from "../Layouts/actionsTable";
+import { contactActions } from "../../redux/contacto";
 
-export default class Contacts extends Component {
+class IndexContactComponent extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
@@ -27,12 +29,16 @@ export default class Contacts extends Component {
       business: sdd && sdd.business ? sdd.business : "",
       host: ls.host,
       token: ls.token,
+      options: {
+        page: 1,
+        orderby: "created_at",
+        order: "desc",
+        search: "",
+        itemsPage: 20,
+      },
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
-  }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
     this.getContacts();
@@ -69,7 +75,8 @@ export default class Contacts extends Component {
   }
 
   render() {
-    let { contacts, load } = this.state,
+    const { contacts, meta } = this.props;
+    let { load } = this.state,
       dataHeaders = [
         { name: "Nombre", type: "name", filter: true },
         { name: "RFC", type: "name", filter: true },
@@ -95,21 +102,18 @@ export default class Contacts extends Component {
               changeFilters={this.onchangeSearch}
               handleChangePage={this.handleChangePage}
             />
-            <Pagination
-              meta={contacts.meta}
-              handleChangePage={this.handleChangePage}
-            />
+            {/*<Pagination meta={meta} handleChangePage={this.handleChangePage} />*/}
           </div>
         </div>
         <div className="card-body table-responsive p-0">
           <table className="table table-sm table-bordered table-hover">
-            <Header
-              orderby={this.state.orderby}
-              order={this.state.order}
-              data={dataHeaders}
-              actions={true}
-              handleOrder={this.handleOrder}
-            />
+            {
+              <Header
+                data={dataHeaders}
+                actions={true}
+                handleOrder={this.handleOrder}
+              />
+            }
             <tbody>
               {load ? (
                 <tr>
@@ -119,8 +123,8 @@ export default class Contacts extends Component {
                     </div>
                   </td>
                 </tr>
-              ) : Object.keys(contacts.data).length ? (
-                contacts.data.map((contact) => {
+              ) : contacts.length ? (
+                contacts.map((contact) => {
                   return (
                     <tr key={contact.id}>
                       <td>
@@ -269,64 +273,30 @@ export default class Contacts extends Component {
     });
   };
   getContacts() {
-    //Variables
-    let { host, token, order, orderby, search, page, type, business, load } =
-        this.state,
-      url = "http://" + host + "/api/contacts",
-      ordenar = `&orderby=${orderby}&order=${order}`,
-      buscar = search ? `&search=${search}` : "",
-      pagina = page > 0 ? "?page=" + page : "?page=1",
-      tipo = type === "" ? "" : "&type=" + type,
-      negocio = business === "" ? "" : "&business=" + business;
+    const { _getListContact } = this.props,
+      { options } = this.state;
 
-    //Mandamos señal de carga si no lo he hecho
-    if (!load) {
-      this.setState({
-        load: true,
-      });
-    }
-    //Realiza la peticion de los contactos
-    console.log("Descargando contactos del API");
-    fetch(url + pagina + ordenar + buscar + tipo + negocio, {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.data) {
-          console.log("Almacenando contactos");
-          this.setState({
-            contacts: data,
-            load: false,
-          });
-        } else {
-          console.error("Orus: ", data.message);
-          window.Swal.fire("Error", "Al descargar contactos", "error");
-          this.setState({
-            load: false,
-          });
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-        this.setState({
-          load: false,
-        });
-      });
+    _getListContact({
+      ...options,
+    });
+
+    this.setState({
+      load: false,
+    });
   }
 }
+
+const mapStateToProps = (state) => {
+    return {
+      contacts: state.contact.list,
+      meta: state.contact.metaList,
+    };
+  },
+  mapActionsToProps = {
+    _getListContact: contactActions.getListContact,
+  };
+
+export default connect(
+  mapStateToProps,
+  mapActionsToProps
+)(IndexContactComponent);

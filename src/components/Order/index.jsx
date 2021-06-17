@@ -178,6 +178,7 @@ class indexOrderComponent extends Component {
         meta: META,
         loading: LOADING,
         categories: CATEGORY_LIST = {},
+        userRole: ROL = null,
       } = this.props;
     let showpanel = null;
 
@@ -203,6 +204,7 @@ class indexOrderComponent extends Component {
             orderId={orderId}
             order={order}
             loading={LOADING}
+            userRole={ROL}
             handleSaveOrder={this.handleSaveOrder}
             handleChangeInput={this.handleChangeInput}
             handleDeleteOrder={this.handleDeleteOrder}
@@ -437,21 +439,22 @@ class indexOrderComponent extends Component {
   };
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({ order, category, logging }) => {
     return {
-      orders: state.order.list,
-      meta: state.order.metaList,
-      orderId: state.order.orderId,
-      status: state.order.status,
-      page: state.order.page,
-      search: state.order.search,
-      orderby: state.order.orderby,
-      order: state.order.order,
-      itemsPage: state.order.itemsPage,
-      loading: state.order.loading,
-      categories: state.category.list,
-      messages: state.order.messages,
-      errors: state.order.errors,
+      orders: order.list,
+      meta: order.metaList,
+      orderId: order.orderId,
+      status: order.status,
+      page: order.page,
+      search: order.search,
+      orderby: order.orderby,
+      order: order.order,
+      itemsPage: order.itemsPage,
+      loading: order.loading,
+      categories: category.list,
+      messages: order.messages,
+      errors: order.errors,
+      userRole: logging.rol,
     };
   },
   mapActionsToProps = {

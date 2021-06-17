@@ -64,7 +64,15 @@ export default class AddOrder extends Component {
         created_at,
         examShow,
       } = this.state,
-      { handleDeleteOrder: DORDER, loading: LOADING } = this.props;
+      {
+        handleDeleteOrder: DORDER,
+        loading: LOADING,
+        userRole: ROL,
+      } = this.props,
+      fNacimiento =
+        new Date(paciente.f_nacimiento) < new Date()
+          ? moment(paciente.f_nacimiento)
+          : null;
 
     return (
       <div className="card card-warning card-outline">
@@ -160,9 +168,24 @@ export default class AddOrder extends Component {
         </div>
         <div className="p-0 card-body">
           <div className="mailbox-read-info">
-            <h5 className="text-capitalize">
+            <h5>
               <i className="mr-1 fas fa-user"></i>
-              {paciente.nombre}
+              <span className="text-capitalize">{paciente.nombre}</span>
+              {!ROL ? (
+                <span className="float-right mailbox-read-time">
+                  Fecha de nacimiento:{" "}
+                  {fNacimiento ? (
+                    <>
+                      {fNacimiento.format("LL")}
+                      <label className="ml-1">
+                        ({moment().diff(fNacimiento, "years")} años)
+                      </label>
+                    </>
+                  ) : (
+                    "NO REGISTRADO"
+                  )}
+                </span>
+              ) : null}
             </h5>
             <h6>
               {paciente.email ? (
@@ -172,7 +195,7 @@ export default class AddOrder extends Component {
                 </span>
               ) : null}
               <span className="float-right mailbox-read-time">
-                {moment(created_at).fromNow()}
+                Pedido registrado {moment(created_at).fromNow()}
               </span>
             </h6>
           </div>

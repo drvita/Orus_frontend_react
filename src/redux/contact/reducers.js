@@ -13,14 +13,12 @@ const LS = localStorage.getItem("OrusSystem"),
   DEFAULT_STATE = {
     list: [],
     metaList: {},
-    orderId: 0,
     orderby: OBY,
     order: ORD,
     search: SEARCH,
     page: PAGE,
     status: STATUS,
     itemsPage: IP,
-    errors: [],
     messages: [],
     loading: false,
   };
@@ -62,7 +60,6 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         ...state,
         ...payload.result,
         ...payload.options,
-        orderId: 0,
         messages: [],
         loading: false,
       };

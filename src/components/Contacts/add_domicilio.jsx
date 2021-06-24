@@ -1,9 +1,35 @@
-import React, { Component } from "react";
+import React from "react";
 
-export default class AddDomicilio extends Component {
-  render() {
-    let { calle, colonia, municipio, estado, cp } = this.props;
-    return (
+const DataDomiciliosComponent = (props) => {
+  const { domicilios, handleChangeData } = props,
+    { calle, colonia, municipio, estado, cp } = domicilios;
+  //const [inputs, setInputs] = useState("");
+
+  const catchInputs = (e) => {
+    const { name, value } = e.target;
+    let val = domicilios;
+
+    if (name === "calle") {
+      val.calle = value;
+    }
+    if (name === "colonia") {
+      val.colonia = value;
+    }
+    if (name === "municipio") {
+      val.municipio = value;
+    }
+    if (name === "estado") {
+      val.estado = value;
+    }
+    if (name === "cp") {
+      val.cp = value;
+    }
+
+    handleChangeData("domicilios", val);
+  };
+
+  return (
+    <>
       <div className="col">
         {calle ? (
           <small>
@@ -24,7 +50,7 @@ export default class AddDomicilio extends Component {
             placeholder="Calle y numero"
             name="calle"
             value={calle}
-            onChange={this.catchInputs}
+            onChange={catchInputs}
           />
         </div>
         {colonia ? (
@@ -46,7 +72,7 @@ export default class AddDomicilio extends Component {
             placeholder="Colonia"
             name="colonia"
             value={colonia}
-            onChange={this.catchInputs}
+            onChange={catchInputs}
           />
         </div>
         {municipio ? (
@@ -68,9 +94,11 @@ export default class AddDomicilio extends Component {
             placeholder="Municipio"
             name="municipio"
             value={municipio}
-            onChange={this.catchInputs}
+            onChange={catchInputs}
           />
         </div>
+      </div>
+      <div className="col">
         {estado ? (
           <small>
             <label>Estado</label>
@@ -90,7 +118,7 @@ export default class AddDomicilio extends Component {
             placeholder="Estado"
             name="estado"
             value={estado}
-            onChange={this.catchInputs}
+            onChange={catchInputs}
           />
         </div>
         {cp ? (
@@ -112,14 +140,12 @@ export default class AddDomicilio extends Component {
             placeholder="Codigo Postal"
             name="cp"
             value={cp}
-            onChange={this.catchInputs}
+            onChange={catchInputs}
           />
         </div>
       </div>
-    );
-  }
+    </>
+  );
+};
 
-  catchInputs = (x) => {
-    this.props.onChange(x);
-  };
-}
+export default DataDomiciliosComponent;

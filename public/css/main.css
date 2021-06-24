@@ -1,21 +1,30 @@
 @font-face {
-    font-family: "Oswald";
-    src: url("../css/static/Oswald-Regular.ttf");
+  font-family: "Oswald";
+  src: url("../css/static/Oswald-Regular.ttf");
 }
 @font-face {
-    font-family: "Oswald-light";
-    src: url("../css/static/Oswald-Light.ttf");
+  font-family: "Oswald-light";
+  src: url("../css/static/Oswald-Light.ttf");
 }
 @font-face {
-    font-family: "Oswald-bold";
-    src: url("../css/static/Oswald-Bold.ttf");
+  font-family: "Oswald-bold";
+  src: url("../css/static/Oswald-Bold.ttf");
 }
 @font-face {
-    font-family: "Oswald-semibold";
-    src: url("../css/static/Oswald-SemiBold.ttf");
+  font-family: "Oswald-semibold";
+  src: url("../css/static/Oswald-SemiBold.ttf");
 }
-html {font-family: Oswald-light,Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
-body {background-color: #C5CAE9;}
+html {
+  font-family: Oswald-light, Roboto, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+body {
+  background-color: #c5cae9;
+}
 div.donutChart {
-    min-height: 450px; width: 100%;
+  min-height: 450px;
+  width: 100%;
+}
+.cursor-pointer {
+  cursor: pointer;
 }

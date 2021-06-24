@@ -2,9 +2,17 @@ import { all } from "redux-saga/effects";
 import user from "./user";
 import order from "./order";
 import category from "./category";
-import store from "./store";
-import { contactSagas } from "../contacto/index";
+import { storeSagas } from "../store/";
+import { contactSagas } from "../contact/";
+import { examSagas } from "../exam/";
 
 export default function* rootSaga() {
-  yield all([user(), order(), category(), store(), contactSagas()]);
+  yield all([
+    user(),
+    order(),
+    category(),
+    storeSagas(),
+    contactSagas(),
+    examSagas(),
+  ]);
 }

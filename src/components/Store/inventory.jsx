@@ -14,6 +14,7 @@ export default class Inventory extends Component {
       load: false,
       items: [],
       meta: {},
+      price: 0,
     };
   }
   componentDidMount() {
@@ -36,6 +37,7 @@ export default class Inventory extends Component {
       load,
       items,
       meta,
+      price,
     } = this.state;
     let header = [],
       body = [],
@@ -149,9 +151,34 @@ export default class Inventory extends Component {
                     </div>
                   ) : (
                     <React.Fragment>
-                      <div className="text-center">
-                        Productos: {items.length}
+                      <div className="row mb-2">
+                        <div className="col">
+                          Total de productos: <label>{items.length}</label>
+                        </div>
+                        <div className="col-6">
+                          <div className="row">
+                            <label className="col-4 text-right">Precio</label>
+                            <div className="col">
+                              <input
+                                type="number"
+                                className="form-control"
+                                value={price}
+                                onChange={this.handelChangePrice}
+                              />
+                            </div>
+                            <div className="col">
+                              <button
+                                className="btn btn-primary btn-block"
+                                type="button"
+                                onClick={this.handleToPrice}
+                              >
+                                Cambiar
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
+
                       <div className="table-responsive">
                         <table className="table table-sm table-bordered table-hover">
                           <thead>
@@ -191,13 +218,13 @@ export default class Inventory extends Component {
                                     return (
                                       <td key={i} className="text-center">
                                         {items.length ? (
-                                          items.map((item) => {
+                                          items.map((item, index) => {
                                             //console.log("comp: ");
                                             return grad === item.graduacion ? (
                                               <React.Fragment>
                                                 {item.cantidades ? (
                                                   <span
-                                                    key={item.id}
+                                                    key={item.id + "-" + index}
                                                     className={
                                                       item.cantidades > 0
                                                         ? "badge badge-success"
@@ -257,11 +284,56 @@ export default class Inventory extends Component {
     );
   }
 
+  handleToPrice = () => {
+    const { price, catid_3: catid, load } = this.state;
+
+    if (price && catid) {
+      console.log("Send data to API", price, catid);
+
+      const ls = JSON.parse(localStorage.getItem("OrusSystem")),
+        url =
+          "http://" +
+          ls.host +
+          "/api/store/prices?cat=" +
+          catid +
+          "&price=" +
+          price;
+
+      //Cargando
+      if (!load) {
+        this.setState({
+          load: true,
+        });
+      }
+      //Categories main
+      fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + ls.token,
+        },
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          console.log("[Orus System] Item actualizados", result);
+          this.setState({
+            load: false,
+          });
+        });
+    }
+  };
+  handelChangePrice = (e) => {
+    const { value } = e.target;
+    this.setState({
+      price: parseInt(value),
+    });
+  };
   getItems = (catid) => {
     //Variables en localStorage
     const ls = JSON.parse(localStorage.getItem("OrusSystem")),
       { load } = this.state,
-      url = "http://" + ls.host + "/api/store?cat=" + catid;
+      url = "http://" + ls.host + "/api/store?cat=" + catid + "&itemsPage=500";
 
     //Cargando
     if (!load) {
@@ -285,7 +357,7 @@ export default class Inventory extends Component {
         return response.json();
       })
       .then((res) => {
-        console.log("Descarga de producto exitosa");
+        console.log("[Orus System] Descarga de producto exitosa");
         this.setState({
           items: res.data && res.data.length ? res.data : [],
           load: false,

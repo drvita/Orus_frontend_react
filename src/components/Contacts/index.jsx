@@ -1,275 +1,384 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import moment from "moment";
-import "moment/locale/es";
-import Header from "../Layouts/headerTable";
-import Filter from "./index_filter";
-import Pagination from "../Layouts/pagination";
-import Actions from "../Layouts/actionsTable";
-import { contactActions } from "../../redux/contacto";
+import Inbox from "../../layouts/list_inbox";
+import AddContact from "./add";
+import CardMenu from "../../layouts/card_menu";
+import { contactActions } from "../../redux/contact";
 
 class IndexContactComponent extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    let sdd = JSON.parse(localStorage.getItem("OrusContacts"));
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+    //let sdd = JSON.parse(localStorage.getItem("OrusContacts"));
     this.state = {
-      contacts: {
-        data: [],
-        meta: {},
-      },
-      load: true,
-      page: sdd ? sdd.page : 1,
-      orderby: sdd && sdd.orderby ? sdd.orderby : "created_at",
-      order: sdd && sdd.order ? sdd.order : "desc",
-      search: sdd && sdd.search ? sdd.search : "",
-      type: sdd && sdd.type ? sdd.type : "",
-      business: sdd && sdd.business ? sdd.business : "",
-      host: ls.host,
-      token: ls.token,
+      load: false,
+      contact: {},
+      newOrEdit: false,
+      contactSelected: "",
       options: {
         page: 1,
         orderby: "created_at",
         order: "desc",
         search: "",
-        itemsPage: 20,
+        itemsPage: 10,
       },
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
+    this.timeInterval = 0;
   }
   componentDidMount() {
-    this.getContacts();
-    localStorage.setItem(
-      "OrusContacts",
-      JSON.stringify({
-        page: this.state.page,
-        orderby: this.state.orderby,
-        order: this.state.order,
-        search: this.state.search,
-        type: this.state.type,
-        business: this.state.business,
-      })
-    );
-    console.log("[Contacts] Eliminando datos de contacto en uso");
-    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
+    const { match } = this.props,
+      { id } = match.params;
+
+    this.setState({
+      load: true,
+    });
+
+    if (id) {
+      this.timeInterval = setInterval(() => {
+        const { contacts } = this.props;
+        if (contacts.length) {
+          clearInterval(this.timeInterval);
+
+          contacts.every((contact) => {
+            if (contact.id === parseInt(id)) {
+              this.handleEditItem(contact);
+              return false;
+            }
+            return true;
+          });
+        }
+      }, 1000);
+    }
   }
   componentDidUpdate(props, state) {
-    if (state.load === false && this.state.load === true) {
-      console.log("Recargando contactos");
+    const { load } = this.state,
+      { messages: MSGS } = this.props;
+
+    if (state.load !== load && load === true) {
+      console.log("[Orus System] Recargando contactos");
       this.getContacts();
-      localStorage.setItem(
-        "OrusContacts",
-        JSON.stringify({
-          page: this.state.page,
-          orderby: this.state.orderby,
-          order: this.state.order,
-          search: this.state.search,
-          type: this.state.type,
-          business: this.state.business,
-        })
-      );
+    }
+
+    if (props.messages.length !== MSGS.length && MSGS.length) {
+      MSGS.forEach((msg) => {
+        const { type, text } = msg;
+        window.Swal.fire({
+          icon: type,
+          title: text,
+          showConfirmButton: type !== "error" ? false : true,
+          timer: type !== "error" ? 1500 : 9000,
+        });
+      });
     }
   }
 
+  handleSetSelectOptions = (e) => {
+    const { name, value } = e.target,
+      { options } = this.state;
+    let val = value;
+
+    if (name === "itemsPage") val = parseInt(value);
+
+    this.setState({
+      options: {
+        ...options,
+        [name]: val,
+      },
+      load: true,
+    });
+  };
+
   render() {
-    const { contacts, meta } = this.props;
-    let { load } = this.state,
-      dataHeaders = [
-        { name: "Nombre", type: "name", filter: true },
-        { name: "RFC", type: "name", filter: true },
-        { name: "E-mail", type: "email", filter: true },
-        { name: "Tipo", type: "type", filter: true },
-        { name: "Telefono" },
-        { name: "Actualizado", type: "updated_at", filter: true },
-        { name: "Registrado", type: "created_at", filter: true },
-      ];
+    const { contacts, loading, meta } = this.props,
+      { contact, newOrEdit, contactSelected, options } = this.state;
 
     return (
-      <div className="card card-danger card-outline">
-        <div className="card-header">
-          <h2 className="card-title text-danger">
-            <i className="fas fa-address-book mr-1"></i>
-            Lista de contactos
-          </h2>
-          <div className="card-tools">
-            <Filter
-              search={this.state.search}
-              type={this.state.type}
-              business={this.state.business}
-              changeFilters={this.onchangeSearch}
-              handleChangePage={this.handleChangePage}
-            />
-            {/*<Pagination meta={meta} handleChangePage={this.handleChangePage} />*/}
-          </div>
-        </div>
-        <div className="card-body table-responsive p-0">
-          <table className="table table-sm table-bordered table-hover">
-            {
-              <Header
-                data={dataHeaders}
-                actions={true}
-                handleOrder={this.handleOrder}
-              />
-            }
-            <tbody>
-              {load ? (
-                <tr>
-                  <td colSpan="10" className="text-center">
-                    <div className="spinner-border text-danger" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : contacts.length ? (
-                contacts.map((contact) => {
-                  return (
-                    <tr key={contact.id}>
-                      <td>
-                        <Link to={"/contactos/registro/" + contact.id}>
-                          <span className="badge badge-danger text-capitalize p-1">
-                            {contact.nombre}
-                            <i className="fas fa-pencil-alt ml-1"></i>
-                          </span>
-                        </Link>
-                      </td>
-                      <td className="text-uppercase">
-                        {contact.rfc ? contact.rfc : "--"}
-                      </td>
-                      <td className="text-lowercase">
-                        {contact.email ? contact.email : "--"}
-                      </td>
-                      <td className="text-uppercase">
-                        {contact.tipo ? (
-                          <span className="text-purple">Proveedor</span>
-                        ) : (
-                          <span className="text-green">Cliente</span>
-                        )}
-                      </td>
-                      <td>
-                        {contact.telefonos && contact.telefonos.t_movil
-                          ? contact.telefonos.t_movil
-                          : "--"}
-                      </td>
-                      <td>{moment(contact.updated_at).fromNow()}</td>
-                      <td>{moment(contact.created_at).format("ll")}</td>
-                      <Actions
-                        id={contact.id}
-                        item={contact.nombre}
-                        delete={contact.enUso ? null : this.handleDelete}
-                        edit={"/contactos/registro/"}
-                      />
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <th colSpan="10" className="text-center">
-                    No hay datos para mostrar
-                  </th>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="card-footer text-right">
-          <Link
-            to="/contactos/registro"
-            className="btn btn-outline-danger"
-            onClick={this.changePage}
-            id="/contactos/registro"
+      <div className="row">
+        <div className="col-sm-12 col-md-3">
+          <button
+            className="btn bg-indigo btn-block mb-3"
+            type="button"
+            disabled={newOrEdit}
+            onClick={(e) => {
+              e.preventDefault();
+
+              this.setState({
+                newOrEdit: true,
+              });
+            }}
           >
-            <i className="fas fa-plus" id="/contactos/registro"></i>
-            &nbsp; Nuevo contacto
-          </Link>
+            <i className="fas fa-plus mr-1"></i>
+            Nuevo contacto
+          </button>
+          {!newOrEdit ? (
+            <CardMenu title="Filtros">
+              <li className="nav-item p-2">
+                <select
+                  className="form-control "
+                  name="orderby"
+                  value={options.orderby}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="">-- Seleccione orden --</option>
+                  <option value="created_at">Fecha de registro</option>
+                  <option value="updated_at">Fecha de modificacion</option>
+                </select>
+              </li>
+              <li className="nav-item p-2">
+                <select
+                  className="form-control "
+                  name="order"
+                  value={options.order}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="asc">Ultimos</option>
+                  <option value="desc">Primeros</option>
+                </select>
+              </li>
+              <li className="nav-item p-2">
+                <select
+                  className="form-control "
+                  name="itemsPage"
+                  value={options.itemsPage}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="10">-- ver 10 --</option>
+                  <option value="20">-- ver 20 --</option>
+                  <option value="50">-- ver 50 --</option>
+                  <option value="100">-- ver 100 --</option>
+                </select>
+              </li>
+            </CardMenu>
+          ) : null}
+        </div>
+        <div className="col-sm-12 col-md-9">
+          {newOrEdit ? (
+            <AddContact
+              contact={contact}
+              handleClose={this.handleCloseEdit}
+              handleSave={this.handleSaveContact}
+            />
+          ) : (
+            <Inbox
+              title="Lista de contactos"
+              icon="id-badge"
+              color="indigo"
+              loading={loading}
+              meta={meta}
+              itemSelected={contactSelected}
+              handlePagination={this.handleChangePage}
+              handleSearch={this.handleSearch}
+              handleDeleteItem={this.handleDelete}
+              handleEditItem={this.handleEditItem}
+              handleSync={this.handleSync}
+            >
+              <table className="table table-hover table-striped">
+                <tbody>
+                  {contacts.length ? (
+                    <>
+                      {contacts.map((contact) => {
+                        return (
+                          <tr key={contact.id}>
+                            <td className="icheck-primary pl-2">
+                              <input
+                                type="checkbox"
+                                className="form-check-input mt-4"
+                                value={contact.id}
+                                id={"contact_" + contact.id}
+                                checked={
+                                  contactSelected === contact.id ? true : false
+                                }
+                                onChange={this.handleChangeCheckbox}
+                              />
+                              <label
+                                htmlFor={"contact_" + contact.id}
+                                className="sr-only"
+                              ></label>
+                            </td>
+                            <td className="icheck-primary">
+                              <div className="badge bg-indigo">
+                                # {contact.id}
+                              </div>
+                            </td>
+                            <td
+                              className="mailbox-name text-capitalize text-truncate"
+                              style={{ cursor: "pointer", maxWidth: 180 }}
+                              onClick={(e) => this.handleEditItem(contact)}
+                            >
+                              <label style={{ cursor: "pointer" }}>
+                                <i className="fas fa-user text-sm mr-2"></i>
+                                {contact.nombre}
+                              </label>
+                            </td>
+                            <td
+                              className="mailbox-attachment text-lowercase text-truncate"
+                              style={{ maxWidth: 180 }}
+                            >
+                              <span>
+                                <i className="fas fa-envelope text-sm mr-2 text-secondary"></i>
+                                {contact.email}
+                              </span>
+                            </td>
+                            <td className="mailbox-date text-muted text-truncate text-right">
+                              <span>
+                                <i className="fas fa-phone text-sm mr-2"></i>
+                                {contact.telefonos.t_movil
+                                  ? contact.telefonos.t_movil
+                                  : contact.telefonos.t_casa
+                                  ? contact.telefonos.t_casa
+                                  : contact.telefonos.t_oficina
+                                  ? contact.telefonos.t_oficina
+                                  : "--"}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <tr>
+                      <th className="text-center text-muted">
+                        No hay contactos registrados
+                      </th>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </Inbox>
+          )}
         </div>
       </div>
     );
   }
 
-  onchangeSearch = (key, value) => {
+  handleSaveContact = (id, data) => {
+    const { _saveContact } = this.props,
+      { options } = this.state;
+
+    _saveContact({
+      data,
+      id,
+      options,
+    });
+    this.handleCloseEdit();
+  };
+  handleCloseEdit = () => {
+    this.props.history.push(`/contactos`);
     this.setState({
-      [key]: value,
+      newOrEdit: false,
+      contact: {},
+      contactSelected: "",
     });
   };
-  handleOrder = (item) => {
+  handleSync = () => {
+    this.getContacts();
+  };
+  handleEditItem = (contact) => {
+    const { contactSelected } = this.state,
+      { contacts } = this.props;
+    let contactToSave = {};
+
+    if (contactSelected) {
+      contacts.every((contact) => {
+        if (contact.id === contactSelected) {
+          contactToSave = contact;
+          return false;
+        }
+
+        return true;
+      });
+    } else if (contact.id) {
+      contactToSave = contact;
+    }
+    if (contactToSave.id) {
+      this.props.history.push(`/contactos/${contactToSave.id}`);
+      this.setState({
+        contact: contactToSave,
+        contactSelected: contactToSave.id,
+        newOrEdit: true,
+      });
+    } else {
+      this.props.history.push(`/contactos`);
+      this.setState({
+        contact: {},
+        contactSelected: "",
+        newOrEdit: false,
+      });
+    }
+  };
+  handleChangeCheckbox = (e) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      this.setState({
+        contactSelected: parseInt(value),
+      });
+    } else {
+      this.setState({
+        contactSelected: "",
+      });
+    }
+  };
+  handleSearch = (search) => {
+    const { options } = this.state;
+
     this.setState({
-      orderby: item,
-      order: this.state.order === "desc" ? "asc" : "desc",
+      options: {
+        ...options,
+        search,
+      },
       load: true,
     });
   };
-  handleChangePage = (id) => {
+  handleChangePage = (page) => {
+    const { options } = this.state;
+
     this.setState({
-      page: id,
+      options: {
+        ...options,
+        page,
+      },
       load: true,
     });
   };
-  changePage = (e) => {
-    this.props.page(e.target.id);
-  };
-  handleDelete = (id, item) => {
+  handleDelete = () => {
+    const { contactSelected, options } = this.state,
+      { _deleteContact } = this.props;
+
+    console.log("[DEBUG] handele delete", contactSelected);
+
+    if (!contactSelected) {
+      window.Swal.fire({
+        title: "Verificacion",
+        text: "Debe de selecionar al menos un contacto para eliminar",
+        icon: "warning",
+      });
+      return false;
+    }
+
     //Confirmación de eliminacion
     window.Swal.fire({
       title: "Eliminar",
-      text: "¿Esta seguro de eliminar el contacto " + item.toUpperCase() + "?",
-      icon: "warning",
+      text: "¿Esta seguro de eliminar el contacto?",
+      icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          let { host, token } = this.state;
-
-          //Inicio de proceso de eliminción por API
-          console.log("Solicitud de eliminación por API");
-          return fetch("http://" + host + "/api/contacts/" + id, {
-            method: "DELETE",
-            signal: this.signal,
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then(async (response) => {
-              let back = {};
-              if (response.status !== 204) back = await response.json();
-              if (!response.ok) {
-                throw new Error(back.message);
-              }
-              return back;
-            })
-            .catch((e) => {
-              console.error("Orus fetch: ", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
-        }
-      },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        window.Swal.fire({
-          icon: "success",
-          title: "Contacto eliminado con exito",
-          showConfirmButton: false,
-          timer: 1500,
-        }).then((res) => this.getContacts());
-      } else if (result && !result.dismiss) {
-        console.log("Orus res: ", result);
-        window.Swal.fire(
-          "Error",
-          "Se perdio la conexion con el servidor",
-          "error"
+    }).then(({ dismiss }) => {
+      if (dismiss !== "cancel") {
+        console.log(
+          "[Orus System] Enviando datos para eliminar",
+          contactSelected
         );
+        _deleteContact({
+          id: contactSelected,
+          options,
+        });
       }
+      this.setState({
+        contactSelected: "",
+      });
     });
   };
   getContacts() {
@@ -286,14 +395,18 @@ class IndexContactComponent extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({ contact }) => {
     return {
-      contacts: state.contact.list,
-      meta: state.contact.metaList,
+      contacts: contact.list,
+      messages: contact.messages,
+      meta: contact.metaList,
+      loading: contact.loading,
     };
   },
   mapActionsToProps = {
     _getListContact: contactActions.getListContact,
+    _deleteContact: contactActions.deleteContact,
+    _saveContact: contactActions.saveContact,
   };
 
 export default connect(

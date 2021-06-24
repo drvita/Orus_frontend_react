@@ -1,106 +1,97 @@
-import React, { Component } from "react";
+import React from "react";
 
-export default class AddTelefonos extends Component {
-  render() {
-    let { t_casa, t_oficina, t_movil } = this.props,
-      verify =
-        t_casa.length === 10 ||
-        t_movil.length === 10 ||
-        t_oficina.length === 10;
+const DataTelefonosComponent = (props) => {
+  const { telefonos, handleChangeData } = props,
+    { t_casa = "", t_oficina = "", t_movil = "" } = telefonos;
 
-    return (
-      <div className="col">
-        {t_casa ? (
-          <div className="ml-1 mt-1">
-            <small>
-              <label>Telefono de casa</label>
-            </small>
-          </div>
-        ) : (
-          <br />
-        )}
-        <div className="input-group mb-1">
-          <div className="input-group-prepend">
-            <span className="input-group-text">
-              <i className="fas fa-phone"></i>
-            </span>
-          </div>
-          <input
-            type="tel"
-            className="form-control"
-            placeholder="Telefono de casa"
-            name="t_casa"
-            value={t_casa}
-            onChange={this.catchInputs}
-            pattern="^[\d]{10}$"
-            maxLength="10"
-          />
-        </div>
-        {t_oficina ? (
-          <div className="ml-1 mt-1">
-            <small>
-              <label>Telefono de oficina</label>
-            </small>
-          </div>
-        ) : (
-          <br />
-        )}
-        <div className="input-group mb-1">
-          <div className="input-group-prepend">
-            <span className="input-group-text">
-              <i className="fas fa-phone-alt"></i>
-            </span>
-          </div>
-          <input
-            type="tel"
-            className="form-control"
-            placeholder="Telefono de oficina"
-            name="t_oficina"
-            value={t_oficina}
-            onChange={this.catchInputs}
-            pattern="^[\d]{10}$"
-            maxLength="10"
-          />
-        </div>
-        {t_movil ? (
-          <div className="ml-1 mt-1">
-            <small>
-              <label>Telefono celular</label>
-            </small>
-          </div>
-        ) : (
-          <br />
-        )}
-        <div className="input-group mb-1">
-          <div className="input-group-prepend">
-            <span className="input-group-text">
-              <i className="fas fa-mobile-alt"></i>
-            </span>
-          </div>
-          <input
-            type="tel"
-            className="form-control"
-            placeholder="Telefono celular"
-            name="t_movil"
-            value={t_movil}
-            onChange={this.catchInputs}
-            pattern="^[\d]{10}$"
-            required={
-              t_casa.length !== 10 && t_oficina.length !== 10 ? true : false
-            }
-            maxLength="10"
-          />
-        </div>
-        {!verify ? (
-          <div className="mt-2 p-0 text-danger">
-            <small>Por lo menos capture un telefono</small>
-          </div>
-        ) : null}
-      </div>
-    );
-  }
+  const catchInputs = (e) => {
+    const { name, value } = e.target,
+      pattern = /^\d+$/gim;
+    let val = telefonos;
 
-  catchInputs = (x) => {
-    this.props.onChange(x);
+    //console.log("[DEBUG] catch inputs:", val);
+
+    if (name === "t_casa") {
+      if (pattern.test(value)) {
+        val.t_casa = value;
+        if (val.t_movil.length < 10) val.t_movil = value;
+      }
+    }
+    if (name === "t_oficina") {
+      if (pattern.test(value)) val.t_oficina = value;
+    }
+    if (name === "t_movil") {
+      if (pattern.test(value)) val.t_movil = value;
+    }
+    handleChangeData("telefonos", val);
   };
-}
+
+  return (
+    <>
+      <div className="col">
+        <div className="form-group">
+          <label>Telefono personal</label>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <span className="input-group-text">
+                <i className="fas fa-phone"></i>
+              </span>
+            </div>
+            <input
+              type="tel"
+              className="form-control"
+              placeholder="(999) 999 9999"
+              maxLength="10"
+              name="t_casa"
+              value={t_casa}
+              onChange={catchInputs}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="col">
+        <div className="form-group">
+          <label>Telefono para recados</label>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <span className="input-group-text">
+                <i className="fas fa-phone"></i>
+              </span>
+            </div>
+            <input
+              type="tel"
+              className="form-control"
+              placeholder="(999) 999 9999"
+              maxLength="10"
+              value={t_oficina}
+              onChange={catchInputs}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="col">
+        <div className="form-group">
+          <label>Numero de whatsApp</label>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <span className="input-group-text">
+                <i className="fas fa-phone"></i>
+              </span>
+            </div>
+            <input
+              type="tel"
+              className="form-control"
+              placeholder="(999) 999 9999"
+              maxLength="10"
+              name="t_movil"
+              value={t_movil}
+              onChange={catchInputs}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default DataTelefonosComponent;

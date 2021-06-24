@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { getListStore, setListStore } from "../../redux/store/actions";
+import { storeActions } from "../../redux/store/";
 
 function AddItemModal(props) {
   const {
@@ -266,8 +266,8 @@ const mapStateToProps = (state) => {
     };
   },
   mapActionsToProps = {
-    getListStore,
-    setListStore,
+    getListStore: storeActions.getListStore,
+    setListStore: storeActions.setListStore,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(AddItemModal);

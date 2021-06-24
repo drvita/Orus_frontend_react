@@ -12,8 +12,8 @@ import Categories from "./components/Store/categories";
 import Brands from "./components/Store/brands";
 import Inventory from "./components/Store/inventory";
 import Contacts from "./components/Contacts/index";
-import ContactsAdd from "./components/Contacts/add";
-import AddByContact from "./components/Contacts/addByContact";
+//import ContactsAdd from "./components/Contacts/add";
+//import AddByContact from "./components/Contacts/addByContact";
 import Tools from "./components/Layouts/tools";
 import Exam from "./components/Exam/index";
 import ExamAdd from "./components/Exam/add";
@@ -131,29 +131,8 @@ export default class Routers extends Component {
                         )}
                       />
                       <Route
-                        path="/contactos/registro/:id?"
-                        render={(props) => (
-                          <ContactsAdd
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
                         extric
-                        path="/contactos/add"
-                        render={(props) => (
-                          <AddByContact
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
-                        extric
-                        path="/contactos"
+                        path="/contactos/:id?"
                         render={(props) => (
                           <Contacts
                             {...props}

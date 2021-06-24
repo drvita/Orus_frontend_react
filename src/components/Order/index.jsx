@@ -16,17 +16,6 @@ import { getListCategories } from "../../redux/category/actions";
 class indexOrderComponent extends Component {
   constructor(props) {
     super(props);
-    //Variables en localStorage
-    const LS = localStorage.getItem("OrusSystem"),
-      { orders: ORDER = {} } = JSON.parse(LS ? LS : "{}"),
-      {
-        orderBy: ORDERBY = "updated_at",
-        order: ORD = "desc",
-        search: SEARCH = "",
-        page: PAGE = 1,
-        status: STATUS = "",
-        itemsPage: IP = 10,
-      } = ORDER;
 
     this.state = {
       panel: 0,
@@ -34,17 +23,16 @@ class indexOrderComponent extends Component {
       update: false,
       editId: [],
       options: {
-        page: PAGE,
-        orderby: ORDERBY,
-        order: ORD,
-        search: SEARCH,
-        status: STATUS,
-        itemsPage: IP,
+        page: 1,
+        orderby: "updated_at",
+        order: "desc",
+        search: "",
+        status: "",
+        itemsPage: 10,
       },
     };
   }
   componentDidMount() {
-    //localStorage.setItem("OrusOrderDashboard", JSON.stringify(this.state));
     const { options } = this.state,
       { getListOrder: _getListOrder, match } = this.props,
       { id } = match.params;

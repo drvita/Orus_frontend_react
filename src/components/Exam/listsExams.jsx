@@ -24,7 +24,7 @@ export default class ListsExams extends Component {
     };
   }
   componentDidMount() {
-    if (this.props.exam && !this.props.exam.id) {
+    if (!this.props.exam) {
       this.getExams();
     } else {
       this.setState({
@@ -358,9 +358,6 @@ export default class ListsExams extends Component {
                           <Link
                             className="btn btn-outline-info btn-sm"
                             to={"/consultorio/registro/" + row.id}
-                            onClick={(e) => {
-                              this.changePage("/consultorio/registro/");
-                            }}
                             alt="Ver examen"
                           >
                             <i className="fas fa-share"></i> Ver examen
@@ -618,9 +615,6 @@ export default class ListsExams extends Component {
         }
       }
     });
-  };
-  changePage = (e) => {
-    this.props.page(e);
   };
   getExams = () => {
     const { load, host, token } = this.state;

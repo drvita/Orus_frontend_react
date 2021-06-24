@@ -24,8 +24,6 @@ export default class AddOrder extends Component {
       created_at: null,
       nota: 0,
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
   }
   componentDidMount() {
     const { order } = this.props;

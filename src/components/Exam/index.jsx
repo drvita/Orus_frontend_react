@@ -1,21 +1,16 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import moment from "moment";
 import Inbox from "../../layouts/list_inbox";
 import CardMenu from "../../layouts/card_menu";
 import { examActions } from "../../redux/exam/";
+import { contactActions } from "../../redux/contact";
+import AddOrNew from "./add";
 
 class IndexExamComponent extends Component {
   constructor(props) {
     super(props);
-    //Variables en localStorage
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
-      exams: {
-        data: [],
-        meta: {},
-      },
       newOrEdit: false,
       load: false,
       options: {
@@ -28,8 +23,7 @@ class IndexExamComponent extends Component {
         date: "",
       },
       examSelected: "",
-      host: ls.host,
-      token: ls.token,
+      exam: {},
     };
   }
   componentDidMount() {
@@ -57,12 +51,302 @@ class IndexExamComponent extends Component {
     }
   }
 
+  render() {
+    const { meta, loading, exams } = this.props,
+      { newOrEdit, options, examSelected, exam } = this.state;
+
+    return (
+      <div className="row">
+        <div className="col-sm-12 col-md-2">
+          <button
+            className="btn bg-info btn-block mb-3"
+            type="button"
+            disabled={newOrEdit}
+            onClick={(e) => {
+              const { _setListContact } = this.props;
+
+              this.setState({
+                newOrEdit: true,
+              });
+              _setListContact({
+                result: {
+                  list: [],
+                  metaList: {},
+                },
+              });
+              this.props.history.push(`/consultorio/new`);
+            }}
+          >
+            <i className="fas fa-plus mr-1"></i>
+            Nuevo examen
+          </button>
+          {!newOrEdit ? (
+            <CardMenu title="Filtros">
+              <li className="nav-item p-2">
+                <label htmlFor="orderby">Ordenar por</label>
+                <select
+                  className="form-control "
+                  name="orderby"
+                  id="orderby"
+                  value={options.orderby}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="created_at">Fecha de registro</option>
+                  <option value="updated_at">Fecha de modificacion</option>
+                </select>
+              </li>
+              <li className="nav-item p-2">
+                <label htmlFor="date">Fecha</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={
+                    options.date
+                      ? moment(options.date).format("YYYY-MM-DD")
+                      : ""
+                  }
+                  className="form-control"
+                  onChange={this.handleSetSelectOptions}
+                />
+                <button
+                  type="button"
+                  className="btn btn-info btn-block text-bold"
+                  onClick={(e) => {
+                    const { options } = this.state;
+
+                    this.setState({
+                      options: {
+                        ...options,
+                        date: "",
+                      },
+                      load: true,
+                    });
+                  }}
+                >
+                  <i className="fas fa-trash mr-1"></i>
+                  Borrar
+                </button>
+              </li>
+              <li className="nav-item p-2">
+                <label htmlFor="order">Mostrar por</label>
+                <select
+                  className="form-control "
+                  name="order"
+                  id="order"
+                  value={options.order}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="asc">Antiguos</option>
+                  <option value="desc">Recientes</option>
+                </select>
+              </li>
+              <li className="nav-item p-2">
+                <label htmlFor="itemsPage">Numero de examenes</label>
+                <select
+                  className="form-control "
+                  name="itemsPage"
+                  id="itemsPage"
+                  value={options.itemsPage}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="10">ver 10</option>
+                  <option value="20">ver 20</option>
+                  <option value="50">ver 50</option>
+                  <option value="100">ver 100</option>
+                </select>
+              </li>
+              <li className="nav-item p-2">
+                <label htmlFor="status">Estado</label>
+                <select
+                  className="form-control "
+                  name="status"
+                  id="status"
+                  value={options.status}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="">-- Todos --</option>
+                  <option value="1">Solo terminados</option>
+                  <option value="0">En proceso</option>
+                </select>
+              </li>
+            </CardMenu>
+          ) : null}
+        </div>
+        <div className="col-sm-12 col-md-10">
+          {newOrEdit ? (
+            <AddOrNew exam={exam} handleClose={this.handleCloseEdit} />
+          ) : (
+            <Inbox
+              title="Lista de examenes"
+              icon="notes-medical"
+              color="info"
+              loading={loading}
+              meta={meta}
+              itemSelected={examSelected}
+              handlePagination={this.handleChangePage}
+              handleSearch={this.handleSearch}
+              handleDeleteItem={this.handleDelete}
+              handleEditItem={this.handleEditItem}
+              handleSync={this.handleSync}
+            >
+              <table className="table table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>Estado</th>
+                    <th>ESF</th>
+                    <th>CIL</th>
+                    <th>EJE</th>
+                    <th>ADC</th>
+                    <th>MED</th>
+                    <th>DP</th>
+                    <th>ALT</th>
+                    <th>Realizado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {exams.length ? (
+                    <>
+                      {exams.map((exam) => {
+                        return (
+                          <tr key={exam.id}>
+                            <td className="icheck-primary pl-2">
+                              <input
+                                type="checkbox"
+                                className="form-check-input mt-4"
+                                value={exam.id}
+                                id={"exam_" + exam.id}
+                                checked={
+                                  examSelected === exam.id ? true : false
+                                }
+                                onChange={this.handleChangeCheckbox}
+                                disabled={exam.estado}
+                              />
+                              <label
+                                htmlFor={"exam_" + exam.id}
+                                className="sr-only"
+                              ></label>
+                            </td>
+                            <td className="mailbox-name text-capitalize text-truncate">
+                              <a
+                                href="#edit"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  this.handleEditItem(exam.id);
+                                }}
+                              >
+                                <span
+                                  className={
+                                    exam.estado
+                                      ? "text-muted"
+                                      : "text-dark text-bold"
+                                  }
+                                >
+                                  <i className="fas fa-user text-sm mr-2"></i>
+                                  {exam.paciente.nombre}
+                                </span>
+                              </a>
+                            </td>
+                            <td
+                              className="text-center"
+                              style={{ cursor: "pointer" }}
+                            >
+                              {exam.estado ? (
+                                <i
+                                  className="fas fa-clipboard-check text-muted"
+                                  title="Terminado"
+                                ></i>
+                              ) : (
+                                <i
+                                  className="fas fa-clipboard text-info"
+                                  title="En proceso"
+                                ></i>
+                              )}
+                            </td>
+                            <td>
+                              {exam.esferaod}/{exam.esferaoi}
+                            </td>
+                            <td>
+                              {exam.cilindrod}/{exam.cilindroi}
+                            </td>
+                            <td>
+                              {exam.ejeod}/{exam.ejeoi}
+                            </td>
+                            <td>
+                              {exam.adiciond}/{exam.adicioni}
+                            </td>
+                            <td>
+                              {exam.adicion_media_od}/{exam.adicion_media_oi}
+                            </td>
+                            <td>
+                              {exam.dpod}/{exam.dpoi}
+                            </td>
+                            <td>
+                              {exam.alturaod}/{exam.alturaoi}
+                            </td>
+                            <td>{moment(exam.created_at).fromNow()}</td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <tr>
+                      <th className="text-center text-muted" colSpan="12">
+                        No hay examenes registrados
+                      </th>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </Inbox>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  handleCloseEdit = () => {
+    this.setState({
+      newOrEdit: false,
+      exam: {},
+      examSelected: "",
+      load: true,
+    });
+    this.props.history.push(`/consultorio`);
+  };
+  handleEditItem = (item = null) => {
+    const { examSelected } = this.state,
+      { exams } = this.props,
+      id = item ?? examSelected,
+      exam = exams.filter((e) => e.id === id);
+
+    if (exam.length) {
+      console.log("[Orus System] Editar usuario", id);
+      this.setState({
+        exam: exam[0],
+        newOrEdit: true,
+        examSelected: id,
+      });
+      this.props.history.push(`/consultorio/${id}`);
+    } else {
+      this.setState({
+        newOrEdit: false,
+        exam: {},
+        examSelected: "",
+        load: true,
+      });
+      this.props.history.push(`/consultorio`);
+    }
+  };
   handleSetSelectOptions = (e) => {
     const { name, value } = e.target,
       { options } = this.state;
     let val = value;
 
     if (name === "itemsPage") val = parseInt(value);
+    if (name === "date") val = value ? value : "";
 
     //console.log("[DEBUG] manejando filtros", name, value, val);
     this.setState({
@@ -102,7 +386,6 @@ class IndexExamComponent extends Component {
   };
   handleChangePage = (page) => {
     const { options } = this.state;
-    console.log("Cambio de pagina", page);
     this.setState({
       options: {
         ...options,
@@ -114,283 +397,40 @@ class IndexExamComponent extends Component {
   handleSync = () => {
     this.getExams();
   };
-
-  render() {
-    const { meta, loading, exams } = this.props;
-    const { newOrEdit, options, examSelected } = this.state;
-
-    return (
-      <div className="row">
-        <div className="col-sm-12 col-md-3">
-          <button
-            className="btn bg-info btn-block mb-3"
-            type="button"
-            disabled={newOrEdit}
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <i className="fas fa-plus mr-1"></i>
-            Nuevo examen
-          </button>
-          {!newOrEdit ? (
-            <CardMenu title="Filtros">
-              <li className="nav-item p-2">
-                <select
-                  className="form-control "
-                  name="orderby"
-                  value={options.orderby}
-                  onChange={this.handleSetSelectOptions}
-                >
-                  <option value="">-- Seleccione orden --</option>
-                  <option value="created_at">Fecha de registro</option>
-                  <option value="updated_at">Fecha de modificacion</option>
-                </select>
-              </li>
-              <li className="nav-item p-2">
-                <select
-                  className="form-control "
-                  name="order"
-                  value={options.order}
-                  onChange={this.handleSetSelectOptions}
-                >
-                  <option value="asc">Ultimos</option>
-                  <option value="desc">Primeros</option>
-                </select>
-              </li>
-              <li className="nav-item p-2">
-                <select
-                  className="form-control "
-                  name="itemsPage"
-                  value={options.itemsPage}
-                  onChange={this.handleSetSelectOptions}
-                >
-                  <option value="10">-- ver 10 --</option>
-                  <option value="20">-- ver 20 --</option>
-                  <option value="50">-- ver 50 --</option>
-                  <option value="100">-- ver 100 --</option>
-                </select>
-              </li>
-            </CardMenu>
-          ) : null}
-        </div>
-        <div className="col-sm-12 col-md-9">
-          {newOrEdit ? (
-            <span>Ediar examenes o crear</span>
-          ) : (
-            <Inbox
-              title="Lista de examenes"
-              icon="notes-medical"
-              color="info"
-              loading={loading}
-              meta={meta}
-              itemSelected={examSelected}
-              handlePagination={this.handleChangePage}
-              handleSearch={this.handleSearch}
-              handleDeleteItem={this.handleDelete}
-              //handleEditItem={this.handleEditItem}
-              handleSync={this.handleSync}
-            >
-              <table className="table table-hover table-striped">
-                <tbody>
-                  {exams.length ? (
-                    <>
-                      {exams.map((exam) => {
-                        return (
-                          <tr
-                            key={exam.id}
-                            className={
-                              exam.estado
-                                ? "table-secondary"
-                                : moment
-                                    .utc(new Date())
-                                    .isSame(moment.utc(exam.created_at), "hour")
-                                ? "table-success"
-                                : ""
-                            }
-                          >
-                            <td className="icheck-primary pl-2">
-                              <input
-                                type="checkbox"
-                                className="form-check-input mt-4"
-                                value={exam.id}
-                                id={"exam_" + exam.id}
-                                checked={
-                                  examSelected === exam.id ? true : false
-                                }
-                                onChange={this.handleChangeCheckbox}
-                              />
-                              <label
-                                htmlFor={"exam_" + exam.id}
-                                className="sr-only"
-                              ></label>
-                            </td>
-                            <td>
-                              <Link
-                                to={"/consultorio/registro/" + exam.id}
-                                onClick={(e) => {
-                                  //e.preventDefault();
-                                  console.log(
-                                    "[Exams] Almacenando datos de paciente en local storage"
-                                  );
-                                  localStorage.setItem(
-                                    "OrusContactInUse",
-                                    JSON.stringify({
-                                      id: exam.paciente.id,
-                                      nombre: exam.paciente.nombre,
-                                    })
-                                  );
-                                  return true;
-                                }}
-                              >
-                                <span className="badge badge-danger text-capitalize p-1">
-                                  {exam.paciente.nombre}
-                                  <i className="fas fa-pencil-alt ml-1"></i>
-                                </span>
-                              </Link>
-                            </td>
-                            <td className="text-uppercase">
-                              {exam.estado ? (
-                                <span className="text-secondary">
-                                  Terminado
-                                </span>
-                              ) : (
-                                <span className="text-success">Activo</span>
-                              )}
-                            </td>
-                            <td>
-                              {exam.esferaod}/{exam.esferaoi}
-                            </td>
-                            <td>
-                              {exam.cilindrod}/{exam.cilindroi}
-                            </td>
-                            <td>
-                              {exam.ejeod}/{exam.ejeoi}
-                            </td>
-                            <td>
-                              {exam.adiciond}/{exam.adicioni}
-                            </td>
-                            <td>
-                              {exam.adicion_media_od}/{exam.adicion_media_oi}
-                            </td>
-                            <td>
-                              {exam.dpod}/{exam.dpoi}
-                            </td>
-                            <td>
-                              {exam.alturaod}/{exam.alturaoi}
-                            </td>
-                            <td>
-                              {moment(exam.created_at, "YYYY-MM-DD").fromNow()}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </>
-                  ) : (
-                    <tr>
-                      <th className="text-center text-muted">
-                        No hay examenes registrados
-                      </th>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </Inbox>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  handleFilter = () => {
-    this.setState({
-      load: true,
-      page: 1,
-    });
-  };
-  onchangeSearch = (key, value) => {
-    this.setState({
-      [key]: value,
-    });
-  };
-  handleOrder = (item) => {
-    this.setState({
-      orderby: item,
-      order: this.state.order === "desc" ? "asc" : "desc",
-      load: true,
-    });
-  };
-  /*
-  handleChangePage = (id) => {
-    this.setState({
-      page: id,
-      load: true,
-    });
-  };
-  */
   handleDelete = (id, item) => {
+    const { examSelected, options } = this.state,
+      { _deleteExam } = this.props;
+
+    if (!examSelected) {
+      window.Swal.fire({
+        title: "Verificacion",
+        text: "Debe de selecionar al menos un contacto para eliminar",
+        icon: "warning",
+      });
+      return false;
+    }
+
     //Confirmación de eliminacion
     window.Swal.fire({
       title: "Eliminar",
-      text:
-        "¿Esta seguro de eliminar el examen del paciente " +
-        item.toUpperCase() +
-        "?",
-      icon: "warning",
+      text: "¿Esta seguro de eliminar el examen?",
+      icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          let { host, token } = this.state;
-
-          //Inicio de proceso de eliminción por API
-          return fetch("http://" + host + "/api/exams/" + id, {
-            method: "DELETE",
-            signal: this.signal,
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then(async (response) => {
-              let back = {};
-              if (response.status !== 204) back = await response.json();
-              if (!response.ok) {
-                throw new Error(back.message);
-              }
-              return back;
-            })
-            .catch((e) => {
-              console.error(e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
-        }
-      },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        console.log("Examen eliminado");
-        window.Swal.fire({
-          icon: "success",
-          title: "Examen eliminado con exito",
-          showConfirmButton: false,
-          timer: 1500,
-        }).then((res) => this.getExams());
-      } else if (result && !result.dismiss) {
-        console.log("Orus: ", result);
-        window.Swal.fire(
-          "Error",
-          "Se perdio la conexion con el servidor",
-          "error"
-        );
+    }).then(({ dismiss }) => {
+      if (dismiss !== "cancel") {
+        console.log("[Orus System] Enviando datos para eliminar", examSelected);
+        _deleteExam({
+          id: examSelected,
+          options,
+        });
       }
+      this.setState({
+        examSelected: "",
+      });
     });
   };
   getExams() {
@@ -417,6 +457,8 @@ const mapStateToProps = ({ exam }) => {
   },
   mapActionsToProps = {
     _getListExams: examActions.getListExam,
+    _deleteExam: examActions.deleteExam,
+    _setListContact: contactActions.setListContact,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexExamComponent);

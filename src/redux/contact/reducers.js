@@ -1,31 +1,16 @@
 import { TYPE } from "./types";
 
-const LS = localStorage.getItem("OrusSystem"),
-  { contact: CONTACT = {} } = JSON.parse(LS ? LS : "{}"),
-  {
-    orderBy: OBY = "updated_at",
-    order: ORD = "desc",
-    search: SEARCH = "",
-    page: PAGE = 1,
-    status: STATUS = "",
-    itemsPage: IP = 10,
-  } = CONTACT,
-  DEFAULT_STATE = {
-    list: [],
-    metaList: {},
-    orderby: OBY,
-    order: ORD,
-    search: SEARCH,
-    page: PAGE,
-    status: STATUS,
-    itemsPage: IP,
-    messages: [],
-    loading: false,
-  };
+const DEFAULT_STATE = {
+  list: [],
+  metaList: {},
+  contact: {},
+  messages: [],
+  loading: false,
+};
 
 const default_reducer = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
-    case TYPE.SAGA_GET_LIST_CONTACT: {
+    case TYPE.SAGA_GET_LIST_CONTACTS: {
       return {
         ...state,
         loading: true,
@@ -43,19 +28,15 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         loading: true,
       };
     }
+    case TYPE.SAGA_GET_CONTACT: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
+
     case TYPE.SET_LIST_CONTACT: {
-      const { payload } = action,
-        LS = localStorage.getItem("OrusSystem"),
-        localstorage = JSON.parse(LS ? LS : "{}"),
-        storage = {
-          ...localstorage,
-          contact: {
-            ...payload.options,
-          },
-        };
-
-      localStorage.setItem("OrusSystem", JSON.stringify(storage));
-
+      const { payload } = action;
       return {
         ...state,
         ...payload.result,
@@ -79,6 +60,16 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         messages: payload,
       };
     }
+    case TYPE.SET_CONTACT: {
+      const { payload } = action;
+      return {
+        ...state,
+        loading: false,
+        contact: payload,
+        messages: [],
+      };
+    }
+
     default:
       return {
         ...state,

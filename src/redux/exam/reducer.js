@@ -3,10 +3,6 @@ import { TYPE } from "./types";
 const DEFAULT_STATE = {
   list: [],
   metaList: {},
-  orderby: "created_at",
-  order: "desc",
-  search: "",
-  page: 1,
   messages: [],
   loading: false,
 };
@@ -15,6 +11,12 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
   const { payload } = action;
   switch (action.type) {
     case TYPE.SAGA_GET_LIST_EXAM: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
+    case TYPE.SAGA_DELETE_EXAM: {
       return {
         ...state,
         loading: true,
@@ -36,6 +38,7 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         messages: payload,
       };
     }
+
     default:
       return {
         ...state,

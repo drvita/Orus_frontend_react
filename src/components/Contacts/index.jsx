@@ -26,37 +26,30 @@ class IndexContactComponent extends Component {
     this.timeInterval = 0;
   }
   componentDidMount() {
-    const { match } = this.props,
+    const { match, _getContact } = this.props,
       { id } = match.params;
 
-    this.setState({
-      load: true,
-    });
-
     if (id) {
-      this.timeInterval = setInterval(() => {
-        const { contacts } = this.props;
-        if (contacts.length) {
-          clearInterval(this.timeInterval);
-
-          contacts.every((contact) => {
-            if (contact.id === parseInt(id)) {
-              this.handleEditItem(contact);
-              return false;
-            }
-            return true;
-          });
-        }
-      }, 1000);
+      _getContact(id);
+    } else {
+      this.getContacts();
     }
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
-      { messages: MSGS } = this.props;
+      { messages: MSGS, contact } = this.props;
 
-    if (state.load !== load && load === true) {
+    if (state.load !== load && load) {
       console.log("[Orus System] Recargando contactos");
       this.getContacts();
+    }
+
+    if (props.contact.id !== contact.id && contact.id) {
+      console.log("[Orus System] Cargando contacto");
+      this.setState({
+        contact,
+        newOrEdit: true,
+      });
     }
 
     if (props.messages.length !== MSGS.length && MSGS.length) {
@@ -72,29 +65,13 @@ class IndexContactComponent extends Component {
     }
   }
 
-  handleSetSelectOptions = (e) => {
-    const { name, value } = e.target,
-      { options } = this.state;
-    let val = value;
-
-    if (name === "itemsPage") val = parseInt(value);
-
-    this.setState({
-      options: {
-        ...options,
-        [name]: val,
-      },
-      load: true,
-    });
-  };
-
   render() {
     const { contacts, loading, meta } = this.props,
       { contact, newOrEdit, contactSelected, options } = this.state;
 
     return (
       <div className="row">
-        <div className="col-sm-12 col-md-3">
+        <div className="col-sm-12 col-md-2">
           <button
             className="btn bg-indigo btn-block mb-3"
             type="button"
@@ -113,49 +90,54 @@ class IndexContactComponent extends Component {
           {!newOrEdit ? (
             <CardMenu title="Filtros">
               <li className="nav-item p-2">
+                <label htmlFor="orderby">Ordenar por</label>
                 <select
                   className="form-control "
                   name="orderby"
+                  id="orderby"
                   value={options.orderby}
                   onChange={this.handleSetSelectOptions}
                 >
-                  <option value="">-- Seleccione orden --</option>
                   <option value="created_at">Fecha de registro</option>
                   <option value="updated_at">Fecha de modificacion</option>
                 </select>
               </li>
               <li className="nav-item p-2">
+                <label htmlFor="order">Mostrar por</label>
                 <select
                   className="form-control "
                   name="order"
+                  id="order"
                   value={options.order}
                   onChange={this.handleSetSelectOptions}
                 >
-                  <option value="asc">Ultimos</option>
-                  <option value="desc">Primeros</option>
+                  <option value="asc">Antiguos</option>
+                  <option value="desc">Recientes</option>
                 </select>
               </li>
               <li className="nav-item p-2">
+                <label htmlFor="itemsPage">Numero de contactos</label>
                 <select
                   className="form-control "
                   name="itemsPage"
+                  id="itemsPage"
                   value={options.itemsPage}
                   onChange={this.handleSetSelectOptions}
                 >
-                  <option value="10">-- ver 10 --</option>
-                  <option value="20">-- ver 20 --</option>
-                  <option value="50">-- ver 50 --</option>
-                  <option value="100">-- ver 100 --</option>
+                  <option value="10">ver 10</option>
+                  <option value="20">ver 20</option>
+                  <option value="50">ver 50</option>
+                  <option value="100">ver 100</option>
                 </select>
               </li>
             </CardMenu>
           ) : null}
         </div>
-        <div className="col-sm-12 col-md-9">
+        <div className="col-sm-12 col-md-10">
           {newOrEdit ? (
             <AddContact
               contact={contact}
-              handleClose={this.handleCloseEdit}
+              handleClose={this.handleEditItem}
               handleSave={this.handleSaveContact}
             />
           ) : (
@@ -195,15 +177,10 @@ class IndexContactComponent extends Component {
                                 className="sr-only"
                               ></label>
                             </td>
-                            <td className="icheck-primary">
-                              <div className="badge bg-indigo">
-                                # {contact.id}
-                              </div>
-                            </td>
                             <td
                               className="mailbox-name text-capitalize text-truncate"
                               style={{ cursor: "pointer", maxWidth: 180 }}
-                              onClick={(e) => this.handleEditItem(contact)}
+                              onClick={(e) => this.handleEditItem(contact.id)}
                             >
                               <label style={{ cursor: "pointer" }}>
                                 <i className="fas fa-user text-sm mr-2"></i>
@@ -260,50 +237,32 @@ class IndexContactComponent extends Component {
       id,
       options,
     });
-    this.handleCloseEdit();
-  };
-  handleCloseEdit = () => {
-    this.props.history.push(`/contactos`);
-    this.setState({
-      newOrEdit: false,
-      contact: {},
-      contactSelected: "",
-    });
+    this.handleEditItem();
   };
   handleSync = () => {
     this.getContacts();
   };
-  handleEditItem = (contact) => {
+  handleEditItem = (item = null) => {
     const { contactSelected } = this.state,
-      { contacts } = this.props;
-    let contactToSave = {};
+      { contacts } = this.props,
+      id = item ?? contactSelected,
+      contact = contacts.filter((c) => c.id === id);
 
-    if (contactSelected) {
-      contacts.every((contact) => {
-        if (contact.id === contactSelected) {
-          contactToSave = contact;
-          return false;
-        }
-
-        return true;
-      });
-    } else if (contact.id) {
-      contactToSave = contact;
-    }
-    if (contactToSave.id) {
-      this.props.history.push(`/contactos/${contactToSave.id}`);
+    if (contact.length) {
       this.setState({
-        contact: contactToSave,
-        contactSelected: contactToSave.id,
+        contact: contact[0],
+        contactSelected: id,
         newOrEdit: true,
       });
+      this.props.history.push(`/contactos/${id}`);
     } else {
-      this.props.history.push(`/contactos`);
       this.setState({
         contact: {},
         contactSelected: "",
         newOrEdit: false,
+        load: true,
       });
+      this.props.history.push(`/contactos`);
     }
   };
   handleChangeCheckbox = (e) => {
@@ -318,9 +277,23 @@ class IndexContactComponent extends Component {
       });
     }
   };
+  handleSetSelectOptions = (e) => {
+    const { name, value } = e.target,
+      { options } = this.state;
+    let val = value;
+
+    if (name === "itemsPage") val = parseInt(value);
+
+    this.setState({
+      options: {
+        ...options,
+        [name]: val,
+      },
+      load: true,
+    });
+  };
   handleSearch = (search) => {
     const { options } = this.state;
-
     this.setState({
       options: {
         ...options,
@@ -331,7 +304,6 @@ class IndexContactComponent extends Component {
   };
   handleChangePage = (page) => {
     const { options } = this.state;
-
     this.setState({
       options: {
         ...options,
@@ -343,8 +315,6 @@ class IndexContactComponent extends Component {
   handleDelete = () => {
     const { contactSelected, options } = this.state,
       { _deleteContact } = this.props;
-
-    console.log("[DEBUG] handele delete", contactSelected);
 
     if (!contactSelected) {
       window.Swal.fire({
@@ -382,10 +352,10 @@ class IndexContactComponent extends Component {
     });
   };
   getContacts() {
-    const { _getListContact } = this.props,
+    const { _getListContacts } = this.props,
       { options } = this.state;
 
-    _getListContact({
+    _getListContacts({
       ...options,
     });
 
@@ -401,12 +371,14 @@ const mapStateToProps = ({ contact }) => {
       messages: contact.messages,
       meta: contact.metaList,
       loading: contact.loading,
+      contact: contact.contact,
     };
   },
   mapActionsToProps = {
-    _getListContact: contactActions.getListContact,
+    _getListContacts: contactActions.getListContacts,
     _deleteContact: contactActions.deleteContact,
     _saveContact: contactActions.saveContact,
+    _getContact: contactActions.getContact,
   };
 
 export default connect(

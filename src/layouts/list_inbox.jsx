@@ -17,8 +17,6 @@ const ListInbox = (props) => {
         props.handleSearch(search);
       }, 1000);
       setTimer(toTimer);
-    } else if (!search.length) {
-      props.handleSearch("");
     }
     // eslint-disable-next-line
   }, [search]);
@@ -39,7 +37,7 @@ const ListInbox = (props) => {
             <input
               type="text"
               className="form-control"
-              placeholder="Buscar pedido"
+              placeholder="Buscar"
               value={search}
               onChange={(e) => {
                 const { value } = e.target;

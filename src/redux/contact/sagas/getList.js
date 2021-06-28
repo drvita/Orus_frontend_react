@@ -2,7 +2,7 @@ import { call, put } from "redux-saga/effects";
 import { api, getUrl } from "../../sagas/api";
 import { contactActions } from "../.";
 
-export default function* handleGetContacts({ payload, idOrder: id }) {
+export default function* handleGetContacts({ payload }) {
   try {
     const url = getUrl("contacts", null, payload),
       result = yield call(api, url, "GET");
@@ -17,14 +17,6 @@ export default function* handleGetContacts({ payload, idOrder: id }) {
           options: payload,
         })
       );
-      if (id) {
-        yield put(
-          contactActions.setStateVar({
-            key: "orderId",
-            val: id,
-          })
-        );
-      }
     } else {
       yield put(
         contactActions.setMessageContact([

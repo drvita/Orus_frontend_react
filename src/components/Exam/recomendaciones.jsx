@@ -28,8 +28,11 @@ export default class Recomendaciones extends Component {
     this.getCategories();
   }
   componentDidUpdate(props, state) {
-    if (props.category_id !== this.props.category_id) {
-      console.log("[Recomendaciones] Recargando recomendacion");
+    if (
+      props.category_id !== this.props.category_id &&
+      this.props.category_id
+    ) {
+      console.log("[DEBUG] Recargando recomendacion");
       this.getCategories();
     }
   }
@@ -302,13 +305,8 @@ export default class Recomendaciones extends Component {
         .then((cat) => {
           if (cat.data) {
             console.log("Recomendacion descargada");
-            const {
-                category_id,
-                esferaod,
-                esferaoi,
-                cilindrod,
-                cilindroi,
-              } = this.props,
+            const { category_id, esferaod, esferaoi, cilindrod, cilindroi } =
+                this.props,
               category = cat.data;
             let code =
                 category_id && Object.keys(category).length

@@ -219,7 +219,7 @@ class indexOrderComponent extends Component {
 
     return (
       <div className="row">
-        <div className="col-lg-3 col-md-4 col-sm-12">
+        <div className="col-md-2 col-sm-12">
           <a
             href="#new"
             className={
@@ -240,11 +240,11 @@ class indexOrderComponent extends Component {
           <div className="card">
             <div className="card-header">
               <h5 className="card-title text-dark">
-                <i className="mr-2 fas fa-ellipsis-v"></i>Menu
+                <i className="mr-2 fas fa-ellipsis-v"></i>Menu y filtros
               </h5>
             </div>
             <div className="p-0 card-body">
-              <ul className="nav nav-pills flex-column p-1 pl-4">
+              <ul className="nav nav-pills flex-column">
                 <li className="nav-item">
                   <a
                     href="#item"
@@ -269,14 +269,17 @@ class indexOrderComponent extends Component {
                 </li>
                 {!panel ? (
                   <Fragment>
+                    <li className="nav-item">&nbsp;</li>
                     <li className="p-2 nav-item">
+                      <label htmlFor="status">Estado del pedido</label>
                       <select
                         className="form-control "
                         name="status"
+                        id="status"
                         value={options.status}
                         onChange={this.handleSetSelectOptions}
                       >
-                        <option value="">-- Seleccione estado --</option>
+                        <option value="">-- Todos --</option>
                         <option value="0">En proceso</option>
                         <option value="1">Laboratorio</option>
                         <option value="2">Bicelación</option>
@@ -286,13 +289,14 @@ class indexOrderComponent extends Component {
                       </select>
                     </li>
                     <li className="nav-item p-2">
+                      <label htmlFor="orderby">Ordenar por</label>
                       <select
                         className="form-control "
                         name="orderby"
+                        id="orderby"
                         value={options.orderby}
                         onChange={this.handleSetSelectOptions}
                       >
-                        <option value="">-- Seleccione orden --</option>
                         <option value="created_at">Fecha de registro</option>
                         <option value="updated_at">
                           Fecha de modificacion
@@ -300,9 +304,11 @@ class indexOrderComponent extends Component {
                       </select>
                     </li>
                     <li className="nav-item p-2">
+                      <label htmlFor="order">Mostrar por</label>
                       <select
                         className="form-control "
                         name="order"
+                        id="order"
                         value={options.order}
                         onChange={this.handleSetSelectOptions}
                       >
@@ -311,9 +317,11 @@ class indexOrderComponent extends Component {
                       </select>
                     </li>
                     <li className="nav-item p-2">
+                      <label htmlFor="itemsPage">Numero de pedidos</label>
                       <select
                         className="form-control "
                         name="itemsPage"
+                        id="itemsPage"
                         value={options.itemsPage}
                         onChange={this.handleSetSelectOptions}
                       >
@@ -331,7 +339,7 @@ class indexOrderComponent extends Component {
 
           {panel === 3 ? <Chat table="orders" idRow={orderId} /> : null}
         </div>
-        <div className="col-lg-9 col-md-8 col-sm-12">{showpanel}</div>
+        <div className="col-md-10 col-sm-12">{showpanel}</div>
       </div>
     );
   }

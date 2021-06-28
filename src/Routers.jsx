@@ -141,24 +141,10 @@ export default class Routers extends Component {
                           />
                         )}
                       />
-
                       <Route
                         extric
-                        path="/consultorio/registro/:id?"
-                        render={(props) => (
-                          <ExamAdd
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
-                        extric
-                        path="/consultorio"
-                        render={(props) => (
-                          <Exam {...props} data={data} page={this.handlePage} />
-                        )}
+                        path="/consultorio/:id?"
+                        render={(props) => <Exam {...props} />}
                       />
 
                       <Route

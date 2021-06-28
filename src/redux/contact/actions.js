@@ -1,9 +1,8 @@
 import { TYPE } from "./types";
 //SAGAS
-const getListContact = (payload = {}, idOrder) => ({
-  type: TYPE.SAGA_GET_LIST_CONTACT,
+const getListContacts = (payload = {}) => ({
+  type: TYPE.SAGA_GET_LIST_CONTACTS,
   payload,
-  idOrder,
 });
 const deleteContact = (payload = {}) => ({
   type: TYPE.SAGA_DELETE_CONTACT,
@@ -26,14 +25,24 @@ const setMessageContact = (payload = []) => ({
   type: TYPE.SET_MESSAGE_CONTACT,
   payload,
 });
+const getContact = (payload = {}) => ({
+  type: TYPE.SAGA_GET_CONTACT,
+  payload,
+});
+const setContact = (payload = {}) => ({
+  type: TYPE.SET_CONTACT,
+  payload,
+});
 
 const toExportActions = {
-  getListContact,
+  getListContacts,
   deleteContact,
   saveContact,
   setListContact,
   setStateVar,
   setMessageContact,
+  getContact,
+  setContact,
 };
 
 export default toExportActions;

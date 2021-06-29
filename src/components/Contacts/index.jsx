@@ -153,7 +153,7 @@ class IndexContactComponent extends Component {
           {newOrEdit ? (
             <AddContact
               contact={contact}
-              handleClose={this.handleEditItem}
+              handleClose={this.handleCloseEdit}
               handleSave={this.handleSaveContact}
             />
           ) : (
@@ -258,10 +258,19 @@ class IndexContactComponent extends Component {
       id,
       options,
     });
-    this.handleEditItem();
+    this.handleCloseEdit();
   };
   handleSync = () => {
     this.getContacts();
+  };
+  handleCloseEdit = () => {
+    this.setState({
+      contact: {},
+      contactSelected: "",
+      newOrEdit: false,
+      load: true,
+    });
+    this.props.history.push(`/contactos`);
   };
   handleEditItem = (item = null) => {
     const { contactSelected } = this.state,

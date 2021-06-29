@@ -175,7 +175,11 @@ class IndexExamComponent extends Component {
         </div>
         <div className="col-sm-12 col-md-10">
           {newOrEdit ? (
-            <AddOrNew exam={exam} handleClose={this.handleCloseEdit} />
+            <AddOrNew
+              exam={exam}
+              handleClose={this.handleCloseEdit}
+              handleSave={this.handleSaveExam}
+            />
           ) : (
             <Inbox
               title="Lista de examenes"
@@ -307,6 +311,18 @@ class IndexExamComponent extends Component {
     );
   }
 
+  handleSaveExam = (id, data) => {
+    const { options } = this.state,
+      { _saveExam } = this.props;
+
+    //console.log("[DEBUG] save item", data);
+    _saveExam({
+      id,
+      options,
+      data,
+    });
+    this.handleCloseEdit();
+  };
   handleCloseEdit = () => {
     this.setState({
       newOrEdit: false,
@@ -459,6 +475,7 @@ const mapStateToProps = ({ exam }) => {
     _getListExams: examActions.getListExam,
     _deleteExam: examActions.deleteExam,
     _setListContact: contactActions.setListContact,
+    _saveExam: examActions.saveExam,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexExamComponent);

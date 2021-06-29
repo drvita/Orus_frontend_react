@@ -312,8 +312,8 @@ class indexOrderComponent extends Component {
                         value={options.order}
                         onChange={this.handleSetSelectOptions}
                       >
-                        <option value="asc">Ultimos</option>
-                        <option value="desc">Primeros</option>
+                        <option value="asc">Antiguos</option>
+                        <option value="desc">Recientes</option>
                       </select>
                     </li>
                     <li className="nav-item p-2">
@@ -325,10 +325,10 @@ class indexOrderComponent extends Component {
                         value={options.itemsPage}
                         onChange={this.handleSetSelectOptions}
                       >
-                        <option value="10">-- ver 10 --</option>
-                        <option value="20">-- ver 20 --</option>
-                        <option value="50">-- ver 50 --</option>
-                        <option value="100">-- ver 100 --</option>
+                        <option value="10">ver 10</option>
+                        <option value="20">ver 20</option>
+                        <option value="50">ver 50</option>
+                        <option value="100">ver 100</option>
                       </select>
                     </li>
                   </Fragment>

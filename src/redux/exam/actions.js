@@ -16,12 +16,17 @@ const setMessagesExam = (payload = {}) => ({
   type: TYPE.SET_MESSAGE_EXAM,
   payload,
 });
+const saveExam = (payload = {}) => ({
+  type: TYPE.SAGA_SAVE_EXAM,
+  payload,
+});
 
 const toExportActions = {
   getListExam,
   setListExam,
   setMessagesExam,
   deleteExam,
+  saveExam,
 };
 
 export default toExportActions;

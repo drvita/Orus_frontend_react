@@ -14,9 +14,9 @@ class IndexStoreComponent extends Component {
     //let sdd = JSON.parse(localStorage.getItem("OrusContacts"));
     this.state = {
       load: false,
-      list: {},
+      item: {},
       newOrEdit: false,
-      contactSelected: "",
+      storeSelected: "",
       panel: "inbox",
       options: {
         page: 1,
@@ -58,7 +58,7 @@ class IndexStoreComponent extends Component {
       { messages: MSGS } = this.props;
 
     if (state.load !== load && load === true) {
-      console.log("[Orus System] Recargando contactos");
+      console.log("[Orus System] Recargando productos");
       this.getContacts();
     }
 
@@ -94,11 +94,13 @@ class IndexStoreComponent extends Component {
 
   render() {
     const { list, loading, meta } = this.props,
-      { newOrEdit, contactSelected, options, panel } = this.state;
+      { newOrEdit, storeSelected, options, panel } = this.state;
+
+    //console.log("[DEBUG] Render", list);
 
     return (
       <div className="row">
-        <div className="col-sm-12 col-md-3">
+        <div className="col-sm-12 col-md-2">
           <button
             className="btn bg-primary btn-block mb-3"
             type="button"
@@ -114,7 +116,7 @@ class IndexStoreComponent extends Component {
             }}
           >
             <i className="fas fa-plus mr-1"></i>
-            Nuevo contacto
+            Nuevo producto
           </button>
           {!newOrEdit ? (
             <CardMenu title="Menu y filtros">
@@ -157,55 +159,60 @@ class IndexStoreComponent extends Component {
                 </a>
               </li>
               <li className="nav-item p-2">
+                <label htmlFor="orderby">Ordenar por</label>
                 <select
                   className="form-control "
                   name="orderby"
+                  id="orderby"
                   value={options.orderby}
                   onChange={this.handleSetSelectOptions}
                 >
-                  <option value="">-- Seleccione orden --</option>
                   <option value="created_at">Fecha de registro</option>
                   <option value="updated_at">Fecha de modificacion</option>
                 </select>
               </li>
               <li className="nav-item p-2">
+                <label htmlFor="order">Mostrar por</label>
                 <select
                   className="form-control "
                   name="order"
+                  id="order"
                   value={options.order}
                   onChange={this.handleSetSelectOptions}
                 >
-                  <option value="asc">Ultimos</option>
-                  <option value="desc">Primeros</option>
+                  <option value="asc">Antiguos</option>
+                  <option value="desc">Recientes</option>
                 </select>
               </li>
               <li className="nav-item p-2">
+                <label htmlFor="itemsPage">Numero de productos</label>
                 <select
                   className="form-control "
                   name="itemsPage"
+                  id="itemsPage"
                   value={options.itemsPage}
                   onChange={this.handleSetSelectOptions}
                 >
-                  <option value="10">-- ver 10 --</option>
-                  <option value="20">-- ver 20 --</option>
-                  <option value="50">-- ver 50 --</option>
-                  <option value="100">-- ver 100 --</option>
+                  <option value="10">ver 10</option>
+                  <option value="20">ver 20</option>
+                  <option value="50">ver 50</option>
+                  <option value="100">ver 100</option>
                 </select>
               </li>
             </CardMenu>
           ) : null}
         </div>
-        <div className="col-sm-12 col-md-9">
+        <div className="col-sm-12 col-md-10">
           {panel === "inventory" ? (
             <Inventario />
           ) : (
             <Inbox
-              title="Lista de contactos"
+              title="Lista de productos"
               icon="id-badge"
               color="primary"
               loading={loading}
               meta={meta}
-              itemSelected={contactSelected}
+              itemSelected={storeSelected}
               handlePagination={this.handleChangePage}
               handleSearch={this.handleSearch}
               handleDeleteItem={this.handleDelete}
@@ -213,6 +220,16 @@ class IndexStoreComponent extends Component {
               handleSync={this.handleSync}
             >
               <table className="table table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Codigo</th>
+                    <th>Describción</th>
+                    <th>Marca</th>
+                    <th>Proveedor</th>
+                    <th>Cant</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {list.length ? (
                     <>
@@ -226,7 +243,7 @@ class IndexStoreComponent extends Component {
                                 value={item.id}
                                 id={"contact_" + item.id}
                                 checked={
-                                  contactSelected === item.id ? true : false
+                                  storeSelected === item.id ? true : false
                                 }
                                 onChange={this.handleChangeCheckbox}
                               />
@@ -236,8 +253,8 @@ class IndexStoreComponent extends Component {
                               ></label>
                             </td>
                             <td className="icheck-primary">
-                              <div className="badge badge-primary">
-                                # {item.codigo}
+                              <div className="badge badge-primary text-uppercase">
+                                {item.codigo}
                               </div>
                             </td>
                             <td
@@ -248,8 +265,15 @@ class IndexStoreComponent extends Component {
                                 {item.producto}
                               </label>
                             </td>
-                            <td className="mailbox-attachment text-lowercase text-truncate">
-                              <span>{item.marca.marca}</span>
+                            <td className="mailbox-attachment text-uppercase text-truncate text-muted">
+                              <span>
+                                {item.marca ? item.marca.marca : "--"}
+                              </span>
+                            </td>
+                            <td className="mailbox-attachment text-capitalize text-truncate text-muted">
+                              <span>
+                                {item.proveedor ? item.proveedor.nombre : "--"}
+                              </span>
                             </td>
                             <td className="mailbox-date text-muted text-truncate text-right">
                               <span>{item.cantidades}</span>
@@ -260,8 +284,8 @@ class IndexStoreComponent extends Component {
                     </>
                   ) : (
                     <tr>
-                      <th className="text-center text-muted">
-                        No hay contactos registrados
+                      <th className="text-center text-muted" colSpan="6">
+                        No hay productos registrados
                       </th>
                     </tr>
                   )}
@@ -299,54 +323,45 @@ class IndexStoreComponent extends Component {
   handleEditTemp = (id) => {
     this.props.history.push(`/almacen/registro/${id}`);
   };
-  handleEditItem = (contact) => {
-    const { contactSelected } = this.state,
-      { contacts } = this.props;
-    let contactToSave = {};
+  handleEditItem = (item) => {
+    const { storeSelected } = this.state,
+      { list } = this.props,
+      id = item ?? storeSelected,
+      store = list.filter((e) => e.id === id);
 
-    if (contactSelected) {
-      contacts.every((contact) => {
-        if (contact.id === contactSelected) {
-          contactToSave = contact;
-          return false;
-        }
-
-        return true;
-      });
-    } else if (contact.id) {
-      contactToSave = contact;
-    }
-    if (contactToSave.id) {
-      this.props.history.push(`/almacen/${contactToSave.id}`);
+    if (store.length) {
+      console.log("[Orus System] Editar producto", id);
       this.setState({
-        contact: contactToSave,
-        contactSelected: contactToSave.id,
+        item: store[0],
         newOrEdit: true,
+        storeSelected: id,
       });
+      this.props.history.push(`/almacen/registro/${id}`);
     } else {
-      this.props.history.push(`/almacen`);
       this.setState({
-        contact: {},
-        contactSelected: "",
         newOrEdit: false,
+        item: {},
+        storeSelected: "",
+        load: true,
       });
+      this.props.history.push(`/almacen`);
     }
   };
   handleChangeCheckbox = (e) => {
     const { value, checked } = e.target;
     if (checked) {
       this.setState({
-        contactSelected: parseInt(value),
+        storeSelected: parseInt(value),
       });
     } else {
       this.setState({
-        contactSelected: "",
+        storeSelected: "",
       });
     }
   };
   handleSearch = (search) => {
     const { options } = this.state;
-
+    console.log("[DEBUG] handle search", search);
     this.setState({
       options: {
         ...options,
@@ -367,15 +382,15 @@ class IndexStoreComponent extends Component {
     });
   };
   handleDelete = () => {
-    const { contactSelected, options } = this.state,
+    const { storeSelected, options } = this.state,
       { _deleteContact } = this.props;
 
-    console.log("[DEBUG] handele delete", contactSelected);
+    //console.log("[DEBUG] handele delete", storeSelected);
 
-    if (!contactSelected) {
+    if (!storeSelected) {
       window.Swal.fire({
         title: "Verificacion",
-        text: "Debe de selecionar al menos un contacto para eliminar",
+        text: "Debe de selecionar al menos un producto para eliminar",
         icon: "warning",
       });
       return false;
@@ -384,7 +399,7 @@ class IndexStoreComponent extends Component {
     //Confirmación de eliminacion
     window.Swal.fire({
       title: "Eliminar",
-      text: "¿Esta seguro de eliminar el contacto?",
+      text: "¿Esta seguro de eliminar el producto?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -395,15 +410,15 @@ class IndexStoreComponent extends Component {
       if (dismiss !== "cancel") {
         console.log(
           "[Orus System] Enviando datos para eliminar",
-          contactSelected
+          storeSelected
         );
         _deleteContact({
-          id: contactSelected,
+          id: storeSelected,
           options,
         });
       }
       this.setState({
-        contactSelected: "",
+        storeSelected: "",
       });
     });
   };
@@ -412,7 +427,7 @@ class IndexStoreComponent extends Component {
       { options } = this.state;
 
     _getListContact({
-      ...options,
+      options,
     });
 
     this.setState({

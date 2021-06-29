@@ -2,7 +2,7 @@ import { call, put } from "redux-saga/effects";
 import { api, getUrl } from "../../sagas/api";
 import { examActions } from "../index";
 
-export default function* handledDeleteContact({ payload }) {
+export default function* handledDelete({ payload }) {
   try {
     const { id: ID, options } = payload,
       url = getUrl("exams", ID),

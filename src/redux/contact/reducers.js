@@ -40,7 +40,6 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         ...payload.result,
-        ...payload.options,
         messages: [],
         loading: false,
       };

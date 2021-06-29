@@ -22,6 +22,13 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         loading: true,
       };
     }
+    case TYPE.SAGA_SAVE_EXAM: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
+
     case TYPE.SET_LIST_EXAM: {
       return {
         ...state,

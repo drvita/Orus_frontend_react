@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-//import moment from "moment";
+import moment from "moment";
 //import SearchContact from "../Contacts/searchContactCard";
 import Recomendaciones from "./recomendaciones";
 import Generales from "./generalesExam";
@@ -62,9 +62,9 @@ export default class ExamAdd extends Component {
           {paciente.id ? (
             <div className="row">
               <div className="col-2">
-                <div class="nav flex-column nav-tabs">
+                <div className="nav flex-column nav-tabs">
                   <a
-                    class={!panel ? "nav-link active" : "nav-link"}
+                    className={!panel ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -78,7 +78,7 @@ export default class ExamAdd extends Component {
                   </a>
 
                   <a
-                    class={panel === 1 ? "nav-link active" : "nav-link"}
+                    className={panel === 1 ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -92,7 +92,7 @@ export default class ExamAdd extends Component {
                   </a>
 
                   <a
-                    class={panel === 2 ? "nav-link active" : "nav-link"}
+                    className={panel === 2 ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -106,7 +106,7 @@ export default class ExamAdd extends Component {
                   </a>
 
                   <a
-                    class={panel === 3 ? "nav-link active" : "nav-link"}
+                    className={panel === 3 ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -120,7 +120,7 @@ export default class ExamAdd extends Component {
                   </a>
 
                   <a
-                    class={panel === 4 ? "nav-link active" : "nav-link"}
+                    className={panel === 4 ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -134,7 +134,7 @@ export default class ExamAdd extends Component {
                   </a>
 
                   <a
-                    class={panel === 5 ? "nav-link active" : "nav-link"}
+                    className={panel === 5 ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -148,7 +148,7 @@ export default class ExamAdd extends Component {
                   </a>
 
                   <a
-                    class={panel === 6 ? "nav-link active" : "nav-link"}
+                    className={panel === 6 ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -162,7 +162,7 @@ export default class ExamAdd extends Component {
                   </a>
 
                   <a
-                    class={panel === 7 ? "nav-link active" : "nav-link"}
+                    className={panel === 7 ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -176,7 +176,7 @@ export default class ExamAdd extends Component {
                   </a>
 
                   <a
-                    class={panel === 8 ? "nav-link active" : "nav-link"}
+                    className={panel === 8 ? "nav-link active" : "nav-link"}
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -434,7 +434,9 @@ export default class ExamAdd extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    let { host, token, id, cilindrod, cilindroi, ejeod, ejeoi } = this.state;
+    const { cilindrod, cilindroi, ejeod, ejeoi, paciente, exam } = this.state,
+      id = exam.id,
+      { handleSave: _handleSave } = this.props;
 
     //Verificar si los datos son validos.
     if ((cilindrod < 0 && !ejeod) || (cilindroi < 0 && !ejeoi)) {
@@ -453,65 +455,17 @@ export default class ExamAdd extends Component {
       confirmButtonText: id ? "Actualizar" : "Crear",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          //Variables
-          let body = this.state,
-            //Identificamos la URL y el metodo segun sea el caso (Actualizar o agregar)
-            url = id
-              ? "http://" + host + "/api/exams/" + id
-              : "http://" + host + "/api/exams",
-            method = id ? "PUT" : "POST";
-          if (!body.category_id) delete body.category_id;
-          if (!body.category_ii) delete body.category_ii;
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        let { exam: body } = this.state;
+        const edad = moment().diff(paciente.f_nacimiento, "years");
 
-          //Crear o modificar examen
-          console.log("Enviando datos del examen a la API");
-          return fetch(url, {
-            method: method,
-            signal: this.signal,
-            body: JSON.stringify(body),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(response.statusText);
-              }
-              return response.json();
-            })
-            .catch((e) => {
-              console.error("Orus fetch: ", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
-        }
-      },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        let data = result.value;
-        if (data.data) {
-          console.log("[Exams] Examen almacenado correctamente");
-          window.Swal.fire({
-            icon: "success",
-            title: id
-              ? "Examen actualizado con exito"
-              : "Examen almacenado con exito",
-            showConfirmButton: false,
-            timer: 1500,
-          }).then((res) => this.props.history.goBack());
-          console.log("[Exams] Eliminando usuario en uso de localStorage");
-          localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-        } else {
-          window.Swal.fire("Error", "al almacenar el examen", "error");
-          console.error("[Exams] Error al almacenar datos de examen", data);
-        }
+        body.contact_id = paciente.id;
+        body.edad = edad < 1 || !edad ? 0 : edad;
+        if (!body.category_id) delete body.category_id;
+        if (!body.category_ii) delete body.category_ii;
+
+        _handleSave(id, body);
       }
     });
   };

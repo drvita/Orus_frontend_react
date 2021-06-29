@@ -7,7 +7,7 @@ export default function* handleGetList({ payload }) {
     const { options, id } = payload,
       url = getUrl("store", id, options),
       result = yield call(api, url);
-    //console.log("[DEBUG] saga setStore:", result);
+    //console.log("[DEBUG] saga setStore:", url);
     yield put(
       storeActions.setListStore({
         result: {

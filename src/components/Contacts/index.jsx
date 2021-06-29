@@ -20,6 +20,7 @@ class IndexContactComponent extends Component {
         orderby: "created_at",
         order: "desc",
         search: "",
+        type: "",
         itemsPage: 10,
       },
     };
@@ -68,6 +69,7 @@ class IndexContactComponent extends Component {
   render() {
     const { contacts, loading, meta } = this.props,
       { contact, newOrEdit, contactSelected, options } = this.state;
+    //domain = /^.{1,100}@domain(.com)?$/gim;
 
     return (
       <div className="row">
@@ -89,6 +91,20 @@ class IndexContactComponent extends Component {
           </button>
           {!newOrEdit ? (
             <CardMenu title="Filtros">
+              <li className="nav-item p-2">
+                <label htmlFor="type">Tipo</label>
+                <select
+                  className="form-control "
+                  name="type"
+                  id="type"
+                  value={options.type}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="">-- Todos --</option>
+                  <option value="0">Clientes</option>
+                  <option value="1">Proveedores</option>
+                </select>
+              </li>
               <li className="nav-item p-2">
                 <label htmlFor="orderby">Ordenar por</label>
                 <select
@@ -192,8 +208,13 @@ class IndexContactComponent extends Component {
                               style={{ maxWidth: 180 }}
                             >
                               <span>
-                                <i className="fas fa-envelope text-sm mr-2 text-secondary"></i>
-                                {contact.email}
+                                <i className="fas fa-envelope text-sm mr-2"></i>
+                                <a
+                                  href={"mailto:" + contact.email}
+                                  className="text-muted"
+                                >
+                                  {contact.email}
+                                </a>
                               </span>
                             </td>
                             <td className="mailbox-date text-muted text-truncate text-right">

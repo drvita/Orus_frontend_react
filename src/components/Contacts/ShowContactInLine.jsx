@@ -14,6 +14,7 @@ const ShowContactComponent = (props) => {
     handleChangeContact: _handleChangeContact,
     _getListContacts,
     _setContact,
+    _setListContact,
   } = props;
   const [input, setInput] = useState("");
   const domain = /.*@domain(.com)?/gim;
@@ -21,21 +22,20 @@ const ShowContactComponent = (props) => {
     const { value } = e.target;
     setInput(value);
   };
-  const toDay = new Date();
-  const birthDay = new Date(contact.f_nacimiento);
-  const birthDayValid = toDay > birthDay;
+  const birthDay = new Date(contact.f_nacimiento ?? new Date());
+  const numAnos = moment().diff(birthDay, "years");
 
   useEffect(() => {
     if (input.length > 2) {
       _getListContacts({
-        page: 1,
-        orderby: "created_at",
-        order: "desc",
+        type: 0,
         search: input,
         itemsPage: 20,
       });
     }
   }, [input]);
+
+  //console.log("[DEBUG] Render", numAnos);
 
   return (
     <div className="input-group position-static">
@@ -53,10 +53,10 @@ const ShowContactComponent = (props) => {
               {contact.email}
             </span>
           ) : null}
-          {birthDayValid ? (
+          {numAnos > 1 ? (
             <span className="badge badge-secondary ml-1">
               <i className="fas fa-calendar mr-1"></i>
-              {moment().diff(contact.f_nacimiento, "years")} años
+              {numAnos} años
             </span>
           ) : null}
         </span>
@@ -100,8 +100,13 @@ const ShowContactComponent = (props) => {
                         onClick={(e) => {
                           e.preventDefault();
                           _handleChangeContact(contact);
-                          _setContact({});
-                          console.log("[DEBUG] selected", contact);
+                          _setListContact({
+                            result: {
+                              list: [],
+                              metaList: {},
+                            },
+                          });
+                          setInput("");
                         }}
                       >
                         <i className="fas fa-user mr-1"></i>
@@ -151,6 +156,7 @@ const mapStateToProps = ({ contact }) => {
   mapActionsToProps = {
     _getListContacts: contactActions.getListContacts,
     _setContact: contactActions.setContact,
+    _setListContact: contactActions.setListContact,
   };
 
 export default connect(

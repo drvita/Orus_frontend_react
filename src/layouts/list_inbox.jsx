@@ -11,13 +11,11 @@ const ListInbox = (props) => {
 
   useEffect(() => {
     let toTimer = null;
-    if (search.length > 2) {
-      if (timer) clearTimeout(timer);
-      toTimer = setTimeout(() => {
-        props.handleSearch(search);
-      }, 1000);
-      setTimer(toTimer);
-    }
+    if (timer) clearTimeout(timer);
+    toTimer = setTimeout(() => {
+      props.handleSearch(search);
+    }, 1000);
+    setTimer(toTimer);
     // eslint-disable-next-line
   }, [search]);
 

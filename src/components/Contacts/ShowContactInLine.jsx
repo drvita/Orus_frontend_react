@@ -13,7 +13,6 @@ const ShowContactComponent = (props) => {
     //Funciones
     handleChangeContact: _handleChangeContact,
     _getListContacts,
-    _setContact,
     _setListContact,
   } = props;
   const [input, setInput] = useState("");
@@ -33,6 +32,7 @@ const ShowContactComponent = (props) => {
         itemsPage: 20,
       });
     }
+    //eslint-disable-next-line
   }, [input]);
 
   //console.log("[DEBUG] Render", numAnos);

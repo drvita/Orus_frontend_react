@@ -47,6 +47,7 @@ const DataPersonalComponent = (props) => {
         },
       });
     }
+    //eslint-disable-next-line
   }, [name]);
 
   return (

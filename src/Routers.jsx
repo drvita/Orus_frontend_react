@@ -16,7 +16,7 @@ import Contacts from "./components/Contacts/index";
 //import AddByContact from "./components/Contacts/addByContact";
 import Tools from "./components/Layouts/tools";
 import Exam from "./components/Exam/index";
-import ExamAdd from "./components/Exam/add";
+//import ExamAdd from "./components/Exam/add";
 import Order from "./components/Order/index";
 import Sales from "./components/Sales/index";
 import SalesAdd from "./components/Sales/add";

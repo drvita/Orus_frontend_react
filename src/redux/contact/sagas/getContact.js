@@ -2,7 +2,7 @@ import { call, put } from "redux-saga/effects";
 import { api } from "../../sagas/api";
 import { contactActions } from "../.";
 
-export default function* handleGetContacts({ payload: id }) {
+export default function* handleGetContact({ payload: id }) {
   try {
     const result = yield call(api, `contacts/${id}`, "GET");
 

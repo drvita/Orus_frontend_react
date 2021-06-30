@@ -12,6 +12,10 @@ const saveContact = (payload = {}) => ({
   type: TYPE.SAGA_SAVE_CONTACT,
   payload,
 });
+const getContact = (payload = {}) => ({
+  type: TYPE.SAGA_GET_CONTACT,
+  payload,
+});
 //SETS
 const setListContact = (payload = {}) => ({
   type: TYPE.SET_LIST_CONTACT,
@@ -23,10 +27,6 @@ const setStateVar = (payload = {}) => ({
 });
 const setMessageContact = (payload = []) => ({
   type: TYPE.SET_MESSAGE_CONTACT,
-  payload,
-});
-const getContact = (payload = {}) => ({
-  type: TYPE.SAGA_GET_CONTACT,
   payload,
 });
 const setContact = (payload = {}) => ({

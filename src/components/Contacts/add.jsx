@@ -7,7 +7,7 @@ import Personal from "./add_personal";
 import Domicilio from "./add_domicilio";
 import Telefono from "./add_telefonos";
 
-export default class AddContactComponent extends Component {
+class AddContactComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -92,37 +92,34 @@ export default class AddContactComponent extends Component {
                     handleChangeData={this.handleChangeData}
                   />
                 </div>
+                <div className="row mt-5 border-top pt-5">
+                  <h6 className="card-subtitle text-muted d-block w-100 mb-4 text-center">
+                    Medios de contacto <span className="text-orange">*</span>
+                    {(!telefonos.t_casa &&
+                      !telefonos.t_oficina &&
+                      !telefonos.t_movil) | !verification.telefonos ? (
+                      <small className="d-block w-100">
+                        <span className="text-orange">
+                          Ingrese por lo menos un telefono
+                        </span>
+                      </small>
+                    ) : null}
+                  </h6>
+                  <Telefono
+                    telefonos={telefonos}
+                    handleChangeData={this.handleChangeData}
+                  />
+                </div>
                 {!type ? (
-                  <>
-                    <div className="row mt-5 border-top pt-5">
-                      <h6 className="card-subtitle text-muted d-block w-100 mb-4 text-center">
-                        Medios de contacto{" "}
-                        <span className="text-orange">*</span>
-                        {(!telefonos.t_casa &&
-                          !telefonos.t_oficina &&
-                          !telefonos.t_movil) | !verification.telefonos ? (
-                          <small className="d-block w-100">
-                            <span className="text-orange">
-                              Ingrese por lo menos un telefono
-                            </span>
-                          </small>
-                        ) : null}
-                      </h6>
-                      <Telefono
-                        telefonos={telefonos}
-                        handleChangeData={this.handleChangeData}
-                      />
-                    </div>
-                    <div className="row mt-5 border-top pt-5">
-                      <h6 className="card-subtitle text-muted d-block w-100 mb-4 text-center">
-                        Domicilios del contacto
-                      </h6>
-                      <Domicilio
-                        domicilios={domicilios}
-                        handleChangeData={this.handleChangeData}
-                      />
-                    </div>
-                  </>
+                  <div className="row mt-5 border-top pt-5">
+                    <h6 className="card-subtitle text-muted d-block w-100 mb-4 text-center">
+                      Domicilios del contacto
+                    </h6>
+                    <Domicilio
+                      domicilios={domicilios}
+                      handleChangeData={this.handleChangeData}
+                    />
+                  </div>
                 ) : null}
               </div>
               <div className="card-footer">
@@ -213,6 +210,7 @@ export default class AddContactComponent extends Component {
         });
         break;
       default:
+        //console.log("[DEBUG] VERIFY: " + key, value);
         this.setState({
           [key]: value,
         });
@@ -220,14 +218,14 @@ export default class AddContactComponent extends Component {
     }
   };
   handleVerificationData = () => {
-    const { name, email, birthday, telefonos, verification } = this.state,
+    const { name, email, birthday, telefonos, verification, type } = this.state,
       patternName =
         /^[A-ZÁÉÍÓÚñáéíóúÑ]+\s[A-ZÁÉÍÓÚñáéíóúÑ]{2,}(\s?[A-ZÁÉÍÓÚñáéíóúÑ]+){1,}/gim,
       patternEmail =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gim,
       patternPhone = /^\d{10}$/gim;
 
-    if (!patternName.test(name)) {
+    if (!type && !patternName.test(name)) {
       window.Swal.fire({
         title: "Verificacion",
         text: "El nombre del contacto es erroneo",
@@ -265,7 +263,7 @@ export default class AddContactComponent extends Component {
       return true;
     });
 
-    if (telefonoVerify) {
+    if (!type && telefonoVerify) {
       window.Swal.fire({
         title: "Verificacion",
         text: "El numero de contacto es erroneo",
@@ -284,7 +282,7 @@ export default class AddContactComponent extends Component {
       today = new Date(),
       anos = today.getFullYear() - date.getFullYear();
 
-    if (!birthday || anos < 1) {
+    if (!type && (!birthday || anos < 1)) {
       window.Swal.fire({
         title: "Verificacion",
         text: "La fecha de nacimiento es erronea",
@@ -389,3 +387,5 @@ export default class AddContactComponent extends Component {
     }
   };
 }
+
+export default AddContactComponent;

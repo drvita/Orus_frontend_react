@@ -614,16 +614,9 @@ export default class StoreAdd extends Component {
         ? " " +
           this.brandRef.current.options[
             this.brandRef.current.selectedIndex
-          ].text.trim()
-        : "";
-    stringcode +=
-      this.supplierRef.current !== null
-        ? " " +
-          this.supplierRef.current.options[
-            this.supplierRef.current.selectedIndex
           ].text
             .trim()
-            .split(" ")[0]
+            .replace(" ", "")
         : "";
 
     stringcode += " " + code.toString();

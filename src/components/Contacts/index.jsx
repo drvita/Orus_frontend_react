@@ -71,6 +71,8 @@ class IndexContactComponent extends Component {
       { contact, newOrEdit, contactSelected, options } = this.state;
     //domain = /^.{1,100}@domain(.com)?$/gim;
 
+    console.log("[DEBUG] Render", contacts);
+
     return (
       <div className="row">
         <div className="col-sm-12 col-md-2">
@@ -199,7 +201,11 @@ class IndexContactComponent extends Component {
                               onClick={(e) => this.handleEditItem(contact.id)}
                             >
                               <label style={{ cursor: "pointer" }}>
-                                <i className="fas fa-user text-sm mr-2"></i>
+                                {contact.tipo ? (
+                                  <i className="fas fa-store text-sm mr-2"></i>
+                                ) : (
+                                  <i className="fas fa-user text-sm mr-2"></i>
+                                )}
                                 {contact.nombre}
                               </label>
                             </td>

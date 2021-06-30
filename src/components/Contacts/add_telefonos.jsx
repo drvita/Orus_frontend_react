@@ -9,7 +9,7 @@ const DataTelefonosComponent = (props) => {
       pattern = /^\d+$/gim;
     let val = telefonos;
 
-    //console.log("[DEBUG] catch inputs:", val);
+    //console.log("[DEBUG] catch inputs:", name, val);
 
     if (name === "t_casa") {
       if (pattern.test(value)) {
@@ -63,6 +63,7 @@ const DataTelefonosComponent = (props) => {
               className="form-control"
               placeholder="(999) 999 9999"
               maxLength="10"
+              name="t_oficina"
               value={t_oficina}
               onChange={catchInputs}
             />

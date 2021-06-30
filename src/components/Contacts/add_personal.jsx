@@ -1,6 +1,6 @@
-import React from "react";
-//import NameInput from "./nameInput";
-//import EmailInput from "./emailInput";
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { contactActions } from "../../redux/contact/index";
 
 const DataPersonalComponent = (props) => {
   const {
@@ -12,8 +12,11 @@ const DataPersonalComponent = (props) => {
     birthday,
     handleChangeData,
     verification,
+    contacts,
+    //Functions
+    _getList,
+    _setList,
   } = props;
-
   const catchInputs = (e) => {
     const { name, value, checked } = e.target;
     let val = value;
@@ -23,6 +26,28 @@ const DataPersonalComponent = (props) => {
     //console.log("[DEBUG] catch input:", name, value, checked, val);
     handleChangeData(name, val);
   };
+  const [time, setTime] = useState(null);
+
+  useEffect(() => {
+    let timeTemp = null;
+    if (name.length > 2) {
+      if (time) clearTimeout(time);
+      timeTemp = setTimeout(() => {
+        //console.log("[DEBUG] name change", name);
+        _getList({
+          search: name,
+        });
+      }, 1000);
+      setTime(timeTemp);
+    } else {
+      _setList({
+        result: {
+          list: [],
+          metaList: {},
+        },
+      });
+    }
+  }, [name]);
 
   return (
     <>
@@ -71,13 +96,18 @@ const DataPersonalComponent = (props) => {
         ) : null}
       </div>
       <div className="col">
-        <div className="form-group">
+        <div className="form-group position-relative">
           <label>
-            Nombre completo <span className="text-orange">*</span>
+            Nombre completo <span className="text-orange">*</span> (
+            {verification.nameInDb})
           </label>
           <input
             type="text"
-            className="form-control text-capitalize text-truncate"
+            className={
+              contacts.length
+                ? "form-control text-capitalize text-truncate text-danger"
+                : "form-control text-capitalize text-truncate"
+            }
             placeholder="Ej: Juan Perez G"
             name="name"
             value={name ?? ""}
@@ -87,6 +117,33 @@ const DataPersonalComponent = (props) => {
             <small>
               <span className="text-orange">Este campo es requerido</span>
             </small>
+          ) : null}
+          {contacts.length ? (
+            <div
+              className="position-absolute border rounded p-0 bg-white overflow-auto "
+              style={{
+                zIndex: "50",
+                top: "4.1rem",
+                width: "100%",
+                maxHeight: "8rem",
+              }}
+            >
+              <ul className="list-group">
+                {contacts.map((contact) => {
+                  return (
+                    <li
+                      className="list-group-item text-truncate"
+                      key={contact.id}
+                    >
+                      <i className="fas fa-minus mr-1 text-danger"></i>
+                      <span className="text-capitalize text-muted text-monospace text-sm">
+                        {contact.nombre}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           ) : null}
         </div>
         <div className="form-group">
@@ -136,4 +193,17 @@ const DataPersonalComponent = (props) => {
   );
 };
 
-export default DataPersonalComponent;
+const mapStateToProps = ({ contact }) => {
+    return {
+      contacts: contact.list,
+    };
+  },
+  mapActionsToProps = {
+    _getList: contactActions.getListContacts,
+    _setList: contactActions.setListContact,
+  };
+
+export default connect(
+  mapStateToProps,
+  mapActionsToProps
+)(DataPersonalComponent);

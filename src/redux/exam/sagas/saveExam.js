@@ -15,7 +15,9 @@ export default function* handledSave({ payload }) {
         examActions.setMessagesExam([
           {
             type: "success",
-            text: "Examen almacenado con exito",
+            text: id
+              ? "Examen actualizado con exito"
+              : "Examen almacenado con exito",
           },
         ])
       );

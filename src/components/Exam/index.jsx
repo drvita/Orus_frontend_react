@@ -256,6 +256,12 @@ class IndexExamComponent extends Component {
                             <td
                               className="text-center"
                               style={{ cursor: "pointer" }}
+                              onClick={(e) =>
+                                this.handleSaveExam(exam.id, {
+                                  contatc_id: exam.paciente.id,
+                                  status: !exam.estado,
+                                })
+                              }
                             >
                               {exam.estado ? (
                                 <i

@@ -30,6 +30,12 @@ export default class ExamAdd extends Component {
     this.getExam();
   }
 
+  changeStatus = (e) => {
+    const { checked } = e.target;
+    //console.log("[DEBUG] Status change:", checked);
+    this.handleChangeInput("estado", checked);
+  };
+
   render() {
     const { exam, paciente, panel } = this.state,
       { handleClose: _handleClose } = this.props;
@@ -57,6 +63,32 @@ export default class ExamAdd extends Component {
               title="paciente"
               handleChangeContact={(paciente) => this.setState({ paciente })}
             />
+
+            <div className="custom-control custom-switch mt-4">
+              <input
+                name="estado"
+                type="checkbox"
+                className="custom-control-input"
+                id="estado"
+                checked={exam.estado}
+                onChange={this.changeStatus}
+              />
+              <label
+                className={
+                  exam.estado
+                    ? "custom-control-label text-muted"
+                    : "custom-control-label text-info"
+                }
+                htmlFor="estado"
+              >
+                <i
+                  className={
+                    exam.estado ? "fas fa-folder" : "fas fa-folder-open"
+                  }
+                ></i>
+                {exam.estado ? "Examen terminado" : "Examen en proceso"}
+              </label>
+            </div>
           </div>
 
           {paciente.id ? (
@@ -462,6 +494,8 @@ export default class ExamAdd extends Component {
 
         body.contact_id = paciente.id;
         body.edad = edad < 1 || !edad ? 0 : edad;
+        body.status = body.estado;
+        delete body.estado;
         if (!body.category_id) delete body.category_id;
         if (!body.category_ii) delete body.category_ii;
 

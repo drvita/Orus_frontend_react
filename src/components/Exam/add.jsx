@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
-//import SearchContact from "../Contacts/searchContactCard";
-import Recomendaciones from "./recomendaciones";
+//Componentes
 import Generales from "./generalesExam";
 import Interrogatorios from "./interrogatoriosExam";
 import KeraRet from "./keraRetExam";
@@ -10,12 +9,13 @@ import Agudeza from "./agudezaExam";
 import Diagnostico from "./diagnosticoExam";
 import Graduacion from "./graduacionExam";
 import Observaciones from "./observacionesExam";
-//import Chat from "../Layouts/messenger";
-//import SearchContact from "../Contacts/searchContactLine";
+import Recomendaciones from "./recomendaciones";
 import ShowContact from "../Contacts/ShowContactInLine";
 import PrintExam from "./print_exam";
+//logic local
+import action from "./add_actions";
 
-export default class ExamAdd extends Component {
+export default class ExamAddComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -23,6 +23,17 @@ export default class ExamAdd extends Component {
       exam: { id: 0 },
       paciente: { id: 0 },
       panel: 0,
+      used: {
+        generales: false,
+        interrogatorios: false,
+        keraRet: false,
+        diabetes: false,
+        agudeza: false,
+        diagnostico: false,
+        graduacion: false,
+        observaciones: false,
+        recomendaciones: false,
+      },
     };
   }
 
@@ -30,16 +41,9 @@ export default class ExamAdd extends Component {
     this.getExam();
   }
 
-  changeStatus = (e) => {
-    const { checked } = e.target;
-    //console.log("[DEBUG] Status change:", checked);
-    this.handleChangeInput("estado", checked);
-  };
-
   render() {
-    const { exam, paciente, panel } = this.state,
+    const { exam, paciente, panel, used } = this.state,
       { handleClose: _handleClose } = this.props;
-    //console.log("[DEBUG] Paciente", paciente);
 
     return (
       <div className="card card-info card-outline">
@@ -57,6 +61,12 @@ export default class ExamAdd extends Component {
         </div>
         <div className="card-body d-print-none">
           <div className="form-group">
+            {!paciente.id ? (
+              <span className="text-sm text-muted ml-4">
+                <label>Primero:</label> Busque el paciente por nombre para crear
+                un nuevo examen
+              </span>
+            ) : null}
             <ShowContact
               contact={paciente}
               readOnly={exam.id ? true : false}
@@ -64,31 +74,33 @@ export default class ExamAdd extends Component {
               handleChangeContact={(paciente) => this.setState({ paciente })}
             />
 
-            <div className="custom-control custom-switch mt-4">
-              <input
-                name="estado"
-                type="checkbox"
-                className="custom-control-input"
-                id="estado"
-                checked={exam.estado}
-                onChange={this.changeStatus}
-              />
-              <label
-                className={
-                  exam.estado
-                    ? "custom-control-label text-muted"
-                    : "custom-control-label text-info"
-                }
-                htmlFor="estado"
-              >
-                <i
+            {paciente.id && exam.id ? (
+              <div className="custom-control custom-switch mt-4">
+                <input
+                  name="estado"
+                  type="checkbox"
+                  className="custom-control-input"
+                  id="estado"
+                  checked={exam.estado}
+                  onChange={action.changeStatus}
+                />
+                <label
                   className={
-                    exam.estado ? "fas fa-folder" : "fas fa-folder-open"
+                    exam.estado
+                      ? "custom-control-label text-muted"
+                      : "custom-control-label text-info"
                   }
-                ></i>
-                {exam.estado ? "Examen terminado" : "Examen en proceso"}
-              </label>
-            </div>
+                  htmlFor="estado"
+                >
+                  <i
+                    className={
+                      exam.estado ? "fas fa-folder" : "fas fa-folder-open"
+                    }
+                  ></i>
+                  {exam.estado ? "Examen terminado" : "Examen en proceso"}
+                </label>
+              </div>
+            ) : null}
           </div>
 
           {paciente.id ? (
@@ -96,7 +108,9 @@ export default class ExamAdd extends Component {
               <div className="col-2">
                 <div className="nav flex-column nav-tabs">
                   <a
-                    className={!panel ? "nav-link active" : "nav-link"}
+                    className={
+                      !panel ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -105,12 +119,20 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
-                    Generales
+                    <i
+                      className={
+                        used.generales
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
+                    Generales {used.generales ? "T" : "F"}
                   </a>
 
                   <a
-                    className={panel === 1 ? "nav-link active" : "nav-link"}
+                    className={
+                      panel === 1 ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -119,12 +141,20 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
+                    <i
+                      className={
+                        used.interrogatorios
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
                     Interrogatorio
                   </a>
 
                   <a
-                    className={panel === 2 ? "nav-link active" : "nav-link"}
+                    className={
+                      panel === 2 ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -133,12 +163,20 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
+                    <i
+                      className={
+                        used.keraRet
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
                     Keratometria
                   </a>
 
                   <a
-                    className={panel === 3 ? "nav-link active" : "nav-link"}
+                    className={
+                      panel === 3 ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -147,12 +185,20 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
+                    <i
+                      className={
+                        used.diabetes
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
                     Diabetes
                   </a>
 
                   <a
-                    className={panel === 4 ? "nav-link active" : "nav-link"}
+                    className={
+                      panel === 4 ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -161,12 +207,20 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
+                    <i
+                      className={
+                        used.agudeza
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
                     Agudeza
                   </a>
 
                   <a
-                    className={panel === 5 ? "nav-link active" : "nav-link"}
+                    className={
+                      panel === 5 ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -175,12 +229,20 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
+                    <i
+                      className={
+                        used.diagnostico
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
                     Diagnostico
                   </a>
 
                   <a
-                    className={panel === 6 ? "nav-link active" : "nav-link"}
+                    className={
+                      panel === 6 ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -189,12 +251,20 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
+                    <i
+                      className={
+                        used.graduacion
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
                     Graduación
                   </a>
 
                   <a
-                    className={panel === 7 ? "nav-link active" : "nav-link"}
+                    className={
+                      panel === 7 ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -203,12 +273,20 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
+                    <i
+                      className={
+                        used.observaciones
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
                     Observaciones
                   </a>
 
                   <a
-                    className={panel === 8 ? "nav-link active" : "nav-link"}
+                    className={
+                      panel === 8 ? "nav-link text-bold active" : "nav-link"
+                    }
                     href="#general"
                     onClick={(e) => {
                       e.preventDefault();
@@ -217,7 +295,13 @@ export default class ExamAdd extends Component {
                       });
                     }}
                   >
-                    <i className="fas fa-check-circle mr-1"></i>
+                    <i
+                      className={
+                        used.recomendaciones
+                          ? "fas fa-check-circle mr-1 text-success"
+                          : "fas fa-circle mr-1"
+                      }
+                    ></i>
                     Recomendaciones
                   </a>
                 </div>
@@ -354,6 +438,10 @@ export default class ExamAdd extends Component {
                                 ...exam,
                                 ...obj,
                               },
+                              used: {
+                                ...used,
+                                recomendaciones: true,
+                              },
                             });
                           }
                         }}
@@ -378,6 +466,10 @@ export default class ExamAdd extends Component {
                                 exam: {
                                   ...exam,
                                   ...obj,
+                                },
+                                used: {
+                                  ...used,
+                                  recomendaciones: true,
                                 },
                               });
                             }
@@ -407,18 +499,20 @@ export default class ExamAdd extends Component {
                   exam.id ? "fas fa-arrow-left mr-2" : "fas fa-ban mr-2"
                 }
               ></i>
-              <strong>{exam.id ? "Cerrar" : "Cancelar"}</strong>
+              <strong>{exam.id ? "Cancelar" : "Cerrar"}</strong>
             </a>
-            <button
-              className="btn btn-default"
-              onClick={(e) => {
-                e.preventDefault();
-                window.print();
-              }}
-            >
-              <i className="fas fa-print mr-2"></i>
-              Imprimir
-            </button>
+            {exam.id ? (
+              <button
+                className="btn btn-default"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.print();
+                }}
+              >
+                <i className="fas fa-print mr-2"></i>
+                Imprimir
+              </button>
+            ) : null}
             <button
               type="button"
               className={paciente.id ? "btn btn-info" : "btn btn-info disabled"}
@@ -426,7 +520,7 @@ export default class ExamAdd extends Component {
               disabled={paciente.id ? "" : "disabled"}
             >
               <i className="fas fa-save mr-1"></i>
-              <strong>Guardar</strong>
+              <strong>{exam.id ? "Actualizar" : "Guardar"}</strong>
             </button>
           </div>
           <PrintExam
@@ -457,13 +551,21 @@ export default class ExamAdd extends Component {
   }
 
   handleChangeInput = (key, value) => {
-    const { exam } = this.state;
+    const { exam, used } = this.state,
+      usedto = action.handleTypeInput(key);
 
+    console.log("[DEBUG] change input:", key, action.handleTypeInput(key));
     this.setState({
       exam: {
         ...exam,
         [key]: value,
       },
+      used: usedto
+        ? {
+            ...used,
+            [usedto]: true,
+          }
+        : used,
     });
   };
   handleStatus = () => {
@@ -518,6 +620,18 @@ export default class ExamAdd extends Component {
         exam: exam,
         paciente: exam.paciente ?? { id: 0 },
         load: false,
+        panel: 0,
+        used: {
+          generales: true,
+          interrogatorios: true,
+          keraRet: true,
+          diabetes: true,
+          agudeza: true,
+          diagnostico: true,
+          graduacion: true,
+          observaciones: true,
+          recomendaciones: true,
+        },
       });
     }
   };

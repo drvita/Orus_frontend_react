@@ -6,6 +6,7 @@ import CardMenu from "../../layouts/card_menu";
 import { examActions } from "../../redux/exam/";
 import { contactActions } from "../../redux/contact";
 import AddOrNew from "./add";
+import Chat from "../Layouts/messenger";
 
 class IndexExamComponent extends Component {
   constructor(props) {
@@ -57,7 +58,7 @@ class IndexExamComponent extends Component {
 
     return (
       <div className="row">
-        <div className="col-sm-12 col-md-2 d-print-none">
+        <div className="col-sm-12 col-md-4 col-lg-2 d-print-none">
           <button
             className="btn bg-info btn-block mb-3"
             type="button"
@@ -173,7 +174,7 @@ class IndexExamComponent extends Component {
             </CardMenu>
           ) : null}
         </div>
-        <div className="col-sm-12 col-md-10">
+        <div className="col-sm-12 col-md-8 col-lg-10">
           {newOrEdit ? (
             <AddOrNew
               exam={exam}

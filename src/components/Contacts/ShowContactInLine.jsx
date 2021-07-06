@@ -79,8 +79,8 @@ const ShowContactComponent = (props) => {
             <div
               className="position-absolute overflow-auto"
               style={{
-                top: "6.4rem",
-                left: "8rem",
+                top: "8.1rem",
+                left: "7.8rem",
                 height: "12rem",
                 zIndex: "10",
                 width: "100%",

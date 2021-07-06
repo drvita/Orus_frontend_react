@@ -372,6 +372,7 @@ export default class ExamAdd extends Component {
                           nameItem="item2"
                           title="Recomendacion adicional"
                           onChangeInput={(obj) => {
+                            console.log("[DEBUG] change recomendation", obj);
                             if (typeof obj === "object") {
                               this.setState({
                                 exam: {
@@ -429,26 +430,26 @@ export default class ExamAdd extends Component {
             </button>
           </div>
           <PrintExam
-            esferaod={exam.esferaod}
-            esferaoi={exam.esferaoi}
-            cilindrod={exam.cilindrod}
-            cilindroi={exam.cilindroi}
-            ejeod={exam.ejeod}
-            ejeoi={exam.ejeoi}
-            adiciond={exam.adiciond}
-            adicioni={exam.adicioni}
-            adicion_media_od={exam.adicion_media_od}
-            adicion_media_oi={exam.adicion_media_oi}
-            dpod={exam.dpod}
-            dpoi={exam.dpoi}
-            alturaod={exam.alturaod}
-            alturaoi={exam.alturaoi}
-            lcmarca={exam.lcmarca}
-            lcgod={exam.lcgod}
-            lcgoi={exam.lcgoi}
-            diagnostico={exam.diagnostico}
-            paciente={paciente}
-            presbicie={exam.presbicie}
+            esferaod={exam.esferaod ?? ""}
+            esferaoi={exam.esferaoi ?? ""}
+            cilindrod={exam.cilindrod ?? ""}
+            cilindroi={exam.cilindroi ?? ""}
+            ejeod={exam.ejeod ?? ""}
+            ejeoi={exam.ejeoi ?? ""}
+            adiciond={exam.adiciond ?? ""}
+            adicioni={exam.adicioni ?? ""}
+            adicion_media_od={exam.adicion_media_od ?? ""}
+            adicion_media_oi={exam.adicion_media_oi ?? ""}
+            dpod={exam.dpod ?? ""}
+            dpoi={exam.dpoi ?? ""}
+            alturaod={exam.alturaod ?? ""}
+            alturaoi={exam.alturaoi ?? ""}
+            lcmarca={exam.lcmarca ?? ""}
+            lcgod={exam.lcgod ?? ""}
+            lcgoi={exam.lcgoi ?? ""}
+            diagnostico={exam.diagnostico ?? ""}
+            paciente={paciente ?? ""}
+            presbicie={exam.presbicie ?? ""}
           />
         </div>
       </div>
@@ -502,8 +503,8 @@ export default class ExamAdd extends Component {
         body.edad = edad < 1 || !edad ? 0 : edad;
         body.status = body.estado;
         delete body.estado;
-        if (!body.category_id) delete body.category_id;
-        if (!body.category_ii) delete body.category_ii;
+        if (!body.category_id) body.category_id = null;
+        if (!body.category_ii) body.category_ii = null;
 
         _handleSave(id, body);
       }

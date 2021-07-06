@@ -52,33 +52,33 @@ export default class printExam extends Component {
         <div className="row">
           <div className="col">
             <Graduacion
-              esferaod={esferaod}
-              esferaoi={esferaoi}
-              cilindrod={cilindrod}
-              cilindroi={cilindroi}
-              ejeod={ejeod}
-              ejeoi={ejeoi}
-              adiciond={adiciond}
-              adicioni={adicioni}
-              adicion_media_od={adicion_media_od}
-              adicion_media_oi={adicion_media_oi}
-              dpod={dpod}
-              dpoi={dpoi}
-              alturaod={alturaod}
-              alturaoi={alturaoi}
+              esferaod={esferaod ?? ""}
+              esferaoi={esferaoi ?? ""}
+              cilindrod={cilindrod ?? ""}
+              cilindroi={cilindroi ?? ""}
+              ejeod={ejeod ?? ""}
+              ejeoi={ejeoi ?? ""}
+              adiciond={adiciond ?? ""}
+              adicioni={adicioni ?? ""}
+              adicion_media_od={adicion_media_od ?? ""}
+              adicion_media_oi={adicion_media_oi ?? ""}
+              dpod={dpod ?? ""}
+              dpoi={dpoi ?? ""}
+              alturaod={alturaod ?? ""}
+              alturaoi={alturaoi ?? ""}
             />
           </div>
         </div>
         <div className="row">
           <div className="col">
-            <p className="card-text text-center mt-4 pt-4">
+            <div className="card-text text-center mt-4 pt-4">
               <h4>Julio Cárdenas Martinez</h4>
               Optometrista contactologo
               <br />
               UAG
               <br />
               CED PROF. 2413419
-            </p>
+            </div>
           </div>
         </div>
       </div>

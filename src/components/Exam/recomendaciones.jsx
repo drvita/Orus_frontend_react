@@ -28,10 +28,7 @@ export default class Recomendaciones extends Component {
     this.getCategories();
   }
   componentDidUpdate(props, state) {
-    if (
-      props.category_id !== this.props.category_id &&
-      this.props.category_id
-    ) {
+    if (props.category_id !== this.props.category_id) {
       console.log("[DEBUG] Recargando recomendacion");
       this.getCategories();
     }

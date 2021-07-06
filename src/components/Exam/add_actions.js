@@ -1,5 +1,3 @@
-import moment from "moment";
-
 const handleTypeInput = (key) => {
   if (
     key === "pc" ||
@@ -98,14 +96,8 @@ const handleTypeInput = (key) => {
   return null;
 };
 
-const changeStatus = (e) => {
-  const { checked } = e.target;
-  this.handleChangeInput("estado", checked);
-};
-
 const toExportActions = {
   handleTypeInput,
-  changeStatus,
 };
 
 export default toExportActions;

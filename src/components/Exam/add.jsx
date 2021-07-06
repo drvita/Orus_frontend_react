@@ -82,7 +82,7 @@ export default class ExamAddComponent extends Component {
                   className="custom-control-input"
                   id="estado"
                   checked={exam.estado}
-                  onChange={action.changeStatus}
+                  onChange={this.changeStatus}
                 />
                 <label
                   className={
@@ -550,6 +550,10 @@ export default class ExamAddComponent extends Component {
     );
   }
 
+  changeStatus = (e) => {
+    const { checked } = e.target;
+    this.handleChangeInput("estado", checked);
+  };
   handleChangeInput = (key, value) => {
     const { exam, used } = this.state,
       usedto = action.handleTypeInput(key);

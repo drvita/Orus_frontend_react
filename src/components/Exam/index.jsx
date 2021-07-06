@@ -6,7 +6,6 @@ import CardMenu from "../../layouts/card_menu";
 import { examActions } from "../../redux/exam/";
 import { contactActions } from "../../redux/contact";
 import AddOrNew from "./add";
-import Chat from "../Layouts/messenger";
 
 class IndexExamComponent extends Component {
   constructor(props) {

@@ -57,10 +57,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={esferaod ? esferaod.toFixed(2) : ""}
+                  value={esferaod ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{esferaod.toFixed(2)}</h5>
+                <h5 className="d-none d-print-block">{esferaod ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -75,10 +75,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={cilindrod ? cilindrod.toFixed(2) : ""}
+                  value={cilindrod ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{cilindrod.toFixed(2)}</h5>
+                <h5 className="d-none d-print-block">{cilindrod ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -112,10 +112,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={adiciond ? adiciond.toFixed(2) : ""}
+                  value={adiciond ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{adiciond.toFixed(2)}</h5>
+                <h5 className="d-none d-print-block">{adiciond ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -130,11 +130,11 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={adicion_media_od ? adicion_media_od.toFixed(2) : ""}
+                  value={adicion_media_od ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">
-                  {adicion_media_od.toFixed(2)}
+                  {adicion_media_od ?? ""}
                 </h5>
               </td>
               <td className="text-right">
@@ -150,10 +150,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={dpod ? dpod.toFixed(1) : ""}
+                  value={dpod ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{dpod.toFixed(1)}</h5>
+                <h5 className="d-none d-print-block">{dpod ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -168,10 +168,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={alturaod ? alturaod.toFixed(1) : ""}
+                  value={alturaod ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{alturaod.toFixed(1)}</h5>
+                <h5 className="d-none d-print-block">{alturaod ?? ""}</h5>
               </td>
             </tr>
             <tr>
@@ -192,10 +192,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={esferaoi ? esferaoi.toFixed(2) : ""}
+                  value={esferaoi ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{esferaoi.toFixed(2)}</h5>
+                <h5 className="d-none d-print-block">{esferaoi ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -210,10 +210,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={cilindroi ? cilindroi.toFixed(2) : ""}
+                  value={cilindroi ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{cilindroi.toFixed(2)}</h5>
+                <h5 className="d-none d-print-block">{cilindroi ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -247,10 +247,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={adicioni ? adicioni.toFixed(2) : ""}
+                  value={adicioni ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{adicioni.toFixed(2)}</h5>
+                <h5 className="d-none d-print-block">{adicioni ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -265,11 +265,11 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={adicion_media_oi ? adicion_media_oi.toFixed(2) : ""}
+                  value={adicion_media_oi ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">
-                  {adicion_media_oi.toFixed(2)}
+                  {adicion_media_oi ?? ""}
                 </h5>
               </td>
               <td className="text-right">
@@ -285,10 +285,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={dpoi ? dpoi.toFixed(1) : ""}
+                  value={dpoi ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{dpoi.toFixed(1)}</h5>
+                <h5 className="d-none d-print-block">{dpoi ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -303,10 +303,10 @@ export default class GraduacionExam extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={alturaoi ? alturaoi.toFixed(1) : ""}
+                  value={alturaoi ?? ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{alturaoi.toFixed(1)}</h5>
+                <h5 className="d-none d-print-block">{alturaoi ?? ""}</h5>
               </td>
             </tr>
           </tbody>

@@ -13,7 +13,7 @@ import Observaciones from "./observacionesExam";
 //import Chat from "../Layouts/messenger";
 //import SearchContact from "../Contacts/searchContactLine";
 import ShowContact from "../Contacts/ShowContactInLine";
-//import PrintExam from "./print_exam";
+import PrintExam from "./print_exam";
 
 export default class ExamAdd extends Component {
   constructor(props) {
@@ -42,8 +42,8 @@ export default class ExamAdd extends Component {
     //console.log("[DEBUG] Paciente", paciente);
 
     return (
-      <div className="card card-info card-outline d-print-none">
-        <div className="card-header">
+      <div className="card card-info card-outline">
+        <div className="card-header d-print-none">
           <h3 className="card-title text-info">
             <i className="fas fa-notes-medical mr-1"></i>
             {exam.id ? (
@@ -55,7 +55,7 @@ export default class ExamAdd extends Component {
             )}
           </h3>
         </div>
-        <div className="card-body">
+        <div className="card-body d-print-none">
           <div className="form-group">
             <ShowContact
               contact={paciente}
@@ -349,7 +349,12 @@ export default class ExamAdd extends Component {
                         title="Recomendacion principal"
                         onChangeInput={(obj) => {
                           if (typeof obj === "object") {
-                            this.setState(obj);
+                            this.setState({
+                              exam: {
+                                ...exam,
+                                ...obj,
+                              },
+                            });
                           }
                         }}
                         update={true}
@@ -368,7 +373,12 @@ export default class ExamAdd extends Component {
                           title="Recomendacion adicional"
                           onChangeInput={(obj) => {
                             if (typeof obj === "object") {
-                              this.setState(obj);
+                              this.setState({
+                                exam: {
+                                  ...exam,
+                                  ...obj,
+                                },
+                              });
                             }
                           }}
                           update={true}
@@ -380,32 +390,6 @@ export default class ExamAdd extends Component {
               </div>
             </div>
           ) : null}
-
-          {/* 
-            
-            <PrintExam
-              esferaod={esferaod}
-              esferaoi={esferaoi}
-              cilindrod={cilindrod}
-              cilindroi={cilindroi}
-              ejeod={ejeod}
-              ejeoi={ejeoi}
-              adiciond={adiciond}
-              adicioni={adicioni}
-              adicion_media_od={adicion_media_od}
-              adicion_media_oi={adicion_media_oi}
-              dpod={dpod}
-              dpoi={dpoi}
-              alturaod={alturaod}
-              alturaoi={alturaoi}
-              lcmarca={lcmarca}
-              lcgod={lcgod}
-              lcgoi={lcgoi}
-              diagnostico={diagnostico}
-              presbicie={presbicie}
-            />
-            
-            */}
         </div>
         <div className="card-footer text-right">
           <div className="btn-group d-print-none" role="group">
@@ -444,6 +428,28 @@ export default class ExamAdd extends Component {
               <strong>Guardar</strong>
             </button>
           </div>
+          <PrintExam
+            esferaod={exam.esferaod}
+            esferaoi={exam.esferaoi}
+            cilindrod={exam.cilindrod}
+            cilindroi={exam.cilindroi}
+            ejeod={exam.ejeod}
+            ejeoi={exam.ejeoi}
+            adiciond={exam.adiciond}
+            adicioni={exam.adicioni}
+            adicion_media_od={exam.adicion_media_od}
+            adicion_media_oi={exam.adicion_media_oi}
+            dpod={exam.dpod}
+            dpoi={exam.dpoi}
+            alturaod={exam.alturaod}
+            alturaoi={exam.alturaoi}
+            lcmarca={exam.lcmarca}
+            lcgod={exam.lcgod}
+            lcgoi={exam.lcgoi}
+            diagnostico={exam.diagnostico}
+            paciente={paciente}
+            presbicie={exam.presbicie}
+          />
         </div>
       </div>
     );

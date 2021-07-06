@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
 import Graduacion from "./graduacionExam";
-import Contacto from "../Contacts/contactDataVertical";
 
 export default class printExam extends Component {
   render() {
@@ -22,6 +21,7 @@ export default class printExam extends Component {
       alturaoi,
       diagnostico,
       presbicie,
+      paciente,
     } = this.props;
     return (
       <div className="card d-none d-print-block">
@@ -36,15 +36,16 @@ export default class printExam extends Component {
           <div className="col-3 text-right">{moment().format("LLL")}</div>
         </div>
         <div className="row pt-4">
-          <Contacto />
-        </div>
-        <div className="row">
-          <div className="col">
+          <div className="col text-left">
+            <label className="mr-2">Nombre del paciente</label>
+            <span className="text-uppercase">{paciente.nombre}</span>
+          </div>
+          <div className="col left">
             <label className="mr-2">Diagnostico:</label>
             {diagnostico}
           </div>
-          <div className="col-4">
-            <label className="mr-2">presbicie:</label>
+          <div className="col-2 text-right">
+            <label className="mr-2">Presbicie:</label>
             {presbicie ? "SI" : "NO"}
           </div>
         </div>

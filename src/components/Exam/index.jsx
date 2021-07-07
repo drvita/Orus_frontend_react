@@ -318,8 +318,17 @@ class IndexExamComponent extends Component {
   }
 
   handleSaveExam = (id, data) => {
-    const { options } = this.state,
+    const { options: OPT } = this.state,
+      options = {
+        ...OPT,
+        page: 1,
+      },
       { _saveExam } = this.props;
+
+    //Back to first page
+    this.setState({
+      options,
+    });
 
     //console.log("[DEBUG] save item", data);
     _saveExam({
@@ -375,6 +384,7 @@ class IndexExamComponent extends Component {
       options: {
         ...options,
         [name]: val,
+        page: 1,
       },
       load: true,
     });

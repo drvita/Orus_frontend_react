@@ -224,7 +224,7 @@ export default class searchContact extends Component {
       });
       console.log("[Contact][search] Eliminando datos local storage");
       localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-      this.props.getIdContact(0);
+      this.props.getIdContact(0, 0, {});
     }
   };
   handleClickContact = (e, id) => {
@@ -240,7 +240,7 @@ export default class searchContact extends Component {
           moment(contact.f_nacimiento)
             .fromNow(true)
             .replace(/[a-zA-ZñÑ]/gi, "") * 1;
-        this.props.getIdContact(id, edad);
+        this.props.getIdContact(id, edad, contact);
         console.log(
           "[Contact][search] Almacenando datos de contacto en local storage"
         );

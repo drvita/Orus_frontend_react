@@ -27,15 +27,34 @@ class IndexExamComponent extends Component {
     };
   }
   componentDidMount() {
-    this.getExams();
+    const { match, _getExam } = this.props,
+      { id } = match.params;
+
+    if (id) {
+      _getExam(id);
+    } else {
+      this.setState({
+        load: true,
+      });
+    }
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
-      { messages: MSGS } = this.props;
+      { messages: MSGS, exam } = this.props;
 
     if (state.load !== load && load === true) {
-      console.log("[Orus System] Recargando examenes");
+      console.log("[Orus System] Cargando examenes");
       this.getExams();
+    }
+
+    if (props.exam.id !== exam.id && exam.id) {
+      console.log("[Orus System] Exam en URL", exam.id);
+      this.setState({
+        newOrEdit: true,
+        exam,
+        examSelected: exam.id,
+        load: false,
+      });
     }
 
     if (props.messages.length !== MSGS.length && MSGS.length) {
@@ -125,7 +144,7 @@ class IndexExamComponent extends Component {
                   }}
                 >
                   <i className="fas fa-trash mr-1"></i>
-                  Borrar
+                  Borrar fecha
                 </button>
               </li>
               <li className="nav-item p-2">
@@ -175,11 +194,7 @@ class IndexExamComponent extends Component {
         </div>
         <div className="col-sm-12 col-md-8 col-lg-10">
           {newOrEdit ? (
-            <AddOrNew
-              exam={exam}
-              handleClose={this.handleCloseEdit}
-              handleSave={this.handleSaveExam}
-            />
+            <AddOrNew exam={exam} handleClose={this.handleCloseEdit} />
           ) : (
             <Inbox
               title="Lista de examenes"
@@ -193,6 +208,7 @@ class IndexExamComponent extends Component {
               handleDeleteItem={this.handleDelete}
               handleEditItem={this.handleEditItem}
               handleSync={this.handleSync}
+              handleStatus={this.changeStatus}
             >
               <table className="table table-hover table-striped">
                 <thead>
@@ -207,7 +223,11 @@ class IndexExamComponent extends Component {
                     <th>MED</th>
                     <th>DP</th>
                     <th>ALT</th>
-                    <th>Realizado</th>
+                    <th>
+                      {options.orderby === "created_at"
+                        ? "Registrado"
+                        : "Actualizado"}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -225,7 +245,9 @@ class IndexExamComponent extends Component {
                                 checked={
                                   examSelected === exam.id ? true : false
                                 }
-                                onChange={this.handleChangeCheckbox}
+                                onChange={(e) =>
+                                  this.handleChangeCheckbox(e, exam)
+                                }
                                 disabled={exam.estado}
                               />
                               <label
@@ -256,12 +278,7 @@ class IndexExamComponent extends Component {
                             <td
                               className="text-center"
                               style={{ cursor: "pointer" }}
-                              onClick={(e) =>
-                                this.handleSaveExam(exam.id, {
-                                  contatc_id: exam.paciente.id,
-                                  status: !exam.estado,
-                                })
-                              }
+                              onClick={(e) => this.changeStatus(exam)}
                             >
                               {exam.estado ? (
                                 <i
@@ -296,7 +313,13 @@ class IndexExamComponent extends Component {
                             <td>
                               {exam.alturaod}/{exam.alturaoi}
                             </td>
-                            <td>{moment(exam.created_at).fromNow()}</td>
+                            <td>
+                              {moment(
+                                options.orderby === "created_at"
+                                  ? exam.created_at
+                                  : exam.updated_at
+                              ).fromNow()}
+                            </td>
                           </tr>
                         );
                       })}
@@ -317,32 +340,48 @@ class IndexExamComponent extends Component {
     );
   }
 
+  changeStatus = (exam = {}) => {
+    if (exam.id) {
+      this.handleSaveExam(exam.id, {
+        status: !exam.estado,
+      });
+    } else {
+      const { examSelected, exam } = this.state;
+
+      if (examSelected) {
+        //console.log("[DEBUG] Status", examSelected, exam);
+        this.handleSaveExam(exam.id, {
+          status: !exam.estado,
+        });
+        this.setState({
+          examSelected: "",
+          exam: {},
+        });
+      }
+    }
+  };
   handleSaveExam = (id, data) => {
+    const { _saveExam } = this.props,
+      { options } = this.state;
+
+    _saveExam({
+      id,
+      data,
+      options,
+    });
+  };
+  handleCloseEdit = (back = false) => {
     const { options: OPT } = this.state,
       options = {
         ...OPT,
         page: 1,
-      },
-      { _saveExam } = this.props;
+      };
 
-    //Back to first page
-    this.setState({
-      options,
-    });
-
-    //console.log("[DEBUG] save item", data);
-    _saveExam({
-      id,
-      options,
-      data,
-    });
-    this.handleCloseEdit();
-  };
-  handleCloseEdit = () => {
     this.setState({
       newOrEdit: false,
       exam: {},
       examSelected: "",
+      options: back ? options : OPT,
       load: true,
     });
     this.props.history.push(`/consultorio`);
@@ -359,6 +398,7 @@ class IndexExamComponent extends Component {
         exam: exam[0],
         newOrEdit: true,
         examSelected: id,
+        load: false,
       });
       this.props.history.push(`/consultorio/${id}`);
     } else {
@@ -389,19 +429,18 @@ class IndexExamComponent extends Component {
       load: true,
     });
   };
-  handleSearch = () => {
-    console.log("search");
-  };
-  handleChangeCheckbox = (e) => {
+  handleChangeCheckbox = (e, exam = {}) => {
     const { value, checked } = e.target;
 
     if (checked) {
       this.setState({
         examSelected: parseInt(value),
+        exam,
       });
     } else {
       this.setState({
         examSelected: "",
+        exam: {},
       });
     }
   };
@@ -485,6 +524,7 @@ const mapStateToProps = ({ exam }) => {
       messages: exam.messages,
       meta: exam.metaList,
       loading: exam.loading,
+      exam: exam.exam,
     };
   },
   mapActionsToProps = {
@@ -492,6 +532,7 @@ const mapStateToProps = ({ exam }) => {
     _deleteExam: examActions.deleteExam,
     _setListContact: contactActions.setListContact,
     _saveExam: examActions.saveExam,
+    _getExam: examActions.getExam,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexExamComponent);

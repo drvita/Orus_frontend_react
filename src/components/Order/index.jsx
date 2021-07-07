@@ -217,6 +217,8 @@ class indexOrderComponent extends Component {
         );
     }
 
+    //console.log("[DEBUG] List of orders", ORDERS_LIST);
+
     return (
       <div className="row">
         <div className="col-md-2 col-sm-12">

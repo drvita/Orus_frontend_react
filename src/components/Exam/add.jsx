@@ -1,21 +1,23 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import moment from "moment";
 //Componentes
-import Generales from "./generalesExam";
-import Interrogatorios from "./interrogatoriosExam";
-import KeraRet from "./keraRetExam";
-import Diabetes from "./diabetesExam";
-import Agudeza from "./agudezaExam";
-import Diagnostico from "./diagnosticoExam";
-import Graduacion from "./graduacionExam";
-import Observaciones from "./observacionesExam";
-import Recomendaciones from "./recomendaciones";
+import Generales from "./views/generalesExam";
+import Interrogatorios from "./views/interrogatoriosExam";
+import KeraRet from "./views/keraRetExam";
+import Diabetes from "./views/diabetesExam";
+import Agudeza from "./views/agudezaExam";
+import Diagnostico from "./views/diagnosticoExam";
+import Graduacion from "./views/graduacionExam";
+import Observaciones from "./views/observacionesExam";
+import Recomendaciones from "./views/recomendaciones";
 import ShowContact from "../Contacts/ShowContactInLine";
-import PrintExam from "./print_exam";
-//logic local
-import action from "./add_actions";
+import PrintExam from "./views/print_exam";
+//logic
+import action from "./helpers";
+import { examActions } from "../../redux/exam/";
 
-export default class ExamAddComponent extends Component {
+class ExamAddComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -581,7 +583,7 @@ export default class ExamAddComponent extends Component {
     e.preventDefault();
     const { cilindrod, cilindroi, ejeod, ejeoi, paciente, exam } = this.state,
       id = exam.id,
-      { handleSave: _handleSave } = this.props;
+      { handleClose: _handleClose, _saveExam } = this.props;
 
     //Verificar si los datos son validos.
     if ((cilindrod < 0 && !ejeod) || (cilindroi < 0 && !ejeoi)) {
@@ -612,7 +614,11 @@ export default class ExamAddComponent extends Component {
         if (!body.category_id) body.category_id = null;
         if (!body.category_ii) body.category_ii = null;
 
-        _handleSave(id, body);
+        _saveExam({
+          id,
+          data: body,
+        });
+        _handleClose(true);
       }
     });
   };
@@ -640,3 +646,15 @@ export default class ExamAddComponent extends Component {
     }
   };
 }
+
+const mapStateToProps = ({ exam }) => {
+    return {
+      messages: exam.messages,
+    };
+  },
+  mapActionsToProps = {
+    _deleteExam: examActions.deleteExam,
+    _saveExam: examActions.saveExam,
+  };
+
+export default connect(mapStateToProps, mapActionsToProps)(ExamAddComponent);

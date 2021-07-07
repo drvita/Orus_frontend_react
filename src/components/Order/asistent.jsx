@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import SearchContact from "../Contacts/searchContactLine";
-import ListExam from "../Exam/listExamsCustomer";
-import Exam from "../Exam/examCustomer";
+import ListExam from "../Exam/views/listExamsCustomer";
+import Exam from "../Exam/examShort";
 import Items from "./itemsOrder";
 
 export default class Asistent extends Component {
   constructor(props) {
     super(props);
     //Recogemos valores de registro previo
-    let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
+    /*let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
     console.log(
       "[OrderAsitent] Contacto en uso: ",
       contact && contact.id ? "Si" : "No"
-    );
+    );*/
 
     this.state = {
       session:
@@ -23,7 +23,8 @@ export default class Asistent extends Component {
         Math.random().toString(36).substring(2, 16) +
         Math.random().toString(36).substring(2, 16) +
         Math.random().toString(10),
-      contact_id: contact && contact.id ? contact.id : 0,
+      contact_id: 0,
+      contact: {},
       items: [],
       codes: {},
       edad: 0,
@@ -34,7 +35,7 @@ export default class Asistent extends Component {
     };
   }
   componentDidMount() {
-    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
+    //localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
   componentDidUpdate(props, state) {
     const { categories } = this.props;
@@ -45,8 +46,17 @@ export default class Asistent extends Component {
   }
 
   render() {
-    const { contact_id, items, edad, exam_id, exam, examEdit, codes, session } =
-        this.state,
+    const {
+        contact_id,
+        contact,
+        items,
+        edad,
+        exam_id,
+        exam,
+        examEdit,
+        codes,
+        session,
+      } = this.state,
       { loading: LOADING } = this.props;
 
     return (
@@ -146,10 +156,18 @@ export default class Asistent extends Component {
               ) : (
                 <div className="form-group">
                   <ListExam
-                    paciente={contact_id}
-                    edad={edad}
-                    ChangeInput={this.handleChangeInput}
+                    exams={contact.examenes}
+                    ChangeInput={(exam) => {
+                      this.handleChangeInput("exam", exam);
+                    }}
                   />
+                  <button
+                    type="button"
+                    className="btn btn-default"
+                    onClick={(e) => this.handleChangeInput("exam", { id: 0 })}
+                  >
+                    Sin examen
+                  </button>
                 </div>
               )}
             </React.Fragment>
@@ -293,8 +311,10 @@ export default class Asistent extends Component {
     }
     return code;
   };
-  getIdContact = (contact_id, edad) => {
+  getIdContact = (contact_id, edad, contact) => {
+    //console.log("[DEBUG] Contact", contact.id);
     this.setState({
+      contact,
       contact_id,
       edad,
     });

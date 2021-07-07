@@ -91,6 +91,18 @@ const ListInbox = (props) => {
               </button>
             ) : null}
 
+            {props.handleStatus ? (
+              <button
+                type="button"
+                className="btn btn-default btn-sm"
+                title="Estado"
+                disabled={props.itemSelected ? false : true}
+                onClick={(e) => props.handleStatus()}
+              >
+                <i className="fas fa-check-circle"></i>
+              </button>
+            ) : null}
+
             {props.handleSync ? (
               <button
                 type="button"

@@ -97,7 +97,7 @@ export default class GraduacionExam extends Component {
                   value={ejeod ? parseInt(ejeod) : ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{parseInt(ejeod ?? 0)}</h5>
+                <h5 className="d-none d-print-block">{ejeod ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input
@@ -232,7 +232,7 @@ export default class GraduacionExam extends Component {
                   value={ejeoi ? parseInt(ejeoi) : ""}
                   onChange={this.catchInputs}
                 />
-                <h5 className="d-none d-print-block">{parseInt(ejeoi)}</h5>
+                <h5 className="d-none d-print-block">{ejeoi ?? ""}</h5>
               </td>
               <td className="text-right">
                 <input

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import moment from "moment";
 import LabOrder from "./labOrder";
 import Bicelacion from "./bicelacionOrder";
-import Exam from "../Exam/examCustomer";
+import Exam from "../Exam/examShort";
 import Items from "./itemsOrder";
 import { Link } from "react-router-dom";
 

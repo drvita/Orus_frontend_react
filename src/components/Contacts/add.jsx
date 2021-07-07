@@ -2,7 +2,7 @@ import React, { Component } from "react";
 //import { Link } from "react-router-dom";
 //import moment from "moment";
 //import Mapa from "./mapa";
-import ListExam from "../Exam/listsExams";
+import ListExam from "../Exam/views/listExamsCustomer";
 import Personal from "./add_personal";
 import Domicilio from "./add_domicilio";
 import Telefono from "./add_telefonos";

@@ -81,20 +81,7 @@ class IndexExamComponent extends Component {
             className="btn bg-info btn-block mb-3"
             type="button"
             disabled={newOrEdit}
-            onClick={(e) => {
-              const { _setListContact } = this.props;
-
-              this.setState({
-                newOrEdit: true,
-              });
-              _setListContact({
-                result: {
-                  list: [],
-                  metaList: {},
-                },
-              });
-              this.props.history.push(`/consultorio/new`);
-            }}
+            onClick={this.newExam}
           >
             <i className="fas fa-plus mr-1"></i>
             Nuevo examen
@@ -340,6 +327,20 @@ class IndexExamComponent extends Component {
     );
   }
 
+  newExam = () => {
+    const { _setListContact, history } = this.props;
+
+    this.setState({
+      newOrEdit: true,
+    });
+    _setListContact({
+      result: {
+        list: [],
+        metaList: {},
+      },
+    });
+    history.push(`/consultorio/new`);
+  };
   changeStatus = (exam = {}) => {
     if (exam.id) {
       this.handleSaveExam(exam.id, {
@@ -388,7 +389,7 @@ class IndexExamComponent extends Component {
   };
   handleEditItem = (item = null) => {
     const { examSelected } = this.state,
-      { exams } = this.props,
+      { exams, history } = this.props,
       id = item ?? examSelected,
       exam = exams.filter((e) => e.id === id);
 
@@ -400,7 +401,7 @@ class IndexExamComponent extends Component {
         examSelected: id,
         load: false,
       });
-      this.props.history.push(`/consultorio/${id}`);
+      history.push(`/consultorio/${id}`);
     } else {
       this.setState({
         newOrEdit: false,
@@ -408,7 +409,7 @@ class IndexExamComponent extends Component {
         examSelected: "",
         load: true,
       });
-      this.props.history.push(`/consultorio`);
+      history.push(`/consultorio`);
     }
   };
   handleSetSelectOptions = (e) => {
@@ -501,6 +502,7 @@ class IndexExamComponent extends Component {
       }
       this.setState({
         examSelected: "",
+        exam: {},
       });
     });
   };

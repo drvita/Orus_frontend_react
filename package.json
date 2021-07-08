@@ -24,6 +24,7 @@
     "eject": "react-scripts eject",
     "deployAll": "aws s3 sync build/ s3://app.opticamadero.com --acl public-read",
     "deployStatic": "aws s3 sync build/static/ s3://app.opticamadero.com/static --acl public-read",
+    "deployIndex": "aws s3 cp build/index.html s3://app.opticamadero.com --acl public-read",
     "deployImg": "aws s3 sync build/img/ s3://app.opticamadero.com/img --acl public-read"
   },
   "eslintConfig": {

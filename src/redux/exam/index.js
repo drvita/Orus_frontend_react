@@ -1,6 +1,6 @@
-import storeReducer from "./reducer";
+import examReducer from "./reducer";
 
 export { default as examActions } from "./actions";
 export { default as examSagas } from "./sagas/";
 
-export default storeReducer;
+export default examReducer;

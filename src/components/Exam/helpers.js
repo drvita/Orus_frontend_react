@@ -95,9 +95,55 @@ const handleTypeInput = (key) => {
 
   return null;
 };
+const handleCodeName = (category) => {
+  let code = "";
+  if (category.parent) {
+    if (category.parent.parent) {
+      code = category.parent.parent.meta.code;
+      code += category.parent.meta.code;
+      code += category.meta.code;
+    } else {
+      code = category.parent.meta.code;
+      code += category.meta.code;
+    }
+  } else {
+    code = category.meta.code;
+  }
+
+  return code;
+};
+const getCodeGrad = (category, esferaod, esferaoi, cilindrod, cilindroi) => {
+  const code = Object.keys(category).length ? handleCodeName(category) : null;
+
+  if (!code) return {};
+
+  let gradod = "+000000",
+    gradoi = "+000000";
+
+  if (cilindrod || esferaod) {
+    gradod = esferaod > 0 ? "+" : "";
+    gradod +=
+      esferaod.toFixed(2).toString().replace(".", "") +
+      cilindrod.toFixed(2).toString().replace("-", "").replace(".", "");
+  }
+  if (cilindroi || esferaoi) {
+    gradoi = esferaoi > 0 ? "+" : "";
+    gradoi +=
+      esferaoi.toFixed(2).toString().replace(".", "") +
+      cilindroi.toFixed(2).toString().replace("-", "").replace(".", "");
+  }
+
+  return {
+    code,
+    od: gradod,
+    oi: gradoi,
+  };
+};
 
 const toExportActions = {
   handleTypeInput,
+  handleCodeName,
+  getCodeGrad,
 };
 
 export default toExportActions;

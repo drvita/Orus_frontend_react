@@ -11,7 +11,7 @@ import {
   deleteOrder,
   saveOrder,
 } from "../../redux/order/actions";
-import { getListCategories } from "../../redux/category/actions";
+import { categoryActions } from "../../redux/category/";
 
 class indexOrderComponent extends Component {
   constructor(props) {
@@ -459,7 +459,7 @@ const mapStateToProps = ({ order, category, logging }) => {
     setStateVar,
     getListOrder,
     deleteOrder,
-    getListCategories,
+    getListCategories: categoryActions.getListCategories,
     saveOrder,
   };
 

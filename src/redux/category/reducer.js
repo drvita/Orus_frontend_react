@@ -1,48 +1,52 @@
 import { TYPE } from "./types";
 
 const DEFAULT_STATE = {
-    list: [],
-    metaList: {},
-    orderId: 0,
-    orderby: "created_at",
-    order: "name",
-    search: "",
-    page: 1,
-    loading: false,
-  };
+  list: [],
+  metaList: {},
+  messages: [],
+  category: { id: 0 },
+  loading: false,
+};
 
 const default_reducer = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
     case TYPE.SAGA_GET_LIST_CATEGORIES: {
-      
       return {
         ...state,
         loading: true,
-      }
+      };
     }
-    case TYPE.SAGE_DELETE_CATEGORY: {
+    case TYPE.SAGA_GET_CATEGORY: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
 
-      return {
-        ...state,
-        loading: true,
-      }
-    }
     case TYPE.SET_LIST_CATEGORY: {
       const { payload } = action;
       return {
         ...state,
         ...payload.result,
-        ...payload.options,
+        messages: [],
         loading: false,
       };
     }
-    case TYPE.SET_ERROR_CATEGORY: {
-      const {payload} = action;
+    case TYPE.SET_MESSAGE_CATEGORY: {
+      const { payload } = action;
       return {
         ...state,
         loading: false,
-        errors: payload,
-      }
+        messages: payload,
+      };
+    }
+    case TYPE.SET_CATEGORY: {
+      const { payload } = action;
+      return {
+        ...state,
+        loading: false,
+        category: payload,
+      };
     }
     default:
       return {

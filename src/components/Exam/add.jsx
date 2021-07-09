@@ -425,7 +425,7 @@ class ExamAddComponent extends Component {
                   <div className="row">
                     <div className="col">
                       <Recomendaciones
-                        category_id={parseInt(exam.category_id ?? 0)}
+                        category_id={exam.category_id ?? null}
                         esferaod={exam.esferaod ?? ""}
                         esferaoi={exam.esferaoi ?? ""}
                         cilindrod={exam.cilindrod ?? ""}
@@ -433,27 +433,14 @@ class ExamAddComponent extends Component {
                         nameCategory="category_id"
                         nameItem="item1"
                         title="Recomendacion principal"
-                        onChangeInput={(obj) => {
-                          if (typeof obj === "object") {
-                            this.setState({
-                              exam: {
-                                ...exam,
-                                ...obj,
-                              },
-                              used: {
-                                ...used,
-                                recomendaciones: true,
-                              },
-                            });
-                          }
-                        }}
+                        onChangeInput={this.handleChangeRecomendations}
                         update={true}
                       />
                     </div>
                     {exam.category_id ? (
                       <div className="col">
                         <Recomendaciones
-                          category_id={parseInt(exam.category_ii ?? 0)}
+                          category_id={exam.category_ii ?? null}
                           esferaod={exam.esferaod ?? ""}
                           esferaoi={exam.esferaoi ?? ""}
                           cilindrod={exam.cilindrod ?? ""}
@@ -461,21 +448,7 @@ class ExamAddComponent extends Component {
                           nameCategory="category_ii"
                           nameItem="item2"
                           title="Recomendacion adicional"
-                          onChangeInput={(obj) => {
-                            console.log("[DEBUG] change recomendation", obj);
-                            if (typeof obj === "object") {
-                              this.setState({
-                                exam: {
-                                  ...exam,
-                                  ...obj,
-                                },
-                                used: {
-                                  ...used,
-                                  recomendaciones: true,
-                                },
-                              });
-                            }
-                          }}
+                          onChangeInput={this.handleChangeRecomendations}
                           update={true}
                         />
                       </div>
@@ -552,6 +525,24 @@ class ExamAddComponent extends Component {
     );
   }
 
+  handleChangeRecomendations = (obj) => {
+    const { exam, used } = this.state,
+      key = Object.keys(obj);
+
+    if (typeof obj === "object") {
+      this.setState({
+        exam: {
+          ...exam,
+          category_ii: key[0] === "category_id" ? null : exam.category_ii,
+          ...obj,
+        },
+        used: {
+          ...used,
+          recomendaciones: true,
+        },
+      });
+    }
+  };
   changeStatus = (e) => {
     const { checked } = e.target;
     this.handleChangeInput("estado", checked);
@@ -560,7 +551,6 @@ class ExamAddComponent extends Component {
     const { exam, used } = this.state,
       usedto = action.handleTypeInput(key);
 
-    console.log("[DEBUG] change input:", key, action.handleTypeInput(key));
     this.setState({
       exam: {
         ...exam,
@@ -627,7 +617,13 @@ class ExamAddComponent extends Component {
     if (exam.id) {
       console.log("[Orus System] Procesando examen", exam.id);
       this.setState({
-        exam: exam,
+        exam: {
+          ...exam,
+          category_id: exam.category_primary ? exam.category_primary.id : null,
+          category_ii: exam.category_secondary
+            ? exam.category_secondary.id
+            : null,
+        },
         paciente: exam.paciente ?? { id: 0 },
         load: false,
         panel: 0,

@@ -1,36 +1,80 @@
 import React, { Component, Fragment } from "react";
-//import Codestring from "../Layouts/codeLentString";
+import { connect } from "react-redux";
 
-export default class Recomendaciones extends Component {
+import action from "../helpers";
+import { categoryActions } from "../../../redux/category";
+
+class RecomendationGlassComponent extends Component {
   constructor(props) {
     super(props);
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+
     this.state = {
       category_list: [],
-      meta: {},
       category_list_2: [],
       category_list_3: [],
-      category_id: 0,
+      category_id_1: 0,
       category_id_2: 0,
       category_id_3: 0,
-      category: [],
+      category: {},
       codesItems: {},
-      host: ls.host,
-      token: ls.token,
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
   }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
-  }
+
   componentDidMount() {
-    this.getCategories();
+    const { category_id, categories, _getList } = this.props;
+
+    if (categories.length) {
+      this.setState({
+        category_list: categories[0].sons,
+      });
+    } else {
+      _getList({
+        options: {
+          categoryid: "raiz",
+          search: "lentes",
+        },
+        id: null,
+      });
+    }
+
+    if (category_id) {
+      this.getCategory(category_id);
+    }
   }
   componentDidUpdate(props, state) {
-    if (props.category_id !== this.props.category_id) {
-      console.log("[DEBUG] Recargando recomendacion");
-      this.getCategories();
+    const {
+        category_id,
+        esferaod,
+        esferaoi,
+        cilindrod,
+        cilindroi,
+        categories,
+      } = this.props,
+      { category: category_state } = this.state;
+
+    if (props.categories.length !== categories.length && categories.length) {
+      this.setState({
+        category_list: categories[0].sons,
+      });
+    }
+
+    if (props.category_id !== category_id && category_id) {
+      this.getCategory(category_id);
+    }
+
+    if (state.category.id !== category_state.id && category_state.id) {
+      const data = action.getCodeGrad(
+        category_state,
+        esferaod,
+        esferaoi,
+        cilindrod,
+        cilindroi
+      );
+
+      this.setState({
+        category: category_state,
+        codesItems: data,
+      });
     }
   }
 
@@ -44,115 +88,109 @@ export default class Recomendaciones extends Component {
         cilindroi,
         handleCodesItems,
       } = this.props,
-      { codesItems } = this.state;
+      {
+        codesItems,
+        category_id_1,
+        category_id_2,
+        category_id_3,
+        category_list_2,
+        category_list_3,
+        category_list,
+      } = this.state;
 
     return (
       <div className="card border border-info rounded d-print-none">
         <div className="card-body">
           <h3 className="card-title text-success m-2">{title}</h3>
           {!category_id ? (
-            this.state.category_list.length ? (
-              <Fragment>
-                {this.state.category_list.length ? (
-                  <div className="input-group mb-3">
-                    <div className="input-group-prepend">
-                      <span className="input-group-text">Tipo</span>
-                    </div>
-                    <select
-                      name="category_id"
-                      className="custom-select"
-                      value={this.state.category_id}
-                      onChange={this.handleCategoryChange}
-                    >
-                      <option value="0">Seleccione el tipo</option>
-                      {this.state.category_list.map((cat) => {
-                        if (
-                          cat.meta &&
-                          cat.meta.rangoInf <= esferaod &&
-                          esferaod <= cat.meta.rangoSup &&
-                          cat.meta.rangoInf <= esferaoi &&
-                          esferaoi <= cat.meta.rangoSup &&
-                          cat.meta.cil <= cilindrod &&
-                          cat.meta.cil <= cilindroi
-                        ) {
-                          return (
-                            <option value={cat.id} key={cat.id}>
-                              {cat.categoria}
-                            </option>
-                          );
-                        } else return false;
-                      })}
-                    </select>
+            <Fragment>
+              {category_list.length ? (
+                <div className="input-group mb-3">
+                  <div className="input-group-prepend">
+                    <span className="input-group-text">Tipo</span>
                   </div>
-                ) : null}
-
-                {this.state.category_id && this.state.category_list_2.length ? (
-                  <div className="input-group mb-3">
-                    <div className="input-group-prepend">
-                      <span className="input-group-text">Material</span>
-                    </div>
-                    <select
-                      name="category_id_2"
-                      className="custom-select"
-                      value={this.state.category_id_2}
-                      onChange={this.handleCategoryChange}
-                    >
-                      <option value="0">Seleccione el material</option>
-                      {this.state.category_list_2.map((cat) => {
-                        if (
-                          cat.meta &&
-                          cat.meta.rangoInf <= esferaod &&
-                          esferaod <= cat.meta.rangoSup &&
-                          cat.meta.rangoInf <= esferaoi &&
-                          esferaoi <= cat.meta.rangoSup
-                        ) {
-                          return (
-                            <option value={cat.id} key={cat.id}>
-                              {cat.categoria}
-                            </option>
-                          );
-                        } else return false;
-                      })}
-                    </select>
-                  </div>
-                ) : null}
-
-                {this.state.category_id &&
-                this.state.category_id_2 &&
-                this.state.category_list_3.length ? (
-                  <div className="input-group mb-3">
-                    <div className="input-group-prepend">
-                      <span className="input-group-text">Tratamiento</span>
-                    </div>
-                    <select
-                      name="category_id_3"
-                      className="custom-select"
-                      value={this.state.category_id_3}
-                      onChange={(e) => {
-                        this.handleCategoryChange(
-                          e,
-                          codesItems.od,
-                          codesItems.oi
-                        );
-                      }}
-                    >
-                      <option value="0">Seleccione el tratamiento</option>
-                      {this.state.category_list_3.map((cat) => {
+                  <select
+                    name="category_id_1"
+                    className="custom-select"
+                    value={category_id_1 ?? ""}
+                    onChange={this.handleCategoryChange}
+                  >
+                    <option value="0">-- Seleccione el tipo --</option>
+                    {category_list.map((cat) => {
+                      if (
+                        cat.meta &&
+                        cat.meta.rangoInf <= esferaod &&
+                        esferaod <= cat.meta.rangoSup &&
+                        cat.meta.rangoInf <= esferaoi &&
+                        esferaoi <= cat.meta.rangoSup &&
+                        cat.meta.cil <= cilindrod &&
+                        cat.meta.cil <= cilindroi
+                      ) {
                         return (
                           <option value={cat.id} key={cat.id}>
-                            {cat.categoria}
+                            {cat.name}
                           </option>
                         );
-                      })}
-                    </select>
+                      } else return null;
+                    })}
+                  </select>
+                </div>
+              ) : null}
+
+              {category_id_1 && category_list_2.length ? (
+                <div className="input-group mb-3">
+                  <div className="input-group-prepend">
+                    <span className="input-group-text">Material</span>
                   </div>
-                ) : null}
-              </Fragment>
-            ) : (
-              <div className="spinner-border text-primary" role="status">
-                <span className="sr-only">Loading...</span>
-              </div>
-            )
+                  <select
+                    name="category_id_2"
+                    className="custom-select"
+                    value={category_id_2}
+                    onChange={this.handleCategoryChange}
+                  >
+                    <option value="0">-- Seleccione el material --</option>
+                    {category_list_2.map((cat) => {
+                      if (
+                        cat.meta &&
+                        cat.meta.rangoInf <= esferaod &&
+                        esferaod <= cat.meta.rangoSup &&
+                        cat.meta.rangoInf <= esferaoi &&
+                        esferaoi <= cat.meta.rangoSup
+                      ) {
+                        return (
+                          <option value={cat.id} key={cat.id}>
+                            {cat.name}
+                          </option>
+                        );
+                      } else return false;
+                    })}
+                  </select>
+                </div>
+              ) : null}
+
+              {category_id_1 && category_id_2 && category_list_3.length ? (
+                <div className="input-group mb-3">
+                  <div className="input-group-prepend">
+                    <span className="input-group-text">Tratamiento</span>
+                  </div>
+                  <select
+                    name="category_id_3"
+                    className="custom-select"
+                    value={category_id_3}
+                    onChange={this.handleCategoryChange}
+                  >
+                    <option value="0">-- Seleccione el tratamiento --</option>
+                    {category_list_3.map((cat) => {
+                      return (
+                        <option value={cat.id} key={cat.id}>
+                          {cat.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              ) : null}
+            </Fragment>
           ) : (
             <Fragment>
               {codesItems.code + codesItems.od ===
@@ -206,187 +244,124 @@ export default class Recomendaciones extends Component {
     );
   }
 
-  handleCodeName = (category) => {
-    let code = "";
-    if (category.depende_de) {
-      if (category.depende_de.depende_de) {
-        code = category.depende_de.depende_de.meta.code;
-        code += category.depende_de.meta.code;
-        code += category.meta.code;
-      } else {
-        code = category.depende_de.meta.code;
-        code += category.meta.code;
-      }
-    } else {
-      code = category.meta.code;
+  getCategory = (id) => {
+    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+
+    if (id) {
+      fetch("http://" + ls.host + "/api/categories/" + id, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + ls.token,
+        },
+      })
+        .then((response) => response.json())
+        .then(({ data }) => {
+          if (data) {
+            this.setState({
+              category: data,
+            });
+          }
+        });
     }
-    return code;
+
+    return {};
   };
   handleClickCategory = (e) => {
     e.preventDefault();
     const { onChangeInput, nameCategory } = this.props;
     this.setState({
-      category_id: 0,
+      category_id_1: 0,
       category_id_2: 0,
       category_id_3: 0,
       category_list_2: [],
       category_list_3: [],
+      codesItems: {},
+      category: {},
     });
     onChangeInput({
-      [nameCategory]: 0,
+      [nameCategory]: null,
     });
   };
-  handleCategoryChange = (e, gradod, gradoi) => {
+  handleCategoryChange = (e) => {
     const { name, value } = e.target,
-      { onChangeInput, nameCategory } = this.props;
+      { onChangeInput: _onChangeInput, nameCategory } = this.props,
+      { category_list } = this.state;
 
-    if (name === "category_id") {
+    switch (name) {
+      case "category_id_1":
+        for (const key in category_list) {
+          if (category_list[key].id === parseInt(value)) {
+            this.setState({
+              category_id_1: parseInt(value),
+              category_id_3: 0,
+              category_list_2: category_list[key].sons,
+              category_list_3: [],
+            });
+            break;
+          }
+        }
+        break;
+      case "category_id_2":
+        if (value) {
+          this.state.category_list_2.map((cat) => {
+            if (cat.id === value * 1) {
+              this.setState({
+                category_id_2: parseInt(value),
+                category_list_3: cat.sons,
+              });
+            }
+            return null;
+          });
+        }
+        break;
+      case "category_id_3":
+        _onChangeInput({
+          [nameCategory]: parseInt(value),
+        });
+        break;
+
+      default:
+        this.setState({
+          [name]: parseInt(value),
+        });
+        break;
+    }
+
+    /*
+    if (name === "") {
       if (value) {
-        this.state.category_list.map((cat) => {
+       
+        category_list.map((cat) => {
           if (cat.id === parseInt(value)) {
             this.setState({
               category_id_3: 0,
-              category_list_2: cat.hijos,
+              category_list_2: cat.sons,
               category_list_3: [],
             });
           }
           return null;
         });
+        
+        
       }
-    }
-    if (name === "category_id_2") {
-      if (value) {
-        this.state.category_list_2.map((cat) => {
-          if (cat.id === value * 1) {
-            this.setState({
-              category_list_3: cat.hijos,
-            });
-          }
-          return null;
-        });
-      }
-    }
-
-    this.setState({
-      [name]: parseInt(value),
-    });
-
-    if (name === "category_id_3") {
-      onChangeInput({
-        [nameCategory]: parseInt(value),
-      });
-    }
+      
+    }*/
   };
-  getCategories = () => {
-    const { host, token } = this.state,
-      { category_id } = this.props;
-
-    //console.log("Tipo de descarga", nameCategory, category_id);
-    if (category_id) {
-      console.log("Descargando categoria para recomendacion");
-      fetch("http://" + host + "/api/categories/" + category_id, {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(response.statusText);
-          }
-          return response.json();
-        })
-        .then((cat) => {
-          if (cat.data) {
-            console.log("Recomendacion descargada");
-            const { category_id, esferaod, esferaoi, cilindrod, cilindroi } =
-                this.props,
-              category = cat.data;
-            let code =
-                category_id && Object.keys(category).length
-                  ? this.handleCodeName(category)
-                  : "XX",
-              gradod = "+000000",
-              gradoi = "+000000";
-
-            if (cilindrod || esferaod) {
-              gradod = esferaod > 0 ? "+" : "";
-              gradod +=
-                esferaod.toFixed(2).toString().replace(".", "") +
-                cilindrod
-                  .toFixed(2)
-                  .toString()
-                  .replace("-", "")
-                  .replace(".", "");
-            }
-            if (cilindroi || esferaoi) {
-              gradoi = esferaoi > 0 ? "+" : "";
-              gradoi +=
-                esferaoi.toFixed(2).toString().replace(".", "") +
-                cilindroi
-                  .toFixed(2)
-                  .toString()
-                  .replace("-", "")
-                  .replace(".", "");
-            }
-            //console.log("[DEBUG FETCH] ", code, gradod, gradoi);
-            this.setState({
-              category: cat.data,
-              category_id,
-              codesItems: {
-                code,
-                od: gradod,
-                oi: gradoi,
-              },
-            });
-          }
-        })
-        .catch((e) => {
-          console.error("Orus: " + e);
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
-        });
-    } else {
-      console.log("Descargando lista de recomendaciones raiz");
-      fetch("http://" + host + "/api/categories/1", {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(response.statusText);
-          }
-          return response.json();
-        })
-        .then((cat) => {
-          if (cat.data) {
-            console.log("Lista de recomendaciones descargadas");
-            this.setState({
-              category_list: cat.data.hijos,
-              meta: cat.meta,
-              category_id: 0,
-            });
-          }
-        })
-        .catch((e) => {
-          console.error("Orus: " + e);
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
-        });
-    }
-  };
+  getCategories = () => {};
 }
+
+const mapStateToProps = ({ category }) => {
+    return {
+      categories: category.list,
+    };
+  },
+  mapActionsToProps = {
+    _getList: categoryActions.getListCategories,
+  };
+
+export default connect(
+  mapStateToProps,
+  mapActionsToProps
+)(RecomendationGlassComponent);

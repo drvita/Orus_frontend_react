@@ -350,7 +350,6 @@ class IndexExamComponent extends Component {
       const { examSelected, exam } = this.state;
 
       if (examSelected) {
-        //console.log("[DEBUG] Status", examSelected, exam);
         this.handleSaveExam(exam.id, {
           status: !exam.estado,
         });
@@ -420,7 +419,6 @@ class IndexExamComponent extends Component {
     if (name === "itemsPage") val = parseInt(value);
     if (name === "date") val = value ? value : "";
 
-    //console.log("[DEBUG] manejando filtros", name, value, val);
     this.setState({
       options: {
         ...options,

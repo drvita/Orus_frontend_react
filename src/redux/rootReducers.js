@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 import loggin_state from "./user/reducer";
 import default_state from "./default/reducer";
 import order_state from "./order/reducer";
-import category_state from "./category/reducer";
+import category_state from "./category/";
 import storeReducer from "./store/";
 import contactReducer from "./contact/";
 import examReducer from "./exam/";

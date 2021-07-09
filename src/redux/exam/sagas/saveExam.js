@@ -4,7 +4,7 @@ import { examActions } from "../index";
 
 export default function* handledSave({ payload }) {
   try {
-    const { options, id, data } = payload,
+    const { id, data } = payload,
       url = getUrl("exams", id),
       method = id ? "PUT" : "POST",
       result = yield call(api, url, method, data);
@@ -20,11 +20,6 @@ export default function* handledSave({ payload }) {
               : "Examen almacenado con exito",
           },
         ])
-      );
-      yield put(
-        examActions.getListExam({
-          options,
-        })
       );
     } else {
       console.error(

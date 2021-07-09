@@ -90,6 +90,7 @@ function AddItemModal(props) {
       console.log("[DEBUG] action", search.length);
       _reset();
     }
+    // eslint-disable-next-line
   }, [search]);
 
   return (

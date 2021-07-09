@@ -48,6 +48,21 @@ function AddItemModal(props) {
     _reset();
     _handleCloseModal();
   };
+  const _searchItem = () => {
+    if (search) {
+      if (search.length > 2) {
+        _getListStore({
+          options: {
+            page: 1,
+            orderby: "name",
+            order: "ASC",
+            search: search,
+            itemsPage: 25,
+          },
+        });
+      }
+    }
+  };
 
   const verifyItem = () => {
     let result = true;
@@ -68,11 +83,14 @@ function AddItemModal(props) {
     return result;
   };
 
-  let searchInput = null;
-
+  //let searchInput = null;
   useEffect(() => {
-    if (!search && searchInput) searchInput.focus();
-  });
+    //if (!search && searchInput) searchInput.focus();
+    if (!search.length) {
+      console.log("[DEBUG] action", search.length);
+      _reset();
+    }
+  }, [search]);
 
   return (
     <div className="modal" tabIndex="-1" style={{ display: "block" }}>
@@ -106,26 +124,11 @@ function AddItemModal(props) {
                   type="text"
                   placeholder="Buscar produccto"
                   autoComplete="off"
-                  ref={(input) => {
-                    searchInput = input;
-                  }}
                   value={search}
                   onChange={(e) => {
                     const { value } = e.target;
                     setSearch(value.toLocaleLowerCase());
-                    if (value.length > 2) {
-                      _getListStore({
-                        options: {
-                          page: 1,
-                          orderby: "name",
-                          order: "ASC",
-                          search: value,
-                          itemsPage: 25,
-                        },
-                      });
-                    } else if (!value.length) {
-                      _reset();
-                    }
+                    _searchItem();
                   }}
                 />
                 {items.length && !item.store_items_id ? (

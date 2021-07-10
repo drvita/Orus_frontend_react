@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import moment from "moment";
 import Inbox from "../../layouts/list_inbox";
 import AddContact from "./add";
 import CardMenu from "../../layouts/card_menu";
@@ -173,6 +174,20 @@ class IndexContactComponent extends Component {
               handleSync={this.handleSync}
             >
               <table className="table table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Nombre</th>
+                    <th>E-mail</th>
+                    <th>Telefono</th>
+                    <th>Creado por</th>
+                    <th>
+                      {options.orderby === "created_at"
+                        ? "Registrado"
+                        : "Actualizado"}
+                    </th>
+                  </tr>
+                </thead>
                 <tbody>
                   {contacts.length ? (
                     <>
@@ -185,6 +200,7 @@ class IndexContactComponent extends Component {
                                 className="form-check-input mt-4"
                                 value={contact.id}
                                 id={"contact_" + contact.id}
+                                disabled={contact.enUso}
                                 checked={
                                   contactSelected === contact.id ? true : false
                                 }
@@ -234,6 +250,14 @@ class IndexContactComponent extends Component {
                                   ? contact.telefonos.t_oficina
                                   : "--"}
                               </span>
+                            </td>
+                            <td>{contact.created.name}</td>
+                            <td>
+                              {moment(
+                                options.orderby === "created_at"
+                                  ? contact.created_at
+                                  : contact.updated_at
+                              ).fromNow()}
                             </td>
                           </tr>
                         );

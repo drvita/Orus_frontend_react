@@ -3,9 +3,9 @@ import React, { Component } from "react";
 //import moment from "moment";
 //import Mapa from "./mapa";
 import ListExam from "../Exam/views/listExamsCustomer";
-import Personal from "./add_personal";
-import Domicilio from "./add_domicilio";
-import Telefono from "./add_telefonos";
+import Personal from "./views/add_personal";
+import Domicilio from "./views/add_domicilio";
+import Telefono from "./views/add_telefonos";
 
 class AddContactComponent extends Component {
   constructor(props) {

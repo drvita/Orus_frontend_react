@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Easycontact from "./easyContact";
+import Easycontact from "./views/easyContact";
 import moment from "moment";
 
 export default class searchContact extends Component {

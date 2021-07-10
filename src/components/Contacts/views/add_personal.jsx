@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { contactActions } from "../../redux/contact/index";
+import { contactActions } from "../../../redux/contact/index";
 
 const DataPersonalComponent = (props) => {
   const {

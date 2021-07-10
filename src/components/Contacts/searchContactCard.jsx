@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Easycontact from "./easyContact";
+import Easycontact from "./views/easyContact";
 import moment from "moment";
 
 export default class searchContactLine extends Component {
@@ -58,15 +58,8 @@ export default class searchContactLine extends Component {
           </div>
         );
       } else if (Object.keys(this.state.dataContact).length) {
-        const {
-            nombre,
-            telefonos,
-            domicilio,
-            id,
-            f_nacimiento,
-            email,
-            rfc,
-          } = this.state.dataContact,
+        const { nombre, telefonos, domicilio, id, f_nacimiento, email, rfc } =
+            this.state.dataContact,
           edad = this.props.edad
             ? this.props.edad + " años"
             : f_nacimiento

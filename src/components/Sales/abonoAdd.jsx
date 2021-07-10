@@ -28,7 +28,8 @@ export default class AddAbono extends Component {
   }
 
   render() {
-    const { listBank, metodopago, total, bank_id, auth, details } = this.state;
+    const { listBank, metodopago, total, bank_id, auth, details } = this.state,
+      { user } = this.props;
 
     return (
       <div className="modal" tabIndex="-1" role="dialog" id="abonos">
@@ -63,7 +64,7 @@ export default class AddAbono extends Component {
                     type="text"
                     className="form-control-plaintext"
                     readOnly={true}
-                    value={this.props.user}
+                    value={user}
                   />
                 </div>
               </div>

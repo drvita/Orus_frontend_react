@@ -55,7 +55,7 @@ export default class SaleAdd extends Component {
   }
 
   render() {
-    let {
+    const {
         contact_id,
         cliente,
         subtotal,
@@ -68,17 +68,19 @@ export default class SaleAdd extends Component {
         load,
         date,
         order_id,
+        usuario,
       } = this.state,
-      pay = subtotal - (descuento + pagado),
       { data } = this.props,
       chat = order_id ? (
         <Chat data={data} table="orders" idRow={order_id} pagado={pagado} />
       ) : (
         <Chat data={data} table="sales" idRow={id} pagado={pagado} />
       );
+    let pay = subtotal - (descuento + pagado);
 
     this.total = subtotal - descuento;
     pay = pay > 0 ? pay : 0;
+
     return (
       <React.Fragment>
         <div className="row d-print-none">
@@ -236,7 +238,7 @@ export default class SaleAdd extends Component {
                     pay={parseInt(pay)}
                     order={parseInt(order_id)}
                     data={data}
-                    user={this.props.data.name}
+                    user={usuario}
                     handleChange={this.handleChangeInput}
                   />
                 </div>
@@ -441,7 +443,7 @@ export default class SaleAdd extends Component {
         .then((data) => {
           if (!data.message) {
             const { rol } = this.props.data;
-            console.log("Mostrando datos del pedido");
+            console.log("Mostrando datos del pedido", data);
             this.setState({
               id: data.data.id,
               session: data.data.session

@@ -29,7 +29,7 @@ const ListExamComponent = (props) => {
               key={row.id}
               className={
                 moment(new Date()).isSame(moment(row.created_at), "day")
-                  ? "table-active"
+                  ? "text-primary"
                   : ""
               }
             >

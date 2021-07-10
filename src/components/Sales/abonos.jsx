@@ -167,7 +167,10 @@ export default class ListAbonos extends Component {
           const ls = JSON.parse(localStorage.getItem("OrusSystem"));
 
           //Inicio de proceso de eliminción por API
-          console.log("Solicitud de eliminación de venta por API");
+          console.log(
+            "[OrusSystem] Solicitud de eliminación de venta por API:",
+            id
+          );
           return fetch("http://" + ls.host + "/api/payments/" + id, {
             method: "DELETE",
             signal: this.signal,
@@ -176,36 +179,30 @@ export default class ListAbonos extends Component {
               "Content-Type": "application/json",
               Authorization: "Bearer " + ls.token,
             },
-          })
-            .then(async (response) => {
-              let back = {};
-              if (response.status !== 204) back = await response.json();
-              if (!response.ok) {
-                throw new Error(back.message);
-              }
-              return back;
-            })
-            .catch((e) => {
-              console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
+          }).then(async (response) => {
+            let back = {};
+            if (response.status !== 204) back = await response.json();
+            if (!response.ok) {
+              throw new Error(back.message);
+            }
+            return back;
+          });
         }
       },
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
-        console.log("Abono eliminado");
+        console.log("[OrusSystem] Abono eliminado");
         window.Swal.fire({
           icon: "success",
           title: "Abono eliminado con exito",
           showConfirmButton: false,
           timer: 1500,
-        }).then((res) => this.getPayments());
+        }).then((res) => {
+          console.log("[DEBUG] abonos: getPayments");
+          this.getPayments();
+        });
       } else if (result && !result.dismiss) {
-        console.log("Orus res: ", result);
+        console.error("Orus res: ", result);
         window.Swal.fire(
           "Error",
           "Se perdio la conexion con el servidor",
@@ -289,7 +286,7 @@ export default class ListAbonos extends Component {
       });
     }
     //Realiza la peticion del usuario seun el id
-    console.log("Descargando datos de los pagos");
+    console.log("[OrusSystem] Descargando datos de los abonos");
     fetch("http://" + varLocalStorage.host + "/api/payments" + sale + order, {
       method: "GET",
       signal: this.signal,
@@ -300,27 +297,30 @@ export default class ListAbonos extends Component {
     })
       .then((res) => {
         if (!res.ok) {
-          window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-          console.log(res);
+          //window.alert("Ups!\n Hubo un error, intentelo mas tarde");
+          console.error(res);
         }
         return res.json();
       })
       .then((data) => {
         if (data.meta && data.meta.total) {
-          console.log("[Payments] Almacenando abonos");
+          console.log("[OrusSystem] Almacenando abonos");
           let total = 0;
           for (var i = 0; i < data.data.length; i++) {
             total += data.data[i].total;
           }
-          this.props.handleChange("pagado", total * 1);
+          this.props.handleChange("pagado", parseInt(total));
           this.setState({
             abonos: data.data,
             total,
             load: false,
           });
         } else {
+          this.props.handleChange("pagado", 0);
           this.setState({
             load: false,
+            abonos: [],
+            total: 0,
           });
         }
       });

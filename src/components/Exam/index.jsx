@@ -67,6 +67,9 @@ class IndexExamComponent extends Component {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
+      this.setState({
+        load: true,
+      });
     }
   }
 

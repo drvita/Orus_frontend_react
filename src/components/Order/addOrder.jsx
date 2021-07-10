@@ -27,12 +27,12 @@ export default class AddOrder extends Component {
   }
   componentDidMount() {
     const { order } = this.props;
-
+    //console.log("[DEBUG] Order edit:", order);
     this.setState({
       id: order.id,
       paciente: order.paciente,
       session: order.session,
-      lab_id: (order.examen && order.examen.id) ?? 0,
+      lab_id: (order.laboratorio && order.laboratorio.id) ?? 0,
       npedidolab: order.folio_lab,
       observaciones: order.observaciones,
       ncaja: order.caja,

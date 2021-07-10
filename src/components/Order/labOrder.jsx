@@ -12,6 +12,8 @@ export default class labOrder extends Component {
   }
 
   render() {
+    const { lab_id } = this.props;
+
     return (
       <div className="row m-2">
         <div className="col">
@@ -23,7 +25,7 @@ export default class labOrder extends Component {
               }
               disabled={this.props.status > 1 ? true : false}
               name="lab_id"
-              value={this.props.lab_id}
+              value={lab_id}
               onChange={this.changeInput}
             >
               <option value="0">Seleccione un proveedor</option>

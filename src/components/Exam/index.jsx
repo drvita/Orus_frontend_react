@@ -40,15 +40,16 @@ class IndexExamComponent extends Component {
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
-      { messages: MSGS, exam } = this.props;
+      { messages: MSGS, exam, _setMessages } = this.props;
 
     if (state.load !== load && load === true) {
-      console.log("[Orus System] Cargando examenes");
+      console.log("[OrusSystem] Cargando examenes", load);
+      //console.log("[DEBUG] updates state", state, this.state);
       this.getExams();
     }
 
     if (props.exam.id !== exam.id && exam.id) {
-      console.log("[Orus System] Exam en URL", exam.id);
+      console.log("[OrusSystem] Exam en URL", exam.id);
       this.setState({
         newOrEdit: true,
         exam,
@@ -67,9 +68,7 @@ class IndexExamComponent extends Component {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
-      this.setState({
-        load: true,
-      });
+      _setMessages();
     }
   }
 
@@ -235,10 +234,11 @@ class IndexExamComponent extends Component {
                                 checked={
                                   examSelected === exam.id ? true : false
                                 }
-                                onChange={(e) =>
-                                  this.handleChangeCheckbox(e, exam)
-                                }
-                                disabled={exam.estado}
+                                onChange={(e) => {
+                                  console.log("[DEBUG] exam change", exam);
+                                  this.handleChangeCheckbox(e, exam);
+                                }}
+                                disabled={exam.estado || exam.orders.length}
                               />
                               <label
                                 htmlFor={"exam_" + exam.id}
@@ -255,7 +255,7 @@ class IndexExamComponent extends Component {
                               >
                                 <span
                                   className={
-                                    exam.estado
+                                    exam.estado || exam.orders.length
                                       ? "text-muted"
                                       : "text-dark text-bold"
                                   }
@@ -331,7 +331,7 @@ class IndexExamComponent extends Component {
   }
 
   newExam = () => {
-    const { _setListContact, history } = this.props;
+    const { _setListContact, _setContact, history } = this.props;
 
     this.setState({
       newOrEdit: true,
@@ -342,6 +342,8 @@ class IndexExamComponent extends Component {
         metaList: {},
       },
     });
+    _setContact({});
+
     history.push(`/consultorio/new`);
   };
   changeStatus = (exam = {}) => {
@@ -372,13 +374,17 @@ class IndexExamComponent extends Component {
       data,
       options,
     });
+    this.setState({
+      load: true,
+    });
   };
   handleCloseEdit = (back = false) => {
     const { options: OPT } = this.state,
       options = {
         ...OPT,
         page: 1,
-      };
+      },
+      { history, _setContact } = this.props;
 
     this.setState({
       newOrEdit: false,
@@ -387,7 +393,8 @@ class IndexExamComponent extends Component {
       options: back ? options : OPT,
       load: true,
     });
-    this.props.history.push(`/consultorio`);
+    _setContact({});
+    history.push(`/consultorio`);
   };
   handleEditItem = (item = null) => {
     const { examSelected } = this.state,
@@ -468,10 +475,12 @@ class IndexExamComponent extends Component {
     });
   };
   handleSync = () => {
-    this.getExams();
+    this.setState({
+      load: true,
+    });
   };
   handleDelete = (id, item) => {
-    const { examSelected, options } = this.state,
+    const { examSelected } = this.state,
       { _deleteExam } = this.props;
 
     if (!examSelected) {
@@ -498,12 +507,12 @@ class IndexExamComponent extends Component {
         console.log("[Orus System] Enviando datos para eliminar", examSelected);
         _deleteExam({
           id: examSelected,
-          options,
         });
       }
       this.setState({
         examSelected: "",
         exam: {},
+        //load: true,
       });
     });
   };
@@ -536,6 +545,8 @@ const mapStateToProps = ({ exam }) => {
     _setListContact: contactActions.setListContact,
     _saveExam: examActions.saveExam,
     _getExam: examActions.getExam,
+    _setContact: contactActions.setContact,
+    _setMessages: examActions.setMessagesExam,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexExamComponent);

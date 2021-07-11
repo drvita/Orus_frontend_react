@@ -10,7 +10,7 @@ const ListExamComponent = (props) => {
         <tr>
           <th scope="col"></th>
           <th scope="col">Folio</th>
-          <th scope="col">Registro</th>
+          <th scope="col">Registrado</th>
           <th scope="col">Estado</th>
         </tr>
       </thead>
@@ -35,14 +35,18 @@ const ListExamComponent = (props) => {
             >
               <td>
                 <div className="icheck-primary">
-                  <input
-                    type="checkbox"
-                    name={"exam_" + row.id}
-                    id={"exam_" + row.id}
-                    onChange={(e) => _ChangeInput(row)}
-                    disabled={allSelect ? false : row.estado ? false : true}
-                  />
-                  <label htmlFor={"exam_" + row.id}></label>
+                  {_ChangeInput ? (
+                    <>
+                      <input
+                        type="checkbox"
+                        name={"exam_" + row.id}
+                        id={"exam_" + row.id}
+                        onChange={(e) => _ChangeInput(row)}
+                        disabled={allSelect ? false : row.estado ? false : true}
+                      />
+                      <label htmlFor={"exam_" + row.id}></label>
+                    </>
+                  ) : null}
                 </div>
               </td>
               <th scope="row">

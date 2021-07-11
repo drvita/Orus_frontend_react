@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-//import { Link } from "react-router-dom";
-//import moment from "moment";
+import moment from "moment";
 //import Mapa from "./mapa";
 import ListExam from "../Exam/views/listExamsCustomer";
 import Personal from "./views/add_personal";
 import Domicilio from "./views/add_domicilio";
 import Telefono from "./views/add_telefonos";
+import ListSales from "../Sales/views/listOfSales";
+import DashboardUser from "./views/dashboard_customer";
+import DashboardSupplier from "./views/dashboard_supplier";
 
 class AddContactComponent extends Component {
   constructor(props) {
@@ -55,12 +57,43 @@ class AddContactComponent extends Component {
         load,
         verification,
       } = this.state,
-      { handleClose } = this.props;
+      { handleClose, contact } = this.props,
+      hasTel = Object.values(telefonos).filter((tel) => tel.length === 10);
+
+    //console.log(contact);
 
     return (
       <>
+        {contact.id && !type ? (
+          <DashboardUser
+            purchases={contact.compras.length}
+            exams={contact.examenes.length}
+            register={contact.created_at}
+            created={contact.created.name}
+          />
+        ) : null}
+        {contact.id && type ? (
+          <DashboardSupplier
+            brands={contact.marcas.length}
+            orders={contact.proveedor_de.length}
+            register={contact.created_at}
+            created={contact.created.name}
+          />
+        ) : null}
         <div className="row">
           <div className="col-md-12">
+            {contact.deleted_at ? (
+              <div className="alert alert-warning">
+                <h4 class="alert-heading">
+                  <i className="fas fa-info-circle mr-1"></i>
+                  Precaucion!
+                </h4>
+                <p>
+                  Este contacto fue eliminado por {contact.updated.name} el{" "}
+                  {moment(contact.deleted_at).format("LLLL")}
+                </p>
+              </div>
+            ) : null}
             <div className="card card-indigo card-outline">
               <div className="card-header">
                 <h3 className="card-title text-indigo">
@@ -142,6 +175,13 @@ class AddContactComponent extends Component {
                         type="button"
                         className="btn bg-indigo"
                         onClick={this.handleSave}
+                        disabled={
+                          contact.deleted_at ||
+                          !name.length ||
+                          !email.length ||
+                          (!birthday.length && !type) ||
+                          !hasTel.length
+                        }
                       >
                         <i className="fas fa-save mr-1"></i>
                         Guardar
@@ -158,10 +198,31 @@ class AddContactComponent extends Component {
             </div>
           </div>
         </div>
-        {id ? (
-          <div className="row">
-            <div className="col">
-              <ListExam exam="" paciente={id} />
+        {id && !type ? (
+          <div className="content">
+            <div className="row">
+              <div className="col">
+                <div className="card">
+                  <div className="card-body">
+                    <h5 className="card-title text-indigo text-bold">
+                      <i className="fas fa-notes-medical mr-1"></i>
+                      Examenes
+                    </h5>
+                    <ListExam allSelect={true} exams={contact.examenes} />
+                  </div>
+                </div>
+              </div>
+              <div className="col">
+                <div className="card">
+                  <div className="card-body">
+                    <h5 className="card-title text-indigo text-bold w-100 mb-2">
+                      <i className="fas fa-shopping-basket mr-1"></i>
+                      Compras
+                    </h5>
+                    <ListSales sales={contact.compras} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         ) : null}
@@ -361,11 +422,11 @@ class AddContactComponent extends Component {
       this.setState({
         id: contact.id,
         name: contact.nombre,
-        rfc: contact.rfc,
-        email: contact.email,
+        rfc: contact.rfc ?? "",
+        email: contact.email ?? "",
         type: contact.tipo,
         business: contact.empresa,
-        birthday: contact.f_nacimiento,
+        birthday: contact.f_nacimiento ?? "",
         domicilios: domicilio
           ? domicilio
           : {

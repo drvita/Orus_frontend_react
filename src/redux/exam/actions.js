@@ -4,7 +4,7 @@ const setListExam = (payload = {}) => ({
   type: TYPE.SET_LIST_EXAM,
   payload,
 });
-const setMessagesExam = (payload = {}) => ({
+const setMessagesExam = (payload = []) => ({
   type: TYPE.SET_MESSAGE_EXAM,
   payload,
 });

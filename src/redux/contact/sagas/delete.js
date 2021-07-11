@@ -4,7 +4,7 @@ import { contactActions } from "../.";
 
 export default function* handledDeleteContact({ payload }) {
   try {
-    const { id: ID, options: OPTIONS } = payload,
+    const { id: ID } = payload,
       url = getUrl("contacts", ID),
       result = yield call(api, url, "DELETE");
 
@@ -18,7 +18,7 @@ export default function* handledDeleteContact({ payload }) {
           },
         ])
       );
-      yield put(contactActions.getListContact(OPTIONS));
+      //yield put(contactActions.getListContacts(OPTIONS));
     } else {
       console.error(
         "[Orus System] Fallo al eliminar el contacto",
@@ -47,7 +47,7 @@ export default function* handledDeleteContact({ payload }) {
       }
     }
   } catch (e) {
-    console.error("[Orus System] Error in handle deleteOrder", e);
+    console.error("[Orus System] Error in handle delete contact", e);
     yield put(
       contactActions.setMessageContact([
         {

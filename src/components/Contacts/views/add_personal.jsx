@@ -4,6 +4,7 @@ import { contactActions } from "../../../redux/contact/index";
 
 const DataPersonalComponent = (props) => {
   const {
+    id,
     type,
     business,
     name,
@@ -36,6 +37,7 @@ const DataPersonalComponent = (props) => {
         //console.log("[DEBUG] name change", name);
         _getList({
           search: name,
+          except: id,
         });
       }, 1000);
       setTime(timeTemp);

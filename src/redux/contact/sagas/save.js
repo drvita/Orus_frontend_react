@@ -4,7 +4,7 @@ import { contactActions } from "../.";
 
 export default function* handleSaveContact({ payload }) {
   try {
-    const { data = {}, id: ID = null, options: OPT = {} } = payload,
+    const { data = {}, id: ID = null } = payload,
       url = getUrl("contacts", ID),
       method = ID ? "PUT" : "POST",
       result = yield call(api, url, method, data);
@@ -31,7 +31,16 @@ export default function* handleSaveContact({ payload }) {
           ])
         );
       }
-    } else {
+    } else if (result.message) {
+      yield put(
+        contactActions.setMessageContact([
+          {
+            type: "error",
+            text: `Error en servidor, contacte al administrador: \nResponse [${result.message}]`,
+          },
+        ])
+      );
+    } else if (result.data) {
       if (ID) console.log("[Orus System] Contacto actualizado con exito", ID);
       else
         console.log("[Orus system] Contacto creado con exito", result.data.id);
@@ -46,16 +55,16 @@ export default function* handleSaveContact({ payload }) {
           },
         ])
       );
-      yield put(contactActions.getListContact(OPT));
+      yield put(contactActions.setContact(result.data));
     }
     //localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   } catch (e) {
-    console.error("[Orus System] Error in handle save contact --", e);
+    console.error("[OrusSystem] Error in handle save contact --", e);
     yield put(
       contactActions.setMessageContact([
         {
           type: "error",
-          text: "al almacenar el contacto, intentelo mas tarde",
+          text: "En el servidor al almacenar el contacto, intentelo mas tarde",
         },
       ])
     );

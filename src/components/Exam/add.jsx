@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
+import { contactActions } from "../../redux/contact";
 //Componentes
 import Generales from "./views/generalesExam";
 import Interrogatorios from "./views/interrogatoriosExam";
@@ -22,8 +23,7 @@ class ExamAddComponent extends Component {
     super(props);
 
     this.state = {
-      exam: { id: 0 },
-      paciente: { id: 0 },
+      exam: { id: 0, edad: 20 },
       panel: 0,
       used: {
         generales: false,
@@ -43,9 +43,23 @@ class ExamAddComponent extends Component {
     this.getExam();
   }
 
+  componentDidUpdate(props) {
+    const { contact } = this.props,
+      { exam } = this.state;
+
+    if (props.contact.id !== contact.id && !exam.id) {
+      this.setState({
+        exam: {
+          ...exam,
+          edad: contact.edad,
+        },
+      });
+    }
+  }
+
   render() {
-    const { exam, paciente, panel, used } = this.state,
-      { handleClose: _handleClose } = this.props;
+    const { exam, panel, used } = this.state,
+      { contact: paciente, handleClose: _handleClose } = this.props;
 
     return (
       <div className="card card-info card-outline">
@@ -70,37 +84,69 @@ class ExamAddComponent extends Component {
               </span>
             ) : null}
             <ShowContact
-              contact={paciente}
+              //contact={paciente}
               readOnly={exam.id ? true : false}
               title="paciente"
+              edad={exam.edad}
               handleChangeContact={(paciente) => this.setState({ paciente })}
             />
 
-            {paciente.id && exam.id ? (
-              <div className="custom-control custom-switch mt-4">
-                <input
-                  name="estado"
-                  type="checkbox"
-                  className="custom-control-input"
-                  id="estado"
-                  checked={exam.estado}
-                  onChange={this.changeStatus}
-                />
-                <label
-                  className={
-                    exam.estado
-                      ? "custom-control-label text-muted"
-                      : "custom-control-label text-info"
-                  }
-                  htmlFor="estado"
-                >
-                  <i
-                    className={
-                      exam.estado ? "fas fa-folder" : "fas fa-folder-open"
-                    }
-                  ></i>
-                  {exam.estado ? "Examen terminado" : "Examen en proceso"}
-                </label>
+            {paciente.id ? (
+              <div className="row my-4">
+                <div className="col">
+                  {exam.id ? (
+                    <div className="custom-control custom-switch ">
+                      <input
+                        name="estado"
+                        type="checkbox"
+                        className="custom-control-input"
+                        id="estado"
+                        checked={exam.estado}
+                        onChange={this.changeStatus}
+                      />
+                      <label
+                        className={
+                          exam.estado
+                            ? "custom-control-label text-muted"
+                            : "custom-control-label text-info"
+                        }
+                        htmlFor="estado"
+                      >
+                        <i
+                          className={
+                            exam.estado ? "fas fa-folder" : "fas fa-folder-open"
+                          }
+                        ></i>
+                        {exam.estado ? "Examen terminado" : "Examen en proceso"}
+                      </label>
+                    </div>
+                  ) : null}
+                </div>
+                {exam.edad !== paciente.edad || (!paciente.edad && !exam.id) ? (
+                  <div className="col-12 col-sm-3 input-group">
+                    <label className="input-group-prepend mr-2">Edad</label>
+                    <input
+                      type="number"
+                      className={
+                        exam.edad
+                          ? "form-control text-right mr-2"
+                          : "form-control text-right mr-2 bg-info"
+                      }
+                      value={exam.edad}
+                      placeholder="Escriba la edad actual"
+                      onChange={(e) => {
+                        const { value } = e.target,
+                          val = parseInt(value);
+
+                        if (val) {
+                          this.handleChangeInput("edad", val);
+                        }
+                      }}
+                      min="1"
+                      max="120"
+                    />
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>
@@ -571,9 +617,9 @@ class ExamAddComponent extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    const { cilindrod, cilindroi, ejeod, ejeoi, paciente, exam } = this.state,
+    const { cilindrod, cilindroi, ejeod, ejeoi, exam } = this.state,
       id = exam.id,
-      { handleClose: _handleClose, _saveExam } = this.props;
+      { contact: paciente, handleClose: _handleClose, _saveExam } = this.props;
 
     //Verificar si los datos son validos.
     if ((cilindrod < 0 && !ejeod) || (cilindroi < 0 && !ejeoi)) {
@@ -595,10 +641,13 @@ class ExamAddComponent extends Component {
     }).then(({ dismiss }) => {
       if (!dismiss) {
         let { exam: body } = this.state;
-        const edad = moment().diff(paciente.f_nacimiento, "years");
+        const anos = paciente.f_nacimiento
+            ? moment().diff(paciente.f_nacimiento, "years")
+            : 0,
+          edad = anos < 1 || !anos ? 0 : anos;
 
         body.contact_id = paciente.id;
-        body.edad = edad < 1 || !edad ? 0 : edad;
+        body.edad = body.edad ? body.edad : edad;
         body.status = body.estado;
         delete body.estado;
         if (!body.category_id) body.category_id = null;
@@ -613,7 +662,7 @@ class ExamAddComponent extends Component {
     });
   };
   getExam = () => {
-    const { exam } = this.props;
+    const { exam, _setContact } = this.props;
     if (exam.id) {
       console.log("[Orus System] Procesando examen", exam.id);
       this.setState({
@@ -624,7 +673,6 @@ class ExamAddComponent extends Component {
             ? exam.category_secondary.id
             : null,
         },
-        paciente: exam.paciente ?? { id: 0 },
         load: false,
         panel: 0,
         used: {
@@ -639,18 +687,21 @@ class ExamAddComponent extends Component {
           recomendaciones: true,
         },
       });
+      _setContact(exam.paciente ?? { id: 0 });
     }
   };
 }
 
-const mapStateToProps = ({ exam }) => {
+const mapStateToProps = ({ exam, contact }) => {
     return {
       messages: exam.messages,
+      contact: contact.contact,
     };
   },
   mapActionsToProps = {
     _deleteExam: examActions.deleteExam,
     _saveExam: examActions.saveExam,
+    _setContact: contactActions.setContact,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(ExamAddComponent);

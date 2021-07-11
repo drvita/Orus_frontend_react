@@ -4,7 +4,7 @@ import moment from "moment";
 import Inbox from "../../layouts/list_inbox";
 import AddContact from "./add";
 import CardMenu from "../../layouts/card_menu";
-import { contactActions } from "../../redux/contact";
+import { contactActions } from "../../redux/contact/.";
 
 class IndexContactComponent extends Component {
   constructor(props) {
@@ -52,6 +52,7 @@ class IndexContactComponent extends Component {
         contact,
         newOrEdit: true,
       });
+      this.props.history.push(`/contactos/${contact.id}`);
     }
 
     if (props.messages.length !== MSGS.length && MSGS.length) {
@@ -71,8 +72,6 @@ class IndexContactComponent extends Component {
     const { contacts, loading, meta } = this.props,
       { contact, newOrEdit, contactSelected, options } = this.state;
     //domain = /^.{1,100}@domain(.com)?$/gim;
-
-    console.log("[DEBUG] Render", contacts);
 
     return (
       <div className="row">
@@ -178,6 +177,7 @@ class IndexContactComponent extends Component {
                   <tr>
                     <th></th>
                     <th>Nombre</th>
+                    <th>Edad</th>
                     <th>E-mail</th>
                     <th>Telefono</th>
                     <th>Creado por</th>
@@ -200,7 +200,7 @@ class IndexContactComponent extends Component {
                                 className="form-check-input mt-4"
                                 value={contact.id}
                                 id={"contact_" + contact.id}
-                                disabled={contact.enUso}
+                                //disabled={contact.enUso}
                                 checked={
                                   contactSelected === contact.id ? true : false
                                 }
@@ -216,7 +216,10 @@ class IndexContactComponent extends Component {
                               style={{ cursor: "pointer", maxWidth: 180 }}
                               onClick={(e) => this.handleEditItem(contact.id)}
                             >
-                              <label style={{ cursor: "pointer" }}>
+                              <label
+                                style={{ cursor: "pointer" }}
+                                className={contact.enUso ? "text-indigo" : ""}
+                              >
                                 {contact.tipo ? (
                                   <i className="fas fa-store text-sm mr-2"></i>
                                 ) : (
@@ -225,6 +228,7 @@ class IndexContactComponent extends Component {
                                 {contact.nombre}
                               </label>
                             </td>
+                            <th>{contact.edad ? contact.edad : "--"}</th>
                             <td
                               className="mailbox-attachment text-lowercase text-truncate"
                               style={{ maxWidth: 180 }}
@@ -265,7 +269,7 @@ class IndexContactComponent extends Component {
                     </>
                   ) : (
                     <tr>
-                      <th className="text-center text-muted">
+                      <th className="text-center text-muted" colSpan="7">
                         No hay contactos registrados
                       </th>
                     </tr>
@@ -408,6 +412,7 @@ class IndexContactComponent extends Component {
       }
       this.setState({
         contactSelected: "",
+        load: true,
       });
     });
   };

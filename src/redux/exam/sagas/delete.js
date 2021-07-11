@@ -4,7 +4,7 @@ import { examActions } from "../index";
 
 export default function* handledDelete({ payload }) {
   try {
-    const { id: ID, options } = payload,
+    const { id: ID } = payload,
       url = getUrl("exams", ID),
       result = yield call(api, url, "DELETE");
 
@@ -17,12 +17,6 @@ export default function* handledDelete({ payload }) {
             text: "Examen eliminado con exito",
           },
         ])
-      );
-      console.log("[DEBUG] saga", options);
-      yield put(
-        examActions.getListExam({
-          options,
-        })
       );
     } else {
       console.error(

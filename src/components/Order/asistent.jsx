@@ -1,10 +1,15 @@
 import React, { Component } from "react";
-import SearchContact from "../Contacts/searchContactLine";
+import { connect } from "react-redux";
+
+import SearchContact from "../Contacts/showContactInLine";
 import ListExam from "../Exam/views/listExamsCustomer";
 import Exam from "../Exam/examShort";
 import Items from "./itemsOrder";
+import { contactActions } from "../../redux/contact/.";
+import { examActions } from "../../redux/exam/.";
+import helper from "../Exam/helpers";
 
-export default class Asistent extends Component {
+class AsistentComponent extends Component {
   constructor(props) {
     super(props);
     //Recogemos valores de registro previo
@@ -24,10 +29,8 @@ export default class Asistent extends Component {
         Math.random().toString(36).substring(2, 16) +
         Math.random().toString(10),
       contact_id: 0,
-      contact: {},
       items: [],
       codes: {},
-      edad: 0,
       exam_id: null,
       exam: {},
       examEdit: false,
@@ -37,27 +40,45 @@ export default class Asistent extends Component {
   componentDidMount() {
     //localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   }
-  componentDidUpdate(props, state) {
-    const { categories } = this.props;
+  componentDidUpdate(props) {
+    const { categories, contact, msg_exams, _setMsgExam, _getContact } =
+      this.props;
 
     if (props.categories.id !== categories.id) {
       this.getCategories(categories, this.state.exam);
     }
+
+    //Process messages of exams
+    if (props.msg_exams.length !== msg_exams.length && msg_exams.length) {
+      msg_exams.forEach((msg) => {
+        const { type, text } = msg;
+        window.Swal.fire({
+          icon: type,
+          title: text,
+          showConfirmButton: type !== "error" ? false : true,
+          timer: type !== "error" ? 1500 : 9000,
+        });
+      });
+      _setMsgExam();
+      _getContact(contact.id);
+      this.setState({
+        load: true,
+      });
+    }
+
+    //When change contact
+    if (props.contact.id !== contact.id && contact.id) {
+      this.setState({
+        contact,
+        contact_id: contact.id,
+      });
+    }
   }
 
   render() {
-    const {
-        contact_id,
-        contact,
-        items,
-        edad,
-        exam_id,
-        exam,
-        examEdit,
-        codes,
-        session,
-      } = this.state,
-      { loading: LOADING } = this.props;
+    const { contact_id, items, exam, exam_id, examEdit, codes, session } =
+        this.state,
+      { contact, loading: LOADING } = this.props;
 
     return (
       <div className="card card-warning card-outline">
@@ -67,15 +88,20 @@ export default class Asistent extends Component {
           </h3>
         </div>
         <div className="card-body">
-          <div className="form-group">
+          <div className="form-group d-print-none">
+            {!contact.id ? (
+              <span className="text-sm text-muted ml-4">
+                <label>Primero:</label> Busque el paciente por nombre para crear
+                un nuevo pedido
+              </span>
+            ) : null}
             <SearchContact
-              contact={contact_id}
-              edad={parseInt(edad)}
-              getIdContact={this.getIdContact}
+              title="Cliente"
+              readOnly={contact_id}
               status={exam_id !== null ? true : false}
             />
           </div>
-          {contact_id ? (
+          {contact.id ? (
             <React.Fragment>
               {exam_id !== null ? (
                 <React.Fragment>
@@ -157,17 +183,26 @@ export default class Asistent extends Component {
                 <div className="form-group">
                   <ListExam
                     exams={contact.examenes}
-                    ChangeInput={(exam) => {
-                      this.handleChangeInput("exam", exam);
-                    }}
+                    changeInput={(exam) => this.handleChangeInput("exam", exam)}
                   />
-                  <button
-                    type="button"
-                    className="btn btn-default"
-                    onClick={(e) => this.handleChangeInput("exam", { id: 0 })}
-                  >
-                    Sin examen
-                  </button>
+                  <div className="btn-group">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={(e) => this.handleChangeInput("exam", { id: 0 })}
+                    >
+                      <i className="fas fa-ban mr-1"></i>
+                      Sin examen
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={(e) => helper.handleSaveExam(this.props)}
+                    >
+                      <i className="fas fa-notes-medical mr-1"></i>
+                      Nuevo examen
+                    </button>
+                  </div>
                 </div>
               )}
             </React.Fragment>
@@ -179,25 +214,24 @@ export default class Asistent extends Component {
               <div className="btn-group">
                 <a
                   href="#close"
-                  className="btn btn-dark btn-sm"
+                  className="btn btn-default btn-sm"
                   onClick={(e) => {
-                    const { handleChangeInput: _handleChangeInput } =
-                      this.props;
+                    const {
+                      handleChangeInput: _handleChangeInput,
+                      _setContact,
+                    } = this.props;
+
                     e.preventDefault();
                     this.setState({
                       contact_id: 0,
                       items: [],
                       codes: {},
-                      edad: 0,
                       exam_id: null,
                       exam: {},
                       examEdit: false,
                     });
-                    localStorage.setItem(
-                      "OrusContactInUse",
-                      JSON.stringify({})
-                    );
                     _handleChangeInput("panel", 0);
+                    _setContact();
                   }}
                 >
                   <i className="fas fa-arrow-left mr-1"></i>
@@ -311,16 +345,7 @@ export default class Asistent extends Component {
     }
     return code;
   };
-  getIdContact = (contact_id, edad, contact) => {
-    //console.log("[DEBUG] Contact", contact.id);
-    this.setState({
-      contact,
-      contact_id,
-      edad,
-    });
-  };
   handleSave = (e) => {
-    const { handleSaveOrder: _handleSaveOrder } = this.props;
     e.preventDefault();
     //Verificamos campos validos
 
@@ -333,13 +358,12 @@ export default class Asistent extends Component {
       confirmButtonText: "Crear",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          let body = {},
-            items = [];
-
-          this.state.items.map((item) => {
-            items.push({
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        const { handleSaveOrder: _handleSaveOrder, _setContact } = this.props,
+          { items: items_state, exam_id, session, contact_id } = this.state,
+          items = items_state.map((item) => {
+            return {
               cant: item.cantidad,
               price: item.precio,
               subtotal: item.subtotal,
@@ -348,20 +372,35 @@ export default class Asistent extends Component {
               out: item.out,
               descripcion: item.descripcion,
               store_items_id: item.store_items_id,
-            });
-            return false;
+            };
           });
+        let body = {
+          session: session,
+          contact_id: contact_id,
+          items: JSON.stringify(items),
+          status: 0,
+        };
+        if (exam_id) body.exam_id = parseInt(exam_id);
 
-          body = {
-            session: this.state.session,
-            contact_id: this.state.contact_id,
-            items: JSON.stringify(items),
-            status: 0,
-          };
-          if (this.state.exam_id) body.exam_id = parseInt(this.state.exam_id);
-          _handleSaveOrder(body);
-        }
-      },
+        _handleSaveOrder(body);
+        _setContact();
+      }
     });
   };
 }
+
+const mapStateToProps = ({ contact, exam }) => {
+    return {
+      loading: contact.loading,
+      contact: contact.contact,
+      msg_exams: exam.messages,
+    };
+  },
+  mapActionsToProps = {
+    _setContact: contactActions.setContact,
+    _getContact: contactActions.getContact,
+    _saveExam: examActions.saveExam,
+    _setMsgExam: examActions.setMessagesExam,
+  };
+
+export default connect(mapStateToProps, mapActionsToProps)(AsistentComponent);

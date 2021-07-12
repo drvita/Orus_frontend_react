@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
-import { contactActions } from "../../redux/contact";
 //Componentes
 import Generales from "./views/generalesExam";
 import Interrogatorios from "./views/interrogatoriosExam";
@@ -12,11 +11,12 @@ import Diagnostico from "./views/diagnosticoExam";
 import Graduacion from "./views/graduacionExam";
 import Observaciones from "./views/observacionesExam";
 import Recomendaciones from "./views/recomendaciones";
-import ShowContact from "../Contacts/ShowContactInLine";
+import ShowContact from "../Contacts/showContactInLine";
 import PrintExam from "./views/print_exam";
 //logic
 import action from "./helpers";
 import { examActions } from "../../redux/exam/";
+import { contactActions } from "../../redux/contact";
 
 class ExamAddComponent extends Component {
   constructor(props) {
@@ -84,7 +84,6 @@ class ExamAddComponent extends Component {
               </span>
             ) : null}
             <ShowContact
-              //contact={paciente}
               readOnly={exam.id ? true : false}
               title="paciente"
               edad={exam.edad}

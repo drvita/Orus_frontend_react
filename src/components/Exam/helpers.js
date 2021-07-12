@@ -1,3 +1,5 @@
+import moment from "moment";
+
 const handleTypeInput = (key) => {
   if (
     key === "pc" ||
@@ -139,11 +141,50 @@ const getCodeGrad = (category, esferaod, esferaoi, cilindrod, cilindroi) => {
     oi: gradoi,
   };
 };
+//Quickly save exam with a button
+const handleSaveExam = ({ _saveExam, contact }) => {
+  const examToday = contact.examenes.filter(
+    (exam) =>
+      moment(exam.created_at).diff(moment(), "days") === 0 || !exam.estado
+  );
+
+  if (examToday.length) {
+    window.Swal.fire({
+      title: "Examenes",
+      text: "Existe un examen activo o del dia",
+      icon: "error",
+    });
+    console.error("[OrusSystem] Examenes activos:", examToday.length);
+    return false;
+  }
+
+  //Confirmación de almacenamiento
+  window.Swal.fire({
+    title: "Almacenamiento",
+    text: "¿Esta seguro de crear un nuevo examen?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Crear",
+    cancelButtonText: "Cancelar",
+    showLoaderOnConfirm: true,
+  }).then(({ dismiss }) => {
+    if (!dismiss) {
+      _saveExam({
+        id: 0,
+        data: {
+          edad: contact.edad,
+          contact_id: contact.id,
+        },
+      });
+    }
+  });
+};
 
 const toExportActions = {
   handleTypeInput,
   handleCodeName,
   getCodeGrad,
+  handleSaveExam,
 };
 
 export default toExportActions;

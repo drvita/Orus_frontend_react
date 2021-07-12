@@ -1,13 +1,20 @@
 import React, { Component } from "react";
 import moment from "moment";
+import { connect } from "react-redux";
+
 //import Mapa from "./mapa";
-import ListExam from "../Exam/views/listExamsCustomer";
+//import ListExam from "../Exam/views/listExamsCustomer";
 import Personal from "./views/add_personal";
 import Domicilio from "./views/add_domicilio";
 import Telefono from "./views/add_telefonos";
 import ListSales from "../Sales/views/listOfSales";
-import DashboardUser from "./views/dashboard_customer";
-import DashboardSupplier from "./views/dashboard_supplier";
+import Dashboard from "./views/dashboard_customer";
+import ListBrands from "../Store/views/listOfBrands";
+import ListOrders from "../Order/views/listOfOrders";
+import CardExams from "../Exam/views/card_list_add";
+//Actions
+import { contactActions } from "../../redux/contact/.";
+import { examActions } from "../../redux/exam/.";
 
 class AddContactComponent extends Component {
   constructor(props) {
@@ -35,12 +42,39 @@ class AddContactComponent extends Component {
         birthday: true,
         telefonos: true,
       },
-      load: true,
+      load: false,
     };
     this.timeSave = null;
   }
   componentDidMount() {
-    this.getUser();
+    this.setState({
+      load: true,
+    });
+  }
+  componentDidUpdate(props, state) {
+    const { msg_exams, contact, _setMsgExam, _getContact } = this.props,
+      { load } = this.state;
+
+    if (props.msg_exams.length !== msg_exams.length && msg_exams.length) {
+      msg_exams.forEach((msg) => {
+        const { type, text } = msg;
+        window.Swal.fire({
+          icon: type,
+          title: text,
+          showConfirmButton: type !== "error" ? false : true,
+          timer: type !== "error" ? 1500 : 9000,
+        });
+      });
+      _setMsgExam();
+      _getContact(contact.id);
+      this.setState({
+        load: true,
+      });
+    }
+
+    if (props.load !== load && load) {
+      this.getUser();
+    }
   }
 
   render() {
@@ -58,28 +92,42 @@ class AddContactComponent extends Component {
         verification,
       } = this.state,
       { handleClose, contact } = this.props,
+      {
+        compras = [],
+        purchases_count,
+        examenes = [],
+        exams_count,
+        marcas = [],
+        brands_count,
+        proveedor_de = [],
+        suppliers_count,
+        orders = [],
+        orders_count,
+        created_at,
+        created,
+        updated_at,
+        updated,
+      } = contact,
       hasTel = Object.values(telefonos).filter((tel) => tel.length === 10);
 
-    //console.log(contact);
+    //console.log("[DEBUG] Render");
 
     return (
       <>
-        {contact.id && !type ? (
-          <DashboardUser
-            purchases={contact.compras.length}
-            exams={contact.examenes.length}
-            register={contact.created_at}
-            created={contact.created.name}
+        {contact.id ? (
+          <Dashboard
+            purchases={purchases_count}
+            exams={exams_count}
+            brands={brands_count}
+            suppliers={suppliers_count}
+            orders={orders_count}
+            register={created_at ?? ""}
+            created={created ? created.name : ""}
+            updated={updated ? contact.updated.name : ""}
+            updated_at={updated_at ?? ""}
           />
         ) : null}
-        {contact.id && type ? (
-          <DashboardSupplier
-            brands={contact.marcas.length}
-            orders={contact.proveedor_de.length}
-            register={contact.created_at}
-            created={contact.created.name}
-          />
-        ) : null}
+
         <div className="row">
           <div className="col-md-12">
             {contact.deleted_at ? (
@@ -198,31 +246,70 @@ class AddContactComponent extends Component {
             </div>
           </div>
         </div>
-        {id && !type ? (
-          <div className="content">
+        {id ? (
+          <div className="content" id="details">
             <div className="row">
-              <div className="col">
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title text-indigo text-bold">
-                      <i className="fas fa-notes-medical mr-1"></i>
-                      Examenes
-                    </h5>
-                    <ListExam allSelect={true} exams={contact.examenes} />
+              {!type ? (
+                <div className="col">
+                  <CardExams handeleChangePage={this.handleSelectExam} />
+                </div>
+              ) : null}
+
+              {compras.length ? (
+                <div className="col">
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title text-indigo text-bold w-100 mb-2">
+                        <i className="fas fa-money-bill mr-1"></i>
+                        Compras
+                      </h5>
+                      <ListSales sales={compras} />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="col">
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title text-indigo text-bold w-100 mb-2">
-                      <i className="fas fa-shopping-basket mr-1"></i>
-                      Compras
-                    </h5>
-                    <ListSales sales={contact.compras} />
+              ) : null}
+
+              {marcas.length ? (
+                <div className="col">
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title text-indigo text-bold w-100 mb-2">
+                        <i className="fas fa-copyright mr-1"></i>
+                        Marcas
+                      </h5>
+                      <ListBrands brands={marcas} />
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : null}
+
+              {proveedor_de.length ? (
+                <div className="col">
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title text-indigo text-bold w-100 mb-2">
+                        <i className="fas fa-building mr-1"></i>
+                        Laboratorio
+                      </h5>
+                      <ListOrders orders={proveedor_de ?? []} />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {orders.length ? (
+                <div className="col">
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title text-indigo text-bold w-100 mb-2">
+                        <i className="fas fa-shopping-basket mr-1"></i>
+                        Pedidos
+                      </h5>
+                      <ListOrders orders={orders ?? []} />
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -230,6 +317,50 @@ class AddContactComponent extends Component {
     );
   }
 
+  handleSelectExam = ({ id }) => {
+    const { handleChangePage: _handleChangePage } = this.props;
+
+    console.log("[DEBUG] exam selectd", id);
+    _handleChangePage(`/consultorio/${id}`);
+  };
+  handleSaveExam = () => {
+    const { _saveExam, contact } = this.props,
+      examToday = contact.examenes.filter(
+        (exam) =>
+          moment(exam.created_at).diff(moment(), "days") === 0 || !exam.estado
+      );
+
+    if (examToday.length) {
+      window.Swal.fire({
+        title: "Examenes",
+        text: "Existe un examen activo o del dia",
+        icon: "error",
+      });
+      console.error("[OrusSystem] Examenes activos:", examToday.length);
+      return false;
+    }
+
+    //Confirmación de almacenamiento
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: "¿Esta seguro de crear un nuevo examen?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Crear",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        _saveExam({
+          id: 0,
+          data: {
+            edad: contact.edad,
+            contact_id: contact.id,
+          },
+        });
+      }
+    });
+  };
   handleChangeData = (key, value) => {
     const { verification } = this.state;
 
@@ -420,7 +551,7 @@ class AddContactComponent extends Component {
 
     if (id) {
       this.setState({
-        id: contact.id,
+        id,
         name: contact.nombre,
         rfc: contact.rfc ?? "",
         email: contact.email ?? "",
@@ -449,4 +580,18 @@ class AddContactComponent extends Component {
   };
 }
 
-export default AddContactComponent;
+const mapStateToProps = ({ contact, exam }) => {
+    return {
+      loading: contact.loading,
+      msg_exams: exam.messages,
+      contact: contact.contact,
+    };
+  },
+  mapActionsToProps = {
+    _setContact: contactActions.setContact,
+    _getContact: contactActions.getContact,
+    _saveExam: examActions.saveExam,
+    _setMsgExam: examActions.setMessagesExam,
+  };
+
+export default connect(mapStateToProps, mapActionsToProps)(AddContactComponent);

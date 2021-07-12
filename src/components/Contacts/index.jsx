@@ -39,7 +39,7 @@ class IndexContactComponent extends Component {
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
-      { messages: MSGS, contact } = this.props;
+      { messages: MSGS, contact, _setMessage } = this.props;
 
     if (state.load !== load && load) {
       console.log("[Orus System] Recargando contactos");
@@ -47,7 +47,7 @@ class IndexContactComponent extends Component {
     }
 
     if (props.contact.id !== contact.id && contact.id) {
-      console.log("[Orus System] Cargando contacto");
+      console.log("[Orus System] Cargando nuevo contacto");
       this.setState({
         contact,
         newOrEdit: true,
@@ -65,6 +65,7 @@ class IndexContactComponent extends Component {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
+      _setMessage();
     }
   }
 
@@ -91,70 +92,103 @@ class IndexContactComponent extends Component {
             <i className="fas fa-plus mr-1"></i>
             Nuevo contacto
           </button>
-          {!newOrEdit ? (
-            <CardMenu title="Filtros">
-              <li className="nav-item p-2">
-                <label htmlFor="type">Tipo</label>
-                <select
-                  className="form-control "
-                  name="type"
-                  id="type"
-                  value={options.type}
-                  onChange={this.handleSetSelectOptions}
-                >
-                  <option value="">-- Todos --</option>
-                  <option value="0">Clientes</option>
-                  <option value="1">Proveedores</option>
-                </select>
-              </li>
-              <li className="nav-item p-2">
-                <label htmlFor="orderby">Ordenar por</label>
-                <select
-                  className="form-control "
-                  name="orderby"
-                  id="orderby"
-                  value={options.orderby}
-                  onChange={this.handleSetSelectOptions}
-                >
-                  <option value="created_at">Fecha de registro</option>
-                  <option value="updated_at">Fecha de modificacion</option>
-                </select>
-              </li>
-              <li className="nav-item p-2">
-                <label htmlFor="order">Mostrar por</label>
-                <select
-                  className="form-control "
-                  name="order"
-                  id="order"
-                  value={options.order}
-                  onChange={this.handleSetSelectOptions}
-                >
-                  <option value="asc">Antiguos</option>
-                  <option value="desc">Recientes</option>
-                </select>
-              </li>
-              <li className="nav-item p-2">
-                <label htmlFor="itemsPage">Numero de contactos</label>
-                <select
-                  className="form-control "
-                  name="itemsPage"
-                  id="itemsPage"
-                  value={options.itemsPage}
-                  onChange={this.handleSetSelectOptions}
-                >
-                  <option value="10">ver 10</option>
-                  <option value="20">ver 20</option>
-                  <option value="50">ver 50</option>
-                  <option value="100">ver 100</option>
-                </select>
-              </li>
-            </CardMenu>
-          ) : null}
+          <CardMenu title={newOrEdit ? "Menu" : "Filtros"}>
+            {!newOrEdit ? (
+              <>
+                <li className="nav-item p-2">
+                  <label htmlFor="type">Tipo</label>
+                  <select
+                    className="form-control "
+                    name="type"
+                    id="type"
+                    value={options.type}
+                    onChange={this.handleSetSelectOptions}
+                  >
+                    <option value="">-- Todos --</option>
+                    <option value="0">Clientes</option>
+                    <option value="1">Proveedores</option>
+                  </select>
+                </li>
+                <li className="nav-item p-2">
+                  <label htmlFor="orderby">Ordenar por</label>
+                  <select
+                    className="form-control "
+                    name="orderby"
+                    id="orderby"
+                    value={options.orderby}
+                    onChange={this.handleSetSelectOptions}
+                  >
+                    <option value="created_at">Fecha de registro</option>
+                    <option value="updated_at">Fecha de modificacion</option>
+                  </select>
+                </li>
+                <li className="nav-item p-2">
+                  <label htmlFor="order">Mostrar por</label>
+                  <select
+                    className="form-control "
+                    name="order"
+                    id="order"
+                    value={options.order}
+                    onChange={this.handleSetSelectOptions}
+                  >
+                    <option value="asc">Antiguos</option>
+                    <option value="desc">Recientes</option>
+                  </select>
+                </li>
+                <li className="nav-item p-2">
+                  <label htmlFor="itemsPage">Numero de contactos</label>
+                  <select
+                    className="form-control "
+                    name="itemsPage"
+                    id="itemsPage"
+                    value={options.itemsPage}
+                    onChange={this.handleSetSelectOptions}
+                  >
+                    <option value="10">ver 10</option>
+                    <option value="20">ver 20</option>
+                    <option value="50">ver 50</option>
+                    <option value="100">ver 100</option>
+                  </select>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="list-group-item">
+                  <a
+                    href="#back"
+                    className="d-flex justify-content-between align-items-center"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      this.handleCloseEdit();
+                    }}
+                  >
+                    Ver listado
+                    <span className="badge badge-primary badge-pill">
+                      <i className="fas fa-chevron-left"></i>
+                    </span>
+                  </a>
+                </li>
+                {contact.id ? (
+                  <li className="list-group-item">
+                    <a
+                      href="#details"
+                      className="d-flex justify-content-between align-items-center"
+                    >
+                      Detalles
+                      <span className="badge badge-primary badge-pill">
+                        <i className="fas fa-chevron-right"></i>
+                      </span>
+                    </a>
+                  </li>
+                ) : null}
+              </>
+            )}
+          </CardMenu>
         </div>
         <div className="col-sm-12 col-md-10">
           {newOrEdit ? (
             <AddContact
-              contact={contact}
+              handleChangePage={this.handelGoto}
               handleClose={this.handleCloseEdit}
               handleSave={this.handleSaveContact}
             />
@@ -283,6 +317,9 @@ class IndexContactComponent extends Component {
     );
   }
 
+  handelGoto = (page) => {
+    this.props.history.push(page);
+  };
   handleSaveContact = (id, data) => {
     const { _saveContact } = this.props,
       { options } = this.state;
@@ -308,25 +345,12 @@ class IndexContactComponent extends Component {
   };
   handleEditItem = (item = null) => {
     const { contactSelected } = this.state,
-      { contacts } = this.props,
-      id = item ?? contactSelected,
-      contact = contacts.filter((c) => c.id === id);
+      { _getContact } = this.props,
+      id = item ?? contactSelected;
 
-    if (contact.length) {
-      this.setState({
-        contact: contact[0],
-        contactSelected: id,
-        newOrEdit: true,
-      });
-      this.props.history.push(`/contactos/${id}`);
-    } else {
-      this.setState({
-        contact: {},
-        contactSelected: "",
-        newOrEdit: false,
-        load: true,
-      });
-      this.props.history.push(`/contactos`);
+    //console.log("[DEBUG] change edit", id, item, contactSelected);
+    if (id) {
+      _getContact(id);
     }
   };
   handleChangeCheckbox = (e) => {
@@ -351,6 +375,7 @@ class IndexContactComponent extends Component {
     this.setState({
       options: {
         ...options,
+        page: 1,
         [name]: val,
       },
       load: true,
@@ -444,6 +469,8 @@ const mapStateToProps = ({ contact }) => {
     _deleteContact: contactActions.deleteContact,
     _saveContact: contactActions.saveContact,
     _getContact: contactActions.getContact,
+    _setMessage: contactActions.setMessageContact,
+    _setContact: contactActions.setContact,
   };
 
 export default connect(

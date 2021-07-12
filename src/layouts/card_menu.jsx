@@ -16,7 +16,7 @@ const CardMenuComponent = (props) => {
         </h5>
       </div>
       <div className="card-body p-0">
-        <ul className="nav nav-pills flex-column">{props.children}</ul>
+        <ul className="list-group nav list-group-flush">{props.children}</ul>
       </div>
     </div>
   );

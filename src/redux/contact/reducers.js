@@ -32,6 +32,7 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         loading: true,
+        contact: {},
       };
     }
 

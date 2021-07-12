@@ -2,7 +2,11 @@ import React from "react";
 import moment from "moment";
 
 const ListExamComponent = (props) => {
-  const { exams = [], allSelect = false, ChangeInput: _ChangeInput } = props;
+  const {
+    exams = [],
+    allSelect = false,
+    handleSelectedExam: _handleSelectedExam,
+  } = props;
 
   return (
     <table className="table m-0">
@@ -35,13 +39,13 @@ const ListExamComponent = (props) => {
             >
               <td>
                 <div className="icheck-primary">
-                  {_ChangeInput ? (
+                  {_handleSelectedExam ? (
                     <>
                       <input
                         type="checkbox"
                         name={"exam_" + row.id}
                         id={"exam_" + row.id}
-                        onChange={(e) => _ChangeInput(row)}
+                        onChange={(e) => _handleSelectedExam(row)}
                         disabled={allSelect ? false : row.estado ? false : true}
                       />
                       <label htmlFor={"exam_" + row.id}></label>
@@ -52,7 +56,7 @@ const ListExamComponent = (props) => {
               <th scope="row">
                 <span className="text">#{row.id}</span>
               </th>
-              <td>
+              <td className="text-truncate">
                 <i className="fas fa-clock mr-2"></i>
                 {moment(row.created_at).fromNow()}
               </td>

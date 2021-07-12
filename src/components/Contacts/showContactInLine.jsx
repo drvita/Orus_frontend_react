@@ -11,11 +11,13 @@ const ShowContactComponent = (props) => {
     readOnly,
     title = "Contacto",
     contacts,
+    top = "8.1rem",
     //Funciones
     //handleChangeContact: _handleChangeContact,
     _getListContacts,
     _setListContact,
     _setContact,
+    _getContact,
   } = props;
   const [input, setInput] = useState("");
   const [create, setCreate] = useState(false);
@@ -83,7 +85,7 @@ const ShowContactComponent = (props) => {
             <div
               className="position-absolute overflow-auto"
               style={{
-                top: "8.1rem",
+                top: top,
                 left: "7.8rem",
                 height: !create ? "12rem" : "0rem",
                 zIndex: "10",
@@ -101,12 +103,13 @@ const ShowContactComponent = (props) => {
                           className="list-group-item text-capitalize"
                         >
                           <a
-                            href="#selected"
+                            href="#selecte"
                             className="text-indigo"
                             onClick={(e) => {
                               e.preventDefault();
                               //_handleChangeContact(contact);
-                              _setContact(contact);
+                              //_setContact(contact);
+                              _getContact(contact.id);
                               _setListContact({
                                 result: {
                                   list: [],
@@ -199,6 +202,7 @@ const mapStateToProps = ({ contact }) => {
     _getListContacts: contactActions.getListContacts,
     _setContact: contactActions.setContact,
     _setListContact: contactActions.setListContact,
+    _getContact: contactActions.getContact,
   };
 
 export default connect(

@@ -67,42 +67,41 @@ const DataPersonalComponent = (props) => {
             <option value="1">Proveedor</option>
           </select>
         </div>
-        <div className="form-group custom-control custom-checkbox">
-          <input
-            type="checkbox"
-            name="business"
-            className="custom-control-input"
-            checked={business ?? ""}
-            onChange={catchInputs}
-            id="business_checkbox"
-          />
-          <label
-            htmlFor="business_checkbox"
-            className="custom-control-label cursor-pointer"
-          >
-            <small>¿Es una empresa?</small>
-          </label>
-        </div>
-        {!type ? (
-          <div className="form-group">
-            <label>RFC</label>
+        {type ? (
+          <div className="form-group custom-control custom-checkbox">
             <input
-              type="text"
-              className="form-control text-uppercase text-truncate"
-              placeholder="Para facturas"
-              name="rfc"
-              value={rfc ?? ""}
+              type="checkbox"
+              name="business"
+              className="custom-control-input"
+              checked={business ?? ""}
               onChange={catchInputs}
-              minLength="10"
+              id="business_checkbox"
             />
+            <label
+              htmlFor="business_checkbox"
+              className="custom-control-label cursor-pointer"
+            >
+              <small>¿Es un laboratorio?</small>
+            </label>
           </div>
         ) : null}
+        <div className="form-group">
+          <label>RFC</label>
+          <input
+            type="text"
+            className="form-control text-uppercase text-truncate"
+            placeholder="facturas"
+            name="rfc"
+            value={rfc ?? ""}
+            onChange={catchInputs}
+            minLength="10"
+          />
+        </div>
       </div>
       <div className="col">
         <div className="form-group position-relative">
           <label>
-            Nombre completo <span className="text-orange">*</span> (
-            {verification.nameInDb})
+            Nombre completo <span className="text-orange">*</span>
           </label>
           <input
             type="text"

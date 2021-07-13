@@ -216,7 +216,10 @@ export default class Inventory extends Component {
 
                                     //console.log("G", grad);
                                     return (
-                                      <td key={i} className="text-center">
+                                      <td
+                                        key={grad + i}
+                                        className="text-center"
+                                      >
                                         {items.length ? (
                                           items.map((item, index) => {
                                             //console.log("comp: ");
@@ -224,7 +227,7 @@ export default class Inventory extends Component {
                                               <React.Fragment>
                                                 {item.cantidades ? (
                                                   <span
-                                                    key={item.id + "-" + index}
+                                                    key={item.id + index}
                                                     className={
                                                       item.cantidades > 0
                                                         ? "badge badge-success"

@@ -57,7 +57,6 @@ export default function* handleSaveContact({ payload }) {
       );
       yield put(contactActions.setContact(result.data));
     }
-    //localStorage.setItem("OrusContactInUse", JSON.stringify({}));
   } catch (e) {
     console.error("[OrusSystem] Error in handle save contact --", e);
     yield put(

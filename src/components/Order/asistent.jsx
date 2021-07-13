@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import SearchContact from "../Contacts/showContactInLine";
-import ListExam from "../Exam/views/listExamsCustomer";
-import Exam from "../Exam/examShort";
+import SearchContact from "../Contacts/views/showContactInLine";
+import ListExam from "../Exam/data/listExamsCustomer";
+import Exam from "../Exam/views/examShort";
 import Items from "./itemsOrder";
 import { contactActions } from "../../redux/contact/.";
 import { examActions } from "../../redux/exam/.";
@@ -78,7 +78,7 @@ class AsistentComponent extends Component {
   render() {
     const { contact_id, items, exam, exam_id, examEdit, codes, session } =
         this.state,
-      { contact, loading: LOADING } = this.props;
+      { contact, loading: LOADING, _saveExam } = this.props;
 
     return (
       <div className="card card-warning card-outline">
@@ -89,15 +89,13 @@ class AsistentComponent extends Component {
         </div>
         <div className="card-body">
           <div className="form-group d-print-none">
-            {!contact.id ? (
-              <span className="text-sm text-muted ml-4">
-                <label>Primero:</label> Busque el paciente por nombre para crear
-                un nuevo pedido
-              </span>
-            ) : null}
             <SearchContact
-              title="Cliente"
-              readOnly={contact_id}
+              title="cliente"
+              legend={
+                !contact.id
+                  ? "Busque el paciente por nombre para crearun nuevo pedido"
+                  : null
+              }
               status={exam_id !== null ? true : false}
             />
           </div>
@@ -183,7 +181,9 @@ class AsistentComponent extends Component {
                 <div className="form-group">
                   <ListExam
                     exams={contact.examenes}
-                    changeInput={(exam) => this.handleChangeInput("exam", exam)}
+                    handleSelectedExam={(exam) =>
+                      this.handleChangeInput("exam", exam)
+                    }
                   />
                   <div className="btn-group">
                     <button
@@ -197,7 +197,9 @@ class AsistentComponent extends Component {
                     <button
                       type="button"
                       className="btn btn-secondary"
-                      onClick={(e) => helper.handleSaveExam(this.props)}
+                      onClick={(e) =>
+                        helper.handleSaveExam(contact, null, _saveExam)
+                      }
                     >
                       <i className="fas fa-notes-medical mr-1"></i>
                       Nuevo examen

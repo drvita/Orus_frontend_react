@@ -39,8 +39,8 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
     case TYPE.SET_LIST_EXAM: {
       return {
         ...state,
+        exam: { id: 0 },
         ...payload.result,
-        ...payload.options,
         messages: [],
         loading: false,
       };

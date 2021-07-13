@@ -328,28 +328,8 @@ class RecomendationGlassComponent extends Component {
         });
         break;
     }
-
-    /*
-    if (name === "") {
-      if (value) {
-       
-        category_list.map((cat) => {
-          if (cat.id === parseInt(value)) {
-            this.setState({
-              category_id_3: 0,
-              category_list_2: cat.sons,
-              category_list_3: [],
-            });
-          }
-          return null;
-        });
-        
-        
-      }
-      
-    }*/
   };
-  getCategories = () => {};
+  //getCategories = () => {};
 }
 
 const mapStateToProps = ({ category }) => {

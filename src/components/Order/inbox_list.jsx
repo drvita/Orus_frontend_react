@@ -79,7 +79,7 @@ const listInbox = ({
                   ) : !pedido.estado ? (
                     <small>
                       {pedido.examen
-                        ? pedido.examen.estado === "Terminado"
+                        ? pedido.examen.estado === 1
                           ? "Examen completado"
                           : "Examen no realizado"
                         : "Examen no asignado"}

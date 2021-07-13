@@ -94,7 +94,7 @@ function AddItemModal(props) {
   }, [search]);
 
   return (
-    <div className="modal" tabIndex="-1" style={{ display: "block" }}>
+    <div className="modal d-block" tabIndex="-1">
       <div className="modal-dialog modal-dialog-centered" role="document">
         <div className="modal-content">
           <div className="modal-header">

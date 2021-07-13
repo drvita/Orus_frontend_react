@@ -3,7 +3,7 @@ import { TYPE } from "./types";
 const DEFAULT_STATE = {
   list: [],
   metaList: {},
-  contact: {},
+  contact: { id: 0 },
   messages: [],
   loading: false,
 };
@@ -13,18 +13,22 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
     case TYPE.SAGA_GET_LIST_CONTACTS: {
       return {
         ...state,
+        list: [],
+        metaList: {},
         loading: true,
       };
     }
     case TYPE.SAGA_DELETE_CONTACT: {
       return {
         ...state,
+        contact: {},
         loading: true,
       };
     }
     case TYPE.SAGA_SAVE_CONTACT: {
       return {
         ...state,
+        contact: {},
         loading: true,
       };
     }
@@ -40,16 +44,10 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       const { payload } = action;
       return {
         ...state,
+        contact: { id: 0 },
         ...payload.result,
         messages: [],
         loading: false,
-      };
-    }
-    case TYPE.SET_STATE_VAR_CONTACT: {
-      const { payload } = action;
-      return {
-        ...state,
-        [payload.key]: payload.val,
       };
     }
     case TYPE.SET_MESSAGE_CONTACT: {
@@ -66,6 +64,8 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         ...state,
         loading: false,
         contact: payload,
+        list: [],
+        metaList: {},
         messages: [],
       };
     }

@@ -11,7 +11,7 @@ import Diagnostico from "./views/diagnosticoExam";
 import Graduacion from "./views/graduacionExam";
 import Observaciones from "./views/observacionesExam";
 import Recomendaciones from "./views/recomendaciones";
-import ShowContact from "../Contacts/showContactInLine";
+import ShowContact from "../Contacts/views/showContactInLine";
 import PrintExam from "./views/print_exam";
 //logic
 import action from "./helpers";
@@ -77,15 +77,11 @@ class ExamAddComponent extends Component {
         </div>
         <div className="card-body d-print-none">
           <div className="form-group">
-            {!paciente.id ? (
-              <span className="text-sm text-muted ml-4">
-                <label>Primero:</label> Busque el paciente por nombre para crear
-                un nuevo examen
-              </span>
-            ) : null}
             <ShowContact
               readOnly={exam.id ? true : false}
               title="paciente"
+              legend="Busque el paciente por nombre para crear un nuevo examen"
+              left="6.5rem"
               edad={exam.edad}
               handleChangeContact={(paciente) => this.setState({ paciente })}
             />
@@ -537,7 +533,7 @@ class ExamAddComponent extends Component {
               type="button"
               className={paciente.id ? "btn btn-info" : "btn btn-info disabled"}
               onClick={this.handleSave}
-              disabled={paciente.id ? "" : "disabled"}
+              disabled={paciente.id ? false : true}
             >
               <i className="fas fa-save mr-1"></i>
               <strong>{exam.id ? "Actualizar" : "Guardar"}</strong>

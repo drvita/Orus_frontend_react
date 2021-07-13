@@ -21,10 +21,6 @@ const setListContact = (payload = {}) => ({
   type: TYPE.SET_LIST_CONTACT,
   payload,
 });
-const setStateVar = (payload = {}) => ({
-  type: TYPE.SET_STATE_VAR_CONTACT,
-  payload,
-});
 const setMessageContact = (payload = []) => ({
   type: TYPE.SET_MESSAGE_CONTACT,
   payload,
@@ -39,7 +35,6 @@ const toExportActions = {
   deleteContact,
   saveContact,
   setListContact,
-  setStateVar,
   setMessageContact,
   getContact,
   setContact,

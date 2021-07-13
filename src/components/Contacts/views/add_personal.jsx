@@ -24,24 +24,8 @@ const DataPersonalComponent = (props) => {
 
     if (name === "type") val = parseInt(value);
     if (name === "business") val = checked;
-    //console.log("[DEBUG] catch input:", name, value, checked, val);
-    handleChangeData(name, val);
-  };
-  const [time, setTime] = useState(null);
-
-  useEffect(() => {
-    let timeTemp = null;
-    if (name.length > 2) {
-      if (time) clearTimeout(time);
-      timeTemp = setTimeout(() => {
-        //console.log("[DEBUG] name change", name);
-        _getList({
-          search: name,
-          except: id,
-        });
-      }, 1000);
-      setTime(timeTemp);
-    } else {
+    if (name !== "name" && contacts.length) {
+      console.log("[DEBUG] add_personal catch input", name);
       _setList({
         result: {
           list: [],
@@ -49,6 +33,33 @@ const DataPersonalComponent = (props) => {
         },
       });
     }
+    handleChangeData(name, val);
+  };
+  const [time, setTime] = useState(null);
+
+  useEffect(() => {
+    if (!id) {
+      let timeTemp = null;
+      if (name.length > 2) {
+        if (time) clearTimeout(time);
+        timeTemp = setTimeout(() => {
+          _getList({
+            search: name,
+            //except: id,
+          });
+        }, 1000);
+        setTime(timeTemp);
+      } else if (name.length === 1) {
+        console.log("[DEBUG] add_personal effect:", name.length);
+        _setList({
+          result: {
+            list: [],
+            metaList: {},
+          },
+        });
+      }
+    }
+
     //eslint-disable-next-line
   }, [name]);
 
@@ -106,7 +117,7 @@ const DataPersonalComponent = (props) => {
           <input
             type="text"
             className={
-              contacts.length
+              contacts.length && !id
                 ? "form-control text-capitalize text-truncate text-danger"
                 : "form-control text-capitalize text-truncate"
             }
@@ -120,7 +131,7 @@ const DataPersonalComponent = (props) => {
               <span className="text-orange">Este campo es requerido</span>
             </small>
           ) : null}
-          {contacts.length ? (
+          {contacts.length && name.length > 2 && !id ? (
             <div
               className="position-absolute border rounded p-0 bg-white overflow-auto "
               style={{

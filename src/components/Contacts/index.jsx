@@ -32,9 +32,16 @@ class IndexContactComponent extends Component {
       { id } = match.params;
 
     if (id) {
-      _getContact(id);
+      if (id === "new") {
+        this.setState({
+          newOrEdit: true,
+        });
+      }
+      if (parseInt(id)) _getContact(id);
     } else {
-      this.getContacts();
+      this.setState({
+        load: true,
+      });
     }
   }
   componentDidUpdate(props, state) {
@@ -47,7 +54,7 @@ class IndexContactComponent extends Component {
     }
 
     if (props.contact.id !== contact.id && contact.id) {
-      console.log("[Orus System] Cargando nuevo contacto");
+      console.log("[Orus System] Cargando nuevo contacto", contact.id);
       this.setState({
         contact,
         newOrEdit: true,
@@ -81,13 +88,7 @@ class IndexContactComponent extends Component {
             className="btn bg-indigo btn-block mb-3"
             type="button"
             disabled={newOrEdit}
-            onClick={(e) => {
-              e.preventDefault();
-
-              this.setState({
-                newOrEdit: true,
-              });
-            }}
+            onClick={this.openNew}
           >
             <i className="fas fa-plus mr-1"></i>
             Nuevo contacto
@@ -187,11 +188,7 @@ class IndexContactComponent extends Component {
         </div>
         <div className="col-sm-12 col-md-10">
           {newOrEdit ? (
-            <AddContact
-              handleChangePage={this.handelGoto}
-              handleClose={this.handleCloseEdit}
-              handleSave={this.handleSaveContact}
-            />
+            <AddContact handleClose={this.handleCloseEdit} />
           ) : (
             <Inbox
               title="Lista de contactos"
@@ -317,19 +314,13 @@ class IndexContactComponent extends Component {
     );
   }
 
-  handelGoto = (page) => {
-    this.props.history.push(page);
-  };
-  handleSaveContact = (id, data) => {
-    const { _saveContact } = this.props,
-      { options } = this.state;
+  openNew = () => {
+    const { _setContact } = this.props;
 
-    _saveContact({
-      data,
-      id,
-      options,
+    _setContact();
+    this.setState({
+      newOrEdit: true,
     });
-    this.handleCloseEdit();
   };
   handleSync = () => {
     this.getContacts();
@@ -348,7 +339,6 @@ class IndexContactComponent extends Component {
       { _getContact } = this.props,
       id = item ?? contactSelected;
 
-    //console.log("[DEBUG] change edit", id, item, contactSelected);
     if (id) {
       _getContact(id);
     }
@@ -442,12 +432,14 @@ class IndexContactComponent extends Component {
     });
   };
   getContacts() {
-    const { _getListContacts } = this.props,
+    const { loading, _getListContacts } = this.props,
       { options } = this.state;
 
-    _getListContacts({
-      ...options,
-    });
+    if (!loading) {
+      _getListContacts({
+        ...options,
+      });
+    }
 
     this.setState({
       load: false,
@@ -471,6 +463,7 @@ const mapStateToProps = ({ contact }) => {
     _getContact: contactActions.getContact,
     _setMessage: contactActions.setMessageContact,
     _setContact: contactActions.setContact,
+    //_setList: contactActions.setListContact,
   };
 
 export default connect(

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import moment from "moment";
 
 const ListExamComponent = (props) => {
@@ -7,6 +7,14 @@ const ListExamComponent = (props) => {
     allSelect = false,
     handleSelectedExam: _handleSelectedExam,
   } = props;
+
+  const [select, setSelect] = useState("");
+
+  const handleSelect = (exam) => {
+    //console.log("[DEBUG] select", exam.id);
+    setSelect(exam.id);
+    _handleSelectedExam(exam);
+  };
 
   return (
     <table className="table m-0">
@@ -45,8 +53,10 @@ const ListExamComponent = (props) => {
                         type="checkbox"
                         name={"exam_" + row.id}
                         id={"exam_" + row.id}
-                        onChange={(e) => _handleSelectedExam(row)}
+                        value={select}
+                        onChange={(e) => handleSelect(row)}
                         disabled={allSelect ? false : row.estado ? false : true}
+                        checked={select === row.id}
                       />
                       <label htmlFor={"exam_" + row.id}></label>
                     </>

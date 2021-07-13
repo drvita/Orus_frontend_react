@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import moment from "moment";
 import { connect } from "react-redux";
-
-//import Mapa from "./mapa";
-//import ListExam from "../Exam/views/listExamsCustomer";
+//Components
 import Personal from "./views/add_personal";
 import Domicilio from "./views/add_domicilio";
 import Telefono from "./views/add_telefonos";
@@ -15,6 +13,7 @@ import CardExams from "../Exam/views/card_list_add";
 //Actions
 import { contactActions } from "../../redux/contact/.";
 import { examActions } from "../../redux/exam/.";
+import helper from "./helper";
 
 class AddContactComponent extends Component {
   constructor(props) {
@@ -34,7 +33,7 @@ class AddContactComponent extends Component {
         estado: "",
         cp: "",
       },
-      telefonos: { t_casa: "", t_oficina: "", t_movil: "" },
+      telnumbers: { t_casa: "", t_oficina: "", t_movil: "" },
       business: false,
       verification: {
         name: true,
@@ -52,7 +51,8 @@ class AddContactComponent extends Component {
     });
   }
   componentDidUpdate(props, state) {
-    const { msg_exams, contact, _setMsgExam, _getContact } = this.props,
+    const { msg_exams, msg_contact, contact, _setMsgExam, _getContact } =
+        this.props,
       { load } = this.state;
 
     if (props.msg_exams.length !== msg_exams.length && msg_exams.length) {
@@ -72,6 +72,26 @@ class AddContactComponent extends Component {
       });
     }
 
+    if (props.msg_contact.length !== msg_contact.length && msg_contact.length) {
+      msg_exams.forEach((msg) => {
+        const { type, text } = msg;
+        window.Swal.fire({
+          icon: type,
+          title: text,
+          showConfirmButton: type !== "error" ? false : true,
+          timer: type !== "error" ? 1500 : 9000,
+        });
+      });
+      //_getContact(contact.id);
+    }
+
+    //Reload user
+    if (props.contact.id !== contact.id && contact.id) {
+      this.setState({
+        load: true,
+      });
+    }
+
     if (props.load !== load && load) {
       this.getUser();
     }
@@ -86,16 +106,15 @@ class AddContactComponent extends Component {
         type,
         birthday,
         domicilios,
-        telefonos,
+        telnumbers,
         business,
         load,
         verification,
       } = this.state,
-      { handleClose, contact } = this.props,
+      { handleClose: _handleClose, contact } = this.props,
       {
         compras = [],
         purchases_count,
-        examenes = [],
         exams_count,
         marcas = [],
         brands_count,
@@ -108,7 +127,7 @@ class AddContactComponent extends Component {
         updated_at,
         updated,
       } = contact,
-      hasTel = Object.values(telefonos).filter((tel) => tel.length === 10);
+      hasTel = Object.values(telnumbers).filter((tel) => tel.length === 10);
 
     //console.log("[DEBUG] Render");
 
@@ -176,9 +195,9 @@ class AddContactComponent extends Component {
                 <div className="row mt-5 border-top pt-5">
                   <h6 className="card-subtitle text-muted d-block w-100 mb-4 text-center">
                     Medios de contacto <span className="text-orange">*</span>
-                    {(!telefonos.t_casa &&
-                      !telefonos.t_oficina &&
-                      !telefonos.t_movil) | !verification.telefonos ? (
+                    {(!telnumbers.t_casa &&
+                      !telnumbers.t_oficina &&
+                      !telnumbers.t_movil) | !verification.telefonos ? (
                       <small className="d-block w-100">
                         <span className="text-orange">
                           Ingrese por lo menos un telefono
@@ -187,7 +206,7 @@ class AddContactComponent extends Component {
                     ) : null}
                   </h6>
                   <Telefono
-                    telefonos={telefonos}
+                    telefonos={telnumbers}
                     handleChangeData={this.handleChangeData}
                   />
                 </div>
@@ -210,7 +229,7 @@ class AddContactComponent extends Component {
                       <button
                         className="btn btn-default"
                         type="button"
-                        onClick={(e) => handleClose()}
+                        onClick={(e) => _handleClose()}
                       >
                         <i
                           className={
@@ -232,7 +251,7 @@ class AddContactComponent extends Component {
                         }
                       >
                         <i className="fas fa-save mr-1"></i>
-                        Guardar
+                        {id ? "Actualizar" : "Guardar"}
                       </button>
                     </div>
                   </div>
@@ -253,7 +272,9 @@ class AddContactComponent extends Component {
                 <div className="col">
                   <CardExams handeleChangePage={this.handleSelectExam} />
                 </div>
-              ) : null}
+              ) : (
+                <dvi>Type: {type}</dvi>
+              )}
 
               {compras.length ? (
                 <div className="col">
@@ -318,178 +339,13 @@ class AddContactComponent extends Component {
   }
 
   handleSelectExam = ({ id }) => {
-    const { handleChangePage: _handleChangePage } = this.props;
-
-    console.log("[DEBUG] exam selectd", id);
-    _handleChangePage(`/consultorio/${id}`);
-  };
-  handleSaveExam = () => {
-    const { _saveExam, contact } = this.props,
-      examToday = contact.examenes.filter(
-        (exam) =>
-          moment(exam.created_at).diff(moment(), "days") === 0 || !exam.estado
-      );
-
-    if (examToday.length) {
-      window.Swal.fire({
-        title: "Examenes",
-        text: "Existe un examen activo o del dia",
-        icon: "error",
-      });
-      console.error("[OrusSystem] Examenes activos:", examToday.length);
-      return false;
-    }
-
-    //Confirmación de almacenamiento
-    window.Swal.fire({
-      title: "Almacenamiento",
-      text: "¿Esta seguro de crear un nuevo examen?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Crear",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-    }).then(({ dismiss }) => {
-      if (!dismiss) {
-        _saveExam({
-          id: 0,
-          data: {
-            edad: contact.edad,
-            contact_id: contact.id,
-          },
-        });
-      }
-    });
+    window.location.href = `/consultorio/${id}`;
   };
   handleChangeData = (key, value) => {
-    const { verification } = this.state;
+    const { verification } = this.state,
+      dataObject = helper.handleGetDataObject(key, value, verification);
 
-    switch (key) {
-      case "name":
-        this.setState({
-          name: value,
-          verification: {
-            ...verification,
-            name: true,
-          },
-        });
-        break;
-      case "email":
-        this.setState({
-          email: value,
-          verification: {
-            ...verification,
-            email: true,
-          },
-        });
-        break;
-      case "birthday":
-        this.setState({
-          birthday: value,
-          verification: {
-            ...verification,
-            birthday: true,
-          },
-        });
-        break;
-      case "telefonos":
-        this.setState({
-          telefonos: value,
-          verification: {
-            ...verification,
-            telefonos: true,
-          },
-        });
-        break;
-      default:
-        //console.log("[DEBUG] VERIFY: " + key, value);
-        this.setState({
-          [key]: value,
-        });
-        break;
-    }
-  };
-  handleVerificationData = () => {
-    const { name, email, birthday, telefonos, verification, type } = this.state,
-      patternName =
-        /^[A-ZÁÉÍÓÚñáéíóúÑ]+\s[A-ZÁÉÍÓÚñáéíóúÑ]{2,}(\s?[A-ZÁÉÍÓÚñáéíóúÑ]+){1,}/gim,
-      patternEmail =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gim,
-      patternPhone = /^\d{10}$/gim;
-
-    if (!type && !patternName.test(name)) {
-      window.Swal.fire({
-        title: "Verificacion",
-        text: "El nombre del contacto es erroneo",
-        icon: "warning",
-      });
-      this.setState({
-        verification: {
-          ...verification,
-          name: false,
-        },
-      });
-      return false;
-    }
-    if (!patternEmail.test(email)) {
-      window.Swal.fire({
-        title: "Verificacion",
-        text: "El correo electrónico del contacto es erroneo",
-        icon: "warning",
-      });
-      this.setState({
-        verification: {
-          ...verification,
-          email: false,
-        },
-      });
-      return false;
-    }
-    const tel = Object.values(telefonos);
-    let telefonoVerify = true;
-    tel.every((num) => {
-      if (patternPhone.test(num)) {
-        telefonoVerify = false;
-        return false;
-      }
-      return true;
-    });
-
-    if (!type && telefonoVerify) {
-      window.Swal.fire({
-        title: "Verificacion",
-        text: "El numero de contacto es erroneo",
-        icon: "warning",
-      });
-      this.setState({
-        verification: {
-          ...verification,
-          telefonos: false,
-        },
-      });
-      return false;
-    }
-
-    const date = new Date(birthday),
-      today = new Date(),
-      anos = today.getFullYear() - date.getFullYear();
-
-    if (!type && (!birthday || anos < 1)) {
-      window.Swal.fire({
-        title: "Verificacion",
-        text: "La fecha de nacimiento es erronea",
-        icon: "warning",
-      });
-      this.setState({
-        verification: {
-          ...verification,
-          birthday: false,
-        },
-      });
-      return false;
-    }
-
-    return true;
+    this.setState(dataObject);
   };
   handleSave = (e) => {
     e.preventDefault();
@@ -501,22 +357,21 @@ class AddContactComponent extends Component {
         type,
         birthday,
         domicilios,
-        telefonos,
+        telnumbers,
         business,
       } = this.state,
-      { handleSave: _handleSave } = this.props;
-
-    //Verificacion de datos
-    if (!this.handleVerificationData()) return false;
-
-    //Perarando datos
-    let dataDom = {
+      { _saveContact } = this.props;
+    //Data verification
+    if (!helper.handleVerificationData(this.state)) return false;
+    //make data location
+    const dataDom = {
       calle: domicilios.calle.trim(),
       colonia: domicilios.colonia.trim(),
       municipio: domicilios.municipio.trim(),
       estado: domicilios.estado.trim(),
       cp: domicilios.cp.trim(),
     };
+    //Make all data to save
     const data = {
       name: name.trim().toLocaleLowerCase(),
       rfc: rfc.trim().toLocaleLowerCase(),
@@ -524,26 +379,11 @@ class AddContactComponent extends Component {
       type,
       birthday: new Date(birthday),
       domicilio: JSON.stringify(dataDom),
-      telnumbers: JSON.stringify(telefonos),
+      telnumbers: JSON.stringify(telnumbers),
       business: business ? 1 : 0,
     };
-
-    //Confirmación de almacenamiento
-    window.Swal.fire({
-      title: "Almacenamiento",
-      text: id
-        ? "¿Esta seguro de actualizar al contacto?"
-        : "¿Esta seguro de crear un nuevo contacto?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: id ? "Actualizar" : "Crear",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-    }).then(({ dismiss }) => {
-      if (!dismiss) {
-        _handleSave(id, data);
-      }
-    });
+    //Save
+    helper.saveContact("contacto", data, _saveContact, id);
   };
   getUser = () => {
     const { contact } = this.props,
@@ -567,7 +407,7 @@ class AddContactComponent extends Component {
               estado: "",
               cp: "",
             },
-        telefonos: telefonos
+        telnumbers: telefonos
           ? telefonos
           : { t_casa: "", t_oficina: "", t_movil: "" },
         load: false,
@@ -582,14 +422,19 @@ class AddContactComponent extends Component {
 
 const mapStateToProps = ({ contact, exam }) => {
     return {
+      //Contacts
       loading: contact.loading,
-      msg_exams: exam.messages,
       contact: contact.contact,
+      msg_contact: contact.messages,
+      //Exams
+      msg_exams: exam.messages,
     };
   },
   mapActionsToProps = {
-    _setContact: contactActions.setContact,
+    //contact
     _getContact: contactActions.getContact,
+    _saveContact: contactActions.saveContact,
+    //Exams
     _saveExam: examActions.saveExam,
     _setMsgExam: examActions.setMessagesExam,
   };

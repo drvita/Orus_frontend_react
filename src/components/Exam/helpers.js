@@ -142,13 +142,13 @@ const getCodeGrad = (category, esferaod, esferaoi, cilindrod, cilindroi) => {
   };
 };
 //Quickly save exam with a button
-const handleSaveExam = ({ _saveExam, contact }) => {
+const handleSaveExam = (contact, id = 0, _save) => {
   const examToday = contact.examenes.filter(
     (exam) =>
       moment(exam.created_at).diff(moment(), "days") === 0 || !exam.estado
   );
 
-  if (examToday.length) {
+  if (examToday.length && !id) {
     window.Swal.fire({
       title: "Examenes",
       text: "Existe un examen activo o del dia",
@@ -161,15 +161,17 @@ const handleSaveExam = ({ _saveExam, contact }) => {
   //Confirmación de almacenamiento
   window.Swal.fire({
     title: "Almacenamiento",
-    text: "¿Esta seguro de crear un nuevo examen?",
+    text: id
+      ? `¿Esta seguro de actualizar este examen?`
+      : "¿Esta seguro de crear un nuevo examen?",
     icon: "question",
     showCancelButton: true,
-    confirmButtonText: "Crear",
+    confirmButtonText: id ? "Actualizar" : "Crear",
     cancelButtonText: "Cancelar",
     showLoaderOnConfirm: true,
   }).then(({ dismiss }) => {
-    if (!dismiss) {
-      _saveExam({
+    if (!dismiss && _save) {
+      _save({
         id: 0,
         data: {
           edad: contact.edad,

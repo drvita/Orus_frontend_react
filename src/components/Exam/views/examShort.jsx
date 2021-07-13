@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 //Views and actions
-import Graduacion from "./views/graduacionExam";
-import { examActions } from "../../redux/exam";
+import Graduacion from "./graduacionExam";
+import { examActions } from "../../../redux/exam";
 
 const ExamCustomerComponent = (props) => {
   const {

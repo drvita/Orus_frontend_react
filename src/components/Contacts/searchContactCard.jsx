@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Easycontact from "./views/easyContact";
+import Easycontact from "./data/modalAddContact";
 import moment from "moment";
 
 export default class searchContactLine extends Component {

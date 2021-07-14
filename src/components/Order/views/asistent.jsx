@@ -1,13 +1,17 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
-import SearchContact from "../Contacts/views/showContactInLine";
-import ListExam from "../Exam/data/listExamsCustomer";
-import Exam from "../Exam/views/examShort";
-import Items from "./itemsOrder";
-import { contactActions } from "../../redux/contact/.";
-import { examActions } from "../../redux/exam/.";
-import helper from "../Exam/helpers";
+//Components
+import SearchContact from "../../Contacts/views/showContactInLine";
+import ListExam from "../../Exam/data/listExamsCustomer";
+import Exam from "../../Exam/views/examShort";
+import Items from "../itemsOrder";
+//Actions
+import { contactActions } from "../../../redux/contact/.";
+import { examActions } from "../../../redux/exam/.";
+import { categoryActions } from "../../../redux/category/";
+import { orderActions } from "../../../redux/order";
+import helper_exam from "../../Exam/helpers";
+import helper from "../helpers";
 
 class AsistentComponent extends Component {
   constructor(props) {
@@ -78,7 +82,7 @@ class AsistentComponent extends Component {
   render() {
     const { contact_id, items, exam, exam_id, examEdit, codes, session } =
         this.state,
-      { contact, loading: LOADING, _saveExam } = this.props;
+      { contact, load_order: LOADING, _saveExam } = this.props;
 
     return (
       <div className="card card-warning card-outline">
@@ -198,7 +202,7 @@ class AsistentComponent extends Component {
                       type="button"
                       className="btn btn-secondary"
                       onClick={(e) =>
-                        helper.handleSaveExam(contact, null, _saveExam)
+                        helper_exam.handleSaveExam(contact, null, _saveExam)
                       }
                     >
                       <i className="fas fa-notes-medical mr-1"></i>
@@ -218,10 +222,8 @@ class AsistentComponent extends Component {
                   href="#close"
                   className="btn btn-default btn-sm"
                   onClick={(e) => {
-                    const {
-                      handleChangeInput: _handleChangeInput,
-                      _setContact,
-                    } = this.props;
+                    const { handleClose: _handleClose, _setContact } =
+                      this.props;
 
                     e.preventDefault();
                     this.setState({
@@ -232,7 +234,7 @@ class AsistentComponent extends Component {
                       exam: {},
                       examEdit: false,
                     });
-                    _handleChangeInput("panel", 0);
+                    _handleClose();
                     _setContact();
                   }}
                 >
@@ -240,6 +242,7 @@ class AsistentComponent extends Component {
                   {contact_id ? "Cancelar" : "Cerrar"}
                 </a>
                 <button
+                  type="button"
                   className={
                     contact_id && exam_id !== null && items.length
                       ? "btn btn-warning btn-sm"
@@ -267,13 +270,19 @@ class AsistentComponent extends Component {
     );
   }
 
-  handleChangeInput = (key, value) => {
-    const { handleGetCategories: _handleGetCategories } = this.props;
+  handleGetCategories = (cat_id) => {
+    const { _getListCategories } = this.props;
 
+    _getListCategories({
+      options: {},
+      id: cat_id,
+    });
+  };
+  handleChangeInput = (key, value) => {
     if (key === "exam") {
       if (value.category_id) {
         //this.getCategories(value);
-        _handleGetCategories(value.category_id);
+        this.handleGetCategories(value.category_id);
       }
       if (!value.id) {
         this.setState({
@@ -298,6 +307,22 @@ class AsistentComponent extends Component {
         [key]: value,
       });
     }
+  };
+  handleCodeName = (category) => {
+    let code = "";
+    if (category.depende_de) {
+      if (category.depende_de.depende_de) {
+        code = category.depende_de.depende_de.meta.code;
+        code += category.depende_de.meta.code;
+        code += category.meta.code;
+      } else {
+        code = category.depende_de.meta.code;
+        code += category.meta.code;
+      }
+    } else {
+      code = category.meta.code;
+    }
+    return code;
   };
   getCategories = (category, exam) => {
     const { category_id, esferaod, esferaoi, cilindrod, cilindroi, id } = exam;
@@ -331,71 +356,43 @@ class AsistentComponent extends Component {
       },
     });
   };
-  handleCodeName = (category) => {
-    let code = "";
-    if (category.depende_de) {
-      if (category.depende_de.depende_de) {
-        code = category.depende_de.depende_de.meta.code;
-        code += category.depende_de.meta.code;
-        code += category.meta.code;
-      } else {
-        code = category.depende_de.meta.code;
-        code += category.meta.code;
-      }
-    } else {
-      code = category.meta.code;
-    }
-    return code;
-  };
   handleSave = (e) => {
-    e.preventDefault();
-    //Verificamos campos validos
-
-    window.Swal.fire({
-      title: "Almacenamiento",
-      text: "¿Esta seguro de crear un nuevo pedido?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#007bff",
-      confirmButtonText: "Crear",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-    }).then(({ dismiss }) => {
-      if (!dismiss) {
-        const { handleSaveOrder: _handleSaveOrder, _setContact } = this.props,
-          { items: items_state, exam_id, session, contact_id } = this.state,
-          items = items_state.map((item) => {
-            return {
-              cant: item.cantidad,
-              price: item.precio,
-              subtotal: item.subtotal,
-              inStorage: item.inStorage,
-              session: item.session,
-              out: item.out,
-              descripcion: item.descripcion,
-              store_items_id: item.store_items_id,
-            };
-          });
-        let body = {
-          session: session,
-          contact_id: contact_id,
-          items: JSON.stringify(items),
-          status: 0,
+    //Valid data
+    const { options, _saveOrder, _setContact } = this.props,
+      { items: items_state, exam_id, session, contact_id } = this.state,
+      items = items_state.map((item) => {
+        return {
+          cant: item.cantidad,
+          price: item.precio,
+          subtotal: item.subtotal,
+          inStorage: item.inStorage,
+          session: item.session,
+          out: item.out,
+          descripcion: item.descripcion,
+          store_items_id: item.store_items_id,
         };
-        if (exam_id) body.exam_id = parseInt(exam_id);
-
-        _handleSaveOrder(body);
-        _setContact();
-      }
-    });
+      }),
+      deleteContact = () => _setContact({});
+    let data = {
+      session: session,
+      contact_id: contact_id,
+      items: JSON.stringify(items),
+      status: 0,
+    };
+    if (exam_id) data.exam_id = parseInt(exam_id);
+    //Save
+    helper.handleSaveOrder(null, data, options, _saveOrder, deleteContact);
   };
 }
 
-const mapStateToProps = ({ contact, exam }) => {
+const mapStateToProps = ({ contact, exam, order, category }) => {
     return {
-      loading: contact.loading,
+      load_contact: contact.loading,
       contact: contact.contact,
       msg_exams: exam.messages,
+      options: order.options,
+      load_order: order.loading,
+      categories: category.list,
     };
   },
   mapActionsToProps = {
@@ -403,6 +400,8 @@ const mapStateToProps = ({ contact, exam }) => {
     _getContact: contactActions.getContact,
     _saveExam: examActions.saveExam,
     _setMsgExam: examActions.setMessagesExam,
+    _saveOrder: orderActions.saveOrder,
+    _getListCategories: categoryActions.getListCategories,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(AsistentComponent);

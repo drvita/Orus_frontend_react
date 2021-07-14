@@ -106,7 +106,7 @@ const ShowContactComponent = (props) => {
                   </button>
                   <Link
                     to={"/contactos/" + contact.id}
-                    className="btn btn-danger btn-sm"
+                    className="btn bg-indigo btn-sm"
                     title="Editar"
                   >
                     <i className="fas fa-edit"></i>

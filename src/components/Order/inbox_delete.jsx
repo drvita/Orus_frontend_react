@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Pagination from "../Layouts/pagination";
-import InboxList from "./inbox_list";
+import InboxList from "./inbox_list_deleted";
 
 class inboxOrderComponent extends Component {
   constructor(props) {

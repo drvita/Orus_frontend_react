@@ -1,6 +1,6 @@
-//import ratesReducer from './reducers'
+import orderReducer from "./reducer";
 
 export { default as orderActions } from "./actions";
-//export { default as ratesSagas } from './sagas'
+export { default as orderSagas } from "./sagas/.";
 
-//export default ratesReducer;
+export default orderReducer;

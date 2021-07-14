@@ -682,7 +682,7 @@ export default class StoreAdd extends Component {
       })
       .then((cat) => {
         if (cat.data !== null) {
-          console.log("Almacenando categorias");
+          console.log("[DEBUG] Almacenando categorias");
           this.setState({
             category_list1: cat.data,
           });

@@ -2,7 +2,11 @@ import React from "react";
 
 const PaginationComponent = ({ meta, handlePagination, color }) => {
   const handleChangePage = (page) => {
-    handlePagination(page);
+    if (handlePagination) {
+      handlePagination(page);
+    } else {
+      console.error("[OrusSystem] Funcion de paginador no definida");
+    }
   };
 
   return (

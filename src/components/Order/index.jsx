@@ -1,17 +1,14 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 //import { Link } from "react-router-dom";
-import Inbox from "./inbox";
-import Asistent from "./asistent";
+//Components
+import Inbox from "./views/inbox";
+import Asistent from "./views/asistent";
 import AddOrder from "./addOrder";
 import Chat from "../Layouts/messenger";
-import {
-  getListOrder,
-  setStateVar,
-  deleteOrder,
-  saveOrder,
-} from "../../redux/order/actions";
+//Actions
 import { categoryActions } from "../../redux/category/";
+import { orderActions } from "../../redux/order/";
 
 class indexOrderComponent extends Component {
   constructor(props) {
@@ -20,100 +17,28 @@ class indexOrderComponent extends Component {
     this.state = {
       panel: 0,
       order: {},
-      update: false,
-      editId: [],
-      options: {
-        page: 1,
-        orderby: "updated_at",
-        order: "desc",
-        search: "",
-        status: "",
-        itemsPage: 10,
-      },
     };
   }
   componentDidMount() {
-    const { options } = this.state,
-      { getListOrder: _getListOrder, match } = this.props,
+    const { match, _getOrder } = this.props,
       { id } = match.params;
 
-    _getListOrder(options, parseInt(id));
+    if (id) {
+      console.log("[OrusSystem] cargando orden al inicio: " + id);
+      _getOrder(id);
+    }
   }
-  componentDidUpdate(props, state) {
+  componentDidUpdate(props) {
     const {
-        orderId: ID,
-        status: STATUS,
-        page: PAGE,
-        search: SEARCH,
-        orderby: ORDERBY,
-        order: ORDER,
-        itemsPage: IP,
-        orders: ORDERS,
-        errors: ERRS,
-        messages: MSGS,
-        //Functions
-        getListOrder: _getListOrder,
-        setStateVar: _setStateVar,
-      } = this.props,
-      { options, panel } = this.state;
+      order,
+      messages: MSGS,
+      //Functions
+    } = this.props;
 
-    if (state.panel !== panel) {
-      switch (panel) {
-        case 1: {
-          //_getListCategories();
-          break;
-        }
-        case 2: {
-          break;
-        }
-        case 3: {
-          this.props.history.push(`/pedidos/${ID}`);
-          break;
-        }
-        default:
-          if (
-            props.status === STATUS &&
-            props.search === SEARCH &&
-            props.orderby === ORDERBY &&
-            props.page === PAGE &&
-            props.order === ORDER
-          ) {
-            _getListOrder(options);
-          }
-          if (ID) {
-            _setStateVar({
-              key: "orderId",
-              val: 0,
-            });
-            this.props.history.push("/pedidos");
-          }
-          break;
-      }
-    }
-
-    //console.log("[DEBUG] Component update in params:", ID, ORDERS);
-    if (props.orderId !== ID && ID && ORDERS.length) {
-      let order = {};
-
-      ORDERS.forEach((ord) => {
-        if (ord.id === ID) {
-          order = ord;
-        }
-      });
-      if (order.id) {
-        this.setState({
-          panel: 3,
-          order,
-        });
-      }
-    }
-
-    if (
-      (props.orderId !== ID && !ID) ||
-      (props.messages.length !== MSGS.length && MSGS.length && !ERRS.length)
-    ) {
+    if (props.order.id !== order.id && order.id) {
       this.setState({
-        panel: 0,
+        order,
+        panel: 3,
       });
     }
 
@@ -127,95 +52,23 @@ class indexOrderComponent extends Component {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
-    }
-
-    if (
-      props.status !== STATUS ||
-      props.search !== SEARCH ||
-      props.orderby !== ORDERBY ||
-      props.page !== PAGE ||
-      props.order !== ORDER ||
-      props.itemsPage !== IP
-    ) {
-      //Cambiamos el state local
-      this.setState({
-        options: {
-          page: PAGE,
-          orderby: ORDERBY,
-          order: ORDER,
-          search: SEARCH,
-          status: STATUS,
-          itemsPage: IP,
-        },
-      });
+      if (this.state.panel) {
+        this.setState({
+          panel: 0,
+        });
+      }
     }
   }
 
-  handleChangeInput = (key, value) => {
-    this.setState({
-      [key]: value,
-    });
-  };
-
   render() {
-    const { panel, update, editId, options, order } = this.state,
+    const { panel, order } = this.state,
       {
-        orderId,
-        search: SEARCH,
-        orders: ORDERS_LIST,
-        meta: META,
         loading: LOADING,
-        categories: CATEGORY_LIST = {},
+        //categories: CATEGORY_LIST = {},
         userRole: ROL = null,
+        options,
       } = this.props;
-    let showpanel = null;
-
-    switch (panel) {
-      case 1:
-        showpanel = <div className="text-center">Cargando examenes</div>;
-        break;
-      case 2:
-        showpanel = (
-          <Asistent
-            categories={CATEGORY_LIST}
-            loading={LOADING}
-            handleChangeInput={this.handleChangeInput}
-            handleGetCategories={this.handleGetCategories}
-            handleSaveOrder={this.handleSaveOrder}
-          />
-        );
-
-        break;
-      case 3:
-        showpanel = (
-          <AddOrder
-            orderId={orderId}
-            order={order}
-            loading={LOADING}
-            userRole={ROL}
-            handleSaveOrder={this.handleSaveOrder}
-            handleChangeInput={this.handleChangeInput}
-            handleDeleteOrder={this.handleDeleteOrder}
-          />
-        );
-        break;
-      default:
-        showpanel = (
-          <Inbox
-            orders={ORDERS_LIST}
-            meta={META}
-            update={update}
-            editId={editId}
-            options={options}
-            searchText={SEARCH}
-            loading={LOADING}
-            handleSearchOrdes={this.handleSearchOrdes}
-            handlePageOrder={this.handlePageOrder}
-            handleDeleteOrder={this.handleDeleteOrder}
-            handleSelectOrder={this.handleSelectOrder}
-          />
-        );
-    }
+    let showpanel = this.showPanel(panel, order, LOADING, [], ROL);
 
     //console.log("[DEBUG] List of orders", ORDERS_LIST);
 
@@ -287,7 +140,7 @@ class indexOrderComponent extends Component {
                         <option value="2">Bicelación</option>
                         <option value="3">Terminado</option>
                         <option value="4">Entregado</option>
-                        <option value="5">Garantia</option>
+                        {/* <option value="5">Garantia</option> */}
                       </select>
                     </li>
                     <li className="nav-item p-2">
@@ -339,26 +192,54 @@ class indexOrderComponent extends Component {
             </div>
           </div>
 
-          {panel === 3 ? <Chat table="orders" idRow={orderId} /> : null}
+          {panel === 3 ? <Chat table="orders" idRow={order.id} /> : null}
         </div>
         <div className="col-md-10 col-sm-12">{showpanel}</div>
       </div>
     );
   }
 
+  showPanel = (panel, order, loading, category, rol) => {
+    switch (panel) {
+      case 1:
+        return <div className="text-center">Cargando examenes</div>;
+
+      case 2:
+        return (
+          <Asistent handleClose={() => this.handleChangeInput("panel", 0)} />
+        );
+
+      case 3:
+        return (
+          <AddOrder
+            order={order}
+            loading={loading}
+            userRole={rol}
+            handleSaveOrder={this.handleSaveOrder}
+            handleChangeInput={this.handleChangeInput}
+            handleDeleteOrder={this.handleDeleteOrder}
+          />
+        );
+      default:
+        return <Inbox />;
+    }
+  };
   handleSetSelectOptions = ({ target }) => {
-    const { getListOrder: _getListOrder } = this.props,
-      { options } = this.state,
+    const { _setOptions } = this.props,
       { value, name } = target;
     let val = value;
 
     if (name === "itemsPage") val = parseInt(val);
     if (name === "status" && val !== "") val = parseInt(val);
 
-    _getListOrder({
-      ...options,
-      [name]: val,
-      page: 1,
+    _setOptions({
+      key: name,
+      value: val,
+    });
+  };
+  handleChangeInput = (key, value) => {
+    this.setState({
+      [key]: value,
     });
   };
   handleSaveOrder = (order = {}, id = null) => {
@@ -368,41 +249,6 @@ class indexOrderComponent extends Component {
       order,
       id,
       options,
-    });
-  };
-  handleGetCategories = (cat_id) => {
-    const { getListCategories: _getListCategories } = this.props;
-
-    _getListCategories({
-      options: {},
-      id: cat_id,
-    });
-  };
-  handleSearchOrdes = (search) => {
-    const { getListOrder: _getListOrder } = this.props,
-      { options } = this.state;
-
-    _getListOrder({
-      ...options,
-      search,
-      page: 1,
-    });
-  };
-  handlePageOrder = (page) => {
-    const { getListOrder: _getListOrder } = this.props,
-      { options } = this.state;
-
-    _getListOrder({
-      ...options,
-      page,
-    });
-  };
-  handleSelectOrder = (id) => {
-    const { setStateVar: _setStateVar } = this.props;
-
-    _setStateVar({
-      key: "orderId",
-      val: parseInt(id),
     });
   };
 
@@ -439,28 +285,17 @@ class indexOrderComponent extends Component {
 
 const mapStateToProps = ({ order, category, logging }) => {
     return {
-      orders: order.list,
-      meta: order.metaList,
-      orderId: order.orderId,
-      status: order.status,
-      page: order.page,
-      search: order.search,
-      orderby: order.orderby,
       order: order.order,
-      itemsPage: order.itemsPage,
-      loading: order.loading,
-      categories: category.list,
+      options: order.options,
+      //categories: category.list,
       messages: order.messages,
-      errors: order.errors,
       userRole: logging.rol,
     };
   },
   mapActionsToProps = {
-    setStateVar,
-    getListOrder,
-    deleteOrder,
-    getListCategories: categoryActions.getListCategories,
-    saveOrder,
+    _getListCategories: categoryActions.getListCategories,
+    _getOrder: orderActions.getOrder,
+    _setOptions: orderActions.setOptions,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(indexOrderComponent);

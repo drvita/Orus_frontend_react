@@ -520,9 +520,7 @@ class IndexExamComponent extends Component {
     const { _getListExams } = this.props,
       { options } = this.state;
 
-    _getListExams({
-      options,
-    });
+    _getListExams(options);
 
     this.setState({
       load: false,

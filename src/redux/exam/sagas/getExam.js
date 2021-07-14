@@ -9,18 +9,10 @@ export default function* handleGetExam({ payload: id }) {
     if (result.data) {
       yield put(examActions.setExam(result.data));
     } else {
-      console.error("[Orus System] Error in handle GET Contact", result);
-      yield put(
-        examActions.setMessagesExam([
-          {
-            type: "error",
-            text: "al traer datos de contacto en la API",
-          },
-        ])
-      );
+      console.error("[OrusSystem] Error en handleGetExam", result);
     }
   } catch (e) {
-    console.error("[Orus System] Error in handle GET Contact", e);
+    console.error("[OrusSystem] Error en saga/Exam handleGetExam", e);
     yield put(
       examActions.setMessagesExam([
         {

@@ -5,17 +5,19 @@ const ListInbox = (props) => {
   const [search, setSearch] = useState("");
   const [timer, setTimer] = useState("");
 
-  const handleSearchErase = () => {
-    setSearch("");
-  };
-
   useEffect(() => {
     let toTimer = null;
-    if (timer) clearTimeout(timer);
-    toTimer = setTimeout(() => {
-      props.handleSearch(search);
-    }, 1000);
-    setTimer(toTimer);
+    if (props.handleSearch) {
+      if (search.length) {
+        if (timer) clearTimeout(timer);
+        toTimer = setTimeout(() => {
+          props.handleSearch(search);
+        }, 1000);
+        setTimer(toTimer);
+      } else {
+        props.handleSearch("");
+      }
+    }
     // eslint-disable-next-line
   }, [search]);
 
@@ -31,99 +33,111 @@ const ListInbox = (props) => {
           {props.title}
         </h3>
         <div className="card-tools">
-          <div className="input-group input-group-sm position-relative">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Buscar"
-              value={search}
-              onChange={(e) => {
-                const { value } = e.target;
-                setSearch(value);
-              }}
-              onKeyPress={(e) => {
-                const { key } = e;
-                if (key === "Enter") {
-                  console.log("[DEBUG] press enter");
-                }
-              }}
-            />
-            <div
-              className="position-absolute"
-              style={{ top: 5, left: -20, color: "#ced4da" }}
-            >
-              <i className="fas fa-search"></i>
-            </div>
-            {search.length > 2 ? (
-              <div className="input-group-append">
-                <div className="btn btn-secondary" onClick={handleSearchErase}>
-                  <i className="fas fa-window-close"></i>
-                </div>
+          {props.handleSearch ? (
+            <div className="input-group input-group-sm position-relative">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Buscar"
+                value={search}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setSearch(value);
+                }}
+                onKeyPress={(e) => {
+                  const { key } = e;
+                  if (key === "Enter") {
+                    console.log("[DEBUG] press enter");
+                  }
+                }}
+              />
+              <div
+                className="position-absolute"
+                style={{ top: 5, left: -20, color: "#ced4da" }}
+              >
+                <i className="fas fa-search"></i>
               </div>
-            ) : null}
-          </div>
+              {search.length > 2 ? (
+                <div className="input-group-append">
+                  <div
+                    className="btn btn-secondary"
+                    onClick={(e) => setSearch("")}
+                  >
+                    <i className="fas fa-window-close"></i>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="p-0 card-body">
-        <div className="mailbox-controls">
-          <div className="btn-group">
-            {props.handleDeleteItem ? (
-              <button
-                type="button"
-                className="btn btn-default btn-sm"
-                title="Eliminar"
-                disabled={props.itemSelected ? false : true}
-                onClick={(e) => props.handleDeleteItem()}
-              >
-                <i className="fas fa-trash-alt"></i>
-              </button>
-            ) : null}
+        {props.handleDeleteItem ||
+        props.handleEditItem ||
+        props.handleStatus ||
+        props.handleSync ||
+        props.meta ? (
+          <div className="mailbox-controls">
+            <div className="btn-group">
+              {props.handleDeleteItem ? (
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  title="Eliminar"
+                  disabled={props.itemSelected ? false : true}
+                  onClick={(e) => props.handleDeleteItem()}
+                >
+                  <i className="fas fa-trash-alt"></i>
+                </button>
+              ) : null}
 
-            {props.handleEditItem ? (
-              <button
-                type="button"
-                className="btn btn-default btn-sm"
-                title="Editar"
-                disabled={props.itemSelected ? false : true}
-                onClick={(e) => props.handleEditItem()}
-              >
-                <i className="fas fa-edit"></i>
-              </button>
-            ) : null}
+              {props.handleEditItem ? (
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  title="Editar"
+                  disabled={props.itemSelected ? false : true}
+                  onClick={(e) => props.handleEditItem()}
+                >
+                  <i className="fas fa-edit"></i>
+                </button>
+              ) : null}
 
-            {props.handleStatus ? (
-              <button
-                type="button"
-                className="btn btn-default btn-sm"
-                title="Estado"
-                disabled={props.itemSelected ? false : true}
-                onClick={(e) => props.handleStatus()}
-              >
-                <i className="fas fa-check-circle"></i>
-              </button>
-            ) : null}
+              {props.handleStatus ? (
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  title="Estado"
+                  disabled={props.itemSelected ? false : true}
+                  onClick={(e) => props.handleStatus()}
+                >
+                  <i className="fas fa-check-circle"></i>
+                </button>
+              ) : null}
 
-            {props.handleSync ? (
-              <button
-                type="button"
-                className="btn btn-default btn-sm"
-                title="Recargar"
-                onClick={(e) => props.handleSync()}
-              >
-                <i className="fas fa-sync-alt"></i>
-              </button>
-            ) : null}
+              {props.handleSync ? (
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  title="Recargar"
+                  onClick={(e) => props.handleSync()}
+                >
+                  <i className="fas fa-sync-alt"></i>
+                </button>
+              ) : null}
+            </div>
+            <div className="float-right">
+              {props.meta ? (
+                <Pagination
+                  meta={props.meta}
+                  color={props.color}
+                  handlePagination={props.handlePagination}
+                />
+              ) : null}
+            </div>
           </div>
-          <div className="float-right">
-            {props.meta ? (
-              <Pagination
-                meta={props.meta}
-                color={props.color}
-                handlePagination={props.handlePagination}
-              />
-            ) : null}
-          </div>
-        </div>
+        ) : null}
+
         <div className="table-responsive mailbox-messages">
           {props.children}
         </div>

@@ -2,13 +2,9 @@ import React, { Component } from "react";
 
 export default class InputCategory extends Component {
   render() {
-    const {
-      categoryData,
-      categoryName,
-      category,
-      textSelect,
-      categoryRef,
-    } = this.props;
+    const { categoryData, categoryName, category, textSelect, categoryRef } =
+      this.props;
+
     return (
       <div className="input-group mb-3">
         <div className="input-group-prepend">

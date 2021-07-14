@@ -1,35 +1,29 @@
 import { TYPE } from "./types";
 
-const LS = localStorage.getItem("OrusSystem"),
-  { orders: ORDER = {} } = JSON.parse(LS ? LS : "{}"),
-  {
-    orderBy: OBY = "updated_at",
-    order: ORD = "desc",
-    search: SEARCH = "",
-    page: PAGE = 1,
-    status: STATUS = "",
-    itemsPage: IP = 10,
-  } = ORDER,
-  DEFAULT_STATE = {
-    list: [],
-    metaList: {},
-    orderId: 0,
-    orderby: OBY,
-    order: ORD,
-    search: SEARCH,
-    page: PAGE,
-    status: STATUS,
-    itemsPage: IP,
-    errors: [],
-    messages: [],
-    loading: false,
-  };
+const DEFAULT_STATE = {
+  list: [],
+  metaList: {},
+  order: { id: 0 },
+  options: {
+    page: 1,
+    orderby: "created_at",
+    order: "desc",
+    search: "",
+    status: "",
+    itemsPage: 10,
+  },
+  messages: [],
+  loading: false,
+};
 
 const default_reducer = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
     case TYPE.SAGA_GET_LIST: {
       return {
         ...state,
+        list: [],
+        metaList: {},
+        order: { id: 0 },
         loading: true,
       };
     }
@@ -45,41 +39,24 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         loading: true,
       };
     }
+    case TYPE.SAGA_GET_ORDER: {
+      return {
+        ...state,
+        list: [],
+        metaList: {},
+        order: { id: 0 },
+        loading: true,
+      };
+    }
+
     case TYPE.SET_LIST: {
-      const { payload } = action,
-        LS = localStorage.getItem("OrusSystem"),
-        localstorage = JSON.parse(LS ? LS : "{}"),
-        storage = {
-          ...localstorage,
-          orders: {
-            ...payload.options,
-          },
-        };
-
-      localStorage.setItem("OrusSystem", JSON.stringify(storage));
-
+      const { payload } = action;
       return {
         ...state,
         ...payload.result,
-        ...payload.options,
-        orderId: 0,
+        order: { id: 0 },
         messages: [],
         loading: false,
-      };
-    }
-    case TYPE.SET_STATE_VAR: {
-      const { payload } = action;
-      return {
-        ...state,
-        [payload.key]: payload.val,
-      };
-    }
-    case TYPE.SET_ERROR: {
-      const { payload } = action;
-      return {
-        ...state,
-        loading: false,
-        errors: payload,
       };
     }
     case TYPE.SET_MESSAGE: {
@@ -88,6 +65,26 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         ...state,
         loading: false,
         messages: payload,
+      };
+    }
+    case TYPE.SET_ORDER: {
+      const { payload } = action;
+      return {
+        ...state,
+        order: payload,
+        messages: [],
+        loading: false,
+      };
+    }
+    case TYPE.SET_OPTIONS: {
+      const { payload } = action;
+      return {
+        ...state,
+        options: {
+          ...state.options,
+          page: 1,
+          [payload.key]: payload.value,
+        },
       };
     }
     default:

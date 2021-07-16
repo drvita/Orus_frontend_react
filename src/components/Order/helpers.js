@@ -1,7 +1,7 @@
 const handleStatusString = (status) => {
   switch (status) {
     case 0:
-      return "proceso";
+      return "procesando";
     case 1:
       return "laboratorio";
     case 2:
@@ -14,6 +14,13 @@ const handleStatusString = (status) => {
       return "garantia";
   }
 };
+const getStatusType = [
+  "procesando",
+  "laboratorio",
+  "bicelacion",
+  "terminado",
+  "entregado",
+];
 const handleDeleteOrder = (order, options, _delete) => {
   if (order.id) {
     //Check sale
@@ -48,7 +55,7 @@ const handleDeleteOrder = (order, options, _delete) => {
           id: order.id,
           options,
         });
-        console.log("[DEBUG] Delete order in helper:", order.id);
+        console.log("[Orus System] Eliminando pedido: " + order.id);
         return true;
       }
     });
@@ -78,11 +85,51 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
     }
   });
 };
+const getDataTemporary = (field) => {
+    const data = JSON.parse(localStorage.getItem("OrusSystem") ?? "");
+
+    if (!data.orders) {
+      data.orders = [];
+    }
+
+    return field ? data.orders : data;
+  },
+  addDataTemporary = (data) => {
+    const local = getDataTemporary();
+    let localToSave = {
+      ...local,
+      orders: local.orders.filter((item) => item.id !== data.id),
+    };
+
+    localToSave.orders.push(data);
+    localStorage.setItem("OrusSystem", JSON.stringify(localToSave));
+  },
+  removeDataTemporary = (id, fn) => {
+    const local = getDataTemporary(),
+      data = {
+        ...local,
+        orders: local.orders.filter((item) => item.id !== id),
+      };
+    console.log("[DEBUG] delete item", id, data);
+    localStorage.setItem("OrusSystem", JSON.stringify(data));
+    if (fn) fn();
+  },
+  getDataOneItem = (id) => {
+    const local = getDataTemporary(),
+      data = local.orders.filter((item) => item.id === id);
+
+    return data[0] ?? {};
+  };
 
 const toExport = {
   handleStatusString,
   handleDeleteOrder,
   handleSaveOrder,
+  getDataTemporary,
+  addDataTemporary,
+  removeDataTemporary,
+  getDataOneItem,
+  getStatusType,
 };
 
 export default toExport;

@@ -3,12 +3,13 @@ import { connect } from "react-redux";
 //import { Link } from "react-router-dom";
 //Components
 import Inbox from "./views/inbox";
-import Asistent from "./views/asistent";
-import AddOrder from "./addOrder";
+import Asistent from "./asistent";
+import AddOrder from "./editOrder";
 import Chat from "../Layouts/messenger";
+import Pending from "./views/pending";
 //Actions
-import { categoryActions } from "../../redux/category/";
 import { orderActions } from "../../redux/order/";
+import { contactActions } from "../../redux/contact";
 
 class indexOrderComponent extends Component {
   constructor(props) {
@@ -16,30 +17,41 @@ class indexOrderComponent extends Component {
 
     this.state = {
       panel: 0,
-      order: {},
     };
   }
   componentDidMount() {
     const { match, _getOrder } = this.props,
       { id } = match.params;
 
-    if (id) {
+    if (id && !isNaN(id)) {
       console.log("[OrusSystem] cargando orden al inicio: " + id);
       _getOrder(id);
     }
   }
-  componentDidUpdate(props) {
-    const {
-      order,
-      messages: MSGS,
-      //Functions
-    } = this.props;
+  componentDidUpdate(props, state) {
+    const { order, history, messages: MSGS, _setContact } = this.props,
+      { panel } = this.state;
 
     if (props.order.id !== order.id && order.id) {
       this.setState({
-        order,
         panel: 3,
       });
+      _setContact();
+      history.push(`/pedidos/${order.id}`);
+    }
+    if (props.order.id !== order.id && !order.id) {
+      this.setState({
+        panel: 0,
+      });
+      history.push(`/pedidos`);
+    } else if (state.panel !== panel && !panel) {
+      history.push(`/pedidos`);
+    }
+    if (state.panel !== panel && panel === 2) {
+      history.push(`/pedidos/new`);
+    }
+    if (state.panel !== panel && panel === 1) {
+      history.push(`/pedidos/pending`);
     }
 
     if (props.messages.length !== MSGS.length && MSGS.length) {
@@ -61,14 +73,9 @@ class indexOrderComponent extends Component {
   }
 
   render() {
-    const { panel, order } = this.state,
-      {
-        loading: LOADING,
-        //categories: CATEGORY_LIST = {},
-        userRole: ROL = null,
-        options,
-      } = this.props;
-    let showpanel = this.showPanel(panel, order, LOADING, [], ROL);
+    const { panel } = this.state,
+      { order, options } = this.props;
+    let showpanel = this.showPanel(panel);
 
     //console.log("[DEBUG] List of orders", ORDERS_LIST);
 
@@ -109,8 +116,7 @@ class indexOrderComponent extends Component {
                       this.handleShowPanel(e, 1);
                     }}
                   >
-                    <i className="mr-2 fas fa-notes-medical"></i> Examenes sin
-                    pedido
+                    <i className="mr-2 fas fa-notes-medical"></i> Pendientes
                   </a>
                 </li>
                 <li className="nav-item">
@@ -199,10 +205,10 @@ class indexOrderComponent extends Component {
     );
   }
 
-  showPanel = (panel, order, loading, category, rol) => {
+  showPanel = (panel) => {
     switch (panel) {
       case 1:
-        return <div className="text-center">Cargando examenes</div>;
+        return <Pending handleChangePanel={this.handleShowPanel} />;
 
       case 2:
         return (
@@ -210,16 +216,7 @@ class indexOrderComponent extends Component {
         );
 
       case 3:
-        return (
-          <AddOrder
-            order={order}
-            loading={loading}
-            userRole={rol}
-            handleSaveOrder={this.handleSaveOrder}
-            handleChangeInput={this.handleChangeInput}
-            handleDeleteOrder={this.handleDeleteOrder}
-          />
-        );
+        return <AddOrder />;
       default:
         return <Inbox />;
     }
@@ -242,60 +239,23 @@ class indexOrderComponent extends Component {
       [key]: value,
     });
   };
-  handleSaveOrder = (order = {}, id = null) => {
-    const { saveOrder: _saveOrder } = this.props,
-      { options } = this.state;
-    _saveOrder({
-      order,
-      id,
-      options,
-    });
-  };
-
-  handleDeleteOrder = (id) => {
-    const { deleteOrder: _deleteOrder } = this.props,
-      { options } = this.state;
-
-    window.Swal.fire({
-      title: "Eliminar",
-      text: "¿Esta seguro de eliminar el pedido numero " + id + "?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      confirmButtonText: "Eliminar",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          _deleteOrder({
-            id,
-            options,
-          });
-        }
-      },
-    });
-  };
   handleShowPanel = (e, s) => {
-    e.preventDefault();
-    this.setState({
-      panel: s,
-    });
+    if (e) e.preventDefault();
+    this.handleChangeInput("panel", s);
   };
 }
 
-const mapStateToProps = ({ order, category, logging }) => {
+const mapStateToProps = ({ order, category }) => {
     return {
       order: order.order,
       options: order.options,
-      //categories: category.list,
       messages: order.messages,
-      userRole: logging.rol,
     };
   },
   mapActionsToProps = {
-    _getListCategories: categoryActions.getListCategories,
     _getOrder: orderActions.getOrder,
     _setOptions: orderActions.setOptions,
+    _setContact: contactActions.setContact,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(indexOrderComponent);

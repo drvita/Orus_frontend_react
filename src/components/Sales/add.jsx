@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import SearchContact from "../Contacts/searchContactCard";
-import Items from "../Order/itemsOrder";
+import Items from "../Order/views/listItemsOrder";
 import Abonos from "./abonos";
 import Print from "./print_sale";
 import EdoCuenta from "./edoCuenta";

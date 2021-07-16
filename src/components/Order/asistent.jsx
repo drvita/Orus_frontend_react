@@ -1,37 +1,32 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 //Components
-import SearchContact from "../../Contacts/views/showContactInLine";
-import ListExam from "../../Exam/data/listExamsCustomer";
-import Exam from "../../Exam/views/examShort";
-import Items from "../itemsOrder";
+import SearchContact from "../Contacts/views/showContactInLine";
+import ListExam from "../Exam/data/listExamsCustomer";
+import Exam from "../Exam/views/examShort";
+import Items from "./views/listItemsOrder";
 //Actions
-import { contactActions } from "../../../redux/contact/.";
-import { examActions } from "../../../redux/exam/.";
-import { categoryActions } from "../../../redux/category/";
-import { orderActions } from "../../../redux/order";
-import helper_exam from "../../Exam/helpers";
-import helper from "../helpers";
+import { contactActions } from "../../redux/contact";
+import { examActions } from "../../redux/exam";
+import { categoryActions } from "../../redux/category";
+import { orderActions } from "../../redux/order";
+import helper_exam from "../Exam/helpers";
+import helper from "./helpers";
 
 class AsistentComponent extends Component {
   constructor(props) {
     super(props);
-    //Recogemos valores de registro previo
-    /*let contact = JSON.parse(localStorage.getItem("OrusContactInUse"));
-    console.log(
-      "[OrderAsitent] Contacto en uso: ",
-      contact && contact.id ? "Si" : "No"
-    );*/
+    const session =
+      Math.random().toString(36).substring(2, 16) +
+      Math.random().toString(36).substring(2, 16) +
+      Math.random().toString(36).substring(2, 16) +
+      Math.random().toString(36).substring(2, 16) +
+      Math.random().toString(36).substring(2, 16) +
+      Math.random().toString(36).substring(2, 16) +
+      Math.random().toString(10);
 
     this.state = {
-      session:
-        Math.random().toString(36).substring(2, 16) +
-        Math.random().toString(36).substring(2, 16) +
-        Math.random().toString(36).substring(2, 16) +
-        Math.random().toString(36).substring(2, 16) +
-        Math.random().toString(36).substring(2, 16) +
-        Math.random().toString(36).substring(2, 16) +
-        Math.random().toString(10),
+      session,
       contact_id: 0,
       items: [],
       codes: {},
@@ -42,17 +37,32 @@ class AsistentComponent extends Component {
     };
   }
   componentDidMount() {
-    //localStorage.setItem("OrusContactInUse", JSON.stringify({}));
+    const { contact, exam } = this.props;
+
+    if (contact.id) {
+      const data = helper.getDataOneItem(contact.id);
+      if (data) {
+        this.setState({
+          contact,
+          contact_id: contact.id,
+          items: data.items ?? [],
+          session: data.session ?? this.state.session,
+          exam: exam ?? this.state.exam,
+          exam_id: exam.id ?? this.state.exam_id,
+        });
+      }
+    }
   }
   componentDidUpdate(props) {
-    const { categories, contact, msg_exams, _setMsgExam, _getContact } =
-      this.props;
+    const { categories, contact, exam, msg_exams, _setMsgExam, _getContact } =
+        this.props,
+      data = helper.getDataOneItem(contact.id);
 
     if (props.categories.id !== categories.id) {
       this.getCategories(categories, this.state.exam);
     }
 
-    //Process messages of exams
+    //Process messages of exams ok
     if (props.msg_exams.length !== msg_exams.length && msg_exams.length) {
       msg_exams.forEach((msg) => {
         const { type, text } = msg;
@@ -75,6 +85,15 @@ class AsistentComponent extends Component {
       this.setState({
         contact,
         contact_id: contact.id,
+        items: data.items ?? [],
+        session: data.session ?? this.state.session,
+      });
+    }
+    //When change exam
+    if (props.exam.id !== exam.id && exam.id) {
+      this.setState({
+        exam,
+        exam_id: exam.id,
       });
     }
   }
@@ -100,7 +119,7 @@ class AsistentComponent extends Component {
                   ? "Busque el paciente por nombre para crearun nuevo pedido"
                   : null
               }
-              status={exam_id !== null ? true : false}
+              readOnly={exam_id !== null}
             />
           </div>
           {contact.id ? (
@@ -172,12 +191,24 @@ class AsistentComponent extends Component {
                         </div>
                       </div>
 
-                      <Items
-                        items={items}
-                        session={session}
-                        codes={codes}
-                        ChangeInput={this.handleChangeInput}
-                      />
+                      {exam.estado ? (
+                        <Items
+                          items={items}
+                          session={session}
+                          codes={codes}
+                          ChangeInput={this.handleChangeInput}
+                        />
+                      ) : (
+                        <span className="alert">
+                          <h5 className="w-100 text-center">
+                            <i className="fas fa-info-circle mr-1"></i>
+                            <span className="text-muted">
+                              Es necesario que el examen este terminado para
+                              continuar con el pedido
+                            </span>
+                          </h5>
+                        </span>
+                      )}
                     </React.Fragment>
                   )}
                 </React.Fragment>
@@ -185,6 +216,7 @@ class AsistentComponent extends Component {
                 <div className="form-group">
                   <ListExam
                     exams={contact.examenes}
+                    allSelect
                     handleSelectedExam={(exam) =>
                       this.handleChangeInput("exam", exam)
                     }
@@ -218,36 +250,26 @@ class AsistentComponent extends Component {
           <div className="card-footer">
             <div className="mailbox-controls text-right">
               <div className="btn-group">
-                <a
-                  href="#close"
-                  className="btn btn-default btn-sm"
-                  onClick={(e) => {
-                    const { handleClose: _handleClose, _setContact } =
-                      this.props;
-
-                    e.preventDefault();
-                    this.setState({
-                      contact_id: 0,
-                      items: [],
-                      codes: {},
-                      exam_id: null,
-                      exam: {},
-                      examEdit: false,
-                    });
-                    _handleClose();
-                    _setContact();
-                  }}
-                >
-                  <i className="fas fa-arrow-left mr-1"></i>
-                  {contact_id ? "Cancelar" : "Cerrar"}
-                </a>
                 <button
                   type="button"
-                  className={
-                    contact_id && exam_id !== null && items.length
-                      ? "btn btn-warning btn-sm"
-                      : "btn btn-warning btn-sm disabled"
-                  }
+                  className="btn btn-default btn-sm"
+                  onClick={this.handleCancel}
+                >
+                  <i className="fas fa-ban mr-1"></i>
+                  {contact_id ? "Cancelar" : "Cerrar"}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  onClick={this.handleSaveStorage}
+                  disabled={!contact_id}
+                >
+                  <i className="fas fa-clock mr-1"></i>
+                  Temporal
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-warning btn-sm text-bold"
                   onClick={this.handleSave}
                   disabled={
                     contact_id && exam_id !== null && items.length
@@ -270,6 +292,38 @@ class AsistentComponent extends Component {
     );
   }
 
+  handleSaveStorage = () => {
+    const { contact_id, exam_id, items, session } = this.state,
+      { contact } = this.props,
+      data = {
+        id: contact_id,
+        contact: {
+          id: contact.id,
+          name: contact.nombre,
+        },
+        exam_id,
+        items,
+        session,
+        created_at: new Date(),
+      };
+
+    helper.addDataTemporary(data);
+    this.handleCancel();
+  };
+  handleCancel = () => {
+    const { handleClose: _handleClose, _setContact } = this.props;
+
+    this.setState({
+      contact_id: 0,
+      items: [],
+      codes: {},
+      exam_id: null,
+      exam: {},
+      examEdit: false,
+    });
+    _handleClose();
+    _setContact();
+  };
   handleGetCategories = (cat_id) => {
     const { _getListCategories } = this.props;
 
@@ -358,9 +412,12 @@ class AsistentComponent extends Component {
   };
   handleSave = (e) => {
     //Valid data
+    let categories_wrong = 0;
     const { options, _saveOrder, _setContact } = this.props,
       { items: items_state, exam_id, session, contact_id } = this.state,
       items = items_state.map((item) => {
+        if (item.category === 4) categories_wrong++;
+
         return {
           cant: item.cantidad,
           price: item.precio,
@@ -371,8 +428,17 @@ class AsistentComponent extends Component {
           descripcion: item.descripcion,
           store_items_id: item.store_items_id,
         };
-      }),
-      deleteContact = () => _setContact({});
+      });
+
+    if (items.length === categories_wrong) {
+      window.Swal.fire({
+        title: "Verificacion",
+        text: "No hay productos para procesar en un pedido",
+        icon: "warning",
+      });
+      return false;
+    }
+
     let data = {
       session: session,
       contact_id: contact_id,
@@ -381,7 +447,9 @@ class AsistentComponent extends Component {
     };
     if (exam_id) data.exam_id = parseInt(exam_id);
     //Save
-    helper.handleSaveOrder(null, data, options, _saveOrder, deleteContact);
+    helper.handleSaveOrder(null, data, options, _saveOrder, () =>
+      _setContact({})
+    );
   };
 }
 
@@ -389,6 +457,7 @@ const mapStateToProps = ({ contact, exam, order, category }) => {
     return {
       load_contact: contact.loading,
       contact: contact.contact,
+      exam: exam.exam,
       msg_exams: exam.messages,
       options: order.options,
       load_order: order.loading,

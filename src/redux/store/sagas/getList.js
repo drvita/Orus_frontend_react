@@ -2,23 +2,21 @@ import { call, put } from "redux-saga/effects";
 import { api, getUrl } from "../../sagas/api";
 import { storeActions } from "../index";
 
-export default function* handleGetList({ payload }) {
+export default function* handleGetList({ payload: options }) {
   try {
-    const { options, id } = payload,
-      url = getUrl("store", id, options),
+    const url = getUrl("store", null, options),
       result = yield call(api, url);
-    //console.log("[DEBUG] saga setStore:", url);
+
     yield put(
       storeActions.setListStore({
         result: {
           list: result.data,
           metaList: result.meta,
         },
-        options,
       })
     );
   } catch (e) {
-    console.error("[Orus System] Error en saga/store getList:", e);
+    console.error("[Orus System] Error en saga/store handleGetList:", e);
     yield put(storeActions.setMessagesStore([]));
   }
 }

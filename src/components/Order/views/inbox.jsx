@@ -42,7 +42,6 @@ const InboxOrderComponent = (props) => {
   };
   const handleOrderSelect = ({ checked }, pedido) => {
     if (!checked) pedido = { id: 0 };
-    //console.log("[DEBUG] handleOrderSelect", pedido);
     setOrderSelected(pedido);
   };
   const deleteOrder = () => {
@@ -141,11 +140,11 @@ const InboxOrderComponent = (props) => {
                       </span>
                     </a>
                   </td>
-                  <td className="mailbox-subject text-uppercase">
+                  <td className="mailbox-subject">
                     <span
                       className={`badge badge-${
                         pedido.estado < 3 ? "primary" : "secondary"
-                      } mr-2`}
+                      } mr-2 text-uppercase`}
                     >
                       {helper.handleStatusString(pedido.estado)}
                     </span>
@@ -172,11 +171,9 @@ const InboxOrderComponent = (props) => {
                             : "Examen no realizado"
                           : "Examen no asignado"}
                       </small>
-                    ) : pedido.estado >= 3 ? (
-                      <small>Perdido terminado</small>
-                    ) : (
-                      "--"
-                    )}
+                    ) : pedido.estado === 3 ? (
+                      <small className="text-dark">Sin entregar</small>
+                    ) : null}
                   </td>
                   <td className="mailbox-attachment">
                     {pedido.nota ? (

@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+//Compinentes
 import Inbox from "../../layouts/list_inbox";
-//import AddContact from "../Contacts/add";
-import CardMenu from "../../layouts/card_menu";
-import { storeActions } from "../../redux/store/index";
-//Extra componentes
 import Inventario from "./inventory";
+import CardMenu from "../../layouts/card_menu";
+//import AddContact from "../Contacts/add";
+//Actions
+import { storeActions } from "../../redux/store/index";
+import { contactActions } from "../../redux/contact/";
 
 class IndexStoreComponent extends Component {
   constructor(props) {
@@ -24,6 +26,7 @@ class IndexStoreComponent extends Component {
         order: "desc",
         search: "",
         itemsPage: 10,
+        supplier: "",
       },
     };
     this.timeInterval = 0;
@@ -52,6 +55,8 @@ class IndexStoreComponent extends Component {
         }
       }, 1000);
     }
+
+    this.getSuppliers();
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
@@ -93,7 +98,7 @@ class IndexStoreComponent extends Component {
   };
 
   render() {
-    const { list, loading, meta } = this.props,
+    const { list, loading, meta, suppliers } = this.props,
       { newOrEdit, storeSelected, options, panel } = this.state;
 
     //console.log("[DEBUG] Render", list);
@@ -157,6 +162,23 @@ class IndexStoreComponent extends Component {
                 >
                   Inventario
                 </a>
+              </li>
+              <li className="nav-item p-2">
+                <label htmlFor="supplier">Proveedor</label>
+                <select
+                  className="form-control "
+                  name="supplier"
+                  id="supplier"
+                  value={options.supplier}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="">-- Todos --</option>
+                  {suppliers.map((supplier) => {
+                    return (
+                      <option value={supplier.id}>{supplier.nombre}</option>
+                    );
+                  })}
+                </select>
               </li>
               <li className="nav-item p-2">
                 <label htmlFor="orderby">Ordenar por</label>
@@ -423,29 +445,37 @@ class IndexStoreComponent extends Component {
     });
   };
   getContacts() {
-    const { _getListContact } = this.props,
+    const { _getList } = this.props,
       { options } = this.state;
 
-    _getListContact({
-      options,
-    });
+    _getList(options);
 
     this.setState({
       load: false,
     });
   }
+  getSuppliers() {
+    const { _getContacts } = this.props;
+
+    _getContacts({
+      type: 1,
+      business: 0,
+    });
+  }
 }
 
-const mapStateToProps = ({ storeItem }) => {
+const mapStateToProps = ({ storeItem, contact }) => {
     return {
       list: storeItem.list,
       messages: storeItem.messages,
       meta: storeItem.metaList,
       loading: storeItem.loading,
+      suppliers: contact.list,
     };
   },
   mapActionsToProps = {
-    _getListContact: storeActions.getListStore,
+    _getList: storeActions.getListStore,
+    _getContacts: contactActions.getListContacts,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexStoreComponent);

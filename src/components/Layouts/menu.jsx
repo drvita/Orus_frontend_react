@@ -34,10 +34,10 @@ const MenuComponent = (props) => {
     <aside className="main-sidebar sidebar-dark-primary">
       <Link to="/" className="brand-link">
         <img
-          src="/img/AdminLTELogo.png"
+          src="/img/logo.png"
           alt={companyName + " logo "}
-          className="brand-image img-circle elevation-3"
-          style={{ opacity: 0.8 }}
+          className="brand-image img-circle elevation-2"
+          style={{ opacity: 0.8, maxHeight: 16 }}
         />
         <span className="brand-text font-weight-light text-uppercase">
           {companyName}

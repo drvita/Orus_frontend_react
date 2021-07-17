@@ -63,6 +63,7 @@ const handleDeleteOrder = (order, options, _delete) => {
   }
 };
 const handleSaveOrder = (id, data, options, _save, _erase) => {
+  console.log("[DEBUG] save item", id, data);
   window.Swal.fire({
     title: "Almacenamiento",
     text: id
@@ -82,6 +83,7 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
         options,
       });
       if (_erase) _erase();
+      removeDataTemporary(data.contact_id);
     }
   });
 };
@@ -110,7 +112,6 @@ const getDataTemporary = (field) => {
         ...local,
         orders: local.orders.filter((item) => item.id !== id),
       };
-    console.log("[DEBUG] delete item", id, data);
     localStorage.setItem("OrusSystem", JSON.stringify(data));
     if (fn) fn();
   },

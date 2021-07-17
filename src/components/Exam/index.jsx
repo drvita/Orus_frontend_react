@@ -349,14 +349,14 @@ class IndexExamComponent extends Component {
   changeStatus = (exam = {}) => {
     if (exam.id) {
       this.handleSaveExam(exam.id, {
-        status: !exam.estado,
+        status: exam.estado ? 0 : 1,
       });
     } else {
       const { examSelected, exam } = this.state;
 
       if (examSelected) {
         this.handleSaveExam(exam.id, {
-          status: !exam.estado,
+          status: exam.estado ? 0 : 1,
         });
         this.setState({
           examSelected: "",

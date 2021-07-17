@@ -14,8 +14,6 @@ export default function* handleSaveOrder({ payload }) {
     if (ID) console.log("[Orus System] Pedido actualizado con exito", ID);
     else console.log("[Orus system] Pedido creado con exito", result.data.id);
 
-    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-
     yield put(
       setMessageOrder([
         {

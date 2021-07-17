@@ -40,6 +40,17 @@ function PendingOrdersComponent(props) {
       }
       setItem(0);
       _handleChangePanel(null, 2);
+    },
+    handleSelectDirect = (e, item) => {
+      e.preventDefault();
+      if (item.contact.id) {
+        _getContact(item.contact.id);
+      }
+      if (item.exam_id) {
+        _getExam(item.exam_id);
+      }
+      setItem(0);
+      _handleChangePanel(null, 2);
     };
 
   useEffect(() => {
@@ -93,7 +104,12 @@ function PendingOrdersComponent(props) {
                   </div>
                 </td>
                 <th className="text-truncate">
-                  <span className="text-capitalize">{temp.contact.name}</span>
+                  <a
+                    href="#select"
+                    onClick={(e) => handleSelectDirect(e, temp)}
+                  >
+                    <span className="text-capitalize">{temp.contact.name}</span>
+                  </a>
                 </th>
                 <td># {temp.exam_id}</td>
                 <td className="text-right">

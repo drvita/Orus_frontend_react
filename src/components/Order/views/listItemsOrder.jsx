@@ -19,7 +19,7 @@ export default class ListItemComponent extends Component {
     this.total = 0;
 
     return (
-      <div className="card">
+      <div className="card ">
         <div className="card-header">
           <h3 className="card-title">
             <i className="fas fa-shopping-cart"></i> Pedido

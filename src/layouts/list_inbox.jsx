@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import Pagination from "../layouts/pagination";
 
 const ListInbox = (props) => {
-  const [search, setSearch] = useState("");
+  //Const
+  const { defaultSearch = "" } = props;
+  //States
+  const [search, setSearch] = useState(defaultSearch);
   const [timer, setTimer] = useState("");
 
   useEffect(() => {

@@ -1,15 +1,17 @@
 import React, { Component } from "react";
 import moment from "moment";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 //Components
 import Personal from "./views/add_personal";
 import Domicilio from "./views/add_domicilio";
 import Telefono from "./views/add_telefonos";
 import ListSales from "../Sales/views/listOfSales";
-import Dashboard from "./views/dashboard_customer";
+import Dashboard from "../Dashboard/dashboard_customer";
 import ListBrands from "../Store/views/listOfBrands";
 import ListOrders from "../Order/views/listOfOrders";
 import CardExams from "../Exam/views/card_list_add";
+import Confirm from "../../layouts/modal";
 //Actions
 import { contactActions } from "../../redux/contact/.";
 import { examActions } from "../../redux/exam/.";
@@ -42,6 +44,8 @@ class AddContactComponent extends Component {
         telefonos: true,
       },
       load: false,
+      showModal: false,
+      idExamSelect: 0,
     };
     this.timeSave = null;
   }
@@ -110,6 +114,8 @@ class AddContactComponent extends Component {
         business,
         load,
         verification,
+        showModal,
+        idExamSelect,
       } = this.state,
       { handleClose: _handleClose, contact } = this.props,
       {
@@ -142,7 +148,7 @@ class AddContactComponent extends Component {
             orders={orders_count}
             register={created_at ?? ""}
             created={created ? created.name : ""}
-            updated={updated ? contact.updated.name : ""}
+            updated={updated ? updated.name : ""}
             updated_at={updated_at ?? ""}
           />
         ) : null}
@@ -273,7 +279,7 @@ class AddContactComponent extends Component {
                   <CardExams handeleChangePage={this.handleSelectExam} />
                 </div>
               ) : (
-                <dvi>Type: {type}</dvi>
+                <div>Type: {type}</div>
               )}
 
               {compras.length ? (
@@ -334,12 +340,40 @@ class AddContactComponent extends Component {
             </div>
           </div>
         ) : null}
+        {showModal && (
+          <Confirm
+            body={this.dataBodyConfirm(idExamSelect)}
+            handleCancel={this.handleCloseModal}
+          />
+        )}
       </>
     );
   }
 
+  dataBodyConfirm = (id_exam) => {
+    return (
+      <div>
+        <p className="text-center">¿Realmente desea ver el examen?</p>
+        <div className="text-center">
+          <Link to={`/consultorio/${id_exam}`} className="btn btn-primary">
+            Confirmar
+          </Link>
+        </div>
+      </div>
+    );
+  };
+  handleCloseModal = () => {
+    this.setState({
+      showModal: false,
+    });
+  };
   handleSelectExam = ({ id }) => {
-    window.location.href = `/consultorio/${id}`;
+    console.log("[DEBUG] select exam", id);
+    this.setState({
+      showModal: true,
+      idExamSelect: id,
+    });
+    //window.location.href = `/consultorio/${id}`;
   };
   handleChangeData = (key, value) => {
     const { verification } = this.state,

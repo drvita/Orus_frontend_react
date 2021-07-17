@@ -11,7 +11,7 @@ export default function* handleSaveOrder({ payload }) {
 
     if (result.message) throw new Error(result.message);
 
-    if (ID) console.log("[Orus System] Pedido actualizado con exito", ID);
+    if (ID) console.log("[Orus System] Pedido actualizado con exito: " + ID);
     else console.log("[Orus system] Pedido creado con exito", result.data.id);
 
     yield put(

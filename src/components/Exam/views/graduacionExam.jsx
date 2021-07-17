@@ -25,7 +25,7 @@ export default class GraduacionExam extends Component {
 
     return (
       <React.Fragment>
-        <table className="table table-bordered table-hover">
+        <table className="table table-bordered">
           <thead>
             <tr>
               <th>#</th>

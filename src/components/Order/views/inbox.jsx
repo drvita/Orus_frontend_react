@@ -75,6 +75,7 @@ const InboxOrderComponent = (props) => {
       meta={meta}
       itemSelected={orderSelected.id}
       loading={loading}
+      defaultSearch={options.search}
       handlePagination={(page) => handleChangeOptions("page", page)}
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleEditItem={handleSelectOrder}
@@ -187,9 +188,9 @@ const InboxOrderComponent = (props) => {
                     )}
                   </td>
                   <td className="mailbox-date">
-                    {moment(
-                      options.orderby ? pedido.created_at : pedido.updated_at
-                    ).format("ll")}
+                    {options.orderby === "created_at"
+                      ? moment(pedido.created_at).format("ll")
+                      : moment(pedido.updated_at).fromNow()}
                   </td>
                 </tr>
               );

@@ -7,6 +7,7 @@ import LabOrder from "./views/labOrder";
 import Bicelacion from "./views/bicelacionOrder";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
+import Dashboard from "../Dashboard/dashboard_customer";
 //Actions
 import helper from "./helpers";
 import { orderActions } from "../../redux/order/";
@@ -26,7 +27,10 @@ class EditOrderComponent extends Component {
       exam: {},
       codes: {},
       status: 0,
+      created: {},
       created_at: null,
+      updated: {},
+      updated_at: null,
       nota: 0,
     };
   }
@@ -44,6 +48,9 @@ class EditOrderComponent extends Component {
       exam: order.examen ?? {},
       status: order.estado,
       created_at: order.created_at,
+      created: order.created,
+      updated: order.updated,
+      updated_at: order.updated_at,
       nota: (order.nota && order.nota.id) ?? 0,
     });
   }
@@ -62,7 +69,10 @@ class EditOrderComponent extends Component {
         codes,
         nota,
         status,
+        created,
         created_at,
+        updated,
+        updated_at,
       } = this.state,
       { loading: LOADING, userRole: ROL } = this.props,
       fNacimiento =
@@ -73,7 +83,7 @@ class EditOrderComponent extends Component {
         (tel) => tel !== ""
       );
 
-    //console.log("[DEBUG] paciente", exam);
+    //console.log("[DEBUG] Render", created);
 
     return (
       <>
@@ -155,8 +165,9 @@ class EditOrderComponent extends Component {
           ) : null}
         </div>
 
-        <div className="row">
+        <div className="row mt-4">
           <div className="col-lg-4 col-md-6 col-sm-12">
+            <h6 className="w-100 d-block">Acciones</h6>
             <div className="card">
               <div className="text-center mailbox-controls with-border">
                 <div className="btn-group">
@@ -197,7 +208,13 @@ class EditOrderComponent extends Component {
                   ) : null}
                 </div>
               </div>
+              {LOADING ? (
+                <div className="overlay dark">
+                  <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+                </div>
+              ) : null}
             </div>
+            <h6 className="w-100 d-block">Estado</h6>
             <div className="card mt-2">
               <div className="btn-group-vertical">
                 {helper.getStatusType.map((type, index) => (
@@ -219,12 +236,18 @@ class EditOrderComponent extends Component {
                   </button>
                 ))}
               </div>
+              {LOADING ? (
+                <div className="overlay dark">
+                  <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+                </div>
+              ) : null}
             </div>
           </div>
           <div className="col">
-            <div className="card">
+            <div className="card h-100 m-0">
               <div className="card-header">
                 <h5 className="card-title w-100 d-block mb-2 text-capitalize text-bold">
+                  <i className="fas fa-shield-alt mr-1"></i>
                   {helper.handleStatusString(status)}
                 </h5>
               </div>
@@ -279,26 +302,38 @@ class EditOrderComponent extends Component {
                   ) : null}
                 </div>
               </div>
+              {LOADING ? (
+                <div className="overlay dark">
+                  <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
 
-        {exam.id ? (
-          <div className="row">
+        <div className="row mt-4">
+          {exam.id ? (
             <div className="col">
+              <h6 className="w-100 d-block">Examen</h6>
               <div className="card mt-2">
                 <div className="card-body">
-                  <h5 className="card-title text-bold w-100 d-block mb-2">
-                    Examen relacionado
-                  </h5>
-                  <div className="p-2 mailbox-read-message">
+                  <div className="p-0 mailbox-read-message">
                     <Exam id={exam.id} examEdit={false} exam={exam} />
                   </div>
                 </div>
               </div>
             </div>
+          ) : null}
+          <div className={`col-${exam.id ? 3 : 12}`}>
+            <h6 className="w-100 d-block">Meta data</h6>
+            <Dashboard
+              register={created_at ?? ""}
+              created={created ? created.name : ""}
+              updated={updated ? updated.name : ""}
+              updated_at={updated_at ?? ""}
+            />
           </div>
-        ) : null}
+        </div>
       </>
     );
   }
@@ -362,6 +397,7 @@ const mapStateToProps = ({ order, logging }) => {
       order: order.order,
       userRole: logging.rol,
       options: order.options,
+      loading: order.loading,
     };
   },
   mapActionsToProps = {

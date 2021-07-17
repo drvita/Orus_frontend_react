@@ -14,9 +14,9 @@ const DashboardContactComponent = (props) => {
     suppliers,
   } = props;
   return (
-    <div className="row overflow-auto" style={{ maxHeight: 140 }}>
+    <div className="row">
       {brands ? (
-        <div className="col col-lg-2">
+        <div className="col">
           <div className="small-box bg-orange">
             <div className="inner">
               <h5>{brands}</h5>
@@ -34,7 +34,7 @@ const DashboardContactComponent = (props) => {
       ) : null}
 
       {suppliers ? (
-        <div className="col col-lg-2">
+        <div className="col">
           <div className="small-box bg-indigo">
             <div className="inner">
               <h5>{suppliers}</h5>
@@ -52,7 +52,7 @@ const DashboardContactComponent = (props) => {
       ) : null}
 
       {purchases ? (
-        <div className="col col-lg-2">
+        <div className="col">
           <div className="small-box bg-success">
             <div className="inner">
               <h5>{purchases}</h5>
@@ -70,7 +70,7 @@ const DashboardContactComponent = (props) => {
       ) : null}
 
       {exams ? (
-        <div className="col col-lg-2">
+        <div className="col">
           <div className="small-box bg-info">
             <div className="inner">
               <h5>{exams}</h5>
@@ -88,7 +88,7 @@ const DashboardContactComponent = (props) => {
       ) : null}
 
       {orders ? (
-        <div className="col col-lg-2">
+        <div className="col">
           <div className="small-box bg-warning">
             <div className="inner">
               <h5>{orders}</h5>
@@ -106,7 +106,7 @@ const DashboardContactComponent = (props) => {
       ) : null}
 
       {register ? (
-        <div className="col col-lg-2">
+        <div className="col">
           <div className="small-box bg-primary">
             <div className="inner">
               <h5>{moment(register).format("L")}</h5>
@@ -124,7 +124,7 @@ const DashboardContactComponent = (props) => {
       ) : null}
 
       {created ? (
-        <div className="col col-lg-2">
+        <div className="col">
           <div className="small-box bg-primary">
             <div className="inner">
               <h5 className="text-truncate">{created}</h5>

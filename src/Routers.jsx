@@ -77,16 +77,6 @@ export default class Routers extends Component {
                       />
 
                       <Route
-                        path="/almacen/registro/:id?"
-                        render={(props) => (
-                          <StoreAdd
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
                         extric
                         path="/almacen/categorias"
                         render={(props) => (
@@ -110,18 +100,7 @@ export default class Routers extends Component {
                       />
                       <Route
                         extric
-                        path="/almacen/inventario"
-                        render={(props) => (
-                          <Inventory
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
-                        extric
-                        path="/almacen"
+                        path="/almacen/:id?"
                         render={(props) => (
                           <Store
                             {...props}
@@ -130,6 +109,7 @@ export default class Routers extends Component {
                           />
                         )}
                       />
+
                       <Route
                         extric
                         path="/contactos/:id?"

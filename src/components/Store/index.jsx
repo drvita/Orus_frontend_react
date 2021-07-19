@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 //Compinentes
-import Inbox from "../../layouts/list_inbox";
+import Inbox from "./views/Inbox";
 import Inventario from "./inventory";
 import CardMenu from "../../layouts/card_menu";
-//import AddContact from "../Contacts/add";
+import NewOrEdit from "./add";
 //Actions
 import { storeActions } from "../../redux/store/index";
 import { contactActions } from "../../redux/contact/";
@@ -16,28 +16,12 @@ class IndexStoreComponent extends Component {
     //let sdd = JSON.parse(localStorage.getItem("OrusContacts"));
     this.state = {
       load: false,
-      item: {},
-      newOrEdit: false,
-      storeSelected: "",
       panel: "inbox",
-      options: {
-        page: 1,
-        orderby: "created_at",
-        order: "desc",
-        search: "",
-        itemsPage: 10,
-        supplier: "",
-      },
     };
-    this.timeInterval = 0;
   }
   componentDidMount() {
     const { match } = this.props,
       { id } = match.params;
-
-    this.setState({
-      load: true,
-    });
 
     if (id) {
       this.timeInterval = setInterval(() => {
@@ -58,13 +42,14 @@ class IndexStoreComponent extends Component {
 
     this.getSuppliers();
   }
-  componentDidUpdate(props, state) {
-    const { load } = this.state,
-      { messages: MSGS } = this.props;
+  componentDidUpdate(props) {
+    const { messages: MSGS, item, history } = this.props;
 
-    if (state.load !== load && load === true) {
-      console.log("[Orus System] Recargando productos");
-      this.getContacts();
+    if (props.item.id !== item.id && item.id) {
+      this.setState({
+        panel: "neworedit",
+      });
+      history.push(`/almacen/${item.id}`);
     }
 
     if (props.messages.length !== MSGS.length && MSGS.length) {
@@ -80,26 +65,9 @@ class IndexStoreComponent extends Component {
     }
   }
 
-  handleSetSelectOptions = (e) => {
-    const { name, value } = e.target,
-      { options } = this.state;
-    let val = value;
-
-    if (name === "itemsPage") val = parseInt(value);
-
-    console.log("[DEBUG] manejando filtros", name, value, val);
-    this.setState({
-      options: {
-        ...options,
-        [name]: val,
-      },
-      load: true,
-    });
-  };
-
   render() {
-    const { list, loading, meta, suppliers } = this.props,
-      { newOrEdit, storeSelected, options, panel } = this.state;
+    const { options, suppliers, item } = this.props,
+      { panel } = this.state;
 
     //console.log("[DEBUG] Render", list);
 
@@ -109,21 +77,19 @@ class IndexStoreComponent extends Component {
           <button
             className="btn bg-primary btn-block mb-3"
             type="button"
-            disabled={newOrEdit}
+            disabled={panel !== "inbox"}
             onClick={(e) => {
               e.preventDefault();
-              this.props.history.push(`/almacen/registro`);
-              /*
               this.setState({
-                newOrEdit: true,
+                panel: "neworedit",
               });
-              */
+              this.props.history.push(`/almacen/new`);
             }}
           >
             <i className="fas fa-plus mr-1"></i>
             Nuevo producto
           </button>
-          {!newOrEdit ? (
+          {panel === "inbox" && (
             <CardMenu title="Menu y filtros">
               <li className="nav-item">
                 <a
@@ -158,6 +124,7 @@ class IndexStoreComponent extends Component {
                     this.setState({
                       panel: "inventory",
                     });
+                    this.props.history.push(`/almacen/inventario`);
                   }}
                 >
                   Inventario
@@ -175,7 +142,9 @@ class IndexStoreComponent extends Component {
                   <option value="">-- Todos --</option>
                   {suppliers.map((supplier) => {
                     return (
-                      <option value={supplier.id}>{supplier.nombre}</option>
+                      <option value={supplier.id} key={supplier.id}>
+                        {supplier.nombre}
+                      </option>
                     );
                   })}
                 </select>
@@ -222,104 +191,30 @@ class IndexStoreComponent extends Component {
                 </select>
               </li>
             </CardMenu>
-          ) : null}
+          )}
         </div>
         <div className="col-sm-12 col-md-10">
-          {panel === "inventory" ? (
-            <Inventario />
-          ) : (
-            <Inbox
-              title="Lista de productos"
-              icon="id-badge"
-              color="primary"
-              loading={loading}
-              meta={meta}
-              itemSelected={storeSelected}
-              handlePagination={this.handleChangePage}
-              handleSearch={this.handleSearch}
-              handleDeleteItem={this.handleDelete}
-              handleEditItem={this.handleEditItem}
-              handleSync={this.handleSync}
-            >
-              <table className="table table-hover table-striped">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>Codigo</th>
-                    <th>Describción</th>
-                    <th>Marca</th>
-                    <th>Proveedor</th>
-                    <th>Cant</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {list.length ? (
-                    <>
-                      {list.map((item) => {
-                        return (
-                          <tr key={item.id}>
-                            <td className="icheck-primary pl-2">
-                              <input
-                                type="checkbox"
-                                className="form-check-input mt-4"
-                                value={item.id}
-                                id={"contact_" + item.id}
-                                checked={
-                                  storeSelected === item.id ? true : false
-                                }
-                                onChange={this.handleChangeCheckbox}
-                              />
-                              <label
-                                htmlFor={"contact_" + item.id}
-                                className="sr-only"
-                              ></label>
-                            </td>
-                            <td className="icheck-primary">
-                              <div className="badge badge-primary text-uppercase">
-                                {item.codigo}
-                              </div>
-                            </td>
-                            <td
-                              className="mailbox-name text-capitalize text-truncate"
-                              onClick={(e) => this.handleEditTemp(item.id)}
-                            >
-                              <label style={{ cursor: "pointer" }}>
-                                {item.producto}
-                              </label>
-                            </td>
-                            <td className="mailbox-attachment text-uppercase text-truncate text-muted">
-                              <span>
-                                {item.marca ? item.marca.marca : "--"}
-                              </span>
-                            </td>
-                            <td className="mailbox-attachment text-capitalize text-truncate text-muted">
-                              <span>
-                                {item.proveedor ? item.proveedor.nombre : "--"}
-                              </span>
-                            </td>
-                            <td className="mailbox-date text-muted text-truncate text-right">
-                              <span>{item.cantidades}</span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </>
-                  ) : (
-                    <tr>
-                      <th className="text-center text-muted" colSpan="6">
-                        No hay productos registrados
-                      </th>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </Inbox>
-          )}
+          {panel === "inventory" && <Inventario />}
+          {panel === "inbox" && <Inbox />}
+          {panel === "neworedit" && <NewOrEdit item={item} />}
         </div>
       </div>
     );
   }
 
+  handleSetSelectOptions = ({ target }) => {
+    const { name, value } = target,
+      { _setOptions } = this.props;
+    let val = value;
+
+    if (name === "itemsPage") val = parseInt(value);
+
+    //console.log("[DEBUG] manejando filtros", name, value, val);
+    _setOptions({
+      key: name,
+      value: val,
+    });
+  };
   handleSaveContact = (id, data) => {
     const { _saveContact } = this.props,
       { options } = this.state;
@@ -338,9 +233,6 @@ class IndexStoreComponent extends Component {
       contact: {},
       contactSelected: "",
     });
-  };
-  handleSync = () => {
-    this.getContacts();
   };
   handleEditTemp = (id) => {
     this.props.history.push(`/almacen/registro/${id}`);
@@ -444,16 +336,6 @@ class IndexStoreComponent extends Component {
       });
     });
   };
-  getContacts() {
-    const { _getList } = this.props,
-      { options } = this.state;
-
-    _getList(options);
-
-    this.setState({
-      load: false,
-    });
-  }
   getSuppliers() {
     const { _getContacts } = this.props;
 
@@ -467,14 +349,17 @@ class IndexStoreComponent extends Component {
 const mapStateToProps = ({ storeItem, contact }) => {
     return {
       list: storeItem.list,
+      item: storeItem.item,
       messages: storeItem.messages,
       meta: storeItem.metaList,
       loading: storeItem.loading,
+      options: storeItem.options,
       suppliers: contact.list,
     };
   },
   mapActionsToProps = {
     _getList: storeActions.getListStore,
+    _setOptions: storeActions.setOptions,
     _getContacts: contactActions.getListContacts,
   };
 

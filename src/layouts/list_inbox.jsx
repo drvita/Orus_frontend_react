@@ -130,13 +130,13 @@ const ListInbox = (props) => {
               ) : null}
             </div>
             <div className="float-right">
-              {props.meta ? (
+              {props.meta && (
                 <Pagination
                   meta={props.meta}
                   color={props.color}
                   handlePagination={props.handlePagination}
                 />
-              ) : null}
+              )}
             </div>
           </div>
         ) : null}

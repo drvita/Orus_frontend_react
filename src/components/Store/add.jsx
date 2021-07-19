@@ -9,10 +9,10 @@ import Codestring from "../Layouts/codeLentString";
 export default class StoreAdd extends Component {
   constructor(props) {
     super(props);
-    const id = this.props.match.params.id;
+
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
-      id: id ? id : 0,
+      id: 0,
       code: "",
       codebar: "",
       grad: "",
@@ -36,8 +36,6 @@ export default class StoreAdd extends Component {
       host: ls.host,
       token: ls.token,
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
     this.category1 = React.createRef(); //Primera categoria
     this.category2 = React.createRef(); //Segunda categoria
     this.category3 = React.createRef(); //Tercera categoria
@@ -47,11 +45,11 @@ export default class StoreAdd extends Component {
     this.codeRef = React.createRef(); //Referencia del codigo
     this.nameRef = React.createRef(); //REferencia del nombre del producto
   }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
-  }
   componentDidMount() {
-    const { id } = this.state;
+    //const { id } = this.state;
+    console.log("[DEBUG] Constructor add", this.props);
+    const { id } = this.props.item;
+
     this.getItem(id);
     this.getCategory();
   }

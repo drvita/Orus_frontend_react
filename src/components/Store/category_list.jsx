@@ -16,12 +16,8 @@ export default class CategoryList extends Component {
       token: ls.token,
       load: true,
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
   }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
-  }
+
   componentDidMount() {
     this.getCategoriesMain();
   }
@@ -37,6 +33,8 @@ export default class CategoryList extends Component {
       { categoryName, categoryDataName, categorySelect, category, last } =
         this.props;
 
+    //console.log("[DEBUG] Categories", category_raiz);
+
     return (
       <div className="card card-primary card-outline">
         <div className="card-body">
@@ -44,9 +42,7 @@ export default class CategoryList extends Component {
             <thead>
               <tr>
                 <th>Nombre</th>
-                <th style={{ width: 16 }} className="text-center">
-                  E
-                </th>
+                <th style={{ width: 16 }} className="text-center"></th>
               </tr>
             </thead>
             <tbody>
@@ -117,7 +113,7 @@ export default class CategoryList extends Component {
                           </a>
                         </td>
                         <td>
-                          {!cat.hijos.length ? (
+                          {!cat.hijos.length && (
                             <button
                               className="btn btn-outline-dark btn-sm"
                               onClick={(e) => {
@@ -126,7 +122,7 @@ export default class CategoryList extends Component {
                             >
                               <i className="fas fa-trash"></i>
                             </button>
-                          ) : null}
+                          )}
                         </td>
                       </tr>
                     );
@@ -361,13 +357,17 @@ export default class CategoryList extends Component {
             showConfirmButton: false,
             timer: 1500,
           }).then(async (res) => {
+            const toAdd = {
+              ...data.data,
+              hijos: [],
+            };
             //Resultado actualizando datos
             if (parseInt(category) === category_id) {
-              category_raiz.push(data.data);
+              category_raiz.push(toAdd);
             } else {
               await category_raiz.find((cat) => {
                 if (cat.id === category_id) {
-                  cat.hijos.push(data.data);
+                  cat.hijos.push(toAdd);
                   return cat;
                 } else return false;
               });
@@ -377,7 +377,7 @@ export default class CategoryList extends Component {
               category_raiz,
               name: "",
               add: !this.state.add,
-              category_id: data.data.id,
+              category_id: toAdd.id,
             });
             //Fin de resultado
           });
@@ -423,7 +423,7 @@ export default class CategoryList extends Component {
         .then((cat) => {
           this.setState({
             category_raiz: cat.data !== null ? cat.data : [],
-            category_id: category,
+            category_id: category ?? 0,
             load: false,
           });
         })

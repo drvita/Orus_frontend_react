@@ -32,7 +32,6 @@ export default class Categories extends Component {
         <div className="row">
           <div className="col">
             <Catalogo
-              data={this.props.data}
               category={0}
               categoryName="category_id1"
               categoryDataName="category_hijos1"
@@ -42,7 +41,6 @@ export default class Categories extends Component {
           {category_id1 && category_hijos1.length ? (
             <div className="col">
               <Catalogo
-                data={this.props.data}
                 category={category_id1}
                 CategoryData={category_hijos1}
                 categoryName="category_id2"
@@ -55,7 +53,6 @@ export default class Categories extends Component {
           {category_id2 && category_hijos2.length ? (
             <div className="col">
               <Catalogo
-                data={this.props.data}
                 category={category_id2}
                 CategoryData={category_hijos2}
                 categoryName="category_id3"
@@ -67,7 +64,6 @@ export default class Categories extends Component {
           {category_id3 && category_hijos3.length ? (
             <div className="col">
               <Catalogo
-                data={this.props.data}
                 category={category_id3}
                 CategoryData={category_hijos3}
                 categoryName="category_id4"

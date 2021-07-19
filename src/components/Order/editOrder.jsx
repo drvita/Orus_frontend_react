@@ -258,7 +258,7 @@ class EditOrderComponent extends Component {
                       items={items}
                       codes={codes}
                       session={session}
-                      status={!ROL}
+                      //status={!ROL}
                       noPrice
                       ChangeInput={this.handleChangeInput}
                     />

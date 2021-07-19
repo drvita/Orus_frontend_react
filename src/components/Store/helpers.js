@@ -26,8 +26,36 @@ const verifyItem = (item) => {
 
   return true;
 };
+const handleDeleteItem = (item, options, _delete) => {
+  if (item.id) {
+    //Check sale
+
+    //delete confirm
+    window.Swal.fire({
+      text: `¿Esta seguro de eliminar el producto ${item.code}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (!dismiss && _delete) {
+        _delete({
+          id: item.id,
+          options,
+        });
+        console.log("[Orus System] Eliminando producto: " + item.id);
+        return true;
+      }
+    });
+    return false;
+  }
+};
+
 const toExport = {
   verifyItem,
+  handleDeleteItem,
 };
 
 export default toExport;

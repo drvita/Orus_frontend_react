@@ -30,6 +30,10 @@ const getItem = (payload = {}) => ({
   type: TYPE.SAGA_GET_ITEM,
   payload,
 });
+const saveItem = (payload = {}) => ({
+  type: TYPE.SAGA_SAVE_ITEM,
+  payload,
+});
 
 const toExportActions = {
   getListStore,
@@ -39,6 +43,7 @@ const toExportActions = {
   setMessagesStore,
   setOptions,
   setItem,
+  saveItem,
 };
 
 export default toExportActions;

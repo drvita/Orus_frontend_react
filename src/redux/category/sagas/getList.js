@@ -2,10 +2,9 @@ import { call, put } from "redux-saga/effects";
 import { api, getUrl } from "../../sagas/api";
 import { categoryActions } from "../index";
 
-export default function* handleGetList({ payload }) {
+export default function* handleGetList({ payload: options }) {
   try {
-    const { options, id } = payload,
-      url = getUrl("categories", id, options),
+    const url = getUrl("categories", null, options),
       result = yield call(api, url);
     //console.log("[DEBUG] saga exams list:", result.data);
     yield put(
@@ -17,7 +16,7 @@ export default function* handleGetList({ payload }) {
       })
     );
   } catch (e) {
-    console.error("[Orus System] Error en saga/exam getList:", e);
+    console.error("[Orus System] Error en saga handleGetList:", e);
     yield put(categoryActions.setMessageCategory([]));
   }
 }

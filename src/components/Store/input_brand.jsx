@@ -84,7 +84,7 @@ export default class InputBrand extends Component {
     const { host, token } = this.state,
       { supplier } = this.props;
 
-    console.log("solicitando marcas al API");
+    console.log("[DEBUG] solicitando marcas al API", supplier);
     fetch("http://" + host + "/api/brands?supplier=" + supplier, {
       method: "GET",
       signal: this.signal,

@@ -1,12 +1,18 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+//Components
 import StoreLote from "./add_lote";
 import InputCategory from "./input_category";
 import Suppliers from "./input_suppliers";
 import Brands from "./input_brand";
 import Codestring from "../Layouts/codeLentString";
+//Actions
+import { storeActions } from "../../redux/store/index";
+import { categoryActions } from "../../redux/category/index";
+import helper from "./helpers";
 
-export default class StoreAdd extends Component {
+class StoreAddComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -16,12 +22,17 @@ export default class StoreAdd extends Component {
       code: "",
       codebar: "",
       grad: "",
+      brand: {},
       brand_id: 0,
       name: "",
       unit: "PZ",
       cant: 1,
       price: 1,
       supplier: 0,
+      category: "",
+      created_at: null,
+      created: {},
+      updated_at: null,
       category_id: 0,
       category_data: {},
       category_id1: 0,
@@ -32,7 +43,6 @@ export default class StoreAdd extends Component {
       category_list2: [],
       category_list3: [],
       category_list4: [],
-      load: false,
       host: ls.host,
       token: ls.token,
     };
@@ -46,12 +56,11 @@ export default class StoreAdd extends Component {
     this.nameRef = React.createRef(); //REferencia del nombre del producto
   }
   componentDidMount() {
-    //const { id } = this.state;
-    console.log("[DEBUG] Constructor add", this.props);
-    const { id } = this.props.item;
+    const { _getListCategories } = this.props;
 
-    this.getItem(id);
-    this.getCategory();
+    _getListCategories({
+      categoryid: "raiz",
+    });
   }
   componentDidUpdate(props, state) {
     const {
@@ -61,6 +70,17 @@ export default class StoreAdd extends Component {
       category_id2,
       category_id3,
     } = this.state;
+    const { listCategories, item } = this.props;
+
+    if (props.listCategories !== listCategories && listCategories.length) {
+      //this.getItem();
+      this.setState({
+        category_list1: listCategories,
+      });
+      if (item.id) {
+        this.getItem();
+      }
+    }
 
     if (state.category_id !== category_id) {
       if (state.category_id1 !== category_id1 && category_id1 !== 0) {
@@ -93,7 +113,6 @@ export default class StoreAdd extends Component {
   render() {
     const {
       id,
-      load,
       supplier,
       category_id,
       category_id1,
@@ -115,6 +134,7 @@ export default class StoreAdd extends Component {
     let codeValue = code,
       nameValue = name;
 
+    //console.log("[DEBUG] Render", brand_id);
     if (
       this.category1.current !== null &&
       parseInt(this.category1.current.value) === 2
@@ -137,18 +157,15 @@ export default class StoreAdd extends Component {
     return (
       <div className="row">
         <div className={id ? "col-5" : "col-6"}>
-          <form
-            className="card card-primary card-outline"
-            onSubmit={this.handleSave}
-          >
+          <div className="card card-primary card-outline">
             <div className="card-header">
-              <h3 className="card-title text-primary">
+              <h3 className="card-title text-primary text-bold">
                 <i className="fas fa-database mr-1"></i>
-                {id ? "Editar producto" : "Registrar nuevo producto"}
+                {id ? `Editar producto (${code})` : "Registrar nuevo producto"}
               </h3>
             </div>
             <div className="card-body">
-              {category_list1 && category_list1.length && !load ? (
+              {category_list1 && category_list1.length ? (
                 <React.Fragment>
                   <div className="row">
                     <div className="col">
@@ -247,7 +264,6 @@ export default class StoreAdd extends Component {
 
                   {category_id1 && category_id1 !== 1 ? (
                     <Suppliers
-                      data={this.props.data}
                       supplier={supplier}
                       textSelect="Selecione el proveedor"
                       supplierRef={this.supplierRef}
@@ -261,7 +277,6 @@ export default class StoreAdd extends Component {
 
                   {category_id1 && category_id1 !== 1 && supplier ? (
                     <Brands
-                      data={this.props.data}
                       brand={brand_id}
                       supplier={supplier}
                       textSelect="Selecione la marca"
@@ -433,8 +448,10 @@ export default class StoreAdd extends Component {
                             <div className="input-group-prepend">
                               <span
                                 className={
-                                  cant
+                                  cant > 0
                                     ? "input-group-text bg-primary"
+                                    : cant < 0
+                                    ? "input-group-text bg-warning"
                                     : "input-group-text"
                                 }
                               >
@@ -459,7 +476,7 @@ export default class StoreAdd extends Component {
                             <div className="input-group-prepend">
                               <span
                                 className={
-                                  price
+                                  price > 0
                                     ? "input-group-text bg-primary"
                                     : "input-group-text bg-warning"
                                 }
@@ -505,27 +522,27 @@ export default class StoreAdd extends Component {
               <div className="row">
                 <div className="col-md-12">
                   <div className="btn-group" role="group">
-                    <Link
+                    {/*<Link
                       to="/almacen/registro"
                       className="btn btn-dark"
                       onClick={this.setNew}
                     >
                       <i className="fas fa-plus mr-1"></i>
                       Nuevo
-                    </Link>
+                    </Link>*/}
                     <Link
                       to="/almacen"
-                      className="btn btn-dark"
-                      onClick={(e) => {
-                        this.changePage("/almacen");
-                      }}
+                      className="btn btn-default"
+                      onClick={this.handleClose}
                     >
-                      <i
-                        className={id ? "fas fa-ban mr-1" : "fas fa-undo mr-1"}
-                      ></i>
+                      <i className="fas fa-ban mr-1"></i>
                       {id ? "Cerrar" : "Cancelar"}
                     </Link>
-                    <button type="submit" className="btn btn-primary">
+                    <button
+                      type="button"
+                      onClick={this.handleSave}
+                      className="btn btn-primary"
+                    >
                       <i className="fas fa-save mr-1"></i>
                       Guardar
                     </button>
@@ -533,7 +550,7 @@ export default class StoreAdd extends Component {
                 </div>
               </div>
             </div>
-          </form>
+          </div>
         </div>
         {id ? (
           <div className="col">
@@ -548,6 +565,10 @@ export default class StoreAdd extends Component {
     );
   }
 
+  handleClose = () => {
+    const { handleClose: _handleClose } = this.props;
+    _handleClose("inbox");
+  };
   handleNameLent = (grad) => {
     let stringcode = "";
     stringcode +=
@@ -702,302 +723,133 @@ export default class StoreAdd extends Component {
         );
       });
   };
-  handleSave = async (e) => {
-    e.preventDefault();
+  handleSave = async () => {
     const {
-      id,
-      category_id,
-      category_id1,
-      category_id2,
-      category_id4,
-      supplier,
-      brand_id,
-      code,
-    } = this.state;
+        category_id,
+        supplier,
+        brand_id,
+        code,
+        id,
+        codebar,
+        name,
+        unit,
+        cant,
+        price,
+        grad,
+      } = this.state,
+      { options, _saveItem } = this.props;
     //Verificamos campos validos
-    if (!category_id) {
-      window.Swal.fire(
-        "Verificación",
-        "Selecione una categoria primero",
-        "warning"
-      );
-      return false;
-    } else {
-      if (category_id1 === 1 && category_id4 !== category_id) {
-        window.Swal.fire(
-          "Verificación",
-          "Selecione una categoria valida para lentes",
-          "warning"
-        );
-        return false;
-      } else if (category_id1 === 2 && category_id2 !== category_id) {
-        window.Swal.fire(
-          "Verificación",
-          "Selecione una categoria valida para armazones",
-          "warning"
-        );
-        return false;
-      }
-    }
-    if (category_id1 === 2 && !supplier) {
-      window.Swal.fire(
-        "Verificación",
-        "Selecione un PROVEEDOR valido primero",
-        "warning"
-      );
+    if (!helper.handleVerifyData(this.state, this.codeRef)) {
       return false;
     }
-    if (category_id1 === 2 && !brand_id) {
-      window.Swal.fire(
-        "Verificación",
-        "Selecione una MARCA valida primero",
-        "warning"
-      );
-      return false;
-    }
-    if (!code && !this.codeRef.current.value) {
-      window.Swal.fire(
-        "Verificación",
-        "Escriba una CODIGO para este producto",
-        "warning"
-      );
-      return false;
-    }
-
-    window.Swal.fire({
-      title: "Almacenamiento",
-      text: id
-        ? "¿Esta seguro de actualizar el producto?"
-        : "¿Esta seguro de crear un nuevo producto?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#007bff",
-      confirmButtonText: id ? "Actualizar" : "Crear",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          const {
-              id,
-              code,
-              codebar,
-              brand_id,
-              name,
-              unit,
-              cant,
-              price,
-              category_id,
-              token,
-              host,
-              supplier,
-              grad,
-            } = this.state,
-            url = id
-              ? "http://" + host + "/api/store/" + id
-              : "http://" + host + "/api/store",
-            method = id ? "PUT" : "POST";
-          let body = {
-            code: code ? code : this.codeRef.current.value,
-            codebar,
-            name: name ? name : this.nameRef.current.value,
-            unit,
-            cant,
-            price,
-            category_id,
-            grad: grad ? grad : "+000000",
-            brand_id: brand_id ? brand_id : "",
-            contact_id: supplier ? supplier : "",
-          };
-
-          //Actualiza el pedido o creamos un pedido nuevo según el ID
-          console.log("Enviando datos del producto a API");
-          return fetch(url, {
-            method: method,
-            body: JSON.stringify(body),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          }).then(async (response) => {
-            let back = {};
-            if (response.status !== 204) back = await response.json();
-            if (!response.ok) {
-              console.error("Orus res: ", back.message, back.errors);
-              if (back.errors && back.errors.code) {
-                window.Swal.fire(
-                  "Validacion",
-                  "El CODIGO ya esta registrado",
-                  "warning"
-                );
-              } else if (back.errors && back.errors.name) {
-                window.Swal.fire(
-                  "Validacion",
-                  "El nombre del PRODUCTO ya esta registrado",
-                  "warning"
-                );
-              } else
-                window.Swal.fire("Error", "al almacenar el producto", "error");
-            }
-            return back;
-          });
-        }
-      },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        let data = result.value;
-
-        if (data.data) {
-          console.log("Producto almacenado", data.data);
-          window.Swal.fire({
-            icon: "success",
-            title: id
-              ? "Producto actualizado con exito"
-              : "Producto almacenado con exito",
-            showConfirmButton: false,
-            timer: 1500,
-          }).then((res) => {
-            if (id) {
-              this.props.history.push(`/almacen`);
-            } else {
-              this.setState({
-                id: data.data.id,
-              });
-              this.props.history.push(`/almacen/registro/${data.data.id}`);
-            }
-          });
-        }
-      }
-    });
+    //Make a body data
+    const body = {
+      code: code ? code : this.codeRef.current.value,
+      codebar,
+      name: name ? name : this.nameRef.current.value,
+      unit,
+      cant,
+      price,
+      category_id,
+      grad: grad ? grad : "+000000",
+      brand_id: brand_id ? brand_id : "",
+      contact_id: supplier ? supplier : "",
+    };
+    //Save
+    helper.handleSaveItem(id, body, options, _saveItem, this.handleClose);
   };
-  getItem = (id) => {
-    if (id > 0) {
-      //Variables
-      let { host, token } = this.state;
-      //Realiza la peticion al API
-      console.log("Solicitando datos de producto a la API");
-      fetch("http://" + host + "/api/store/" + id, {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(response.statusText);
-          }
-          return response.json();
-        })
-        .then(async (data) => {
-          if (data.data) {
-            let category_id1 = 0,
-              category_list2 = [],
-              category_list3 = [],
-              category_list4 = [],
-              category_id2 = 0,
-              category_id3 = 0,
-              category_id4 = 0;
+  getItem = () => {
+    let category_id1 = 0,
+      category_list2 = [],
+      category_list3 = [],
+      category_list4 = [],
+      category_id2 = 0,
+      category_id3 = 0,
+      category_id4 = 0;
+    const { item: data } = this.props; //listCategories.filter((cat) => cat.name === "lentes")[0];
 
-            if (data.data.categoria && data.data.categoria.depende_de) {
-              if (
-                data.data.categoria.depende_de &&
-                data.data.categoria.depende_de.depende_de
-              ) {
-                if (
-                  data.data.categoria.depende_de.depende_de &&
-                  data.data.categoria.depende_de.depende_de.depende_de
-                ) {
-                  category_id1 =
-                    data.data.categoria.depende_de.depende_de.depende_de.id;
-                  category_id2 = data.data.categoria.depende_de.depende_de.id;
-                  category_id3 = data.data.categoria.depende_de.id;
-                  category_id4 = data.data.categoria.id;
-                  //Listas
-                  category_list2 =
-                    data.data.categoria.depende_de.depende_de.depende_de.hijos;
-                  category_list3 =
-                    data.data.categoria.depende_de.depende_de.hijos;
-                  category_list4 = data.data.categoria.depende_de.hijos;
-                } else {
-                  category_id1 = data.data.categoria.depende_de.depende_de.id;
-                  category_id2 = data.data.categoria.depende_de.id;
-                  category_id3 = data.data.categoria.id;
-                  //Lista
-                  category_list2 =
-                    data.data.categoria.depende_de.depende_de.hijos;
-                  category_list3 = data.data.categoria.depende_de.hijos;
-                }
-              } else {
-                category_id1 = data.data.categoria.depende_de.id;
-                category_id2 = data.data.categoria.id;
-                //Lista
-                category_list2 = data.data.categoria.depende_de.hijos;
-              }
-            } else {
-              category_id1 = data.data.categoria.id;
-              //Lista
-              category_list2 = data.data.categoria.hijos;
-            }
-            /*console.log(
-              "CAT principal",
-              "Nombre: " + data.data.categoria.categoria,
-              "Hijos: " + data.data.categoria.hijos.length,
-              "Padre: ",
-              data.data.categoria.depende_de
-            );*/
-
-            this.setState({
-              id: data.data.id,
-              code: data.data.codigo,
-              codebar: data.data.c_barra,
-              brand_id: data.data.marca ? data.data.marca.id : 0,
-              grad: data.data.graduacion ? data.data.graduacion : "",
-              name: data.data.producto,
-              unit: data.data.unidad,
-              cant: data.data.cantidades,
-              price: data.data.precio,
-              category_id: data.data.categoria.id,
-              category_id1,
-              category_list2,
-              category_list3,
-              category_list4,
-              category_id2,
-              category_id3,
-              category_id4,
-              category_data: data.data.categoria,
-              supplier: data.data.proveedor ? data.data.proveedor.id : 0,
-              load: false,
-            });
-          } else {
-            console.error("[Store] add - ", data.message);
-            window.Swal.fire(
-              "Error",
-              "Error en el sistema, comuniquese con el administrador de sistema",
-              "error"
-            );
-            this.setState({
-              load: false,
-            });
-          }
-        })
-        .catch((error) => {
-          console.log("Orus:", error);
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
-          this.setState({
-            load: false,
-          });
-        });
+    if (data.categoria && data.categoria.depende_de) {
+      if (data.categoria.depende_de && data.categoria.depende_de.depende_de) {
+        if (
+          data.categoria.depende_de.depende_de &&
+          data.categoria.depende_de.depende_de.depende_de
+        ) {
+          category_id1 = data.categoria.depende_de.depende_de.depende_de.id;
+          category_id2 = data.categoria.depende_de.depende_de.id;
+          category_id3 = data.categoria.depende_de.id;
+          category_id4 = data.categoria.id;
+          //Listas
+          category_list2 =
+            data.categoria.depende_de.depende_de.depende_de.hijos;
+          category_list3 = data.categoria.depende_de.depende_de.hijos;
+          category_list4 = data.categoria.depende_de.hijos;
+        } else {
+          category_id1 = data.categoria.depende_de.depende_de.id;
+          category_id2 = data.categoria.depende_de.id;
+          category_id3 = data.categoria.id;
+          //Lista
+          category_list2 = data.categoria.depende_de.depende_de.hijos;
+          category_list3 = data.categoria.depende_de.hijos;
+        }
+      } else {
+        category_id1 = data.categoria.depende_de.id;
+        category_id2 = data.categoria.id;
+        //Lista
+        category_list2 = data.categoria.depende_de.hijos;
+      }
     } else {
-      this.setState({
-        load: false,
-      });
+      category_id1 = data.categoria.id;
+      //Lista
+      category_list2 = data.categoria.hijos;
     }
+
+    this.setState({
+      id: data.id,
+      code: data.codigo,
+      codebar: data.c_barra,
+      grad: data.graduacion,
+      brand: data.marca,
+      brand_id: data.marca.id,
+      name: data.producto,
+      unit: data.unidad,
+      cant: data.cantidades,
+      price: data.precio,
+      supplier: data.proveedor.id,
+      category: data.categoria,
+      created_at: data.created_at,
+      created: data.created,
+      updated_at: data.updated_at,
+      //Data need
+      category_id: data.categoria.id,
+      category_id1,
+      category_list2,
+      category_list3,
+      category_list4,
+      category_id2,
+      category_id3,
+      category_id4,
+      category_data: data.categoria,
+      load: false,
+    });
+    //console.log("[DEBUG] getItem", data.marca.id);
   };
 }
+
+const mapStateToProps = ({ storeItem, category, contact }) => {
+    return {
+      list: storeItem.list,
+      meta: storeItem.metaList,
+      item: storeItem.item,
+      messages: storeItem.messages,
+      options: storeItem.options,
+      listCategories: category.list,
+    };
+  },
+  mapActionsToProps = {
+    _deleteItem: storeActions.deleteItem,
+    _getItem: storeActions.getItem,
+    _saveItem: storeActions.saveItem,
+    _getListCategories: categoryActions.getListCategories,
+  };
+
+export default connect(mapStateToProps, mapActionsToProps)(StoreAddComponent);

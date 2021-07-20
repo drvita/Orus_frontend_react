@@ -3,6 +3,7 @@ import { TYPE } from "../types";
 import getList from "./getList";
 import deleteITem from "./deleteItem";
 import getItem from "./getItem";
+import saveItem from "./saveItem";
 
 export default function* index() {
   //watchers
@@ -10,4 +11,5 @@ export default function* index() {
   yield takeLatest(TYPE.SAGA_GET_LIST_STORE, getList);
   yield takeLatest(TYPE.SAGA_DELETE_STORE, deleteITem);
   yield takeLatest(TYPE.SAGA_GET_ITEM, getItem);
+  yield takeLatest(TYPE.SAGA_SAVE_ITEM, saveItem);
 }

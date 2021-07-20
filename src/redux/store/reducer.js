@@ -23,6 +23,15 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
     case TYPE.SAGA_GET_LIST_STORE: {
       return {
         ...state,
+        list: [],
+        metaList: {},
+        loading: true,
+      };
+    }
+    case TYPE.SAGA_GET_ITEM: {
+      return {
+        ...state,
+        item: {},
         loading: true,
       };
     }
@@ -32,7 +41,7 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         loading: true,
       };
     }
-    case TYPE.SAGA_GET_ITEM: {
+    case TYPE.SAGA_SAVE_ITEM: {
       return {
         ...state,
         loading: true,

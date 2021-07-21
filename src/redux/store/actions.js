@@ -16,6 +16,10 @@ const setItem = (payload = {}) => ({
   type: TYPE.SET_ITEM,
   payload,
 });
+const setListBrand = (payload = {}) => ({
+  type: TYPE.SET_LIST_BRANDS,
+  payload,
+});
 
 //SAGAS
 const getListStore = (payload = {}) => ({
@@ -34,6 +38,10 @@ const saveItem = (payload = {}) => ({
   type: TYPE.SAGA_SAVE_ITEM,
   payload,
 });
+const getListBrands = (payload = {}) => ({
+  type: TYPE.SAGA_GET_LIST_BRANDS,
+  payload,
+});
 
 const toExportActions = {
   getListStore,
@@ -44,6 +52,8 @@ const toExportActions = {
   setOptions,
   setItem,
   saveItem,
+  getListBrands,
+  setListBrand,
 };
 
 export default toExportActions;

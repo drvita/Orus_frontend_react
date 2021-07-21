@@ -23,10 +23,12 @@ function InboxComponent(props) {
   const [itemSelected, setItemSelected] = useState({ id: 0 });
   //Functions
   const handleChangeOptions = (key, value) => {
-      _setOptions({
-        key,
-        value,
-      });
+      if (options[key] !== value) {
+        _setOptions({
+          key,
+          value,
+        });
+      }
     },
     deleteItem = () => {
       helper.handleDeleteItem(itemSelected, options, _deleteItem);
@@ -101,7 +103,7 @@ function InboxComponent(props) {
                       ></label>
                     </td>
                     <td className="icheck-primary">
-                      <div className="badge badge-primary text-uppercase">
+                      <div className="badge badge-dark text-uppercase">
                         {item.codigo}
                       </div>
                     </td>
@@ -109,6 +111,7 @@ function InboxComponent(props) {
                       <a
                         href="·link"
                         onClick={(e) => handleSelectItem(e, item)}
+                        className="text-bold"
                       >
                         {item.producto}
                       </a>

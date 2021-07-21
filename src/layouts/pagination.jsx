@@ -1,9 +1,11 @@
-import React from "react";
-
-const PaginationComponent = ({ meta, handlePagination, color }) => {
+export default function PaginationComponent({
+  meta,
+  color,
+  handlePagination: _handlePagination,
+}) {
   const handleChangePage = (page) => {
-    if (handlePagination) {
-      handlePagination(page);
+    if (_handlePagination) {
+      _handlePagination(page);
     } else {
       console.error("[OrusSystem] Funcion de paginador no definida");
     }
@@ -54,8 +56,13 @@ const PaginationComponent = ({ meta, handlePagination, color }) => {
         </li>
         <li className="page-item">
           <span className="page-link text-dark">
-            {meta.current_page} /
-            {Math.ceil(meta.total / meta.per_page).toFixed(0)}
+            {meta.current_page && meta.last_page ? (
+              <>
+                {meta.current_page} /{meta.last_page}
+              </>
+            ) : (
+              "..."
+            )}
           </span>
         </li>
         <li
@@ -105,6 +112,4 @@ const PaginationComponent = ({ meta, handlePagination, color }) => {
       </ul>
     </div>
   );
-};
-
-export default PaginationComponent;
+}

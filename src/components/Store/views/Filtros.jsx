@@ -7,11 +7,11 @@ import { storeActions } from "../../../redux/store/index";
 import { contactActions } from "../../../redux/contact/index";
 
 function FiltersComponent(props) {
-  const { options, suppliers, _getContacts, _setOptions } = props;
+  const { options, suppliers, loading, _getSuppliers, _setOptions } = props;
 
   //Funciones
   const handleSetSelectOptions = (target) => {
-    console.log("[DEBUG] cambio de filtro");
+    //console.log("[DEBUG] cambio de filtro en almacen");
     const { name, value } = target;
     let val = value;
 
@@ -24,10 +24,7 @@ function FiltersComponent(props) {
   };
 
   useEffect(() => {
-    _getContacts({
-      type: 1,
-      business: 0,
-    });
+    _getSuppliers();
     //eslint-disable-next-line
   }, []);
 
@@ -72,25 +69,32 @@ function FiltersComponent(props) {
           Inventario
         </a>
       </li>
-      <li className="nav-item p-2">
-        <label htmlFor="supplier">Proveedor</label>
-        <select
-          className="form-control "
-          name="supplier"
-          id="supplier"
-          value={options.supplier}
-          onChange={({ target }) => handleSetSelectOptions(target)}
-        >
-          <option value="">-- Todos --</option>
-          {suppliers.map((supplier) => {
-            return (
-              <option value={supplier.id} key={supplier.id}>
-                {supplier.nombre}
-              </option>
-            );
-          })}
-        </select>
-      </li>
+      {!loading ? (
+        <li className="nav-item p-2">
+          <label htmlFor="supplier">Proveedor</label>
+          <select
+            className="form-control text-capitalize"
+            name="supplier"
+            id="supplier"
+            value={options.supplier}
+            onChange={({ target }) => handleSetSelectOptions(target)}
+          >
+            <option value="">-- Todos --</option>
+            {suppliers.map((supplier) => {
+              return (
+                <option value={supplier.id} key={supplier.id}>
+                  {supplier.nombre}
+                </option>
+              );
+            })}
+          </select>
+        </li>
+      ) : (
+        <span className="px-2 text-xs my-2 border bg-gray-light py-1">
+          <i className="fas fa-info-circle mr-1"></i>
+          Cargando proveedores!
+        </span>
+      )}
       <li className="nav-item p-2">
         <label htmlFor="orderby">Ordenar por</label>
         <select
@@ -139,12 +143,13 @@ function FiltersComponent(props) {
 const mapStateToProps = ({ storeItem, contact }) => {
     return {
       options: storeItem.options,
-      suppliers: contact.list,
+      loading: contact.loading,
+      suppliers: contact.suppliers,
     };
   },
   mapActionsToProps = {
     _setOptions: storeActions.setOptions,
-    _getContacts: contactActions.getListContacts,
+    _getSuppliers: contactActions.getListSuppliers,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(FiltersComponent);

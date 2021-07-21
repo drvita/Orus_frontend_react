@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Suppliers from "./input_suppliers";
+import Suppliers from "./views/input_brand";
 
 export default class Brands extends Component {
   constructor(props) {

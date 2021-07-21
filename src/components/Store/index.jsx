@@ -11,10 +11,7 @@ import { storeActions } from "../../redux/store/index";
 class IndexStoreComponent extends Component {
   constructor(props) {
     super(props);
-    //Variables en localStorage
-    //let sdd = JSON.parse(localStorage.getItem("OrusContacts"));
     this.state = {
-      load: false,
       panel: "inbox",
     };
   }
@@ -59,8 +56,7 @@ class IndexStoreComponent extends Component {
   }
 
   render() {
-    const { item } = this.props,
-      { panel } = this.state;
+    const { panel } = this.state;
 
     return (
       <div className="row">
@@ -90,6 +86,9 @@ class IndexStoreComponent extends Component {
   }
 
   handleChangePanel = (panel) => {
+    const { _setItem } = this.props;
+
+    _setItem({});
     this.setState({
       panel,
     });

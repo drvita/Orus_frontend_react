@@ -36,15 +36,15 @@ const ListInbox = (props) => {
           {props.title}
         </h3>
         <div className="card-tools">
-          {props.handleSearch ? (
+          {props.handleSearch && (
             <div className="input-group input-group-sm position-relative">
               <input
                 type="text"
                 className="form-control"
                 placeholder="Buscar"
                 value={search}
-                onChange={(e) => {
-                  const { value } = e.target;
+                onChange={({ target }) => {
+                  const { value } = target;
                   setSearch(value);
                 }}
                 onKeyPress={(e) => {
@@ -71,7 +71,7 @@ const ListInbox = (props) => {
                 </div>
               ) : null}
             </div>
-          ) : null}
+          )}
         </div>
       </div>
       <div className="p-0 card-body">

@@ -4,11 +4,15 @@ const DEFAULT_STATE = {
   list: [],
   metaList: {},
   contact: { id: 0 },
+  suppliers: [],
+  supplier: { id: 0 },
   messages: [],
   loading: false,
 };
 
 const default_reducer = (state = DEFAULT_STATE, action) => {
+  const { payload } = action;
+
   switch (action.type) {
     case TYPE.SAGA_GET_LIST_CONTACTS: {
       return {
@@ -21,14 +25,14 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
     case TYPE.SAGA_DELETE_CONTACT: {
       return {
         ...state,
-        contact: {},
+        contact: { id: 0 },
         loading: true,
       };
     }
     case TYPE.SAGA_SAVE_CONTACT: {
       return {
         ...state,
-        contact: {},
+        contact: { id: 0 },
         loading: true,
       };
     }
@@ -36,12 +40,18 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         loading: true,
-        contact: {},
+        contact: { id: 0 },
+      };
+    }
+    case TYPE.SAGA_GET_LIST_SUPPLIERS: {
+      return {
+        ...state,
+        loading: true,
+        supplier: { id: 0 },
       };
     }
 
     case TYPE.SET_LIST_CONTACT: {
-      const { payload } = action;
       return {
         ...state,
         contact: { id: 0 },
@@ -51,7 +61,6 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       };
     }
     case TYPE.SET_MESSAGE_CONTACT: {
-      const { payload } = action;
       return {
         ...state,
         loading: false,
@@ -59,7 +68,6 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       };
     }
     case TYPE.SET_CONTACT: {
-      const { payload } = action;
       return {
         ...state,
         loading: false,
@@ -67,6 +75,15 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         list: [],
         metaList: {},
         messages: [],
+      };
+    }
+    case TYPE.SET_LIST_SUPPLIERS: {
+      return {
+        ...state,
+        supplier: { id: 0 },
+        suppliers: payload,
+        messages: [],
+        loading: false,
       };
     }
 

@@ -16,8 +16,12 @@ const getContact = (payload = {}) => ({
   type: TYPE.SAGA_GET_CONTACT,
   payload,
 });
+const getListSuppliers = (payload) => ({
+  type: TYPE.SAGA_GET_LIST_SUPPLIERS,
+  payload,
+});
 //SETS
-const setListContact = (payload = {}) => ({
+const setListContact = (payload = []) => ({
   type: TYPE.SET_LIST_CONTACT,
   payload,
 });
@@ -29,6 +33,10 @@ const setContact = (payload = {}) => ({
   type: TYPE.SET_CONTACT,
   payload,
 });
+const setListSuppliers = (payload = []) => ({
+  type: TYPE.SET_LIST_SUPPLIERS,
+  payload,
+});
 
 const toExportActions = {
   getListContacts,
@@ -38,6 +46,8 @@ const toExportActions = {
   setMessageContact,
   getContact,
   setContact,
+  getListSuppliers,
+  setListSuppliers,
 };
 
 export default toExportActions;

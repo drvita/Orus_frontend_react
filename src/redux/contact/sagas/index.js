@@ -4,6 +4,7 @@ import getListContacts from "./getList";
 import deleteContact from "./delete";
 import saveContact from "./save";
 import getContact from "./getContact";
+import getSuppliers from "./getListSuppliers";
 
 export default function* index() {
   //watchers
@@ -12,4 +13,5 @@ export default function* index() {
   yield takeLatest(TYPE.SAGA_DELETE_CONTACT, deleteContact);
   yield takeLatest(TYPE.SAGA_SAVE_CONTACT, saveContact);
   yield takeLatest(TYPE.SAGA_GET_CONTACT, getContact);
+  yield takeLatest(TYPE.SAGA_GET_LIST_SUPPLIERS, getSuppliers);
 }

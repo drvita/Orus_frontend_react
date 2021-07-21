@@ -1,12 +1,11 @@
-import React, { Component } from "react";
+import React, { Component, Fragment, createRef } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 //Components
-import StoreLote from "./add_lote";
-import InputCategory from "./input_category";
-import Suppliers from "./input_suppliers";
-import Brands from "./input_brand";
-import Codestring from "../Layouts/codeLentString";
+import StoreLote from "./views/add_lote";
+import InputCategory from "./views/input_category";
+import Suppliers from "./views/input_suppliers";
+import Brands from "./views/input_brand";
 //Actions
 import { storeActions } from "../../redux/store/index";
 import { categoryActions } from "../../redux/category/index";
@@ -46,14 +45,14 @@ class StoreAddComponent extends Component {
       host: ls.host,
       token: ls.token,
     };
-    this.category1 = React.createRef(); //Primera categoria
-    this.category2 = React.createRef(); //Segunda categoria
-    this.category3 = React.createRef(); //Tercera categoria
-    this.category4 = React.createRef(); //Cuarta categoria
-    this.supplierRef = React.createRef(); //Referencia de proveedor
-    this.brandRef = React.createRef(); //Referencia de proveedor
-    this.codeRef = React.createRef(); //Referencia del codigo
-    this.nameRef = React.createRef(); //REferencia del nombre del producto
+    this.category1 = createRef(); //Primera categoria
+    this.category2 = createRef(); //Segunda categoria
+    this.category3 = createRef(); //Tercera categoria
+    this.category4 = createRef(); //Cuarta categoria
+    this.supplierRef = createRef(); //Referencia de proveedor
+    this.brandRef = createRef(); //Referencia de proveedor
+    this.codeRef = createRef(); //Referencia del codigo
+    this.nameRef = createRef(); //REferencia del nombre del producto
   }
   componentDidMount() {
     const { _getListCategories } = this.props;
@@ -73,7 +72,6 @@ class StoreAddComponent extends Component {
     const { listCategories, item } = this.props;
 
     if (props.listCategories !== listCategories && listCategories.length) {
-      //this.getItem();
       this.setState({
         category_list1: listCategories,
       });
@@ -112,51 +110,80 @@ class StoreAddComponent extends Component {
 
   render() {
     const {
-      id,
-      supplier,
-      category_id,
-      category_id1,
-      category_id2,
-      category_id3,
-      category_id4,
-      category_list1,
-      category_list2,
-      category_list3,
-      category_list4,
-      brand_id,
-      code,
-      name,
-      grad,
-      unit,
-      cant,
-      price,
-    } = this.state;
+        id,
+        supplier,
+        category_id,
+        category_id1,
+        category_id2,
+        category_id3,
+        category_id4,
+        category_list1,
+        category_list2,
+        category_list3,
+        category_list4,
+        brand_id,
+        code,
+        name,
+        grad,
+        unit,
+        cant,
+        price,
+      } = this.state,
+      { loadStore, loadCategory, loadContact } = this.props,
+      LOADING = loadStore || loadCategory || loadContact;
     let codeValue = code,
       nameValue = name;
 
-    //console.log("[DEBUG] Render", brand_id);
+    //Make a code and name if no exist
     if (
       this.category1.current !== null &&
-      parseInt(this.category1.current.value) === 2
+      parseInt(this.category1.current.value) !== 1
     ) {
+      //Make name of other categories
       if (name.length <= 3) {
-        nameValue = this.handleCodeString(codeValue);
+        const type =
+          this.category1.current !== null &&
+          this.category1.current.selectedIndex
+            ? this.category1.current.options[
+                this.category1.current.selectedIndex
+              ].text
+                .trim()
+                .replace(/\s/gim, "")
+                .slice(0, 7)
+            : "";
+
+        nameValue = helper.handleCodeString(
+          codeValue,
+          type === "varios" ? "V" : type,
+          this.category2,
+          this.brandRef
+        );
       }
-    } else if (
-      this.category1.current !== null &&
-      parseInt(this.category1.current.value) === 1
-    ) {
+    } else {
+      //Make code and name of glass
       if (code.length <= 3) {
-        codeValue = this.handleCodeLent(grad);
+        codeValue = helper.handleCodeLent(
+          grad,
+          this.category2,
+          this.category3,
+          this.category4
+        );
       }
       if (name.length <= 3) {
-        nameValue = this.handleNameLent(grad);
+        nameValue = helper.handleNameLent(
+          grad,
+          this.category2,
+          this.category3,
+          this.category4
+        );
       }
     }
+    //Sure that we have a code
+    codeValue = codeValue ? codeValue : Date.now().toString();
 
     return (
       <div className="row">
-        <div className={id ? "col-5" : "col-6"}>
+        <div className="col">
           <div className="card card-primary card-outline">
             <div className="card-header">
               <h3 className="card-title text-primary text-bold">
@@ -166,7 +193,7 @@ class StoreAddComponent extends Component {
             </div>
             <div className="card-body">
               {category_list1 && category_list1.length ? (
-                <React.Fragment>
+                <Fragment>
                   <div className="row">
                     <div className="col">
                       <fieldset>
@@ -182,17 +209,7 @@ class StoreAddComponent extends Component {
                           textSelect="Seleciona la categoria"
                           categoryRef={this.category1}
                           handleChangeCategory={(data) => {
-                            this.setState({
-                              category_id: data.id,
-                              category_id1: data.id,
-                              category_id2: 0,
-                              category_list2: data.hijos,
-                              category_id3: 0,
-                              category_list3: [],
-                              category_id4: 0,
-                              category_list4: [],
-                              supplier: 0,
-                            });
+                            this.setState(helper.handleCatOne(data));
                           }}
                         />
 
@@ -207,14 +224,7 @@ class StoreAddComponent extends Component {
                             textSelect="Seleciona el tipo"
                             categoryRef={this.category2}
                             handleChangeCategory={(data) => {
-                              this.setState({
-                                category_id: data.id,
-                                category_id2: data.id,
-                                category_id3: 0,
-                                category_list3: data.hijos,
-                                category_id4: 0,
-                                category_list4: [],
-                              });
+                              this.setState(helper.handleCatTwo(data));
                             }}
                           />
                         ) : null}
@@ -230,12 +240,7 @@ class StoreAddComponent extends Component {
                             textSelect="Seleciona el material"
                             categoryRef={this.category3}
                             handleChangeCategory={(data) => {
-                              this.setState({
-                                category_id: data.id,
-                                category_id3: data.id,
-                                category_id4: 0,
-                                category_list4: data.hijos,
-                              });
+                              this.setState(helper.handleCatTree(data));
                             }}
                           />
                         ) : null}
@@ -290,7 +295,7 @@ class StoreAddComponent extends Component {
                   ) : null}
 
                   {category_id ? (
-                    <React.Fragment>
+                    <Fragment>
                       <div className="row">
                         <div className="col-5">
                           {codeValue ? (
@@ -495,7 +500,7 @@ class StoreAddComponent extends Component {
                           </div>
                         </div>
                       </div>
-                    </React.Fragment>
+                    </Fragment>
                   ) : (
                     <div className="row">
                       <div className="col">
@@ -505,16 +510,13 @@ class StoreAddComponent extends Component {
                       </div>
                     </div>
                   )}
-                </React.Fragment>
+                </Fragment>
               ) : (
                 <div className="text-center">
-                  <span className="text-primary">Cargando formulario</span>
-                  <div
-                    className="spinner-border text-primary ml-4"
-                    role="status"
-                  >
-                    <span className="sr-only">Loading...</span>
-                  </div>
+                  <h2 className="text-primary">
+                    <i className="fas fa-info-circle mr-2"></i>
+                    Cargando formulario
+                  </h2>
                 </div>
               )}
             </div>
@@ -550,6 +552,11 @@ class StoreAddComponent extends Component {
                 </div>
               </div>
             </div>
+            {LOADING && (
+              <div className="overlay dark">
+                <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+              </div>
+            )}
           </div>
         </div>
         {id ? (
@@ -568,78 +575,6 @@ class StoreAddComponent extends Component {
   handleClose = () => {
     const { handleClose: _handleClose } = this.props;
     _handleClose("inbox");
-  };
-  handleNameLent = (grad) => {
-    let stringcode = "";
-    stringcode +=
-      this.category2.current !== null
-        ? this.category2.current.options[
-            this.category2.current.selectedIndex
-          ].text.trim()
-        : "";
-    stringcode +=
-      this.category3.current !== null
-        ? " " +
-          this.category3.current.options[
-            this.category3.current.selectedIndex
-          ].text.trim()
-        : "";
-    stringcode +=
-      this.category4.current !== null
-        ? " " +
-          this.category4.current.options[
-            this.category4.current.selectedIndex
-          ].text.trim()
-        : "";
-
-    stringcode += " " + grad.toString();
-    return stringcode.toLowerCase();
-  };
-  handleCodeLent = (grad) => {
-    let stringcode =
-      this.category2.current !== null
-        ? Codestring(
-            this.category2.current.options[this.category2.current.selectedIndex]
-              .text
-          )
-        : "";
-    stringcode +=
-      this.category3.current !== null
-        ? Codestring(
-            this.category3.current.options[this.category3.current.selectedIndex]
-              .text
-          )
-        : "";
-    stringcode +=
-      this.category4.current !== null
-        ? Codestring(
-            this.category4.current.options[this.category4.current.selectedIndex]
-              .text
-          )
-        : "";
-    return stringcode + grad.toString();
-  };
-  handleCodeString = (code) => {
-    let stringcode = "armazon";
-    stringcode +=
-      this.category2.current !== null
-        ? " " +
-          this.category2.current.options[
-            this.category2.current.selectedIndex
-          ].text.trim()
-        : "";
-    stringcode +=
-      this.brandRef.current !== null
-        ? " " +
-          this.brandRef.current.options[
-            this.brandRef.current.selectedIndex
-          ].text
-            .trim()
-            .replace(" ", "")
-        : "";
-
-    stringcode += " " + code.toString();
-    return stringcode.toLowerCase();
   };
   setNew = (e) => {
     this.setState({
@@ -665,9 +600,6 @@ class StoreAddComponent extends Component {
       load: false,
     });
   };
-  changePage = (e) => {
-    this.props.page(e);
-  };
   catchInputs = (e) => {
     const { name, type } = e.target;
     let { value } = e.target;
@@ -678,50 +610,6 @@ class StoreAddComponent extends Component {
     this.setState({
       [name]: value,
     });
-  };
-  getCategory = () => {
-    //Variables
-    let { host, token } = this.state;
-
-    console.log("solicitando categorias al API");
-    fetch("http://" + host + "/api/categories?categoryid=raiz", {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((cat) => {
-        if (cat.data !== null) {
-          console.log("[DEBUG] Almacenando categorias");
-          this.setState({
-            category_list1: cat.data,
-          });
-        } else {
-          console.error("Orus: ", cat.message);
-          window.Swal.fire(
-            "Error",
-            "Error al descargar las categorias",
-            "error"
-          );
-        }
-      })
-      .catch((error) => {
-        console.log("Orus:", error);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-      });
   };
   handleSave = async () => {
     const {
@@ -831,7 +719,6 @@ class StoreAddComponent extends Component {
       category_data: data.categoria,
       load: false,
     });
-    //console.log("[DEBUG] getItem", data.marca.id);
   };
 }
 
@@ -843,6 +730,9 @@ const mapStateToProps = ({ storeItem, category, contact }) => {
       messages: storeItem.messages,
       options: storeItem.options,
       listCategories: category.list,
+      loadStore: storeItem.loading,
+      loadCategory: category.loading,
+      loadContact: category.loading,
     };
   },
   mapActionsToProps = {

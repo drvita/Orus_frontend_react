@@ -2,7 +2,12 @@ import { TYPE } from "./types";
 
 const DEFAULT_STATE = {
   list: [],
-  metaList: {},
+  metaList: {
+    current_page: 1,
+    total: 10,
+    per_page: 10,
+    last_page: 1,
+  },
   item: {},
   options: {
     page: 1,
@@ -12,6 +17,7 @@ const DEFAULT_STATE = {
     itemsPage: 10,
     supplier: "",
   },
+  brands: [],
   messages: [],
   loading: false,
 };
@@ -45,6 +51,13 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         loading: true,
+      };
+    }
+    case TYPE.SAGA_GET_LIST_BRANDS: {
+      return {
+        ...state,
+        loading: true,
+        brands: [],
       };
     }
 
@@ -86,6 +99,13 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
           page: 1,
           [key]: value,
         },
+      };
+    }
+    case TYPE.SET_LIST_BRANDS: {
+      return {
+        ...state,
+        brands: payload,
+        loading: false,
       };
     }
     default:

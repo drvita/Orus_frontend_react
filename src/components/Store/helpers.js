@@ -142,12 +142,159 @@ const handleSaveItem = (id = null, data, options, _save, _close) => {
     }
   });
 };
+const handleCatOne = (data) => ({
+    category_id: data.id,
+    category_id1: data.id,
+    category_id2: 0,
+    category_list2: data.hijos,
+    category_id3: 0,
+    category_list3: [],
+    category_id4: 0,
+    category_list4: [],
+    supplier: 0,
+  }),
+  handleCatTwo = (data) => ({
+    category_id: data.id,
+    category_id2: data.id,
+    category_id3: 0,
+    category_list3: data.hijos,
+    category_id4: 0,
+    category_list4: [],
+  }),
+  handleCatTree = (data) => ({
+    category_id: data.id,
+    category_id3: data.id,
+    category_id4: 0,
+    category_list4: data.hijos,
+  });
+const handleCodeString = (code, stringcode = "armazon", category, brand) => {
+    stringcode +=
+      category.current !== null && category.current.selectedIndex
+        ? " " +
+          category.current.options[category.current.selectedIndex].text.trim()
+        : "";
+    stringcode +=
+      brand.current !== null && brand.current.selectedIndex
+        ? " " +
+          brand.current.options[brand.current.selectedIndex].text
+            .trim()
+            .replace(/\s/gim, "")
+        : "";
+
+    stringcode += " " + code.toString();
+
+    return stringcode.toLowerCase();
+  },
+  codeLentString = (string) => {
+    switch (string) {
+      case "monofocales":
+        return "MF";
+      case "bifocales":
+        return "BF";
+      case "progresivo basico":
+      case "progresivo-basico":
+        return "PB";
+      case "progresivo digital":
+      case "progresivo-digital":
+        return "PD";
+      case "plastico":
+        return "CR";
+      case "policarbonato":
+        return "PL";
+      case "hi-index":
+      case "hi index":
+        return "HI";
+      case "antirreflejantes":
+        return "AR";
+      case "photo":
+        return "PH";
+      case "ar & photo":
+      case "antirreflejante-photo":
+        return "ARPH";
+      case "blanco":
+        return "BL";
+      case "polarizado":
+        return "PO";
+      case "bifocal invisible":
+      case "bifocal-invisible":
+        return "BI";
+      case "monofocal drivesafe":
+      case "monofocal-drivesafe":
+      case "monofocal digital drivesafe":
+      case "monofocal digital DriveSafe":
+        return "MDSF";
+      case "monofocal superb":
+      case "monofocal-superb":
+      case "monofocal digital superb":
+        return "MDSU";
+      case "monofocal individual":
+      case "monofocal-individual":
+      case "monofocal digital individual":
+        return "MDIN";
+      default:
+        return "XX";
+    }
+  },
+  handleCodeLent = (grad, category2, category3, category4) => {
+    let stringcode =
+      category2.current !== null
+        ? codeLentString(
+            category2.current.options[category2.current.selectedIndex].text
+              .trim()
+              .toLowerCase()
+          )
+        : "";
+    stringcode +=
+      category3.current !== null
+        ? codeLentString(
+            category3.current.options[category3.current.selectedIndex].text
+              .trim()
+              .toLowerCase()
+          )
+        : "";
+    stringcode +=
+      category4.current !== null
+        ? codeLentString(
+            category4.current.options[category4.current.selectedIndex].text
+              .trim()
+              .toLowerCase()
+          )
+        : "";
+    return stringcode + grad.toString().trim().replace(/\s/gim, "");
+  },
+  handleNameLent = (grad, category2, category3, category4) => {
+    let stringcode = "";
+    stringcode +=
+      category2.current !== null
+        ? category2.current.options[category2.current.selectedIndex].text.trim()
+        : "";
+    stringcode +=
+      category3.current !== null
+        ? " " +
+          category3.current.options[category3.current.selectedIndex].text.trim()
+        : "";
+    stringcode +=
+      category4.current !== null
+        ? " " +
+          category4.current.options[category4.current.selectedIndex].text.trim()
+        : "";
+
+    stringcode += " " + grad.toString();
+    return stringcode.toLowerCase();
+  };
 
 const toExport = {
   verifyItem,
   handleDeleteItem,
   handleVerifyData,
   handleSaveItem,
+  handleCatOne,
+  handleCatTwo,
+  handleCatTree,
+  handleCodeString,
+  handleCodeLent,
+  codeLentString,
+  handleNameLent,
 };
 
 export default toExport;

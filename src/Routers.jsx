@@ -7,10 +7,6 @@ import Footer from "./components/Layouts/footer";
 import Users from "./components/Users/index";
 import UserAdd from "./components/Users/add";
 import Store from "./components/Store/index";
-import StoreAdd from "./components/Store/add";
-import Categories from "./components/Store/categories";
-import Brands from "./components/Store/brands";
-import Inventory from "./components/Store/inventory";
 import Contacts from "./components/Contacts/index";
 //import ContactsAdd from "./components/Contacts/add";
 //import AddByContact from "./components/Contacts/addByContact";
@@ -76,28 +72,6 @@ export default class Routers extends Component {
                         )}
                       />
 
-                      <Route
-                        extric
-                        path="/almacen/categorias"
-                        render={(props) => (
-                          <Categories
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
-                        extric
-                        path="/almacen/marcas"
-                        render={(props) => (
-                          <Brands
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
                       <Route
                         extric
                         path="/almacen/:id?"

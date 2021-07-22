@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import Pagination from "../Layouts/pagination";
+import Pagination from "../../Layouts/pagination";
 
-export default class CategoryList extends Component {
+export default class CategoryListComponent extends Component {
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));

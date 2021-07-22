@@ -7,23 +7,29 @@ function InputBrandComponents(props) {
   const {
     brandsName,
     brand,
-    textSelect,
+    textSelect = "Seleccione una marca",
     brandRef,
     brands,
     supplier,
+    showIcon = true,
+    //Funtions
     _getBrands,
     handleChangeBrand: _handleChangeBrand,
   } = props;
   //Funtions
   const handleChangeCategory = ({ target }) => {
     const { value } = target;
-    _handleChangeBrand(parseInt(value));
+    if (_handleChangeBrand) {
+      _handleChangeBrand(parseInt(value));
+    }
   };
 
   useEffect(() => {
-    _getBrands({
-      supplier,
-    });
+    if (supplier) {
+      _getBrands({
+        supplier,
+      });
+    }
     //eslint-disable-next-line
   }, [supplier]);
   return (
@@ -34,17 +40,19 @@ function InputBrandComponents(props) {
         </small>
         {brands.length ? (
           <div className="input-group mb-3">
-            <div className="input-group-prepend">
-              <span
-                className={
-                  brand
-                    ? "input-group-text bg-primary"
-                    : "input-group-text bg-warning"
-                }
-              >
-                <i className="fas fa-copyright"></i>
-              </span>
-            </div>
+            {showIcon && (
+              <div className="input-group-prepend">
+                <span
+                  className={
+                    brand
+                      ? "input-group-text bg-primary"
+                      : "input-group-text bg-warning"
+                  }
+                >
+                  <i className="fas fa-copyright"></i>
+                </span>
+              </div>
+            )}
             <select
               className="custom-select text-uppercase"
               name={brandsName}

@@ -24,13 +24,21 @@ export function api(url, method = "GET", body) {
 export function getUrl(node, id, param = {}) {
   let url = node,
     paramString = null;
+  const paramKeys = Object.keys(param);
 
   if (id) {
     url += `/${id}`;
   }
 
-  if (Object.keys(param).length) {
-    paramString = param = new URLSearchParams(param);
+  if (paramKeys.length) {
+    paramKeys.map((k) => {
+      if (!param[k]) {
+        delete param[k];
+      }
+      return null;
+    });
+
+    paramString = new URLSearchParams(param);
     url += `?${paramString}`;
   }
 

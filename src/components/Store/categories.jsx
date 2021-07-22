@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Catalogo from "./category_list";
+import Catalogo from "./data/Category_list";
 
 export default class Categories extends Component {
   constructor(props) {
@@ -26,6 +26,7 @@ export default class Categories extends Component {
       category_id3,
       category_hijos3,
     } = this.state;
+
     return (
       <React.Fragment>
         <h5>Categorias de productos</h5>

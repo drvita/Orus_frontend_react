@@ -8,9 +8,16 @@ function InputSuppliersComponent(props) {
     supplier,
     supplierRef,
     suppliers,
+    showIcon = true,
     handleChangeSupplier: _handleChangeSupplier,
     _getSuppliers,
   } = props;
+  const handleChangeSupplier = ({ target }) => {
+    const { value } = target;
+    if (_handleChangeSupplier) {
+      _handleChangeSupplier(parseInt(value));
+    }
+  };
 
   useEffect(() => {
     _getSuppliers();
@@ -25,26 +32,25 @@ function InputSuppliersComponent(props) {
         </small>
         {suppliers.length && (
           <div className="input-group mb-3">
-            <div className="input-group-prepend">
-              <span
-                className={
-                  supplier
-                    ? "input-group-text bg-primary"
-                    : "input-group-text bg-warning"
-                }
-              >
-                <i className="fas fa-address-book"></i>
-              </span>
-            </div>
+            {showIcon && (
+              <div className="input-group-prepend">
+                <span
+                  className={
+                    supplier
+                      ? "input-group-text bg-primary"
+                      : "input-group-text bg-warning"
+                  }
+                >
+                  <i className="fas fa-address-book"></i>
+                </span>
+              </div>
+            )}
             <select
               className="custom-select text-uppercase"
               name="supplier"
               value={supplier}
               ref={supplierRef}
-              onChange={(e) => {
-                const { value } = e.target;
-                _handleChangeSupplier(parseInt(value));
-              }}
+              onChange={handleChangeSupplier}
             >
               <option value="0">--Seleccione un Proveedor--</option>
               {suppliers.map((sp) => {

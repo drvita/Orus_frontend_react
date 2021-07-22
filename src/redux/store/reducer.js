@@ -16,6 +16,8 @@ const DEFAULT_STATE = {
     search: "",
     itemsPage: 10,
     supplier: "",
+    brand: "",
+    zero: "false",
   },
   brands: [],
   messages: [],
@@ -58,6 +60,18 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         ...state,
         loading: true,
         brands: [],
+      };
+    }
+    case TYPE.SAGA_SAVE_BRAND: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
+    case TYPE.SAGA_DELETE_BRAND: {
+      return {
+        ...state,
+        loading: true,
       };
     }
 
@@ -105,6 +119,7 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         brands: payload,
+        messages: [],
         loading: false,
       };
     }

@@ -270,7 +270,6 @@ class StoreAddComponent extends Component {
                   {category_id1 && category_id1 !== 1 ? (
                     <Suppliers
                       supplier={supplier}
-                      textSelect="Selecione el proveedor"
                       supplierRef={this.supplierRef}
                       handleChangeSupplier={(e) => {
                         this.setState({

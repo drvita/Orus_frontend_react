@@ -53,7 +53,7 @@ function InboxComponent(props) {
     //eslint-disable-next-line
   }, [options]);
 
-  //console.log("[DEBUG] Render", itemSelected.id);
+  //console.log("[DEBUG] Render", list);
   return (
     <ListInbox
       title="Lista de productos"
@@ -75,8 +75,8 @@ function InboxComponent(props) {
             <th></th>
             <th>Codigo</th>
             <th>Describción</th>
-            <th>Marca</th>
             <th>Proveedor</th>
+            <th>Marca</th>
             <th>Cant</th>
           </tr>
         </thead>
@@ -116,13 +116,13 @@ function InboxComponent(props) {
                         {item.producto}
                       </a>
                     </td>
-                    <td className="mailbox-attachment text-uppercase text-truncate text-muted">
-                      <span>{item.marca ? item.marca.marca : "--"}</span>
-                    </td>
                     <td className="mailbox-attachment text-capitalize text-truncate text-muted">
                       <span>
                         {item.proveedor ? item.proveedor.nombre : "--"}
                       </span>
+                    </td>
+                    <td className="mailbox-attachment text-uppercase text-truncate text-muted">
+                      <span>{item.marca ? item.marca.marca : "--"}</span>
                     </td>
                     <td className="mailbox-date text-muted text-truncate text-right">
                       <span>{item.cantidades}</span>

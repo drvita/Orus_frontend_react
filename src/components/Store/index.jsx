@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 //Compinentes
 import Inbox from "./views/Inbox";
-import Inventario from "./inventory";
+import Filter from "./views/Filters";
 import NewOrEdit from "./add";
-import Filter from "./views/Filtros";
+import Inventario from "./inventory";
+import Categories from "./categories";
+import Brands from "./brands";
+
 //Actions
 import { storeActions } from "../../redux/store/index";
 
@@ -33,7 +36,7 @@ class IndexStoreComponent extends Component {
     }
   }
   componentDidUpdate(props) {
-    const { messages: MSGS, item, history } = this.props;
+    const { messages: MSGS, item, history, _setMessage } = this.props;
 
     if (props.item.id !== item.id && item.id) {
       this.setState({
@@ -52,6 +55,7 @@ class IndexStoreComponent extends Component {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
+      _setMessage([]);
     }
   }
 
@@ -70,7 +74,7 @@ class IndexStoreComponent extends Component {
             <i className="fas fa-plus mr-1"></i>
             Nuevo producto
           </button>
-          {panel === "inbox" && <Filter />}
+          <Filter panel={panel} handleChangePage={this.handleChangePanel} />
         </div>
         <div className="col-sm-12 col-md-10">
           {panel === "inventory" && (
@@ -80,18 +84,26 @@ class IndexStoreComponent extends Component {
           {panel === "neworedit" && (
             <NewOrEdit handleClose={this.handleChangePanel} />
           )}
+          {panel === "category" && <Categories />}
+          {panel === "brands" && <Brands />}
         </div>
       </div>
     );
   }
 
   handleChangePanel = (panel) => {
-    const { _setItem } = this.props;
+    const { _setItem, history } = this.props;
 
-    _setItem({});
-    this.setState({
-      panel,
-    });
+    if (this.state.panel !== panel) {
+      _setItem({});
+      this.setState({
+        panel,
+      });
+      if (panel === "inbox") history.push(`/almacen`);
+      if (panel === "inventory") history.push(`/almacen/inventario`);
+      if (panel === "category") history.push(`/almacen/categorias`);
+      if (panel === "brands") history.push(`/almacen/marcas`);
+    }
   };
   handleNewItem = () => {
     this.setState({
@@ -103,7 +115,6 @@ class IndexStoreComponent extends Component {
 
 const mapStateToProps = ({ storeItem }) => {
     return {
-      list: storeItem.list,
       item: storeItem.item,
       messages: storeItem.messages,
       loading: storeItem.loading,
@@ -112,6 +123,7 @@ const mapStateToProps = ({ storeItem }) => {
   mapActionsToProps = {
     _getItem: storeActions.getItem,
     _setItem: storeActions.setItem,
+    _setMessage: storeActions.setMessagesStore,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexStoreComponent);

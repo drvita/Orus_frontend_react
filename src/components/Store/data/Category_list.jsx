@@ -42,10 +42,9 @@ class CategoryListComponent extends Component {
 
   render() {
     const { category_raiz, category_id, name, add, meta, load } = this.state,
-      { categoryName, categoryDataName, categorySelect, category, last } =
-        this.props;
+      { categoryName, categoryDataName, categorySelect, category } = this.props;
 
-    //console.log("[DEBUG] Categories", category_raiz);
+    console.log("[DEBUG] Categories", category_raiz);
 
     return (
       <div className="card card-primary card-outline">
@@ -75,7 +74,7 @@ class CategoryListComponent extends Component {
                   >
                     <td
                       colSpan="2"
-                      className="text-capitalize"
+                      className="text-capitalize text-bold text-primary"
                       style={{ cursor: "pointer" }}
                     >
                       Raiz
@@ -88,49 +87,30 @@ class CategoryListComponent extends Component {
                         className={
                           cat.id === category_id ? "table-success" : ""
                         }
-                        style={{ cursor: "pointer" }}
-                        onClick={(e) => {
-                          if (last) {
-                            this.setState({
-                              category_id: parseInt(category) ? category : 0,
-                            });
-                            categorySelect({
-                              [categoryName]: 0,
-                              [categoryDataName]: [],
-                              category_id: category,
-                            });
-                          } else {
-                            categorySelect({
-                              [categoryName]: cat.id,
-                              [categoryDataName]: cat.hijos,
-                              category_id: cat.id,
-                            });
-                            this.setState({
-                              category_id: cat.id,
-                            });
-                          }
-                        }}
                       >
                         <td className="text-capitalize">
-                          <a
-                            href={"#select!" + cat.id}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              this.setState({
-                                category_id: cat.id,
-                              });
-                            }}
-                          >
-                            {cat.categoria}
-                          </a>
+                          {cat.hijos && cat.hijos.length ? (
+                            <a
+                              href={"#select!" + cat.id}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                this.handleSelectCategory(cat);
+                              }}
+                            >
+                              {cat.categoria}
+                            </a>
+                          ) : (
+                            <span className="text-dark">{cat.categoria}</span>
+                          )}
                         </td>
                         <td>
-                          {!cat.hijos.length && (
+                          {cat.hijos && (
                             <button
                               className="btn btn-outline-dark btn-sm"
                               onClick={(e) => {
                                 this.handleClickDelete(cat.id, cat.categoria);
                               }}
+                              disabled={cat.hijos.length}
                             >
                               <i className="fas fa-trash"></i>
                             </button>
@@ -206,6 +186,30 @@ class CategoryListComponent extends Component {
     );
   }
 
+  handleSelectCategory = (cat) => {
+    const { categoryName, categoryDataName, categorySelect, category, last } =
+      this.props;
+
+    if (last) {
+      this.setState({
+        category_id: parseInt(category) ? category : 0,
+      });
+      categorySelect({
+        [categoryName]: 0,
+        [categoryDataName]: [],
+        category_id: category,
+      });
+    } else {
+      categorySelect({
+        [categoryName]: cat.id,
+        [categoryDataName]: cat.hijos,
+        category_id: cat.id,
+      });
+      this.setState({
+        category_id: cat.id,
+      });
+    }
+  };
   handleChangePage = (id) => {
     this.setState({
       page: id,
@@ -404,10 +408,10 @@ class CategoryListComponent extends Component {
     //Variables props
     const { category, CategoryData = [], _getListCategories } = this.props;
 
-    //console.log("[DEBUG] getCategories", category, categories);
-    if (CategoryData === undefined || !CategoryData.length) {
+    if (!category && !CategoryData.length) {
+      console.log("[DEBUG] getCategories", !category, !CategoryData.length);
       _getListCategories({
-        categoryid: category ? category : "raiz",
+        categoryid: "raiz",
         itemsPage: 10,
       });
       /*Variables en localStorage

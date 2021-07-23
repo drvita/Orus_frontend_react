@@ -598,7 +598,7 @@ class StoreAddComponent extends Component {
     if (!helper.handleVerifyData(this.state, this.codeRef)) {
       return false;
     }
-    if (list.length) {
+    if (!id && list.length) {
       window.Swal.fire("Verificación", "El codigo ya esta en uso", "warning");
 
       return false;

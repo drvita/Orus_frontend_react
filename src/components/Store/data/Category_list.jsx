@@ -25,13 +25,13 @@ class CategoryListComponent extends Component {
     this.getCategoriesMain();
   }
   componentDidUpdate(props) {
-    const { category, categories } = this.props;
+    const { category, categories = [] } = this.props;
     if (props.category !== category) {
       this.getCategoriesMain();
     }
 
     if (props.categories !== categories && categories.length) {
-      console.log("[DEBUG] categories update", categories);
+      //console.log("[DEBUG] categories update", categories);
       this.setState({
         category_raiz: categories,
         category_id: category ?? 0,
@@ -402,10 +402,9 @@ class CategoryListComponent extends Component {
   };
   getCategoriesMain = () => {
     //Variables props
-    const { category, CategoryData, _getListCategories, categories } =
-      this.props;
+    const { category, CategoryData = [], _getListCategories } = this.props;
 
-    console.log("[DEBUG] getCategories", category, categories);
+    //console.log("[DEBUG] getCategories", category, categories);
     if (CategoryData === undefined || !CategoryData.length) {
       _getListCategories({
         categoryid: category ? category : "raiz",

@@ -81,7 +81,6 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         ...result,
-        item: {},
         messages: [],
         loading: false,
       };
@@ -90,8 +89,6 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         loading: false,
-        list: [],
-        metaList: {},
         messages: [],
         item: payload,
       };

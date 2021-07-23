@@ -9,7 +9,22 @@ export default function* handleSaveItem({ payload }) {
       method = ID ? "PUT" : "POST",
       result = yield call(api, url, method, DATA);
 
-    if (result.message) throw new Error(result.message);
+    if (result.message) {
+      if (result.errors) {
+        if (result.errors.code.length) {
+          yield put(
+            storeActions.setMessagesStore([
+              {
+                type: "error",
+                text: "El codigo del producto ya esta en uso",
+              },
+            ])
+          );
+          return;
+        }
+      }
+      throw new Error(result.message);
+    }
 
     if (ID) console.log("[Orus System] Producto actualizado con exito: " + ID);
     else console.log("[Orus system] Producto creado con exito", result.data.id);
@@ -26,7 +41,7 @@ export default function* handleSaveItem({ payload }) {
     );
     yield put(storeActions.getListStore(OPT));
   } catch (e) {
-    console.error("[Orus System] Error in handleSaveItem", e);
+    console.error("[Orus System] Error en saga handleSaveItem", e.message);
     yield put(
       storeActions.setMessagesStore([
         {

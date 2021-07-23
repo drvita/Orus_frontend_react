@@ -1,7 +1,10 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import Pagination from "../../Layouts/pagination";
+//Actions
+import { categoryActions } from "../../../redux/category/index";
 
-export default class CategoryListComponent extends Component {
+class CategoryListComponent extends Component {
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
@@ -21,10 +24,19 @@ export default class CategoryListComponent extends Component {
   componentDidMount() {
     this.getCategoriesMain();
   }
-  componentDidUpdate(props, state) {
-    const { category } = this.props;
+  componentDidUpdate(props) {
+    const { category, categories } = this.props;
     if (props.category !== category) {
       this.getCategoriesMain();
+    }
+
+    if (props.categories !== categories && categories.length) {
+      console.log("[DEBUG] categories update", categories);
+      this.setState({
+        category_raiz: categories,
+        category_id: category ?? 0,
+        load: false,
+      });
     }
   }
 
@@ -390,10 +402,16 @@ export default class CategoryListComponent extends Component {
   };
   getCategoriesMain = () => {
     //Variables props
-    const { category, CategoryData } = this.props;
+    const { category, CategoryData, _getListCategories, categories } =
+      this.props;
 
+    console.log("[DEBUG] getCategories", category, categories);
     if (CategoryData === undefined || !CategoryData.length) {
-      //Variables en localStorage
+      _getListCategories({
+        categoryid: category ? category : "raiz",
+        itemsPage: 10,
+      });
+      /*Variables en localStorage
       const { host, token, page, load } = this.state,
         url = "http://" + host + "/api/categories",
         categoryid = category ? "&categoryid=" + category : "&categoryid=raiz",
@@ -435,6 +453,7 @@ export default class CategoryListComponent extends Component {
             "error"
           );
         });
+      */
     } else {
       this.setState({
         category_raiz: CategoryData ? CategoryData : [],
@@ -456,3 +475,22 @@ export default class CategoryListComponent extends Component {
     });
   };
 }
+
+//export default CategoryListComponent;
+const mapStateToProps = ({ category }) => {
+    return {
+      categories: category.list,
+      //category: category.category,
+      messages: category.messages,
+      loading: category.loading,
+    };
+  },
+  mapActionsToProps = {
+    _getListCategories: categoryActions.getListCategories,
+    //_getCategory: categoryActions.getCategory,
+  };
+
+export default connect(
+  mapStateToProps,
+  mapActionsToProps
+)(CategoryListComponent);

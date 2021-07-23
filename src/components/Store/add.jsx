@@ -15,13 +15,11 @@ class StoreAddComponent extends Component {
   constructor(props) {
     super(props);
 
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       id: 0,
       code: "",
       codebar: "",
       grad: "",
-      brand: {},
       brand_id: 0,
       name: "",
       unit: "PZ",
@@ -42,8 +40,6 @@ class StoreAddComponent extends Component {
       category_list2: [],
       category_list3: [],
       category_list4: [],
-      host: ls.host,
-      token: ls.token,
     };
     this.category1 = createRef(); //Primera categoria
     this.category2 = createRef(); //Segunda categoria
@@ -129,8 +125,9 @@ class StoreAddComponent extends Component {
         cant,
         price,
       } = this.state,
-      { loadStore, loadCategory, loadContact } = this.props,
-      LOADING = loadStore || loadCategory || loadContact;
+      { list, loadStore, loadCategory, loadContact } = this.props,
+      LOADING = loadStore || loadCategory || loadContact,
+      itemSearch = list.length ? list[0] : {};
     let codeValue = code,
       nameValue = name;
 
@@ -154,7 +151,7 @@ class StoreAddComponent extends Component {
 
         nameValue = helper.handleCodeString(
           codeValue,
-          type === "varios" ? "V" : type,
+          type === "varios" ? "" : type,
           this.category2,
           this.brandRef
         );
@@ -191,7 +188,7 @@ class StoreAddComponent extends Component {
                 {id ? `Editar producto (${code})` : "Registrar nuevo producto"}
               </h3>
             </div>
-            <div className="card-body">
+            <form className="card-body" autoComplete="off">
               {category_list1 && category_list1.length ? (
                 <Fragment>
                   <div className="row">
@@ -308,7 +305,7 @@ class StoreAddComponent extends Component {
                             <div className="input-group-prepend">
                               <span
                                 className={
-                                  codeValue
+                                  codeValue && !list.length
                                     ? "input-group-text bg-primary"
                                     : "input-group-text bg-warning"
                                 }
@@ -326,6 +323,11 @@ class StoreAddComponent extends Component {
                               onChange={this.catchInputs}
                               autoComplete="off"
                             />
+                            {list.length ? (
+                              <span className="text-muted text-xs d-block w-100">
+                                El codigo ya esta en uso
+                              </span>
+                            ) : null}
                           </div>
                         </div>
                         <div className="col">
@@ -358,13 +360,7 @@ class StoreAddComponent extends Component {
                             </small>
                             <div className="input-group mb-3">
                               <div className="input-group-prepend">
-                                <span
-                                  className={
-                                    grad
-                                      ? "input-group-text bg-primary"
-                                      : "input-group-text bg-warning"
-                                  }
-                                >
+                                <span className="input-group-text bg-primary">
                                   <i className="fas fa-glasses"></i>
                                 </span>
                               </div>
@@ -408,7 +404,7 @@ class StoreAddComponent extends Component {
                               ref={this.nameRef}
                               value={nameValue}
                               onChange={this.catchInputs}
-                              autoComplete="off"
+                              maxLength="149"
                             />
                           </div>
                         </div>
@@ -518,19 +514,11 @@ class StoreAddComponent extends Component {
                   </h2>
                 </div>
               )}
-            </div>
+            </form>
             <div className="card-footer text-right">
               <div className="row">
                 <div className="col-md-12">
                   <div className="btn-group" role="group">
-                    {/*<Link
-                      to="/almacen/registro"
-                      className="btn btn-dark"
-                      onClick={this.setNew}
-                    >
-                      <i className="fas fa-plus mr-1"></i>
-                      Nuevo
-                    </Link>*/}
                     <Link
                       to="/almacen"
                       className="btn btn-default"
@@ -575,36 +563,18 @@ class StoreAddComponent extends Component {
     const { handleClose: _handleClose } = this.props;
     _handleClose("inbox");
   };
-  setNew = (e) => {
-    this.setState({
-      id: 0,
-      code: "",
-      codebar: "",
-      grad: "",
-      brand_id: 0,
-      name: "",
-      unit: "PZ",
-      cant: 1,
-      price: 1,
-      supplier: 0,
-      brand: 0,
-      category_id: 0,
-      category_id1: 0,
-      category_id2: 0,
-      category_id3: 0,
-      category_id4: 0,
-      category_list2: [],
-      category_list3: [],
-      category_list4: [],
-      load: false,
-    });
-  };
-  catchInputs = (e) => {
-    const { name, type } = e.target;
-    let { value } = e.target;
+  catchInputs = ({ target }) => {
+    const { name, type } = target,
+      { _getListStore } = this.props;
+    let { value } = target;
 
     if (type === "text") value = value.toLowerCase();
     if (type === "number") value = parseInt(value);
+    if (name === "code") {
+      _getListStore({
+        code: value,
+      });
+    }
 
     this.setState({
       [name]: value,
@@ -624,9 +594,14 @@ class StoreAddComponent extends Component {
         price,
         grad,
       } = this.state,
-      { options, _saveItem } = this.props;
+      { list, options, _saveItem } = this.props;
     //Verificamos campos validos
     if (!helper.handleVerifyData(this.state, this.codeRef)) {
+      return false;
+    }
+    if (list.length) {
+      window.Swal.fire("Verificación", "El codigo ya esta en uso", "warning");
+
       return false;
     }
     //Make a body data
@@ -695,13 +670,12 @@ class StoreAddComponent extends Component {
       code: data.codigo,
       codebar: data.c_barra,
       grad: data.graduacion,
-      brand: data.marca,
-      brand_id: data.marca.id,
+      brand_id: data.marca ? data.marca.id : 0,
       name: data.producto,
       unit: data.unidad,
       cant: data.cantidades,
       price: data.precio,
-      supplier: data.proveedor.id,
+      supplier: data.proveedor ? data.proveedor.id : 0,
       category: data.categoria,
       created_at: data.created_at,
       created: data.created,
@@ -724,7 +698,6 @@ class StoreAddComponent extends Component {
 const mapStateToProps = ({ storeItem, category, contact }) => {
     return {
       list: storeItem.list,
-      meta: storeItem.metaList,
       item: storeItem.item,
       messages: storeItem.messages,
       options: storeItem.options,
@@ -738,6 +711,7 @@ const mapStateToProps = ({ storeItem, category, contact }) => {
     _deleteItem: storeActions.deleteItem,
     _getItem: storeActions.getItem,
     _saveItem: storeActions.saveItem,
+    _getListStore: storeActions.getListStore,
     _getListCategories: categoryActions.getListCategories,
   };
 

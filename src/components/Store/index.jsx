@@ -22,17 +22,14 @@ class IndexStoreComponent extends Component {
     const { match, history, _getItem, _setItem } = this.props,
       { id } = match.params;
 
-    if (id) {
-      if (Number.isInteger(id)) {
-        _getItem(id);
-      } else if (id === "new") {
-        this.setState({
-          panel: "neworedit",
-        });
-        _setItem({});
-      } else {
-        history.push(`/almacen`);
-      }
+    if (parseInt(id)) {
+      _getItem(parseInt(id));
+    } else if (id === "new") {
+      this.setState({
+        panel: "neworedit",
+      });
+      history.push(`/almacen/new`);
+      _setItem({});
     }
   }
   componentDidUpdate(props) {

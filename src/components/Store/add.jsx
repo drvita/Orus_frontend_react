@@ -304,8 +304,10 @@ class StoreAddComponent extends Component {
                             <div className="input-group-prepend">
                               <span
                                 className={
-                                  codeValue && !list.length
-                                    ? "input-group-text bg-primary"
+                                  codeValue
+                                    ? !id && list.length
+                                      ? "input-group-text bg-warning"
+                                      : "input-group-text bg-primary"
                                     : "input-group-text bg-warning"
                                 }
                               >
@@ -322,7 +324,7 @@ class StoreAddComponent extends Component {
                               onChange={this.catchInputs}
                               autoComplete="off"
                             />
-                            {list.length ? (
+                            {!id && list.length ? (
                               <span className="text-muted text-xs d-block w-100">
                                 El codigo ya esta en uso
                               </span>

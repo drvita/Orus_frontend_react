@@ -120,13 +120,13 @@ const handleDeleteItem = (item, options, _delete) => {
 const handleSaveItem = (id = null, data, options, _save, _close) => {
   return window.Swal.fire({
     title: "Almacenamiento",
-    text: data.id
+    text: id
       ? "¿Esta seguro de actualizar el producto?"
       : "¿Esta seguro de crear un nuevo producto?",
     icon: "question",
     showCancelButton: true,
     confirmButtonColor: "#007bff",
-    confirmButtonText: data.id ? "Actualizar" : "Crear",
+    confirmButtonText: id ? "Actualizar" : "Crear",
     cancelButtonText: "Cancelar",
     showLoaderOnConfirm: true,
   }).then(({ dismiss }) => {

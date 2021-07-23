@@ -126,8 +126,7 @@ class StoreAddComponent extends Component {
         price,
       } = this.state,
       { list, loadStore, loadCategory, loadContact } = this.props,
-      LOADING = loadStore || loadCategory || loadContact,
-      itemSearch = list.length ? list[0] : {};
+      LOADING = loadStore || loadCategory || loadContact;
     let codeValue = code,
       nameValue = name;
 

@@ -16,7 +16,10 @@ export default function* handleGetList({ payload: options }) {
       })
     );
   } catch (e) {
-    console.error("[Orus System] Error en saga handleGetList:", e);
+    console.error(
+      "[Orus System] Error en saga/categorias handleGetList:",
+      e.message
+    );
     yield put(categoryActions.setMessageCategory([]));
   }
 }

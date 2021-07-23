@@ -30,7 +30,7 @@ export function getUrl(node, id, param = {}) {
     url += `/${id}`;
   }
 
-  if (paramKeys.length) {
+  if (paramKeys) {
     paramKeys.map((k) => {
       if (!param[k]) {
         delete param[k];

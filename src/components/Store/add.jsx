@@ -174,8 +174,6 @@ class StoreAddComponent extends Component {
         );
       }
     }
-    //Sure that we have a code
-    codeValue = codeValue ? codeValue : Date.now().toString();
 
     return (
       <div className="row">
@@ -322,6 +320,7 @@ class StoreAddComponent extends Component {
                               ref={this.codeRef}
                               value={codeValue}
                               onChange={this.catchInputs}
+                              onBlur={this.handleSearchCode}
                               autoComplete="off"
                             />
                             {!id && list.length ? (
@@ -560,22 +559,24 @@ class StoreAddComponent extends Component {
     );
   }
 
+  handleSearchCode = (event) => {
+    const { _getListStore } = this.props,
+      { code } = this.state;
+
+    _getListStore({
+      code,
+    });
+  };
   handleClose = () => {
     const { handleClose: _handleClose } = this.props;
     _handleClose("inbox");
   };
   catchInputs = ({ target }) => {
-    const { name, type } = target,
-      { _getListStore } = this.props;
+    const { name, type } = target;
     let { value } = target;
 
     if (type === "text") value = value.toLowerCase();
     if (type === "number") value = parseInt(value);
-    if (name === "code") {
-      _getListStore({
-        code: value,
-      });
-    }
 
     this.setState({
       [name]: value,

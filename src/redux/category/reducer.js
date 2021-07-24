@@ -22,6 +22,18 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         loading: true,
       };
     }
+    case TYPE.SAGE_DELETE_CATEGORY: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
+    case TYPE.SAGA_SAVE_CATEGORY: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
 
     case TYPE.SET_LIST_CATEGORY: {
       const { payload } = action;

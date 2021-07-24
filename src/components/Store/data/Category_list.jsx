@@ -1,14 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Pagination from "../../Layouts/pagination";
 //Actions
 import { categoryActions } from "../../../redux/category/index";
+import helper from "../helpers";
 
 class CategoryListComponent extends Component {
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
+      id: 0,
       meta: {},
       add: false,
       name: "",
@@ -17,34 +18,48 @@ class CategoryListComponent extends Component {
       page: 1,
       host: ls.host,
       token: ls.token,
-      load: true,
+      load: false,
     };
   }
 
   componentDidMount() {
-    this.getCategoriesMain();
+    const { categoryData = [] } = this.props;
+
+    if (categoryData) {
+      this.setState({
+        category_raiz: categoryData,
+      });
+    }
   }
   componentDidUpdate(props) {
-    const { category, categories = [] } = this.props;
-    if (props.category !== category) {
-      this.getCategoriesMain();
+    const { categoryData = [], messages: MSGS, _setMessage } = this.props;
+
+    //console.log("[DEBUG] categories update");
+    if (props.categoryData !== categoryData) {
+      this.setState({
+        category_raiz: categoryData,
+      });
     }
 
-    if (props.categories !== categories && categories.length) {
-      //console.log("[DEBUG] categories update", categories);
-      this.setState({
-        category_raiz: categories,
-        category_id: category ?? 0,
-        load: false,
+    if (props.messages.length !== MSGS.length && MSGS.length) {
+      MSGS.forEach((msg) => {
+        const { type, text } = msg;
+        window.Swal.fire({
+          icon: type,
+          title: text,
+          showConfirmButton: type !== "error" ? false : true,
+          timer: type !== "error" ? 1500 : 9000,
+        });
       });
+      _setMessage([]);
     }
   }
 
   render() {
-    const { category_raiz, category_id, name, add, meta, load } = this.state,
-      { categoryName, categoryDataName, categorySelect, category } = this.props;
+    const { category_raiz, category_id, name, add } = this.state,
+      { loading: load } = this.props;
 
-    console.log("[DEBUG] Categories", category_raiz);
+    //console.log("[DEBUG] Categories", category_raiz);
 
     return (
       <div className="card card-primary card-outline">
@@ -53,68 +68,55 @@ class CategoryListComponent extends Component {
             <thead>
               <tr>
                 <th>Nombre</th>
-                <th style={{ width: 16 }} className="text-center"></th>
+                <th style={{ width: 48 }}></th>
               </tr>
             </thead>
             <tbody>
               {!load && category_raiz ? (
                 <React.Fragment>
-                  <tr
-                    className={category_id === category ? "table-success" : ""}
-                    onClick={(e) => {
-                      this.setState({
-                        category_id: parseInt(category) ? category : 0,
-                      });
-                      categorySelect({
-                        [categoryName]: 0,
-                        [categoryDataName]: [],
-                        category_id: category,
-                      });
-                    }}
-                  >
-                    <td
-                      colSpan="2"
-                      className="text-capitalize text-bold text-primary"
-                      style={{ cursor: "pointer" }}
-                    >
-                      Raiz
-                    </td>
-                  </tr>
                   {category_raiz.map((cat) => {
                     return (
-                      <tr
-                        key={cat.id}
-                        className={
-                          cat.id === category_id ? "table-success" : ""
-                        }
-                      >
+                      <tr key={cat.id}>
                         <td className="text-capitalize">
-                          {cat.hijos && cat.hijos.length ? (
-                            <a
-                              href={"#select!" + cat.id}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                this.handleSelectCategory(cat);
-                              }}
-                            >
-                              {cat.categoria}
-                            </a>
-                          ) : (
-                            <span className="text-dark">{cat.categoria}</span>
-                          )}
+                          <a
+                            href={"#select!" + cat.id}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              this.handleSelectCategory(cat);
+                            }}
+                            className={
+                              cat.sons && cat.sons.length
+                                ? "text-primary"
+                                : "text-dark"
+                            }
+                          >
+                            {cat.categoria}
+                          </a>
                         </td>
-                        <td>
-                          {cat.hijos && (
-                            <button
-                              className="btn btn-outline-dark btn-sm"
-                              onClick={(e) => {
-                                this.handleClickDelete(cat.id, cat.categoria);
-                              }}
-                              disabled={cat.hijos.length}
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          )}
+                        <td className="btn-group">
+                          <button
+                            type="button"
+                            className="btn btn-default"
+                            disabled={true}
+                            title="Proximamente"
+                          >
+                            <i className="fas fa-edit"></i>
+                          </button>
+                          <button
+                            type="button"
+                            title="Eliminar"
+                            className={
+                              cat.hijos && cat.hijos.length
+                                ? "btn btn-outline-secondary btn-sm"
+                                : "btn btn-outline-danger btn-sm"
+                            }
+                            onClick={(e) => {
+                              this.handleClickDelete(cat.id, cat.categoria);
+                            }}
+                            disabled={cat.hijos && cat.hijos.length}
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
                         </td>
                       </tr>
                     );
@@ -137,7 +139,7 @@ class CategoryListComponent extends Component {
                     <input
                       type="text"
                       name="name"
-                      className="form-control text-capitalize"
+                      className="form-control text-uppercase"
                       autoComplete="off"
                       value={name}
                       onChange={this.catchInputs}
@@ -150,35 +152,38 @@ class CategoryListComponent extends Component {
                     <button
                       className="btn btn-dark btn-sm"
                       onClick={this.handleClickSave}
+                      disabled={name.length < 3}
+                      title="Guardar categoria"
                     >
                       <i className="fas fa-save"></i>
                     </button>
                   </td>
                 </tr>
               </tfoot>
-            ) : (
-              <tfoot>
-                <tr>
-                  <td colSpan="3">
-                    <Pagination
-                      meta={meta}
-                      handleChangePage={this.handleChangePage}
-                    />
-                  </td>
-                </tr>
-              </tfoot>
-            )}
+            ) : null}
           </table>
         </div>
         <div className="card-footer text-right">
           <button
-            className="btn btn-primary btn-sm"
+            className={
+              add
+                ? "btn btn-secondary btn-sm text-bold"
+                : "btn btn-primary btn-sm"
+            }
             onClick={this.handleClickAdd}
+            disabled={!category_id}
+            title={add ? "Cancelar" : "Crear nueva categoria"}
           >
-            {this.state.add ? (
-              <i className="fas fa-undo"></i>
+            {add ? (
+              <>
+                <i className="fas fa-ban mr-1"></i>
+                Cancelar
+              </>
             ) : (
-              <i className="fas fa-plus"></i>
+              <>
+                <i className="fas fa-plus mr-1"></i>
+                Agregar
+              </>
             )}
           </button>
         </div>
@@ -187,113 +192,30 @@ class CategoryListComponent extends Component {
   }
 
   handleSelectCategory = (cat) => {
-    const { categoryName, categoryDataName, categorySelect, category, last } =
-      this.props;
+    const { last, categorySelect: _categorySelect } = this.props,
+      { category_raiz } = this.state;
 
-    if (last) {
-      this.setState({
-        category_id: parseInt(category) ? category : 0,
-      });
-      categorySelect({
-        [categoryName]: 0,
-        [categoryDataName]: [],
-        category_id: category,
-      });
-    } else {
-      categorySelect({
-        [categoryName]: cat.id,
-        [categoryDataName]: cat.hijos,
-        category_id: cat.id,
-      });
-      this.setState({
-        category_id: cat.id,
-      });
-    }
-  };
-  handleChangePage = (id) => {
+    if (last) return false;
+    if (!cat.sons || (cat.sons && !cat.sons.length)) return false;
+
+    _categorySelect({
+      category_id: cat.id,
+      category_data: category_raiz,
+    });
     this.setState({
-      page: id,
+      category_id: cat.id,
     });
   };
   handleClickDelete = (id, name) => {
-    window.Swal.fire({
-      title: "Eliminar",
-      text: "¿Esta seguro de eliminar la categoria " + name.toUpperCase() + "?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      confirmButtonText: "Eliminar",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm && id) {
-          const { host, token } = this.state;
+    if (id) {
+      const { _delete } = this.props,
+        item = { id },
+        options = { categoryid: "raiz" },
+        text =
+          "Esta seguro de eliminar la categoria: " + name.toUpperCase() + "?";
 
-          //Inicio de proceso de eliminción por API
-          console.log("Solicitud de eliminación de categoria por API");
-          return fetch("http://" + host + "/api/categories/" + id, {
-            method: "DELETE",
-            signal: this.signal,
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then(async (response) => {
-              let back = {};
-              if (response.status !== 204) back = await response.json();
-              if (!response.ok) {
-                throw new Error(back.message);
-              }
-              return back;
-            })
-            .catch((e) => {
-              console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
-        }
-      },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        console.log("Categoria eliminado");
-        window.Swal.fire({
-          icon: "success",
-          title: "Categoria eliminada con exito",
-          showConfirmButton: false,
-          timer: 1500,
-        }).then((res) => {
-          //Proceso de eliminacion de categoria del array
-          const { category } = this.props;
-          let { category_raiz } = this.state,
-            indexCat = 0;
-
-          if (category_raiz.length) {
-            category_raiz.filter((cat, i) => {
-              if (cat.id === id) indexCat = i;
-              return false;
-            });
-            category_raiz.splice(indexCat, 1);
-            this.setState({
-              category_raiz,
-              category_id: category,
-            });
-          }
-          //fin del proceso
-        });
-      } else if (result && !result.dismiss) {
-        console.log("Orus res: ", result);
-        window.Swal.fire(
-          "Error",
-          "Se perdio la conexion con el servidor",
-          "error"
-        );
-      }
-    });
+      helper.handleDeleteItem(item, options, _delete, text);
+    }
   };
   handleClickSave = () => {
     //Verificamos campos validos
@@ -307,163 +229,25 @@ class CategoryListComponent extends Component {
       return false;
     }
 
-    window.Swal.fire({
-      title: "Almacenamiento",
-      text: "¿Esta seguro de crear una nueva categoria?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#007bff",
-      confirmButtonText: "Crear",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          //Variables
-          const { host, token, category_id, name } = this.state,
-            { category } = this.props,
-            body = {
-              name,
-              category_id: parseInt(category_id)
-                ? parseInt(category_id)
-                : parseInt(category)
-                ? parseInt(category)
-                : "",
-            };
-
-          //Actualiza el pedido o creamos un pedido nuevo según el ID
-          console.log("Enviando datos a API para almacenar");
-          return fetch("http://" + host + "/api/categories", {
-            method: "POST",
-            body: JSON.stringify(body),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then(async (response) => {
-              let back = {};
-              if (response.status !== 204) back = await response.json();
-              if (!response.ok) {
-                throw new Error(back.message);
-              }
-              return back;
-            })
-            .catch((e) => {
-              console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
-        }
+    const { id, category_id, name } = this.state,
+      data = {
+        name,
+        category_id: category_id,
       },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        const data = result.value,
-          { category_raiz, category_id } = this.state,
-          { category } = this.props;
-
-        if (data.data) {
-          console.log("Categoria almacenada");
-          window.Swal.fire({
-            icon: "success",
-            title: "Categoria almacenada con exito",
-            showConfirmButton: false,
-            timer: 1500,
-          }).then(async (res) => {
-            const toAdd = {
-              ...data.data,
-              hijos: [],
-            };
-            //Resultado actualizando datos
-            if (parseInt(category) === category_id) {
-              category_raiz.push(toAdd);
-            } else {
-              await category_raiz.find((cat) => {
-                if (cat.id === category_id) {
-                  cat.hijos.push(toAdd);
-                  return cat;
-                } else return false;
-              });
-            }
-
-            this.setState({
-              category_raiz,
-              name: "",
-              add: !this.state.add,
-              category_id: toAdd.id,
-            });
-            //Fin de resultado
-          });
-        } else {
-          window.Swal.fire("Error", "al almacenar la categoria", "error");
-          console.error("Orus res: ", data.message);
-        }
-      }
-    });
-  };
-  getCategoriesMain = () => {
-    //Variables props
-    const { category, CategoryData = [], _getListCategories } = this.props;
-
-    if (!category && !CategoryData.length) {
-      console.log("[DEBUG] getCategories", !category, !CategoryData.length);
-      _getListCategories({
-        categoryid: "raiz",
-        itemsPage: 10,
-      });
-      /*Variables en localStorage
-      const { host, token, page, load } = this.state,
-        url = "http://" + host + "/api/categories",
-        categoryid = category ? "&categoryid=" + category : "&categoryid=raiz",
-        ppage = page > 0 ? "?page=" + page : "?page=1";
-
-      //Mandamos señal de carga si no lo he hecho
-      if (!load) {
+      { _save } = this.props,
+      options = { categoryid: "raiz" },
+      text = id
+        ? "¿Esta seguro de actualizar la categoria?"
+        : "¿Esta seguro de crear una nueva categoria?",
+      _close = () => {
         this.setState({
-          load: true,
+          name: "",
+          category_id: 0,
+          add: false,
         });
-      }
-      //Categories main
-      fetch(url + ppage + categoryid, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(response.statusText);
-          }
-          return response.json();
-        })
-        .then((cat) => {
-          this.setState({
-            category_raiz: cat.data !== null ? cat.data : [],
-            category_id: category ?? 0,
-            load: false,
-          });
-        })
-        .catch((e) => {
-          console.error("Orus: " + e);
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
-        });
-      */
-    } else {
-      this.setState({
-        category_raiz: CategoryData ? CategoryData : [],
-        category_id: category,
-        load: false,
-      });
-    }
+      };
+
+    helper.handleSaveItem(id, data, options, _save, _close, text);
   };
   handleClickAdd = () => {
     this.setState({
@@ -483,14 +267,15 @@ class CategoryListComponent extends Component {
 const mapStateToProps = ({ category }) => {
     return {
       categories: category.list,
-      //category: category.category,
       messages: category.messages,
       loading: category.loading,
     };
   },
   mapActionsToProps = {
-    _getListCategories: categoryActions.getListCategories,
-    //_getCategory: categoryActions.getCategory,
+    _getList: categoryActions.getListCategories,
+    _delete: categoryActions.deleteCategory,
+    _setMessage: categoryActions.setMessageCategory,
+    _save: categoryActions.saveCategory,
   };
 
 export default connect(

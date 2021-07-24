@@ -91,13 +91,13 @@ const handleVerifyData = (data, codeRef) => {
 
   return true;
 };
-const handleDeleteItem = (item, options, _delete) => {
+const handleDeleteItem = (item, options, _delete, text) => {
   if (item.id) {
-    //Check sale
-
+    //Check text
+    if (!text) text = `¿Esta seguro de eliminar el producto ${item.code}?`;
     //delete confirm
     window.Swal.fire({
-      text: `¿Esta seguro de eliminar el producto ${item.code}?`,
+      text,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -110,19 +110,21 @@ const handleDeleteItem = (item, options, _delete) => {
           id: item.id,
           options,
         });
-        console.log("[Orus System] Eliminando producto: " + item.id);
         return true;
       }
     });
     return false;
   }
 };
-const handleSaveItem = (id = null, data, options, _save, _close) => {
-  return window.Swal.fire({
-    title: "Almacenamiento",
-    text: id
+const handleSaveItem = (id, data, options, _save, _close, text) => {
+  if (!text) {
+    text = id
       ? "¿Esta seguro de actualizar el producto?"
-      : "¿Esta seguro de crear un nuevo producto?",
+      : "¿Esta seguro de crear un nuevo producto?";
+  }
+  window.Swal.fire({
+    title: "Almacenamiento",
+    text,
     icon: "question",
     showCancelButton: true,
     confirmButtonColor: "#007bff",

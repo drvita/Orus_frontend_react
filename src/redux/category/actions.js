@@ -9,6 +9,14 @@ const getCategory = (payload) => ({
   type: TYPE.SAGA_GET_CATEGORY,
   payload,
 });
+const deleteCategory = (payload) => ({
+  type: TYPE.SAGE_DELETE_CATEGORY,
+  payload,
+});
+const saveCategory = (payload) => ({
+  type: TYPE.SAGA_SAVE_CATEGORY,
+  payload,
+});
 
 //Other
 const setListCategories = (payload = []) => ({
@@ -30,6 +38,8 @@ const toExportActions = {
   setListCategories,
   setCategory,
   setMessageCategory,
+  deleteCategory,
+  saveCategory,
 };
 
 export default toExportActions;

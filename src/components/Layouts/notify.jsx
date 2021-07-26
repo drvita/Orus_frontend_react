@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { getNotifyUser, readNotifyUser } from "../../redux/user/actions";
+import { userActions } from "../../redux/user/";
 
 class NotifyComponent extends Component {
   constructor(props) {
@@ -15,12 +15,12 @@ class NotifyComponent extends Component {
   }
 
   componentDidMount() {
-    const { isLogged } = this.props;
+    const { isLogged, getNotifyUser: _getNotifyUser } = this.props;
 
     if (isLogged) {
-      this.props.getNotifyUser();
+      _getNotifyUser();
       this.timerNotify = setInterval(() => {
-        this.props.getNotifyUser();
+        _getNotifyUser();
       }, 60000);
     }
   }
@@ -121,15 +121,15 @@ class NotifyComponent extends Component {
     readNotifyUser({ id });
   };
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = ({ users }) => {
     return {
-      notifications: state.logging.notifications,
-      isLogged: state.logging.isLogged,
+      notifications: users.notifications,
+      dataLoggin: users.dataLoggin,
     };
   },
   mapDispatchToProps = {
-    getNotifyUser,
-    readNotifyUser,
+    getNotifyUser: userActions.getNotifyUser,
+    readNotifyUser: userActions.readNotifyUser,
   };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotifyComponent);

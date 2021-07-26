@@ -1,11 +1,6 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import moment from "moment";
-import "moment/locale/es";
-import Header from "../Layouts/headerTable";
-import Pagination from "../Layouts/pagination";
-import Filters from "./index_filter";
-import Actions from "../Layouts/actionsTable";
+//Components
+import Inbox from "./views/Inbox";
 
 export default class Users extends Component {
   constructor(props) {
@@ -26,12 +21,9 @@ export default class Users extends Component {
       rol: sdd ? sdd.rol : "",
       host: ls.host,
       token: ls.token,
+      //New
+      panel: "inbox",
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
-  }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
     this.getUsers();
@@ -66,130 +58,129 @@ export default class Users extends Component {
   }
 
   render() {
-    let { users, load } = this.state,
-      dataHeaders = [
-        { name: "usuario", type: "username", filter: true },
-        { name: "nombre", type: "name", filter: true },
-        { name: "e-mail", type: "email", filter: true },
-        { name: "Rol", type: "rol", filter: true },
-        { name: "Actividad", type: "session" },
-        { name: "Actualizado", type: "updated_at", filter: true },
-        { name: "Registrado", type: "created_at", filter: true },
-      ];
+    const { panel, options = {} } = this.state;
 
     return (
-      <div className="card card-primary card-outline">
-        <div className="card-header">
-          <h2 className="card-title text-primary">
-            <i className="fas fa-user mr-1"></i>
-            Usuarios registrados
-          </h2>
-          <div className="card-tools">
-            <Filters
-              search={this.state.search}
-              rol={this.state.rol}
-              changeFilters={this.changeFilters}
-              handleChangePage={this.handleChangePage}
-            />
-            <Pagination
-              meta={users.meta}
-              handleChangePage={this.handleChangePage}
-            />
+      <div className="row">
+        <div className="col-md-2 col-sm-12">
+          <a
+            href="#new"
+            className={
+              panel !== "inbox"
+                ? "disabled mb-3 btn btn-secondary btn-block"
+                : "mb-3 btn btn-primary btn-block"
+            }
+            onClick={(e) => {
+              e.preventDefault();
+              this.handleShowPanel(e, 2);
+            }}
+            disabled={panel !== "inbox" ? true : false}
+          >
+            <i className="mr-2 fas fa-plus"></i>
+            Usuario nuevo
+          </a>
+
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title text-dark">
+                <i className="mr-2 fas fa-ellipsis-v"></i>Menu y filtros
+              </h5>
+            </div>
+            <div className="p-0 card-body">
+              <ul className="nav nav-pills flex-column">
+                <li className="nav-item">
+                  <a
+                    href="#item"
+                    className={panel === 1 ? "nav-link active" : "nav-link"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      this.handleShowPanel(e, 1);
+                    }}
+                  >
+                    <i className="mr-2 fas fa-notes-medical"></i> Pendientes
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a
+                    href="#item"
+                    className={!panel ? "nav-link active" : "nav-link"}
+                    onClick={(e) => this.handleShowPanel(e, 0)}
+                  >
+                    <i className="mr-2 fas fa-clipboard-list"></i> Pedidos
+                  </a>
+                </li>
+                {!panel ? (
+                  <>
+                    <li className="nav-item">&nbsp;</li>
+                    <li className="p-2 nav-item">
+                      <label htmlFor="status">Estado del pedido</label>
+                      <select
+                        className="form-control "
+                        name="status"
+                        id="status"
+                        value={options.status}
+                        onChange={this.handleSetSelectOptions}
+                      >
+                        <option value="">-- Todos --</option>
+                        <option value="0">En proceso</option>
+                        <option value="1">Laboratorio</option>
+                        <option value="2">Bicelación</option>
+                        <option value="3">Terminado</option>
+                        <option value="4">Entregado</option>
+                        {/* <option value="5">Garantia</option> */}
+                      </select>
+                    </li>
+                    <li className="nav-item p-2">
+                      <label htmlFor="orderby">Ordenar por</label>
+                      <select
+                        className="form-control "
+                        name="orderby"
+                        id="orderby"
+                        value={options.orderby}
+                        onChange={this.handleSetSelectOptions}
+                      >
+                        <option value="created_at">Fecha de registro</option>
+                        <option value="updated_at">
+                          Fecha de modificacion
+                        </option>
+                      </select>
+                    </li>
+                    <li className="nav-item p-2">
+                      <label htmlFor="order">Mostrar por</label>
+                      <select
+                        className="form-control "
+                        name="order"
+                        id="order"
+                        value={options.order}
+                        onChange={this.handleSetSelectOptions}
+                      >
+                        <option value="asc">Antiguos</option>
+                        <option value="desc">Recientes</option>
+                      </select>
+                    </li>
+                    <li className="nav-item p-2">
+                      <label htmlFor="itemsPage">Numero de pedidos</label>
+                      <select
+                        className="form-control "
+                        name="itemsPage"
+                        id="itemsPage"
+                        value={options.itemsPage}
+                        onChange={this.handleSetSelectOptions}
+                      >
+                        <option value="10">ver 10</option>
+                        <option value="20">ver 20</option>
+                        <option value="50">ver 50</option>
+                        <option value="100">ver 100</option>
+                      </select>
+                    </li>
+                  </>
+                ) : null}
+              </ul>
+            </div>
           </div>
         </div>
-        <div className="card-body table-responsive p-0">
-          <table className="table table-sm table-bordered table-hover">
-            <Header
-              orderby={this.state.orderby}
-              order={this.state.order}
-              data={dataHeaders}
-              actions={true}
-              handleOrder={this.handleOrder}
-            />
-            <tbody>
-              {load ? (
-                <tr>
-                  <td colSpan="9" className="alert alert-light text-center p-4">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : Object.keys(users.data).length ? (
-                users.data.map((user) => {
-                  return (
-                    <tr key={user.id}>
-                      <th scope="row">
-                        <span className="text-capitalize text-primary">
-                          {user.username}
-                        </span>
-                      </th>
-                      <td>
-                        <Link to={"/usuarios/registro/" + user.id}>
-                          <span className="badge badge-primary text-capitalize p-1">
-                            {user.name}
-                            <i className="fas fa-pencil-alt ml-1"></i>
-                          </span>
-                        </Link>
-                      </td>
-                      <td>{user.email}</td>
-                      <td>
-                        {user.rol > 0 ? (
-                          user.rol === 1 ? (
-                            <span className="text-capitalize text-success">
-                              <i className="fas fa-user-tag mr-2"></i>
-                              Ventas
-                            </span>
-                          ) : (
-                            <span className="text-capitalize text-primary">
-                              <i className="fas fa-user-tie mr-2"></i>
-                              Optometrista
-                            </span>
-                          )
-                        ) : (
-                          <span className="text-capitalize text-danger">
-                            <i className="fas fa-user-shield mr-2"></i>
-                            Administrador
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        {user.session
-                          ? moment(user.session.last_activity).fromNow()
-                          : "--"}
-                      </td>
-                      <td>{moment(user.updated_at).fromNow()}</td>
-                      <td className="text-right">
-                        {moment(user.created_at).format("ll")}
-                      </td>
-                      <Actions
-                        id={user.id}
-                        item={user.username}
-                        delete={this.handleDelete}
-                        edit={"/usuarios/registro/"}
-                      />
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <th colSpan="8" className="alert alert-info text-center">
-                    <i className="fas fa-info mr-2"></i>
-                    No hay datos para mostrar
-                  </th>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="card-footer text-right">
-          <Link
-            to="/usuarios/registro"
-            className="btn btn-outline-primary btn-lg"
-          >
-            <i className="fas fa-plus mr-2"></i>
-            Nuevo usuario
-          </Link>
+        <div className="col-md-10 col-sm-12">
+          {panel === "inbox" && <Inbox />}
         </div>
       </div>
     );

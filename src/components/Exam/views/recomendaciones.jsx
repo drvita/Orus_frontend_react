@@ -29,11 +29,9 @@ class RecomendationGlassComponent extends Component {
       });
     } else {
       _getList({
-        options: {
-          categoryid: "raiz",
-          search: "lentes",
-        },
-        id: null,
+        categoryid: "raiz",
+        search: "lentes",
+        order: "id",
       });
     }
 
@@ -52,7 +50,7 @@ class RecomendationGlassComponent extends Component {
       } = this.props,
       { category: category_state } = this.state;
 
-    if (props.categories.length !== categories.length && categories.length) {
+    if (props.categories !== categories && categories.length) {
       this.setState({
         category_list: categories[0].sons,
       });

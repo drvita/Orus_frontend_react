@@ -43,13 +43,16 @@ class IndexExamComponent extends Component {
       { messages: MSGS, exam, _setMessages } = this.props;
 
     if (state.load !== load && load === true) {
-      console.log("[OrusSystem] Cargando examenes", load);
+      console.log("[Orus System] Cargando examenes");
       //console.log("[DEBUG] updates state", state, this.state);
       this.getExams();
+      this.setState({
+        load: false,
+      });
     }
 
     if (props.exam.id !== exam.id && exam.id) {
-      console.log("[OrusSystem] Exam en URL", exam.id);
+      console.log("[Orus System] Exam en URL", exam.id);
       this.setState({
         newOrEdit: true,
         exam,
@@ -342,7 +345,7 @@ class IndexExamComponent extends Component {
         metaList: {},
       },
     });
-    _setContact({});
+    _setContact();
 
     history.push(`/consultorio/new`);
   };
@@ -393,7 +396,7 @@ class IndexExamComponent extends Component {
       options: back ? options : OPT,
       load: true,
     });
-    _setContact({});
+    _setContact();
     history.push(`/consultorio`);
   };
   handleEditItem = (item = null) => {
@@ -475,8 +478,11 @@ class IndexExamComponent extends Component {
     });
   };
   handleSync = () => {
+    const { load } = this.state;
+
+    if (load) this.getExams();
     this.setState({
-      load: true,
+      load: !load,
     });
   };
   handleDelete = (id, item) => {
@@ -521,10 +527,6 @@ class IndexExamComponent extends Component {
       { options } = this.state;
 
     _getListExams(options);
-
-    this.setState({
-      load: false,
-    });
   }
 }
 

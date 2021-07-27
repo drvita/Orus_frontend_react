@@ -1,5 +1,4 @@
 import { call, put } from "redux-saga/effects";
-import { TYPE } from "../types";
 import { api } from "../../sagas/api";
 import { userActions } from "../index";
 

@@ -6,6 +6,16 @@ const subscription = async () => {
         .then(function (response) {
           if (response) {
             console.log("[SW] Services Worker registrado con exito");
+            Notification.requestPermission()
+              .then((response) => {
+                if (response === "granted") {
+                  console.log("[SW] Servicio de notificaciones activadas");
+                  //window.sendPushMessage("Contactos", "Notificaciones activadas");
+                } else {
+                  console.error("[SW] Servicio de notificaciones rechazadas");
+                }
+              })
+              .catch((error) => console.error(error.message));
           }
         })
         .catch(function (error) {
@@ -27,6 +37,14 @@ window.sendPushMessage = (title, message) => {
   navigator.serviceWorker.ready.then((sw) => {
     sw.showNotification(title, {
       body: message,
+    }).catch((error) => {
+      console.error("[SW] Notificaciones no disponibles", error.message);
+      window.Swal.fire({
+        title: message,
+        showConfirmButton: title !== "error" ? false : true,
+        timer: title !== "error" ? 1500 : 9000,
+        position: "top",
+      });
     });
   });
 };

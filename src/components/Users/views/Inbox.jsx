@@ -1,26 +1,27 @@
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 //Components
 import ListInbox from "../../../layouts/list_inbox";
 //Actions
-import { storeActions } from "../../../redux/store/index";
+import { userActions } from "../../../redux/user/index";
 import helper from "../helpers";
 
 function InboxComponent(props) {
   const {
     loading,
     meta,
-    list,
+    users,
     options,
     //Functions
-    _getList,
+    _getListUsers,
     _setOptions,
-    _deleteItem,
-    _setItem,
-    _getItem,
+    _deleteUser,
+    _setUser,
+    _getUser,
   } = props;
   //States
-  const [itemSelected, setItemSelected] = useState({ id: 0 });
+  const [userSelected, setUserSelected] = useState({ id: 0 });
   //Functions
   const handleChangeOptions = (key, value) => {
       if (options[key] !== value) {
@@ -31,25 +32,26 @@ function InboxComponent(props) {
       }
     },
     deleteItem = () => {
-      helper.handleDeleteItem(itemSelected, options, _deleteItem);
-      setItemSelected({ id: 0 });
+      //console.log("[DEBUG] Delete user", userSelected);
+      helper.handleDelete(userSelected, options, _deleteUser);
+      setUserSelected({ id: 0 });
     },
-    handleItemSelect = ({ checked }, item) => {
+    handleUserSelect = ({ checked }, item) => {
       if (!checked) item = { id: 0 };
-      setItemSelected(item);
+      setUserSelected(item);
     },
-    handleSelectItem = (e, order = { id: 0 }) => {
+    handleSelectUser = (e, order = { id: 0 }) => {
       if (e) e.preventDefault();
 
       if (order.id) {
-        _setItem(order);
-      } else if (itemSelected.id) {
-        _getItem(itemSelected.id);
+        _setUser(order);
+      } else if (userSelected.id) {
+        _getUser(userSelected.id);
       }
     };
 
   useEffect(() => {
-    _getList(options);
+    _getListUsers(options);
     //eslint-disable-next-line
   }, [options]);
 
@@ -61,72 +63,80 @@ function InboxComponent(props) {
       color="primary"
       loading={loading}
       meta={meta}
-      itemSelected={itemSelected.id}
+      itemSelected={userSelected.id}
       defaultSearch={options.search}
       handlePagination={(page) => handleChangeOptions("page", page)}
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleDeleteItem={deleteItem}
-      handleEditItem={handleSelectItem}
-      handleSync={() => _getList(options)}
+      handleEditItem={handleSelectUser}
+      handleSync={() => _getListUsers(options)}
     >
       <table className="table table-hover table-striped">
         <thead>
           <tr>
             <th></th>
-            <th>Codigo</th>
-            <th>Describción</th>
-            <th>Proveedor</th>
-            <th>Marca</th>
-            <th>Cant</th>
+            <th>Nombre corto</th>
+            <th>Nombre</th>
+            <th>Email/Usuario</th>
+            <th>Rol</th>
+            {options.orderby === "created_at" ? (
+              <th>Creado</th>
+            ) : (
+              <th>Modificado</th>
+            )}
           </tr>
         </thead>
         <tbody>
-          {list.length ? (
+          {users.length ? (
             <>
-              {list.map((item) => {
+              {users.map((user) => {
                 return (
-                  <tr key={item.id}>
+                  <tr key={user.id}>
                     <td className="icheck-primary pl-2">
                       <input
                         type="checkbox"
                         className="form-check-input mt-4"
-                        value={item.id}
-                        id={"item_" + item.id}
-                        checked={itemSelected.id === item.id ? true : false}
+                        value={user.id}
+                        id={"item_" + user.id}
+                        checked={userSelected.id === user.id ? true : false}
                         onChange={({ target }) =>
-                          handleItemSelect(target, item)
+                          handleUserSelect(target, user)
                         }
                       />
                       <label
-                        htmlFor={"item_" + item.id}
+                        htmlFor={"item_" + user.id}
                         className="sr-only"
                       ></label>
                     </td>
                     <td className="icheck-primary">
                       <div className="badge badge-dark text-uppercase">
-                        {item.codigo}
+                        {user.username}
                       </div>
                     </td>
                     <td className="mailbox-name text-capitalize text-truncate">
                       <a
                         href="·link"
-                        onClick={(e) => handleSelectItem(e, item)}
+                        onClick={(e) => handleSelectUser(e, user)}
                         className="text-bold"
                       >
-                        {item.producto}
+                        {user.name}
                       </a>
                     </td>
-                    <td className="mailbox-attachment text-capitalize text-truncate text-muted">
-                      <span>
-                        {item.proveedor ? item.proveedor.nombre : "--"}
-                      </span>
+                    <td className="mailbox-name text-muted text-truncate">
+                      <span>{user.email}</span>
                     </td>
-                    <td className="mailbox-attachment text-uppercase text-truncate text-muted">
-                      <span>{item.marca ? item.marca.marca : "--"}</span>
+                    <td className="mailbox-name text-dark text-bold text-truncate">
+                      <span>{helper.getNameRol(user.rol)}</span>
                     </td>
-                    <td className="mailbox-date text-muted text-truncate text-right">
-                      <span>{item.cantidades}</span>
-                    </td>
+                    {options.orderby === "created_at" ? (
+                      <td className="mailbox-date text-muted text-truncate">
+                        <span>{moment(user.created_at).format("LL")}</span>
+                      </td>
+                    ) : (
+                      <td className="mailbox-date text-muted text-truncate">
+                        <span>{moment(user.updated_at).fromNow()}</span>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -134,7 +144,7 @@ function InboxComponent(props) {
           ) : (
             <tr>
               <th className="text-center text-muted" colSpan="6">
-                No hay productos registrados
+                No hay usuarios registrados
               </th>
             </tr>
           )}
@@ -144,21 +154,21 @@ function InboxComponent(props) {
   );
 }
 
-const mapStateToProps = ({ storeItem }) => {
+const mapStateToProps = ({ users }) => {
     return {
-      list: storeItem.list,
-      meta: storeItem.metaList,
-      messages: storeItem.messages,
-      loading: storeItem.loading,
-      options: storeItem.options,
+      users: users.list,
+      meta: users.metaList,
+      messages: users.messages,
+      loading: users.loading,
+      options: users.options,
     };
   },
   mapActionsToProps = {
-    _getList: storeActions.getListStore,
-    _setOptions: storeActions.setOptions,
-    _deleteItem: storeActions.deleteItem,
-    _setItem: storeActions.setItem,
-    _getItem: storeActions.getItem,
+    _getListUsers: userActions.getListUsers,
+    _setOptions: userActions.setOptions,
+    _setUser: userActions.setUser,
+    _getUser: userActions.getUser,
+    _deleteUser: userActions.deleteUser,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(InboxComponent);

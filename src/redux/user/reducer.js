@@ -20,9 +20,16 @@ const LS = localStorage.getItem("OrusSystem"),
       email: EMAIL,
       token: TOKEN,
     },
+    options: {
+      page: 1,
+      orderby: "created_at",
+      order: "desc",
+      search: "",
+      itemsPage: 10,
+    },
     notifications: [],
     list: [],
-    meta: {},
+    meta: { total: 0 },
     user: {},
     messages: [],
     loading: false,
@@ -51,6 +58,27 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       };
     }
     case TYPE.SAGA_READ_NOTIFYS: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
+    case TYPE.SAGA_GET_LIST_USERS: {
+      return {
+        ...state,
+        list: [],
+        meta: {},
+        loading: true,
+      };
+    }
+    case TYPE.SAGA_GET_USER: {
+      return {
+        ...state,
+        user: {},
+        loading: true,
+      };
+    }
+    case TYPE.SAGA_DELETE_USER: {
       return {
         ...state,
         loading: true,
@@ -132,7 +160,38 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
     case TYPE.SET_MESSAGES: {
       return {
         ...state,
+        loading: false,
         messages: payload,
+      };
+    }
+    case TYPE.SET_LIST_USERS: {
+      return {
+        ...state,
+        list: payload.data,
+        meta: payload.meta,
+        loading: false,
+        messages: [],
+      };
+    }
+    case TYPE.SET_OPTIONS_USERS: {
+      const { key, value } = payload;
+
+      return {
+        ...state,
+        options: {
+          ...state.options,
+          [key]: value,
+        },
+      };
+    }
+    case TYPE.SET_USER: {
+      return {
+        ...state,
+        user: payload,
+        list: [],
+        meta: {},
+        loading: false,
+        messages: [],
       };
     }
 

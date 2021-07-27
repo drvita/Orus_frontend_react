@@ -16,6 +16,18 @@ const readNotifyUser = (payload) => ({
   type: TYPE.SAGA_READ_NOTIFYS,
   payload,
 });
+const getListUsers = (payload) => ({
+  type: TYPE.SAGA_GET_LIST_USERS,
+  payload,
+});
+const getUser = (payload) => ({
+  type: TYPE.SAGA_GET_USER,
+  payload,
+});
+const deleteUser = (payload) => ({
+  type: TYPE.SAGA_DELETE_USER,
+  payload,
+});
 
 const setLoggin = (payload) => ({
   type: TYPE.SET_LOGGIN,
@@ -33,6 +45,18 @@ const setMessages = (payload) => ({
   type: TYPE.SET_MESSAGES,
   payload,
 });
+const setListUsers = (payload) => ({
+  type: TYPE.SET_LIST_USERS,
+  payload,
+});
+const setOptions = (payload) => ({
+  type: TYPE.SET_OPTIONS_USERS,
+  payload,
+});
+const setUser = (payload) => ({
+  type: TYPE.SET_USER,
+  payload,
+});
 
 const toExportActions = {
   loggin,
@@ -43,6 +67,12 @@ const toExportActions = {
   setLogout,
   setNotifys,
   setMessages,
+  getListUsers,
+  setListUsers,
+  setOptions,
+  setUser,
+  getUser,
+  deleteUser,
 };
 
 export default toExportActions;

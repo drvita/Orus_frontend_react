@@ -13,7 +13,6 @@ class App extends Component {
     const { messages: M_OLD = {} } = props,
       { messages: M_NEW = {}, setMessage: _setMessage } = this.props;
 
-    console.log("[DEBUG] Update", M_OLD, M_NEW);
     if (M_OLD.length !== M_NEW.length && M_NEW.length) {
       M_NEW.forEach((msg) => {
         const { text } = msg;

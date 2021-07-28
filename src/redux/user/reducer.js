@@ -84,6 +84,12 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
         loading: true,
       };
     }
+    case TYPE.SAGA_SAVE_USER: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
 
     case TYPE.SET_LOGGIN: {
       const LS = localStorage.getItem("OrusSystem"),

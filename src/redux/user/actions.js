@@ -28,6 +28,10 @@ const deleteUser = (payload) => ({
   type: TYPE.SAGA_DELETE_USER,
   payload,
 });
+const saveUser = (payload) => ({
+  type: TYPE.SAGA_SAVE_USER,
+  payload,
+});
 
 const setLoggin = (payload) => ({
   type: TYPE.SET_LOGGIN,
@@ -53,7 +57,7 @@ const setOptions = (payload) => ({
   type: TYPE.SET_OPTIONS_USERS,
   payload,
 });
-const setUser = (payload) => ({
+const setUser = (payload = {}) => ({
   type: TYPE.SET_USER,
   payload,
 });
@@ -73,6 +77,7 @@ const toExportActions = {
   setUser,
   getUser,
   deleteUser,
+  saveUser,
 };
 
 export default toExportActions;

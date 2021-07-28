@@ -28,24 +28,16 @@ class LogginComponent extends Component {
     }
   }
 
-  componentDidUpdate(props) {
-    const { messages: M_OLD = {}, changeHostStatus: H_STATUS_VIEJO } = props,
-      {
-        messages: M_NEW = {},
-        setMessage: _setMessage,
-        changeHostStatus: H_STATUS_NEW,
-      } = this.props;
+  componentDidUpdate(props, state) {
+    const { changeHostStatus: H_STATUS_VIEJO } = props,
+      { loading, changeHostStatus: H_STATUS_NEW } = this.props;
 
-    if (M_OLD.length !== M_NEW.length && M_NEW.length) {
+    if (props.loading !== loading) {
       this.setState({
-        load: false,
+        load: loading,
       });
-      M_NEW.forEach((msg) => {
-        const { text } = msg;
-        window.sendPushMessage("Orus system", text);
-      });
-      _setMessage([]);
     }
+
     if (H_STATUS_VIEJO !== H_STATUS_NEW && H_STATUS_NEW) {
       //Manejamos el handle de cambio de host
       //Solo quitamos el loadding

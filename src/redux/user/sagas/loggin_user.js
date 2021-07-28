@@ -43,7 +43,7 @@ export default function* handleLoggin({ payload: credenciales }) {
       );
     }
   } catch (e) {
-    console.error("[Orus System] Error in handle loggin", e);
+    console.error("[Orus System] Error en handle loggin", e);
     yield put(
       userActions.setMessages([
         {

@@ -7,6 +7,7 @@ import checkLoging from "./checkLoging";
 import getUserList from "./getList";
 import getUser from "./getUser";
 import deleteUser from "./deleteUser";
+import saveUser from "./saveUser";
 
 export default function* index() {
   //watchers
@@ -18,4 +19,5 @@ export default function* index() {
   yield takeLatest(TYPE.SAGA_GET_LIST_USERS, getUserList);
   yield takeLatest(TYPE.SAGA_GET_USER, getUser);
   yield takeLatest(TYPE.SAGA_DELETE_USER, deleteUser);
+  yield takeLatest(TYPE.SAGA_SAVE_USER, saveUser);
 }

@@ -13,13 +13,17 @@ class UsersComponent extends Component {
       panel: "inbox",
     };
   }
-  componentDidMount() {}
   componentDidUpdate(props, state) {
     const { user } = this.props;
 
     if (props.user !== user && user.id) {
       this.setState({
         panel: "editAndNewUser",
+      });
+    }
+    if (props.user !== user && !user.id) {
+      this.setState({
+        panel: "inbox",
       });
     }
   }
@@ -40,7 +44,7 @@ class UsersComponent extends Component {
             }
             onClick={(e) => {
               e.preventDefault();
-              this.handleShowPanel(e, 2);
+              this.handleShowPanel("editAndNewUser");
             }}
             disabled={panel !== "inbox" ? true : false}
           >
@@ -48,75 +52,71 @@ class UsersComponent extends Component {
             Usuario nuevo
           </a>
 
-          <div className="card">
-            <div className="card-header">
-              <h5 className="card-title text-dark">
-                <i className="mr-2 fas fa-ellipsis-v"></i>Filtros
-              </h5>
-            </div>
-            <div className="p-0 card-body">
-              <ul className="nav nav-pills flex-column">
-                {panel === "inbox" ? (
-                  <>
-                    <li className="nav-item p-2">
-                      <label htmlFor="orderby">Ordenar por</label>
-                      <select
-                        className="form-control "
-                        name="orderby"
-                        id="orderby"
-                        value={options.orderby}
-                        onChange={({ target }) =>
-                          this.handleSetSelectOptions(target)
-                        }
-                      >
-                        <option value="created_at">Fecha de registro</option>
-                        <option value="updated_at">
-                          Fecha de modificacion
-                        </option>
-                      </select>
-                    </li>
-                    <li className="nav-item p-2">
-                      <label htmlFor="order">Mostrar por</label>
-                      <select
-                        className="form-control "
-                        name="order"
-                        id="order"
-                        value={options.order}
-                        onChange={({ target }) =>
-                          this.handleSetSelectOptions(target)
-                        }
-                      >
-                        <option value="asc">Antiguos</option>
-                        <option value="desc">Recientes</option>
-                      </select>
-                    </li>
+          {panel === "inbox" ? (
+            <div className="card">
+              <div className="card-header">
+                <h5 className="card-title text-dark">
+                  <i className="mr-2 fas fa-ellipsis-v"></i>Filtros
+                </h5>
+              </div>
+              <div className="p-0 card-body">
+                <ul className="nav nav-pills flex-column">
+                  <li className="nav-item p-2">
+                    <label htmlFor="orderby">Ordenar por</label>
+                    <select
+                      className="form-control "
+                      name="orderby"
+                      id="orderby"
+                      value={options.orderby}
+                      onChange={({ target }) =>
+                        this.handleSetSelectOptions(target)
+                      }
+                    >
+                      <option value="created_at">Fecha de registro</option>
+                      <option value="updated_at">Fecha de modificacion</option>
+                    </select>
+                  </li>
+                  <li className="nav-item p-2">
+                    <label htmlFor="order">Mostrar por</label>
+                    <select
+                      className="form-control "
+                      name="order"
+                      id="order"
+                      value={options.order}
+                      onChange={({ target }) =>
+                        this.handleSetSelectOptions(target)
+                      }
+                    >
+                      <option value="asc">Antiguos</option>
+                      <option value="desc">Recientes</option>
+                    </select>
+                  </li>
 
-                    <li className="nav-item p-2">
-                      <label htmlFor="itemsPage">Numero de usuarios</label>
-                      <select
-                        className="form-control "
-                        name="itemsPage"
-                        id="itemsPage"
-                        value={options.itemsPage}
-                        onChange={({ target }) =>
-                          this.handleSetSelectOptions(target)
-                        }
-                      >
-                        <option value="10">ver 10</option>
-                        {meta.total > options.itemsPage && (
-                          <>
-                            <option value="20">ver 20</option>
-                            <option value="50">ver 50</option>
-                            <option value="100">ver 100</option>
-                          </>
-                        )}
-                      </select>
-                    </li>
-                  </>
-                ) : null}
-              </ul>
+                  <li className="nav-item p-2">
+                    <label htmlFor="itemsPage">Numero de usuarios</label>
+                    <select
+                      className="form-control "
+                      name="itemsPage"
+                      id="itemsPage"
+                      value={options.itemsPage}
+                      onChange={({ target }) =>
+                        this.handleSetSelectOptions(target)
+                      }
+                    >
+                      <option value="10">ver 10</option>
+                      {meta.total > 10 && (
+                        <>
+                          <option value="20">ver 20</option>
+                          <option value="50">ver 50</option>
+                          <option value="100">ver 100</option>
+                        </>
+                      )}
+                    </select>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
         <div className="col-md-10 col-sm-12">
           {panel === "inbox" && <Inbox />}
@@ -126,6 +126,11 @@ class UsersComponent extends Component {
     );
   }
 
+  handleShowPanel = (panel) => {
+    this.setState({
+      panel,
+    });
+  };
   handleSetSelectOptions = ({ name, value }) => {
     const { _setOptions } = this.props;
     _setOptions({

@@ -69,8 +69,8 @@ const handleDelete = (item, options, _delete, text) => {
 const handleSave = (id, data, options, _save, _close, text) => {
   if (!text) {
     text = id
-      ? "¿Esta seguro de actualizar el producto?"
-      : "¿Esta seguro de crear un nuevo producto?";
+      ? "¿Esta seguro de actualizar el usuario?"
+      : "¿Esta seguro de crear un nuevo usuario?";
   }
   window.Swal.fire({
     title: "Almacenamiento",

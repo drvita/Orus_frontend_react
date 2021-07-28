@@ -55,7 +55,7 @@ function InboxComponent(props) {
     //eslint-disable-next-line
   }, [options]);
 
-  //console.log("[DEBUG] Render", list);
+  //console.log("[DEBUG] Render", meta);
   return (
     <ListInbox
       title="Lista de productos"
@@ -157,7 +157,7 @@ function InboxComponent(props) {
 const mapStateToProps = ({ users }) => {
     return {
       users: users.list,
-      meta: users.metaList,
+      meta: users.meta,
       messages: users.messages,
       loading: users.loading,
       options: users.options,

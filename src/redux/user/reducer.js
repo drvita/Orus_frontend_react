@@ -33,6 +33,7 @@ const LS = localStorage.getItem("OrusSystem"),
     user: {},
     messages: [],
     loading: false,
+    loading_notify: false,
   };
 
 const loggin_state = (state = DEFAULT_STATE, action) => {
@@ -54,13 +55,13 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
     case TYPE.SAGA_GET_NOTIFY: {
       return {
         ...state,
-        loading: true,
+        loading_notify: true,
       };
     }
     case TYPE.SAGA_READ_NOTIFYS: {
       return {
         ...state,
-        loading: true,
+        loading_notify: true,
       };
     }
     case TYPE.SAGA_GET_LIST_USERS: {
@@ -85,6 +86,12 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       };
     }
     case TYPE.SAGA_SAVE_USER: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
+    case TYPE.SAGA_CLEAR_TOKEN_USER: {
       return {
         ...state,
         loading: true,
@@ -159,7 +166,7 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         notifications: payload,
-        loading: false,
+        loading_notify: false,
         messages: [],
       };
     }

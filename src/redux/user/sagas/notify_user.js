@@ -15,6 +15,8 @@ export default function* handleNotify() {
       yield put(userActions.setLogout());
     }
   } catch (e) {
+    //const auth = e.message.includes("Failed to fetch");
+
     console.error(
       "[Orus System] Error en notificaciones/saga handleNotify",
       e.message

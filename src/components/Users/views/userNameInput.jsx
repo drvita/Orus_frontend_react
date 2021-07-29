@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api, getUrl } from "../../redux/sagas/api";
+import { api, getUrl } from "../../../redux/sagas/api";
 
 export default function UserNameInputComponent(props) {
   const [state, setState] = useState({
@@ -9,7 +9,7 @@ export default function UserNameInputComponent(props) {
     searchUser: false,
   });
   //Vars
-  const { col, username, onChange: _onChange } = props,
+  const { col, username, userId, onChange: _onChange } = props,
     { bgColor, validate, text, searchUser } = state;
   //Functions
   const handleChange = ({ name, value }) => {
@@ -28,7 +28,7 @@ export default function UserNameInputComponent(props) {
           ...state,
           searchUser: true,
         });
-        handleSearchUser(userSearch).then((response) => {
+        handleSearchUser(userSearch, userId).then((response) => {
           if (response) {
             setState({
               ...state,
@@ -123,8 +123,8 @@ export default function UserNameInputComponent(props) {
   );
 }
 
-const handleSearchUser = async (username) => {
-  const url = getUrl("users", null, { username }),
+const handleSearchUser = async (username, userId = null) => {
+  const url = getUrl("users", null, { username, userId, deleted: 0 }),
     result = await api(url);
 
   if (result.data && result.data.length) {

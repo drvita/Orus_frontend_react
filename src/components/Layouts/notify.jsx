@@ -15,9 +15,9 @@ class NotifyComponent extends Component {
   }
 
   componentDidMount() {
-    const { isLogged, getNotifyUser: _getNotifyUser } = this.props;
+    const { dataLoggin, _getNotifyUser } = this.props;
 
-    if (isLogged) {
+    if (dataLoggin.isLogged) {
       _getNotifyUser();
       this.timerNotify = setInterval(() => {
         _getNotifyUser();
@@ -30,33 +30,38 @@ class NotifyComponent extends Component {
   }
 
   render() {
-    const { notifications } = this.props,
+    const { notifications, loading } = this.props,
       { rol } = this.state,
-      countNotify = notifications ? notifications.length : 0;
+      countNotify = notifications ? notifications.length : 0,
+      showNotifications = notifications.slice(0, 10);
 
     return (
       <li className="nav-item dropdown">
         <a className="nav-link" data-toggle="dropdown" href="#end">
-          <i className="far fa-bell"></i>
-          {countNotify ? (
-            <span className="badge badge-warning navbar-badge">
-              {countNotify}
-            </span>
-          ) : null}
+          {loading ? (
+            <i className="fas fa-spinner"></i>
+          ) : (
+            <>
+              <i className="far fa-bell"></i>
+              {countNotify ? (
+                <span className="badge badge-warning navbar-badge">
+                  {countNotify}
+                </span>
+              ) : null}
+            </>
+          )}
         </a>
+
         <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <span className="dropdown-header">{countNotify} Notificaciones</span>
           <div className="dropdown-divider"></div>
-          {notifications.map((notify, index) => {
+          {showNotifications.map((notify) => {
             const notiFyType = notify.type.split("\\", 3);
             let title = "general",
               icon = "fa-file",
               time = moment(notify.created_at).fromNow(),
               url = "#end";
             //page = "/";
-
-            //Cortamos si son más de 10 notificaciones
-            if (index > 10) return false;
 
             if (notiFyType[2] === "ExamNotification") {
               if (rol === 2) {
@@ -97,7 +102,7 @@ class NotifyComponent extends Component {
                   this.handleClickRead(e, -1);
                 }}
               >
-                Marcar como leído.
+                Marcar todas.
               </a>
             </React.Fragment>
           ) : null}
@@ -116,20 +121,21 @@ class NotifyComponent extends Component {
   }
 
   handleClickRead = (e, id) => {
-    const { readNotifyUser } = this.props;
+    const { _readNotifyUser } = this.props;
     if (id === -1) e.preventDefault();
-    readNotifyUser({ id });
+    _readNotifyUser({ id });
   };
 }
 const mapStateToProps = ({ users }) => {
     return {
       notifications: users.notifications,
       dataLoggin: users.dataLoggin,
+      loading: users.loading_notify,
     };
   },
   mapDispatchToProps = {
-    getNotifyUser: userActions.getNotifyUser,
-    readNotifyUser: userActions.readNotifyUser,
+    _getNotifyUser: userActions.getNotifyUser,
+    _readNotifyUser: userActions.readNotifyUser,
   };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotifyComponent);

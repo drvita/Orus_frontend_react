@@ -1,6 +1,6 @@
 import { call, put } from "redux-saga/effects";
-import { TYPE } from "../types";
 import { api } from "../../sagas/api";
+import { userActions } from "..";
 
 export default function* handleNotifyRead({ payload }) {
   try {
@@ -14,12 +14,12 @@ export default function* handleNotifyRead({ payload }) {
       count = parseInt(payload.id) < 0 ? "Todas" : 1;
     if (result.success) {
       console.log("[Orus System] Notificaciones marcadas leidas:", count);
-      yield put({
-        type: TYPE.SAGA_GET_NOTIFY,
-        payload: {},
-      });
+      yield put(userActions.getNotifyUser());
     }
   } catch (e) {
-    console.error("[Orus System] Error in handle read notify user", e);
+    console.error(
+      "[Orus System] Error en saga/Users handleNotifyRead",
+      e.message
+    );
   }
 }

@@ -8,10 +8,13 @@ export default function* handleGetUser({ payload: id }) {
     if (result.data) {
       yield put(userActions.setUser(result.data));
     } else {
-      console.error("[OrusSystem] Error en handleGetUser", result);
+      console.error(
+        "[OrusSystem] Error en saga/users por servidor handleGetUser",
+        result
+      );
     }
   } catch (e) {
-    console.error("[OrusSystem] Error en saga/user handleGetUser:", e.message);
+    console.error("[OrusSystem] Error en saga/users handleGetUser:", e.message);
     yield put(userActions.setMessages([]));
   }
 }

@@ -8,6 +8,7 @@ import getUserList from "./getList";
 import getUser from "./getUser";
 import deleteUser from "./deleteUser";
 import saveUser from "./saveUser";
+import clearToken from "./clear_token";
 
 export default function* index() {
   //watchers
@@ -20,4 +21,5 @@ export default function* index() {
   yield takeLatest(TYPE.SAGA_GET_USER, getUser);
   yield takeLatest(TYPE.SAGA_DELETE_USER, deleteUser);
   yield takeLatest(TYPE.SAGA_SAVE_USER, saveUser);
+  yield takeLatest(TYPE.SAGA_CLEAR_TOKEN_USER, clearToken);
 }

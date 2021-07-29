@@ -8,7 +8,7 @@ const checkLogging = (payload) => ({
   type: TYPE.SAGA_CHECK_LOGING,
   payload,
 });
-const getNotifyUser = (payload) => ({
+const getNotifyUser = (payload = {}) => ({
   type: TYPE.SAGA_GET_NOTIFY,
   payload,
 });
@@ -30,6 +30,10 @@ const deleteUser = (payload) => ({
 });
 const saveUser = (payload) => ({
   type: TYPE.SAGA_SAVE_USER,
+  payload,
+});
+const clearTokenUser = (payload) => ({
+  type: TYPE.SAGA_CLEAR_TOKEN_USER,
   payload,
 });
 
@@ -78,6 +82,7 @@ const toExportActions = {
   getUser,
   deleteUser,
   saveUser,
+  clearTokenUser,
 };
 
 export default toExportActions;

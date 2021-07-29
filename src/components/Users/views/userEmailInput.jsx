@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { useState } from "react";
-import { api, getUrl } from "../../redux/sagas/api";
+import { api, getUrl } from "../../../redux/sagas/api";
 
 export default function UserEmailInputComponent(props) {
   const [state, setState] = useState({
@@ -10,7 +10,7 @@ export default function UserEmailInputComponent(props) {
     searchEmail: false,
   });
   //Vars
-  const { col, email, onChange: _onChange } = props,
+  const { col, email, userId, onChange: _onChange } = props,
     { bgColor, validate, text, searchEmail } = state;
   //Functions
   const handleChange = ({ name, value }) => {
@@ -30,7 +30,7 @@ export default function UserEmailInputComponent(props) {
           ...state,
           searchUser: true,
         });
-        handleSearchUser(emailSearch).then((response) => {
+        handleSearchUser(emailSearch, userId).then((response) => {
           if (response) {
             setState({
               bgColor: "bg-red",
@@ -119,8 +119,8 @@ export default function UserEmailInputComponent(props) {
   );
 }
 
-const handleSearchUser = async (email) => {
-  const url = getUrl("users", null, { email }),
+const handleSearchUser = async (email, userId) => {
+  const url = getUrl("users", null, { email, userId, deleted: 0 }),
     result = await api(url);
 
   if (result.data && result.data.length) {
@@ -132,105 +132,3 @@ const handleSearchUser = async (email) => {
   }
   return false;
 };
-
-export class UserName extends Component {
-  handleChange = (e) => {
-    const { value } = e.target;
-    let regex = 56,
-      x = {
-        target: {
-          name: "validUserEmail",
-          value: true,
-        },
-      };
-    e.target.value = value.replace(/\s/g, "").toLowerCase();
-    if (regex.test(value)) {
-      this.validEmail(e.target.value, x);
-    } else {
-      if (value.length > 8) {
-        this.setState({
-          bgColor: "bg-red",
-          validate: " border border-danger",
-          text: "No tiene el formato de un email",
-        });
-        x.target.value = false;
-        this.props.onChange(x);
-      } else if (!value.length) {
-        this.setState({
-          bgColor: "bg-blue",
-          validate: "",
-          text: "No tiene el formato de un email",
-        });
-        x.target.value = false;
-        this.props.onChange(x);
-      }
-    }
-    this.props.onChange(e);
-  };
-  validEmail = (search, x) => {
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/users",
-      email = "?email=" + search;
-
-    if (this.timeFetch) clearTimeout(this.timeFetch);
-    this.timeFetch = setTimeout(() => {
-      //Realiza la peticion de los usuarios
-      this.setState({
-        searchUser: true,
-      });
-      //Realiza la peticion de los usuarios
-      fetch(url + email, {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + varLocalStorage.token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.alert("Ups!\n Hubo un error, intentelo mas tarde");
-            console.error(res);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (!data.message) {
-            if (
-              data.data.length &&
-              data.data[0].email.toLowerCase() === search
-            ) {
-              this.setState({
-                bgColor: "bg-red",
-                validate: " border border-danger",
-                text: "El email ya esta registrado.",
-                searchUser: false,
-              });
-              x.target.value = false;
-              this.props.onChange(x);
-            } else {
-              this.setState({
-                bgColor: "bg-blue",
-                validate: "",
-                searchUser: false,
-              });
-              x.target.value = true;
-              this.props.onChange(x);
-            }
-          } else {
-            console.error("Error en la descarga de usuarios", data.message);
-            this.setState({
-              bgColor: "bg-red",
-              validate: " border border-danger",
-              text: "Error en la consulta",
-              searchUser: false,
-            });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    }, 1000);
-  };
-}

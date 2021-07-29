@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 //Component
-import UserName from "./userNameInput";
-import UserEmail from "./userEmailInput";
+import UserName from "./views/userNameInput";
+import UserEmail from "./views/userEmailInput";
 //Actions
 import { userActions } from "../../redux/user/index";
 import helper from "./helpers";
@@ -85,6 +85,7 @@ class UserAddComponent extends Component {
                   <div className="row mb-3">
                     <UserName
                       username={username}
+                      userId={id ? id : ""}
                       col={6}
                       onChange={this.catchInputs}
                     />
@@ -155,6 +156,7 @@ class UserAddComponent extends Component {
                     </div>
                     <UserEmail
                       email={email}
+                      userId={id ? id : ""}
                       col={6}
                       onChange={this.catchInputs}
                     />
@@ -268,6 +270,18 @@ class UserAddComponent extends Component {
                   <p>Usuario no ha registrado actividad.</p>
                 )}
               </div>
+              {session && (
+                <div className="card-footer text-right">
+                  <button
+                    type="button"
+                    className="btn btn-default"
+                    onClick={() => this.handleCloseSession(id)}
+                  >
+                    <i className="fas fa-sign-out-alt mr-1"></i>
+                    Cerrar session
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ) : null}
@@ -275,6 +289,28 @@ class UserAddComponent extends Component {
     );
   }
 
+  handleCloseSession = (id) => {
+    const { _clearToken } = this.props;
+
+    if (id) {
+      window.Swal.fire({
+        title: "Almacenamiento",
+        text: "Esta seguro de eliminar la sesion del usuario",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#007bff",
+        confirmButtonText: "Si",
+        cancelButtonText: "Cancelar",
+        showLoaderOnConfirm: true,
+      }).then(({ dismiss }) => {
+        if (!dismiss && _clearToken) {
+          _clearToken(id);
+        }
+      });
+    } else {
+      console.error("[Orus System] Id is undefinned", id);
+    }
+  };
   handleClosePanel = () => {
     const { _setUser } = this.props;
     _setUser();
@@ -338,6 +374,7 @@ const mapStateToProps = ({ users }) => {
   mapActionsToProps = {
     _setUser: userActions.setUser,
     _saveUser: userActions.saveUser,
+    _clearToken: userActions.clearTokenUser,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(UserAddComponent);

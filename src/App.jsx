@@ -15,8 +15,18 @@ class App extends Component {
 
     if (M_OLD.length !== M_NEW.length && M_NEW.length) {
       M_NEW.forEach((msg) => {
-        const { text } = msg;
-        window.sendPushMessage("Orus system", text);
+        const { text, type } = msg;
+        if (window.sendPushMessage) {
+          window.sendPushMessage("Orus system", text);
+        } else {
+          window.Swal.fire({
+            icon: type,
+            title: text,
+            showConfirmButton: type !== "error" ? false : true,
+            timer: type !== "error" ? 1500 : 9000,
+            position: "top",
+          });
+        }
       });
       _setMessage([]);
     }

@@ -43,12 +43,16 @@ export default function* handleLoggin({ payload: credenciales }) {
       );
     }
   } catch (e) {
-    console.error("[Orus System] Error en handle loggin", e);
+    const fetch = e.message.includes("Failed to fetch");
+
+    console.error("[Orus System] Error en handle loggin:", e.message);
     yield put(
       userActions.setMessages([
         {
           type: "error",
-          text: "Desconocido, comuniquese con el administrador del sistema",
+          text: fetch
+            ? "No hay comunicacion con el servidor, revise conexion."
+            : "Desconocido, comuniquese con el administrador del sistema",
         },
       ])
     );

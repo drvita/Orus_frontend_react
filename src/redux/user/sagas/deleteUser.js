@@ -18,7 +18,7 @@ export default function* handledDeleteUser({ payload }) {
           },
         ])
       );
-      yield put(userActions.getListBrands(options));
+      yield put(userActions.getListUsers(options));
     } else {
       console.error(
         "[Orus System] Fallo al eliminar el usuario",
@@ -37,7 +37,10 @@ export default function* handledDeleteUser({ payload }) {
       }
     }
   } catch (e) {
-    console.error("[Orus System] Error en saga/users handledDeleteUser", e);
+    console.error(
+      "[Orus System] Error en saga/users handledDeleteUser",
+      e.message
+    );
     yield put(
       userActions.setMessages([
         {

@@ -1,4 +1,3 @@
-import React, { Component } from "react";
 import { useState } from "react";
 import { api, getUrl } from "../../../redux/sagas/api";
 

@@ -75,11 +75,11 @@ class BreadcrumbComponent extends Component {
     );
   }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = ({ default: system, users }) => {
   return {
-    company: state.default.company,
-    host: state.default.host,
-    name: state.logging.username,
+    company: system.company,
+    host: system.host,
+    name: users.username,
   };
 };
 export default connect(mapStateToProps)(BreadcrumbComponent);

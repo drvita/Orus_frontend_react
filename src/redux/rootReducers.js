@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
-import loggin_state from "./user/reducer";
+//Reducers
 import default_state from "./default/reducer";
+import users_state from "./user/";
 import order_state from "./order/";
 import category_state from "./category/";
 import storeReducer from "./store/";
@@ -8,7 +9,7 @@ import contactReducer from "./contact/";
 import examReducer from "./exam/";
 
 const rootReducers = combineReducers({
-  logging: loggin_state,
+  users: users_state,
   default: default_state,
   order: order_state,
   category: category_state,

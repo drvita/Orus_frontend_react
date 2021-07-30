@@ -32,14 +32,16 @@ export function getUrl(node, id, param = {}) {
 
   if (paramKeys) {
     paramKeys.map((k) => {
-      if (!param[k]) {
+      if (param[k] === null || param[k] === "") {
         delete param[k];
       }
       return null;
     });
 
-    paramString = new URLSearchParams(param);
-    url += `?${paramString}`;
+    if (Object.keys(param).length) {
+      paramString = new URLSearchParams(param);
+      url += `?${paramString}`;
+    }
   }
 
   return url;

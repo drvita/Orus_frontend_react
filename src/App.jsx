@@ -2,29 +2,49 @@ import React, { Component } from "react";
 import Routers from "./Routers";
 import Login from "./components/Layouts/login";
 import { connect } from "react-redux";
-import { checkLogging } from "./redux/user/actions";
+import { userActions } from "./redux/user/";
 
 class App extends Component {
-  componentDidMount() {
-    const { checkLogging: _checkLogging, token: TOKEN, isLogged } = this.props;
-    if (isLogged) _checkLogging(TOKEN);
+  componentDidUpdate(props) {
+    const { messages: M_OLD = {} } = props,
+      { messages: M_NEW = {}, setMessage: _setMessage } = this.props;
+
+    if (M_OLD.length !== M_NEW.length && M_NEW.length) {
+      M_NEW.forEach((msg) => {
+        const { text, type } = msg;
+        if (window.sendPushMessage) {
+          window.sendPushMessage("Orus system", text);
+        } else {
+          window.Swal.fire({
+            icon: type,
+            title: text,
+            showConfirmButton: type !== "error" ? false : true,
+            timer: type !== "error" ? 1500 : 9000,
+            position: "top",
+          });
+        }
+      });
+      _setMessage([]);
+    }
   }
 
   render() {
-    const { isLogged: IS_LOGGING } = this.props;
+    const { dataLoggin } = this.props;
     return (
-      <main>{IS_LOGGING ? <Routers data={this.props} /> : <Login />}</main>
+      <main>
+        {dataLoggin.isLogged ? <Routers data={this.props} /> : <Login />}
+      </main>
     );
   }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = ({ users }) => {
     return {
-      isLogged: state.logging.isLogged,
-      token: state.logging.token,
+      dataLoggin: users.dataLoggin,
+      messages: users.messages,
     };
   },
   mapDispatchToProps = {
-    checkLogging,
+    setMessage: userActions.setMessages,
   };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

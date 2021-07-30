@@ -1,14 +1,17 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 import moment from "moment";
-import "moment/locale/es";
-import UserName from "./userNameInput";
-import UserEmail from "./userEmailInput";
+//Component
+import UserName from "./views/userNameInput";
+import UserEmail from "./views/userEmailInput";
+//Actions
+import { userActions } from "../../redux/user/index";
+import helper from "./helpers";
 
-export default class UserAdd extends Component {
+class UserAddComponent extends Component {
   constructor(props) {
     super(props);
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+
     this.state = {
       id: 0,
       rol: 1,
@@ -22,19 +25,23 @@ export default class UserAdd extends Component {
       created_at: "",
       session: {},
       load: false,
-      host: ls.host,
-      token: ls.token,
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
-  }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
-    let id = this.props.match.params.id;
-    if (id) {
-      this.getUser(id);
+    const { user } = this.props;
+    if (user && user.id) {
+      this.setState({
+        id: user.id,
+        rol: user.rol,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        updated_at: user.updated_at,
+        created_at: user.created_at,
+        session: user.session,
+        validUserName: true,
+        validUserEmail: true,
+      });
     }
   }
 
@@ -55,13 +62,11 @@ export default class UserAdd extends Component {
       } = this.state,
       send =
         !load && validUserName && name.length && validUserEmail ? false : true;
+
     return (
       <div className="row">
-        <div className="col">
-          <form
-            className="card card-primary card-outline"
-            onSubmit={this.handleSave}
-          >
+        <div className={`col-${id ? 8 : 12}`}>
+          <form className="card card-primary card-outline" autoComplete="off">
             <div className="card-header">
               <h1 className="card-title text-primary">
                 <i className="fas fa-user mr-2"></i>
@@ -76,10 +81,11 @@ export default class UserAdd extends Component {
                   </div>
                 </div>
               ) : (
-                <React.Fragment>
+                <>
                   <div className="row mb-3">
                     <UserName
                       username={username}
+                      userId={id ? id : ""}
                       col={6}
                       onChange={this.catchInputs}
                     />
@@ -103,8 +109,8 @@ export default class UserAdd extends Component {
                           placeholder="Nombre completo"
                           name="name"
                           autoComplete="off"
-                          value={name}
-                          onChange={this.catchInputs}
+                          defaultValue={name}
+                          onChange={({ target }) => this.catchInputs(target)}
                           required="required"
                           minLength="8"
                           pattern="^[a-zA-Z]{2,20}[\s]{1}[a-zA-Z]{2,20}.*"
@@ -117,10 +123,8 @@ export default class UserAdd extends Component {
                       {password.length || id ? (
                         <small>
                           <label>Contraseña</label>
-                          {id ? (
-                            ""
-                          ) : (
-                            <span className="ml-2">
+                          {!id && (
+                            <span className="ml-2 text-muted">
                               De 8 a 16 caracteres, por lo menos una mayuscula,
                               un numero y un caracter especial
                             </span>
@@ -141,8 +145,8 @@ export default class UserAdd extends Component {
                           placeholder="Contraseña"
                           name="password"
                           autoComplete="off"
-                          value={password}
-                          onChange={this.catchInputs}
+                          defaultValue={password}
+                          onChange={({ target }) => this.catchInputs(target)}
                           required={id ? false : true}
                           minLength="8"
                           maxLength="16"
@@ -152,6 +156,7 @@ export default class UserAdd extends Component {
                     </div>
                     <UserEmail
                       email={email}
+                      userId={id ? id : ""}
                       col={6}
                       onChange={this.catchInputs}
                     />
@@ -170,8 +175,8 @@ export default class UserAdd extends Component {
                         <select
                           className="custom-select"
                           name="rol"
-                          value={rol}
-                          onChange={this.catchInputs}
+                          defaultValue={rol}
+                          onChange={({ target }) => this.catchInputs(target)}
                         >
                           <option value="0">Administrador</option>
                           <option value="1">Ventas</option>
@@ -180,28 +185,28 @@ export default class UserAdd extends Component {
                       </div>
                     </div>
                   </div>
-                </React.Fragment>
+                </>
               )}
             </div>
             <div className="card-footer">
               <div className="row">
                 <div className="col-md-12 text-right">
                   <div className="btn-group btn-group-lg" role="group">
-                    <Link
-                      to="/usuarios"
+                    <button
+                      type="button"
                       className="btn btn-dark"
-                      onClick={this.changePage}
-                      id="/usuarios"
+                      onClick={this.handleClosePanel}
                     >
                       <i className="fas fa-ban mr-1"></i>
                       Cancelar
-                    </Link>
+                    </button>
                     <button
-                      type="submit"
+                      type="button"
                       className={
                         load ? "btn btn-primary disabled" : "btn btn-primary"
                       }
                       disabled={send ? true : false}
+                      onClick={this.handleSave}
                     >
                       <i className="fas fa-save mr-1"></i>
                       Guardar
@@ -213,7 +218,7 @@ export default class UserAdd extends Component {
           </form>
         </div>
         {id ? (
-          <div className="col">
+          <div className="col-4">
             <div className="card card-primary card-outline">
               <div className="card-header">
                 <h3 className="card-title text-primary">
@@ -265,6 +270,18 @@ export default class UserAdd extends Component {
                   <p>Usuario no ha registrado actividad.</p>
                 )}
               </div>
+              {session && (
+                <div className="card-footer text-right">
+                  <button
+                    type="button"
+                    className="btn btn-default"
+                    onClick={() => this.handleCloseSession(id)}
+                  >
+                    <i className="fas fa-sign-out-alt mr-1"></i>
+                    Cerrar session
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ) : null}
@@ -272,21 +289,64 @@ export default class UserAdd extends Component {
     );
   }
 
-  changePage = (e) => {
-    this.props.page(e.target.id);
+  handleCloseSession = (id) => {
+    const { _clearToken } = this.props;
+
+    if (id) {
+      window.Swal.fire({
+        title: "Almacenamiento",
+        text: "Esta seguro de eliminar la sesion del usuario",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#007bff",
+        confirmButtonText: "Si",
+        cancelButtonText: "Cancelar",
+        showLoaderOnConfirm: true,
+      }).then(({ dismiss }) => {
+        if (!dismiss && _clearToken) {
+          _clearToken(id);
+        }
+      });
+    } else {
+      console.error("[Orus System] Id is undefinned", id);
+    }
   };
-  catchInputs = (e) => {
-    const { name, value } = e.target;
+  handleClosePanel = () => {
+    const { _setUser } = this.props;
+    _setUser();
+  };
+  catchInputs = ({ name, value, type }) => {
+    if (type === "text") {
+      value = value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
     this.setState({
       [name]: value,
     });
   };
-  handleSave = (e) => {
-    e.preventDefault();
+  handleSave = () => {
+    const {
+        id,
+        name,
+        username,
+        rol,
+        password,
+        email,
+        validUserName,
+        validUserEmail,
+      } = this.state,
+      { options, _saveUser } = this.props;
+    let data = {
+      name,
+      username,
+      rol,
+      email,
+    };
+    if (password.length > 8) data.password = password;
 
-    let { id, validUserName, validUserEmail } = this.state;
-
-    //Verificamos campos validos
+    //Valid primary data
     if (!validUserName) {
       window.Swal.fire({
         icon: "error",
@@ -306,144 +366,21 @@ export default class UserAdd extends Component {
       return false;
     }
 
-    window.Swal.fire({
-      title: "Almacenamiento",
-      text: id
-        ? "¿Esta seguro de actualizar el usuario?"
-        : "¿Esta seguro de crear un nuevo usuario?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#007bff",
-      confirmButtonText: id ? "Actualizar" : "Crear",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-      preConfirm: (confirm) => {
-        if (confirm) {
-          let { host, token, id, name, username, rol, password, email } =
-              this.state,
-            body = {
-              name,
-              username,
-              rol,
-              email,
-            },
-            url = id
-              ? "http://" + host + "/api/users/" + id
-              : "http://" + host + "/api/users",
-            method = id ? "PUT" : "POST";
-
-          //Agregamos el password si no esta vacio
-          if (password.length > 8) body.password = password;
-
-          //Actualiza el pedido o creamos un pedido nuevo según el ID
-          console.log("Enviando datos del usuario a API");
-          return fetch(url, {
-            method: method,
-            body: JSON.stringify(body),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(response.statusText);
-              }
-              return response.json();
-            })
-            .catch((e) => {
-              console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
-            });
-        }
-      },
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
-        let data = result.value;
-
-        if (data.data) {
-          console.log("Usuario almacenado");
-          window.Swal.fire({
-            icon: "success",
-            title: id
-              ? "Usuario actualizado con exito"
-              : "Usuario almacenado con exito",
-            showConfirmButton: false,
-            timer: 1500,
-          }).then((res) => this.props.history.goBack());
-        } else {
-          window.Swal.fire("Error", "al almacenar el usuario", "error");
-          console.error("Orus res: ", data.message);
-        }
-      }
-    });
-  };
-  getUser = (id) => {
-    //Variables en localStorage
-    let { host, token } = this.state;
-    if (id > 0) {
-      fetch("http://" + host + "/api/users/" + id, {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(response.statusText);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          if (data.data) {
-            console.log("Cargando datos de usuario");
-            this.setState({
-              id: data.data.id,
-              rol: data.data.rol,
-              username: data.data.username,
-              name: data.data.name,
-              email: data.data.email,
-              updated_at: data.data.updated_at,
-              created_at: data.data.created_at,
-              session: data.data.session,
-              load: false,
-              validUserName: true,
-              validUserEmail: true,
-            });
-          } else {
-            console.error("Orus: ", data.message);
-            window.Swal.fire(
-              "Error",
-              "Error en el sistema, comuniquese con el administrador de sistema",
-              "error"
-            );
-            this.setState({
-              load: false,
-            });
-          }
-        })
-        .catch((error) => {
-          console.log("Orus:", error);
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
-          this.setState({
-            load: false,
-          });
-        });
-    } else {
-      this.setState({
-        load: false,
-      });
-    }
+    helper.handleSave(id, data, options, _saveUser);
   };
 }
+
+const mapStateToProps = ({ users }) => {
+    return {
+      loading: users.loading,
+      user: users.user,
+      options: users.options,
+    };
+  },
+  mapActionsToProps = {
+    _setUser: userActions.setUser,
+    _saveUser: userActions.saveUser,
+    _clearToken: userActions.clearTokenUser,
+  };
+
+export default connect(mapStateToProps, mapActionsToProps)(UserAddComponent);

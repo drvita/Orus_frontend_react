@@ -42,7 +42,7 @@ export default class searchContactLine extends Component {
   }
 
   render() {
-    const { load } = this.state;
+    const { load, dataContact } = this.state;
 
     if (this.props.contact) {
       if (load) {
@@ -57,7 +57,7 @@ export default class searchContactLine extends Component {
             </div>
           </div>
         );
-      } else if (Object.keys(this.state.dataContact).length) {
+      } else if (Object.keys(dataContact).length) {
         const { nombre, telefonos, domicilio, id, f_nacimiento, email, rfc } =
             this.state.dataContact,
           edad = this.props.edad
@@ -66,6 +66,7 @@ export default class searchContactLine extends Component {
             ? moment(f_nacimiento).fromNow()
             : 0,
           domain = /.*@domain(.com)?/gim;
+        /*
         console.log(
           "[searchContactCard] Almacenando datos de contacto en local storage"
         );
@@ -76,6 +77,7 @@ export default class searchContactLine extends Component {
             nombre,
           })
         );
+        */
 
         return (
           <div className="card card-danger card-outline">

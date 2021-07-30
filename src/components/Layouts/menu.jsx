@@ -1,9 +1,10 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { connect } from "react-redux";
-import { loggin } from "../../redux/user/actions";
+import { userActions } from "../../redux/user/";
 
 const MenuComponent = (props) => {
+  const history = useHistory();
   const handleLogOut = (e) => {
     e.preventDefault();
     const { loggin: _LOGOUT } = props;
@@ -15,9 +16,10 @@ const MenuComponent = (props) => {
       confirmButtonColor: "#007bff",
       confirmButtonText: "Si",
       cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result && !result.dismiss && result.value) {
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
         _LOGOUT({});
+        history.push("/");
       }
     });
   };
@@ -218,19 +220,17 @@ const MenuComponent = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({ default: system, users }) => {
     return {
       user: {
-        rol: state.logging.rol,
-        name: state.logging.name,
-        username: state.logging.username,
+        ...users.dataLoggin,
       },
-      companyName: state.default.company,
+      companyName: system.company,
       active: "",
     };
   },
   mapDispatchToProps = {
-    loggin,
+    loggin: userActions.setLogout,
   };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MenuComponent);

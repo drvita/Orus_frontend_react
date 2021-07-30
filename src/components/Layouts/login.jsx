@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { loggin } from "../../redux/user/actions";
+//Actions
 import { changeHost } from "../../redux/default/actions";
+import { userActions } from "../../redux/user/";
+import helper from "../Users/helpers";
 
 class LogginComponent extends Component {
   constructor(props) {
@@ -27,26 +29,22 @@ class LogginComponent extends Component {
   }
 
   componentDidUpdate(props, state) {
-    const { errors: E_VIEJO = {}, changeHostStatus: H_STATUS_VIEJO } = props,
-      { errors: E_NEW = {}, changeHostStatus: H_STATUS_NEW } = this.props;
+    const { changeHostStatus: H_STATUS_VIEJO } = props,
+      { loading, changeHostStatus: H_STATUS_NEW } = this.props;
 
-    if (
-      E_VIEJO.errors !== E_NEW.errors &&
-      E_NEW.errors &&
-      E_NEW.errors.toString().length
-    ) {
-      //Manejamos errores del handle de inicio de sesion
-      //Solo quitamos el loadding
+    if (props.loading !== loading) {
       this.setState({
-        load: false,
+        load: loading,
       });
     }
+
     if (H_STATUS_VIEJO !== H_STATUS_NEW && H_STATUS_NEW) {
       //Manejamos el handle de cambio de host
       //Solo quitamos el loadding
       this.setState({
         load: false,
       });
+      window.sendPushMessage("Orus system", "Cambio de host exitoso");
     }
   }
 
@@ -59,12 +57,7 @@ class LogginComponent extends Component {
         hostShow: HSHOW,
         error: E,
       } = this.state,
-      {
-        company: COMPANY,
-        errors: ERRORS,
-        changeHostStatus: H_STATUS = null,
-        host: H_NAME,
-      } = this.props;
+      { company: COMPANY, errors: ERRORS } = this.props;
 
     return (
       <div className="login-page">
@@ -81,13 +74,6 @@ class LogginComponent extends Component {
                 <i className="mx-2 fas fa-info"></i> {ERRORS.errors.toString()}
               </span>
             </div>
-          ) : H_STATUS ? (
-            <div className="alert alert-success">
-              <span>
-                <i className="mx-2 fas fa-info"></i> Direccion de servidor
-                cambiada con exito [{H_NAME}]
-              </span>
-            </div>
           ) : null}
 
           <div className="rounded shadow-lg card">
@@ -95,21 +81,15 @@ class LogginComponent extends Component {
               <p className="login-box-msg text-uppercase">
                 <span className="p-2 badge badge-secondary">{COMPANY}</span>
               </p>
-              <form onSubmit={this.handleLogin}>
-                <div
-                  className={
-                    E.input && E.input === "email"
-                      ? "mb-0 input-group"
-                      : "mb-3 input-group"
-                  }
-                >
+              <form autoComplete="off">
+                <div className="mb-0 input-group">
                   <input
                     type="email"
                     className="form-control"
                     placeholder="Usuario"
                     name="username"
                     autoFocus={HSHOW ? false : true}
-                    onChange={this.catchInputs}
+                    onChange={({ target }) => this.catchInputs(target)}
                     value={U}
                   />
                   <div className="input-group-append">
@@ -117,30 +97,23 @@ class LogginComponent extends Component {
                       <span className="fas fa-user"></span>
                     </div>
                   </div>
-                  {E.input && E.input === "email" ? (
-                    <span className="text-center text-danger text-wrap font-weight-bold text-monospace">
-                      <small>
-                        <i className="mx-2 fas fa-info"></i>Los datos son
-                        errones
-                      </small>
-                    </span>
-                  ) : null}
                 </div>
-                <div
-                  className={
-                    E.input && E.input === "password"
-                      ? "mb-0 input-group"
-                      : "mb-3 input-group"
-                  }
-                >
+                {E.input && E.input === "email" ? (
+                  <span className="text-center text-danger text-wrap font-weight-bold text-monospace">
+                    <small>
+                      <i className="mx-2 fas fa-info"></i>Los datos son errones
+                    </small>
+                  </span>
+                ) : null}
+                <div className="mt-3 input-group">
                   <input
                     type="password"
                     className="form-control"
                     placeholder="Contraseña"
                     name="password"
-                    autoComplete="off"
-                    onChange={this.catchInputs}
+                    onChange={({ target }) => this.catchInputs(target)}
                     value={P}
+                    onKeyPress={({ key }) => this.handleKeyEnter(key)}
                   />
                   <div className="input-group-append">
                     <div className="input-group-text">
@@ -156,7 +129,7 @@ class LogginComponent extends Component {
                   </span>
                 ) : null}
                 <div className="row">
-                  <div className="mb-4 col-12">
+                  <div className="my-3 col-12">
                     <a
                       href="#tools"
                       onClick={this.showTools}
@@ -173,9 +146,9 @@ class LogginComponent extends Component {
                           name="txtHost"
                           autoComplete="off"
                           autoFocus={HSHOW ? true : false}
-                          onChange={this.catchInputs}
+                          onChange={({ target }) => this.catchInputs(target)}
                           value={H_TXT}
-                          onKeyPress={this.pressEnter}
+                          onKeyPress={({ key }) => this.pressEnter(key)}
                         />
                         <div className="input-group-append">
                           <div className="input-group-text">
@@ -189,12 +162,13 @@ class LogginComponent extends Component {
                 <div className="row">
                   <div className="text-center col-12">
                     <button
-                      type={LOADDING ? "button" : "submit"}
+                      type="button"
                       className={
                         LOADDING
                           ? "btn btn-outline-secondary btn-block"
                           : "btn btn-primary btn-block"
                       }
+                      onClick={this.handleLogin}
                     >
                       {LOADDING ? (
                         <div className="spinner-border text-secondary">
@@ -214,17 +188,16 @@ class LogginComponent extends Component {
     );
   }
 
-  pressEnter = (e) => {
-    //Realiza el cambio del host
-    e.preventDefault();
-    if (e.key === "Enter") {
+  handleKeyEnter = (key) => {
+    if (key === "Enter") {
+      this.handleLogin();
+    }
+  };
+  pressEnter = (key) => {
+    if (key === "Enter") {
       const { txtHost } = this.state,
         { 0: PORT, 1: HOST } = txtHost.split("://"),
         { changeHost: _CHANGE_HOST } = this.props;
-
-      this.setState({
-        load: true,
-      });
 
       if (PORT && HOST) {
         _CHANGE_HOST({
@@ -237,75 +210,20 @@ class LogginComponent extends Component {
           port: undefined,
         });
       }
-    } else if (e.target && e.target.name !== "") {
-      this.catchInputs(e);
     }
   };
-  catchInputs = (e) => {
-    //Manejamos las entrados de los inputs: email, password
-    const { name: NAME, value: VALUE } = e.target,
-      { key: KEY } = e;
-    let val = "";
-
-    if (KEY) {
-      if (NAME === "txtHost") val = this.state.txtHost;
-      val += KEY;
-    } else {
-      val = VALUE;
-    }
-
+  catchInputs = ({ name, value }) => {
     this.setState({
-      [NAME]: val,
+      [name]: value,
     });
   };
   showTools = (e) => {
-    //Muestra el campo para cambiar el host de conexion
-    //Lo realiza a traves del estado local con la variable
-    //hostShow
     e.preventDefault();
     this.setState({
       hostShow: !this.state.hostShow,
     });
   };
-  validInputs(body) {
-    //Valida los campos del formulario para
-    //email y password con expresiones regulares
-    //Usuario: un email valido
-    //Password: de 8 a l6 caracteres, debe de contener mayuscula,
-    //un numero y al menos un caracter: !@#$&.*
-    const REGEXUSER =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-      REGEXPASS = /^(?=.*[A-Z])(?=.*[!@#$&.*])(?=.*[0-9])(?=.*[a-z]).{8,16}$/,
-      { email: U, password: P } = body;
-
-    if (REGEXUSER.test(U)) {
-      if (REGEXPASS.test(P)) {
-        return {
-          isValid: true,
-        };
-      } else {
-        console.error("[Orus System] Fallo validacion de password");
-        return {
-          isValid: false,
-          msg: "Los datos introducidos no son validos",
-          input: "password",
-        };
-      }
-    } else {
-      console.error("[Orus System] Fallo validacion de email");
-      return {
-        isValid: false,
-        msg: "Los datos introducidos no son validos",
-        input: "email",
-      };
-    }
-  }
-  handleLogin = (e) => {
-    //Conecta con el redux para hacer la validacion de
-    //credenciales a traves de una API.
-    //Aqui solo validamos datos y manejamos los fallos
-    //A traves de estado local
-    e.preventDefault();
+  handleLogin = () => {
     console.log("[Orus System] Validando integracion de credenciales");
     const { username: U, password: P, load: LOADING } = this.state,
       { loggin: _LOGGINGPROCESS } = this.props,
@@ -321,10 +239,10 @@ class LogginComponent extends Component {
       });
     }
 
-    const DATA_VALID = this.validInputs(BODY);
+    const DATA_VALID = helper.validInputs(BODY);
 
     if (DATA_VALID.isValid) {
-      console.log("[Orus System] enviando credenciales a _LOGGINGPROCESS");
+      console.log("[Orus System] enviando credenciales al servidor");
       _LOGGINGPROCESS(BODY);
     } else {
       this.setState({
@@ -335,16 +253,18 @@ class LogginComponent extends Component {
   };
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({ default: system, users }) => {
     return {
-      company: state.default.company,
-      host: state.default.host,
-      errors: state.logging.errors,
-      changeHostStatus: state.default.success,
+      company: system.company,
+      host: system.host,
+      messages: users.messages,
+      loading: users.loading,
+      changeHostStatus: system.success,
     };
   },
   mapDispatchToProps = {
-    loggin,
+    loggin: userActions.loggin,
+    setMessage: userActions.setMessages,
     changeHost,
   };
 

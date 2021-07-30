@@ -15,12 +15,12 @@ const FormAddContactComponent = (props) => {
     [data, setData] = useState(helper.dataPrimary),
     { name, telnumbers, birthday, email } = data;
   //States
-  const [validForm, setValidForm] = useState(false);
+  //const [validForm, setValidForm] = useState(false);
   //Acctions
   const changeValue = (e) => {
     helper.changeDataInput(e.target, data, setData);
 
-    setValidForm(handleValidForm);
+    //setValidForm(handleValidForm);
   };
   const handleValidForm = (showMsg = false) => {
     const verify = helper.handleVerificationData(data, showMsg);
@@ -33,7 +33,7 @@ const FormAddContactComponent = (props) => {
         telnumbers: JSON.stringify(data.telnumbers),
       };
     if (!valid) return false;
-    console.log("[DEBUG] Save data", body);
+    //console.log("[DEBUG] Save data", body);
 
     helper.saveContact(title, body, _save);
   };
@@ -147,7 +147,7 @@ const FormAddContactComponent = (props) => {
                 type="button"
                 className="btn btn-primary"
                 onClick={handleSave}
-                disabled={!validForm}
+                disabled={!name || !telnumbers || !birthday || !email}
               >
                 <i className="fas fa-save"></i>
                 Guardar

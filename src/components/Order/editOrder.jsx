@@ -392,10 +392,10 @@ class EditOrderComponent extends Component {
   };
 }
 
-const mapStateToProps = ({ order, logging }) => {
+const mapStateToProps = ({ order, users }) => {
     return {
       order: order.order,
-      userRole: logging.rol,
+      userRole: users.dataLoggin.rol,
       options: order.options,
       loading: order.loading,
     };

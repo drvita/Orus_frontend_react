@@ -4,10 +4,6 @@ const loggin = (payload) => ({
   type: TYPE.SAGA_TRY_LOGING,
   payload,
 });
-const checkLogging = (payload) => ({
-  type: TYPE.SAGA_CHECK_LOGING,
-  payload,
-});
 const getNotifyUser = (payload = {}) => ({
   type: TYPE.SAGA_GET_NOTIFY,
   payload,
@@ -68,7 +64,6 @@ const setUser = (payload = {}) => ({
 
 const toExportActions = {
   loggin,
-  checkLogging,
   getNotifyUser,
   readNotifyUser,
   setLoggin,

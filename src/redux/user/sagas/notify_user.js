@@ -10,13 +10,15 @@ export default function* handleNotify() {
       const { unreadNotifications: NOTIFYS } = result.data;
 
       console.log("[Orus System] Notificaciones encontradas:", NOTIFYS.length);
+      console.log(
+        "[Orus System] Verificacion de usuario correcta",
+        result.data.username
+      );
       yield put(userActions.setNotifys(NOTIFYS));
-    } else if (result.message === "Unauthenticated.") {
+    } else if (result.message && result.message === "Unauthenticated.") {
       yield put(userActions.setLogout());
     }
   } catch (e) {
-    //const auth = e.message.includes("Failed to fetch");
-
     console.error(
       "[Orus System] Error en notificaciones/saga handleNotify",
       e.message

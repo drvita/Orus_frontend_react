@@ -107,7 +107,7 @@ export default function UserEmailInputComponent(props) {
           placeholder="email"
           name="email"
           autoComplete="off"
-          value={email}
+          defaultValue={email}
           onChange={({ target }) => handleChange(target)}
           onBlur={validEmail}
           required="required"

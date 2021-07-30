@@ -109,7 +109,7 @@ class UserAddComponent extends Component {
                           placeholder="Nombre completo"
                           name="name"
                           autoComplete="off"
-                          value={name}
+                          defaultValue={name}
                           onChange={({ target }) => this.catchInputs(target)}
                           required="required"
                           minLength="8"
@@ -145,7 +145,7 @@ class UserAddComponent extends Component {
                           placeholder="Contraseña"
                           name="password"
                           autoComplete="off"
-                          value={password}
+                          defaultValue={password}
                           onChange={({ target }) => this.catchInputs(target)}
                           required={id ? false : true}
                           minLength="8"
@@ -175,7 +175,7 @@ class UserAddComponent extends Component {
                         <select
                           className="custom-select"
                           name="rol"
-                          value={rol}
+                          defaultValue={rol}
                           onChange={({ target }) => this.catchInputs(target)}
                         >
                           <option value="0">Administrador</option>
@@ -315,7 +315,13 @@ class UserAddComponent extends Component {
     const { _setUser } = this.props;
     _setUser();
   };
-  catchInputs = ({ name, value }) => {
+  catchInputs = ({ name, value, type }) => {
+    if (type === "text") {
+      value = value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
     this.setState({
       [name]: value,
     });

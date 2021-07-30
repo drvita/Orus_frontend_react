@@ -109,7 +109,7 @@ export default function UserNameInputComponent(props) {
           name="username"
           autoComplete="off"
           autoFocus="autofocus"
-          value={username}
+          defaultValue={username}
           onChange={({ target }) => handleChange(target)}
           onBlur={validUser}
           required="required"

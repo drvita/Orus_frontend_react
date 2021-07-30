@@ -22,7 +22,7 @@ const subscription = async () => {
           console.error("[Main] SW error \n", error);
         });
     } else {
-      console.log("[Main] Este navegador no soporta SW ");
+      console.log("[Main] Este navegador no soporta SW - Server no seguro");
     }
   } catch (err) {
     console.error("[Main] Error en el montado de SW");
@@ -34,19 +34,28 @@ window.onload = function (e) {
 };
 
 window.sendPushMessage = (title, message) => {
-  navigator.serviceWorker.ready.then((sw) => {
-    sw.showNotification(title, {
-      body: message,
-    }).catch((error) => {
-      console.error("[SW] Notificaciones no disponibles", error.message);
-      window.Swal.fire({
-        title: message,
-        showConfirmButton: title !== "error" ? false : true,
-        timer: title !== "error" ? 1500 : 9000,
-        position: "top",
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.ready.then((sw) => {
+      sw.showNotification(title, {
+        body: message,
+      }).catch((error) => {
+        console.error("[SW] Notificaciones no disponibles", error.message);
+        window.Swal.fire({
+          title: message,
+          showConfirmButton: title !== "error" ? false : true,
+          timer: title !== "error" ? 1500 : 9000,
+          position: "top",
+        });
       });
     });
-  });
+  } else {
+    window.Swal.fire({
+      title: message,
+      showConfirmButton: true,
+      timer: 6000,
+      position: "top",
+    });
+  }
 };
 
 /*

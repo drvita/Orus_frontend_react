@@ -5,10 +5,6 @@ import { connect } from "react-redux";
 import { userActions } from "./redux/user/";
 
 class App extends Component {
-  componentDidMount() {
-    const { checkLogging: _checkLogging, dataLoggin } = this.props;
-    if (dataLoggin.isLogged) _checkLogging(dataLoggin.token);
-  }
   componentDidUpdate(props) {
     const { messages: M_OLD = {} } = props,
       { messages: M_NEW = {}, setMessage: _setMessage } = this.props;
@@ -48,7 +44,6 @@ const mapStateToProps = ({ users }) => {
     };
   },
   mapDispatchToProps = {
-    checkLogging: userActions.checkLogging,
     setMessage: userActions.setMessages,
   };
 

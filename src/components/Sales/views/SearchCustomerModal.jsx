@@ -58,6 +58,7 @@ function SearchCustomerModal({
       ...data,
       list: customers,
     });
+    // eslint-disable-next-line
   }, [customers]);
 
   return (
@@ -108,7 +109,7 @@ function SearchCustomerModal({
                                   {customer.id}
                                 </span>
                               </td>
-                              <td className="text-capitalize">
+                              <td className="text-capitalize text-left">
                                 <a
                                   href="#select"
                                   onClick={(e) =>

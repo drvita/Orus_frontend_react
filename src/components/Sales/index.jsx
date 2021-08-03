@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 //Components
 import SearchCustomerModal from "./views/SearchCustomerModal";
+import InputSearchItem from "./views/InputSearchItem";
+//Data
+const ls = localStorage.getItem("OrusSales"),
+  dataDefault = JSON.parse(ls ?? "{}");
 
-export default function BoxSalesComponent({ _setListContacts }) {
+export default function BoxSalesComponent() {
   const [data, setData] = useState({
-    customer: null,
+    customer: dataDefault.customer ?? null,
     showSearchCustomer: false,
+    items: dataDefault.items ?? [],
   });
+  let total = 0;
   //Functions
   const handleSetCustomer = () => {
       setData({
@@ -26,7 +32,41 @@ export default function BoxSalesComponent({ _setListContacts }) {
         customer,
         showSearchCustomer: false,
       });
+    },
+    handleAddItem = (result) => {
+      const found = data.items.filter(
+        (item) => item.item.id === result.item.id
+      );
+      let newItems = data.items.filter(
+        (item) => item.item.id !== result.item.id
+      );
+
+      if (found.length) {
+        newItems.push({
+          ...found,
+          cant: result.cant + found.cant,
+        });
+      } else {
+        newItems.push(result);
+      }
+
+      setData({
+        ...data,
+        items: newItems,
+      });
     };
+
+  useEffect(() => {
+    const toSave = {
+      customer: data.customer,
+      items: data.items,
+    };
+    localStorage.setItem("OrusSales", JSON.stringify(toSave));
+
+    return () => {
+      localStorage.setItem("OrusSales", "{}");
+    };
+  }, [data]);
 
   return (
     <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
@@ -34,8 +74,8 @@ export default function BoxSalesComponent({ _setListContacts }) {
         <nav className="row mb-2">
           <div className="col">
             <i className="fas fa-user mr-1"></i>
-            Cliente:{" "}
-            <label className="text-capitalize">
+            Cliente:
+            <label className="text-capitalize ml-1">
               {data.customer ? data.customer.nombre : "XXX"}
             </label>
             <button
@@ -53,18 +93,27 @@ export default function BoxSalesComponent({ _setListContacts }) {
         >
           <table className="table table-striped">
             <tbody>
-              <tr>
-                <td>
-                  <span className="text-muted w-full d-block">Producto 1</span>
-                  <label className="w-full d-block">$120.00</label>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <span className="text-muted w-full d-block">Producto 2</span>
-                  <label className="w-full d-block">$75.00</label>
-                </td>
-              </tr>
+              {data.items.map((item) => {
+                const sum = parseInt(item.cant) * parseInt(item.item.precio);
+                total += sum;
+
+                return (
+                  <tr key={item.item.id}>
+                    <td>
+                      <span className="text-muted w-full d-block text-uppercase">
+                        {item.item.producto}
+                      </span>
+                      <label className="w-full d-block">
+                        <span className="badge badge-dark mr-1">
+                          {item.cant}
+                        </span>
+                        *<span className="mx-1">${item.item.precio}</span>=
+                        <span className="ml-1">${sum}</span>
+                      </label>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -76,12 +125,8 @@ export default function BoxSalesComponent({ _setListContacts }) {
         )}
       </div>
       <div className="card-footer">
-        <div className="btn-group float-right text-center">
-          <input className="form-control" placeholder="Barcode" />
-          <button type="button" className="btn btn-primary">
-            <i className="fas fa-barcode"></i>
-          </button>
-        </div>
+        <label className="text-lg">Total: ${total}</label>
+        <InputSearchItem handleAdd={handleAddItem} />
       </div>
     </div>
   );

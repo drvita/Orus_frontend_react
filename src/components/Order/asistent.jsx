@@ -54,12 +54,12 @@ class AsistentComponent extends Component {
     }
   }
   componentDidUpdate(props) {
-    const { categories, contact, exam, msg_exams, _setMsgExam, _getContact } =
+    const { category, contact, exam, msg_exams, _setMsgExam, _getContact } =
         this.props,
       data = helper.getDataOneItem(contact.id);
 
-    if (props.categories.id !== categories.id) {
-      this.getCategories(categories, this.state.exam);
+    if (props.category.id !== category.id) {
+      this.getCategories(category, this.state.exam);
     }
 
     //Process messages of exams ok
@@ -102,6 +102,8 @@ class AsistentComponent extends Component {
     const { contact_id, items, exam, exam_id, examEdit, codes, session } =
         this.state,
       { contact, load_order: LOADING, _saveExam } = this.props;
+
+    //console.log("[DEBUG] codes", codes, exam);
 
     return (
       <div className="card card-warning card-outline">
@@ -325,10 +327,9 @@ class AsistentComponent extends Component {
     _setContact();
   };
   handleGetCategories = (cat_id) => {
-    const { _getListCategories } = this.props;
+    const { _getCategory } = this.props;
 
-    _getListCategories({
-      options: {},
+    _getCategory({
       id: cat_id,
     });
   };
@@ -461,7 +462,7 @@ const mapStateToProps = ({ contact, exam, order, category }) => {
       msg_exams: exam.messages,
       options: order.options,
       load_order: order.loading,
-      categories: category.list,
+      category: category.category,
     };
   },
   mapActionsToProps = {
@@ -470,7 +471,7 @@ const mapStateToProps = ({ contact, exam, order, category }) => {
     _saveExam: examActions.saveExam,
     _setMsgExam: examActions.setMessagesExam,
     _saveOrder: orderActions.saveOrder,
-    _getListCategories: categoryActions.getListCategories,
+    _getCategory: categoryActions.getCategory,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(AsistentComponent);

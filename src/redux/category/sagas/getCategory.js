@@ -4,13 +4,11 @@ import { categoryActions } from "..";
 
 export default function* handleGetExam({ payload }) {
   try {
-    const { id, title } = payload,
+    const { id } = payload,
       result = yield call(api, `categories/${id}`, "GET");
 
     if (result.data) {
-      const response = result.data.length ? result.data : {};
-      console.log(`[DEBUG] in saga [${title}][${id}]`, response);
-      yield put(categoryActions.setCategory(response));
+      yield put(categoryActions.setCategory(result.data));
     } else {
       console.error("[Orus System] Error in handle GET Contact", result);
       yield put(

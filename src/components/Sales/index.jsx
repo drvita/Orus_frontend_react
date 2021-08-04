@@ -11,8 +11,14 @@ export default function BoxSalesComponent() {
     customer: dataDefault.customer ?? null,
     showSearchCustomer: false,
     items: dataDefault.items ?? [],
+    session: dataDefault.session ? dataDefault.session : getSession(),
+    descuento: 0,
+    subtotal: 0,
+    total: 0,
+    contact_id: null,
+    order_id: 0,
+    status: 0,
   });
-  let total = 0;
   //Functions
   const handleSetCustomer = () => {
       setData({
@@ -30,22 +36,28 @@ export default function BoxSalesComponent() {
       setData({
         ...data,
         customer,
+        contact_id: customer.id,
         showSearchCustomer: false,
       });
     },
     handleAddItem = (result) => {
       const found = data.items.filter(
-        (item) => item.item.id === result.item.id
+        (item) => item.store_items_id === result.store_items_id
       );
       let newItems = data.items.filter(
-        (item) => item.item.id !== result.item.id
+        (item) => item.store_items_id !== result.store_items_id
       );
 
       if (found.length) {
-        newItems.push({
-          ...found,
-          cant: result.cant + found.cant,
-        });
+        const cantidad = parseInt(result.cant) + parseInt(found[0].cant),
+          item = {
+            ...found[0],
+            cant: cantidad,
+            subtotal: parseFloat(result.price) * cantidad,
+            inStorage: cantidad >= parseInt(result.cantInStore) ? true : false,
+            out: parseInt(data.cantInStore) - cantidad,
+          };
+        newItems.push(item);
       } else {
         newItems.push(result);
       }
@@ -60,9 +72,25 @@ export default function BoxSalesComponent() {
     const toSave = {
       customer: data.customer,
       items: data.items,
+      session: data.session,
     };
-    localStorage.setItem("OrusSales", JSON.stringify(toSave));
+    let sum = 0;
 
+    data.items.forEach((item) => {
+      sum += parseFloat(item.subtotal);
+    });
+
+    if (sum !== data.subtotal && sum) {
+      //console.log("[DEBUG] Effect", sum, data.subtotal);
+      const total = sum - data.descuento;
+      setData({
+        ...data,
+        subtotal: sum,
+        total,
+      });
+    }
+
+    localStorage.setItem("OrusSales", JSON.stringify(toSave));
     return () => {
       localStorage.setItem("OrusSales", "{}");
     };
@@ -86,6 +114,7 @@ export default function BoxSalesComponent() {
               <i className="fas fa-exchange-alt"></i>
             </button>
           </div>
+          <div className="col">{data.session}</div>
         </nav>
         <div
           className="overflow-auto text-right p-0 border border-gray"
@@ -93,27 +122,29 @@ export default function BoxSalesComponent() {
         >
           <table className="table table-striped">
             <tbody>
-              {data.items.map((item) => {
-                const sum = parseInt(item.cant) * parseInt(item.item.precio);
-                total += sum;
-
-                return (
-                  <tr key={item.item.id}>
-                    <td>
-                      <span className="text-muted w-full d-block text-uppercase">
-                        {item.item.producto}
-                      </span>
-                      <label className="w-full d-block">
-                        <span className="badge badge-dark mr-1">
-                          {item.cant}
-                        </span>
-                        *<span className="mx-1">${item.item.precio}</span>=
-                        <span className="ml-1">${sum}</span>
-                      </label>
-                    </td>
-                  </tr>
-                );
-              })}
+              {data.items.length ? (
+                <>
+                  {data.items.map((item) => {
+                    if (!item.store_items_id) return null;
+                    return (
+                      <tr key={item.store_items_id}>
+                        <td>
+                          <span className="text-muted w-full d-block text-uppercase">
+                            {item.producto}
+                          </span>
+                          <label className="w-full d-block">
+                            <span className="badge badge-dark mr-1">
+                              {item.cant}
+                            </span>
+                            *<span className="mx-1">${item.price}</span>=
+                            <span className="ml-1">${item.subtotal}</span>
+                          </label>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </>
+              ) : null}
             </tbody>
           </table>
         </div>
@@ -125,9 +156,21 @@ export default function BoxSalesComponent() {
         )}
       </div>
       <div className="card-footer">
-        <label className="text-lg">Total: ${total}</label>
+        <label className="text-lg">Total: ${data.total}</label>
         <InputSearchItem handleAdd={handleAddItem} />
       </div>
     </div>
+  );
+}
+
+function getSession() {
+  return (
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(10)
   );
 }

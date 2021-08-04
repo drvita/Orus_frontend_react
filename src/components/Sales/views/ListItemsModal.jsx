@@ -8,7 +8,7 @@ function ListItemsModal({
 }) {
   const [data, setData] = useState({
     item: null,
-    cant: cantDefault,
+    cant: cantDefault ? cantDefault : 1,
   });
   //Functions
   const handleClose = () => {

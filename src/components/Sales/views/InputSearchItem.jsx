@@ -36,7 +36,24 @@ function InputSearchItem({ list, _getList, _setList, handleAdd: _handleAdd }) {
     handleCloseModal = () => {
       setShowList(false);
     },
-    handleSelectItem = (item) => {
+    makeItem = (data) => {
+      return {
+        cant: data.cant,
+        price: parseFloat(data.item.precio),
+        subtotal: parseInt(data.cant) * parseFloat(data.item.precio),
+        inStorage:
+          parseInt(data.item.cantidad) >= parseInt(data.cant) ? true : false,
+        out: parseInt(data.item.cantidad) - parseInt(data.cant),
+        cantInStore: parseInt(data.item.cantidad),
+        session: data.item.session,
+        store_items_id: data.item.id,
+        descripcion: data.item.descripcion,
+        producto: data.item.producto.toLowerCase(),
+        category: data.item.categoria ? data.item.categoria.id : 0,
+      };
+    },
+    handleSelectItem = (data) => {
+      const item = makeItem(data);
       _setList({
         result: {
           list: [],
@@ -50,11 +67,18 @@ function InputSearchItem({ list, _getList, _setList, handleAdd: _handleAdd }) {
   useEffect(() => {
     if (list.length) {
       if (list.length === 1) {
-        console.log("[DEBUG] Se encontro 1", list[0]);
+        const item = makeItem({
+          item: list[0],
+          cant: cantDefault ? cantDefault : 1,
+        });
+        _handleAdd(item);
+        setCantDefault(1);
+        console.log("[DEBUG] Se encontro 1");
       } else {
         setShowList(true);
       }
     }
+    //eslint-disable-next-line
   }, [list]);
 
   return (

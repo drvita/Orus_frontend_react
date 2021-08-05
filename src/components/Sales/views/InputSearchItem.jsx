@@ -82,7 +82,7 @@ function InputSearchItem({ list, _getList, _setList, handleAdd: _handleAdd }) {
   }, [list]);
 
   return (
-    <div className="btn-group float-right text-center">
+    <div className="btn-group text-center">
       <input
         className="form-control"
         placeholder="Barcode"

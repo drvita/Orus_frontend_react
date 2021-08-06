@@ -5,6 +5,7 @@ const DEFAULT_STATE = {
   metaList: {},
   messages: [],
   sale: {},
+  listBanks: [],
   loading: false,
 };
 
@@ -35,6 +36,12 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         loading: true,
       };
     }
+    case TYPE.SAGA_GET_LIST_BANK: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
 
     case TYPE.SET_LIST_SALES: {
       return {
@@ -54,8 +61,17 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
     case TYPE.SET_SALE: {
       return {
         ...state,
+        sale: payload,
+        messages: [],
         loading: false,
-        exam: payload,
+      };
+    }
+    case TYPE.SET_LIST_BANKS: {
+      return {
+        ...state,
+        listBanks: payload,
+        messages: [],
+        loading: false,
       };
     }
 

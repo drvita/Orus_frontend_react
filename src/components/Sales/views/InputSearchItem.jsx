@@ -90,7 +90,12 @@ function InputSearchItem({ list, _getList, _setList, handleAdd: _handleAdd }) {
         onKeyPress={({ key }) => handlePressEnter(key)}
         value={textSearch}
       />
-      <button type="button" className="btn btn-primary" onClick={searchItem}>
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={searchItem}
+        disabled={textSearch.length > 2 ? false : true}
+      >
         <i className="fas fa-barcode"></i>
       </button>
       {showList && list.length ? (

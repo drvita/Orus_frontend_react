@@ -8,9 +8,12 @@ const setMessagesSale = (payload = []) => ({
   type: TYPE.SET_MESSAGE_SALE,
   payload,
 });
-
 const setSale = (payload = {}) => ({
   type: TYPE.SET_SALE,
+  payload,
+});
+const setListBanks = (payload = {}) => ({
+  type: TYPE.SET_LIST_BANKS,
   payload,
 });
 
@@ -31,6 +34,10 @@ const saveSale = (payload = {}) => ({
   type: TYPE.SAGA_SAVE_SALE,
   payload,
 });
+const getListBanks = (payload = {}) => ({
+  type: TYPE.SAGA_GET_LIST_BANK,
+  payload,
+});
 
 const toExportActions = {
   setListSales,
@@ -40,6 +47,8 @@ const toExportActions = {
   getListSale,
   getSale,
   deleteSale,
+  getListBanks,
+  setListBanks,
 };
 
 export default toExportActions;

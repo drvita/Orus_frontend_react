@@ -45,7 +45,7 @@ export default class printSale extends Component {
                     <br />
                     Tel: 312 312 5353
                     <br />
-                    Av. Tecnologico 38-A, Vistahermosa, Colima, Col.
+                    Av. Tecnologico 32-A, Vistahermosa, Colima, Col.
                   </em>
                 </h4>
                 <h4

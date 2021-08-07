@@ -42,7 +42,7 @@ export default class edoCuenta extends Component {
                 className="form-control text-right text-success"
                 type="number"
                 name="total"
-                value={total.toFixed(2)}
+                value={total}
                 onChange={this.catchInputs}
                 readOnly={true}
               />
@@ -51,15 +51,11 @@ export default class edoCuenta extends Component {
 
           <div className="card-text row">
             <label className="col-6 p-2">Abonado</label>
-            <h3 className="col text-success p-2 text-right">
-              $ {pagado.toFixed(2)}
-            </h3>
+            <h3 className="col text-success p-2 text-right">$ {pagado}</h3>
           </div>
           <div className="card-text row">
             <label className="col-6 p-2">Saldo</label>
-            <h3 className="col text-success p-2 text-right">
-              $ {pay.toFixed(2)}
-            </h3>
+            <h3 className="col text-success p-2 text-right">$ {pay}</h3>
           </div>
         </div>
       </div>

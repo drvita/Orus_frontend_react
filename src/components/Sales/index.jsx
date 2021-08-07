@@ -11,7 +11,6 @@ export default class Contacts extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-    let sdd = JSON.parse(localStorage.getItem("OrusSales"));
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       ventas: {
@@ -19,12 +18,12 @@ export default class Contacts extends Component {
         meta: {},
       },
       load: true,
-      page: sdd ? sdd.page : 1,
-      orderby: sdd ? sdd.orderby : "created_at",
-      order: sdd ? sdd.order : "desc",
-      search: sdd ? sdd.search : "",
-      type: sdd ? sdd.type : "",
-      date: sdd ? sdd.date : "",
+      page: 1,
+      orderby: "created_at",
+      order: "desc",
+      search: "",
+      type: "",
+      date: "",
       host: ls.host,
       token: ls.token,
     };
@@ -36,35 +35,11 @@ export default class Contacts extends Component {
   }
   componentDidMount() {
     this.getPedidos();
-    console.log("[Sales] Eliminando datos de contacto en uso");
-    localStorage.setItem("OrusContactInUse", JSON.stringify({}));
-    localStorage.setItem(
-      "OrusSales",
-      JSON.stringify({
-        page: this.state.page,
-        orderby: this.state.orderby,
-        order: this.state.order,
-        search: this.state.search,
-        type: this.state.type,
-        date: this.state.date,
-      })
-    );
   }
   componentDidUpdate(props, state) {
     if (state.load === false && this.state.load === true) {
       console.log("Recargando pedidos");
       this.getPedidos();
-      localStorage.setItem(
-        "OrusSales",
-        JSON.stringify({
-          page: this.state.page,
-          orderby: this.state.orderby,
-          order: this.state.order,
-          search: this.state.search,
-          type: this.state.type,
-          date: this.state.date,
-        })
-      );
     }
   }
 
@@ -161,17 +136,15 @@ export default class Contacts extends Component {
                           </span>
                         </Link>
                       </td>
-                      <td className="text-right">$ {venta.total.toFixed(2)}</td>
-                      <td className="text-right">
-                        $ {venta.pagado.toFixed(2)}
-                      </td>
+                      <td className="text-right">$ {venta.total}</td>
+                      <td className="text-right">$ {venta.pagado}</td>
                       <td className="text-right">
                         {venta.total - venta.pagado <= 0 ? (
                           <label className="text-success">
                             <i className="fas fa-check"></i>
                           </label>
                         ) : (
-                          "$ " + (venta.total - venta.pagado).toFixed(2)
+                          "$ " + (venta.total - venta.pagado)
                         )}
                       </td>
                       <td>{moment(venta.updated_at).fromNow()}</td>

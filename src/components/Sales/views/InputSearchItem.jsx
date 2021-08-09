@@ -4,7 +4,13 @@ import { storeActions } from "../../../redux/store/index";
 //Components
 import ListModal from "./ListItemsModal";
 
-function InputSearchItem({ list, _getList, _setList, handleAdd: _handleAdd }) {
+function InputSearchItem({
+  list,
+  session,
+  _getList,
+  _setList,
+  handleAdd: _handleAdd,
+}) {
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(0);
@@ -37,15 +43,17 @@ function InputSearchItem({ list, _getList, _setList, handleAdd: _handleAdd }) {
       setShowList(false);
     },
     makeItem = (data) => {
+      console.log("[DEBUG] makeitem", data);
       return {
+        id: 0,
         cant: data.cant,
         price: parseFloat(data.item.precio),
         subtotal: parseInt(data.cant) * parseFloat(data.item.precio),
         inStorage:
-          parseInt(data.item.cantidad) >= parseInt(data.cant) ? true : false,
-        out: parseInt(data.item.cantidad) - parseInt(data.cant),
-        cantInStore: parseInt(data.item.cantidad),
-        session: data.item.session,
+          parseInt(data.item.cantidades) >= parseInt(data.cant) ? true : false,
+        out: parseInt(data.item.cantidades) - parseInt(data.cant),
+        cantInStore: parseInt(data.item.cantidades),
+        session,
         store_items_id: data.item.id,
         descripcion: data.item.descripcion,
         producto: data.item.producto.toLowerCase(),

@@ -175,6 +175,18 @@ export default function IndexSalesComponent() {
         showPaymentDetails: false,
         payment: {},
       });
+    },
+    handleDeleteItem = (item) => {
+      const newItems = data.items.filter(
+        (product) => product.store_items_id !== item.store_items_id
+      );
+
+      setData({
+        ...data,
+        items: newItems,
+      });
+
+      console.log("[DEBUG] Items", newItems, item);
     };
 
   useEffect(() => {
@@ -265,11 +277,11 @@ export default function IndexSalesComponent() {
             <tbody>
               {data.items.length ? (
                 <>
-                  {data.items.map((item) => {
+                  {data.items.map((item, index) => {
                     if (!item.store_items_id) return null;
                     return (
-                      <tr key={item.id}>
-                        {handleDeleteBtn()}
+                      <tr key={index}>
+                        {handleDeleteBtn(handleDeleteItem, item)}
                         <td>
                           <span className="text-muted w-full d-block text-uppercase">
                             {item.producto}
@@ -388,7 +400,7 @@ export default function IndexSalesComponent() {
             <label className="text-lg ml-1">${data.total - data.pagado}</label>
           </div>
           <div className="col-6 text-right">
-            <InputSearchItem handleAdd={handleAddItem} />
+            <InputSearchItem handleAdd={handleAddItem} session={data.session} />
             <button
               className="btn btn-success ml-2"
               onClick={handleShowPayment}
@@ -424,14 +436,17 @@ function makeItems(items) {
 
   return itemToBack;
 }
-function handleDeleteBtn(toDo) {
+function handleDeleteBtn(toDo, data = null) {
   return (
     <td style={{ width: 32 }}>
       <button
         type="button"
         className="btn btn-default"
         onClick={() => {
-          if (toDo) toDo();
+          if (toDo) {
+            if (data) toDo(data);
+            else toDo();
+          }
         }}
       >
         <i className="fas fa-trash text-muted"></i>

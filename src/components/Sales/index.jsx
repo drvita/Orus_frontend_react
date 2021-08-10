@@ -185,8 +185,40 @@ export default function IndexSalesComponent() {
         ...data,
         items: newItems,
       });
+    },
+    handleAddDiscount = () => {
+      const discount = window.prompt("Agregue el descuento a aplicar"),
+        isNumeric = /^[0-9]+$/gms,
+        isPercen = /^[0-9]{2,3}%$/gms;
 
-      console.log("[DEBUG] Items", newItems, item);
+      if (discount.match(isNumeric)) {
+        const value = parseInt(discount);
+        setData({
+          ...data,
+          descuento: value,
+          total: data.total - value,
+        });
+        console.log("[DEBUG] Descuento directo", value, discount);
+      } else if (discount.match(isPercen)) {
+        const percent = parseInt(discount.replace("%", "")) / 100,
+          value = data.total * percent;
+
+        setData({
+          ...data,
+          descuento: value,
+          total: data.total - value,
+        });
+        console.log("[DEBUG] Descuento porcentaje", percent, value, discount);
+      }
+    },
+    handleDeleteDiscount = () => {
+      helpers.confirm("Realmente desea eliminar el descuento", () => {
+        setData({
+          ...data,
+          total: data.total + data.descuento,
+          descuento: 0,
+        });
+      });
     };
 
   useEffect(() => {
@@ -207,7 +239,6 @@ export default function IndexSalesComponent() {
     data.payments.forEach((pay) => (pagado += pay.total));
 
     if (sum !== data.subtotal && sum) {
-      //console.log("[DEBUG] Effect", sum, data.subtotal);
       const total = sum - data.descuento;
       setData({
         ...data,
@@ -252,7 +283,7 @@ export default function IndexSalesComponent() {
           <div className="col">
             <div className="card-tools text-right">
               <button
-                className="btn btn-primary"
+                className="btn btn-primary mr-1"
                 title="Cargar una venta"
                 onClick={handleShowListSales}
               >
@@ -260,7 +291,16 @@ export default function IndexSalesComponent() {
               </button>
 
               <button
-                className="btn btn-warning ml-2"
+                className="btn btn-primary mx-1"
+                title="Agregar descuento"
+                onClick={handleAddDiscount}
+                disabled={!data.total}
+              >
+                <i className="fas fa-percent"></i>
+              </button>
+
+              <button
+                className="btn btn-warning ml-1"
                 title="Cancelar venta"
                 onClick={handleEraseSale}
               >
@@ -301,13 +341,15 @@ export default function IndexSalesComponent() {
               ) : null}
               {data.descuento ? (
                 <tr>
-                  {handleDeleteBtn()}
+                  {handleDeleteBtn(handleDeleteDiscount)}
                   <td>
                     <span className="text-danger w-full d-block text-uppercase">
                       Descuento
                     </span>
                     <label className="w-full d-block">
-                      <span className="ml-1">${data.descuento}</span>
+                      <span className="ml-1 text-danger">
+                        - ${data.descuento}
+                      </span>
                     </label>
                   </td>
                 </tr>

@@ -36,20 +36,39 @@ function PaymentModal({ payment = {}, handleClose: _close }) {
               </div>
             ) : null}
 
-            <div className="row mb-2">
-              <div className="col">
-                <label className="mr-2 d-block">Folio</label>
-                <span>{payment.id}</span>
+            {payment.id ? (
+              <div className="row mb-2">
+                <div className="col">
+                  <label className="mr-2 d-block">Folio</label>
+                  <span>{payment.id}</span>
+                </div>
+                <div className="col">
+                  <label className="mr-2 d-block">Fecha</label>
+                  {payment.created_at ? (
+                    <span>{moment(payment.created_at).format("LL")}</span>
+                  ) : (
+                    <span>--</span>
+                  )}
+                </div>
+                <div className="col">
+                  <label className="mr-2 d-block text-uppercase">Recibio</label>
+                  <span>
+                    {payment.created && payment.created.name
+                      ? payment.created.name
+                      : "--"}
+                  </span>
+                </div>
               </div>
-              <div className="col">
-                <label className="mr-2 d-block">Fecha</label>
-                <span>{moment(payment.created_at).format("LL")}</span>
+            ) : (
+              <div className="row mb-2">
+                <div className="col">
+                  <span className="alert alert-warning d-block text-bold">
+                    <i className="fas fa-info-circle mr-1"></i>
+                    Pago no acreditado!
+                  </span>
+                </div>
               </div>
-              <div className="col">
-                <label className="mr-2 d-block text-uppercase">Recibio</label>
-                <span>{payment.created.name}</span>
-              </div>
-            </div>
+            )}
           </div>
           <div className="modal-footer">
             <button

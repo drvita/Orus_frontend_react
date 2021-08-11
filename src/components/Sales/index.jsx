@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 //Components
 import SearchCustomerModal from "./views/SearchCustomerModal";
 import InputSearchItem from "./views/InputSearchItem";
@@ -14,6 +15,7 @@ export default function IndexSalesComponent() {
   const ls = localStorage.getItem("OrusSales"),
     dataDefault = JSON.parse(ls ?? "{}");
   //Store
+  const { sale } = useSelector((state) => state.sales);
   const [data, setData] = useState({
     id: 0,
     customer: dataDefault.customer ?? null,
@@ -106,6 +108,7 @@ export default function IndexSalesComponent() {
       let abonado = 0;
 
       sale.payments.forEach((pay) => (abonado = pay.total));
+      //Agregar a redux
 
       setData({
         ...data,
@@ -219,6 +222,13 @@ export default function IndexSalesComponent() {
           descuento: 0,
         });
       });
+    },
+    handleChangePayments = (payments) => {
+      setData({
+        ...data,
+        payments,
+        showPayment: false,
+      });
     };
 
   useEffect(() => {
@@ -238,7 +248,7 @@ export default function IndexSalesComponent() {
     data.items.forEach((item) => (sum += item.subtotal));
     data.payments.forEach((pay) => (pagado += pay.total));
 
-    if (sum !== data.subtotal && sum) {
+    if ((sum !== data.subtotal && sum) || (data.pagado !== pagado && pagado)) {
       const total = sum - data.descuento;
       setData({
         ...data,
@@ -248,11 +258,16 @@ export default function IndexSalesComponent() {
       });
     }
 
+    if (sale) {
+      //Actualizar datos de la venta
+      console.log("[DEBUG] sale", sale);
+    }
+
     localStorage.setItem("OrusSales", JSON.stringify(data.id ? {} : toSave));
     return () => {
       localStorage.setItem("OrusSales", "{}");
     };
-  }, [data]);
+  }, [data, sale]);
 
   return (
     <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
@@ -356,8 +371,8 @@ export default function IndexSalesComponent() {
               ) : null}
               {data.payments.length ? (
                 <>
-                  {data.payments.map((pay) => (
-                    <tr key={pay.id}>
+                  {data.payments.map((pay, index) => (
+                    <tr key={index}>
                       {handleDeleteBtn()}
                       <td>
                         <a
@@ -365,7 +380,13 @@ export default function IndexSalesComponent() {
                           className=" w-full d-block text-uppercase"
                           onClick={(e) => handleShowPaymentDetails(e, pay)}
                         >
-                          <span className="text-success">Abono</span>
+                          <span
+                            className={
+                              pay.id ? "text-success" : "text-warning text-bold"
+                            }
+                          >
+                            Abono
+                          </span>
                           <span className="ml-1 text-muted">
                             {pay.metodoname}
                           </span>
@@ -417,10 +438,11 @@ export default function IndexSalesComponent() {
               total: data.total,
               pagado: data.pagado,
               contact_id: data.customer.id,
-              order_id: data.order_id,
               session: data.session,
+              items: data.items,
               payments: data.payments,
             }}
+            handelPayments={handleChangePayments}
             total={data.total - data.pagado}
           />
         )}

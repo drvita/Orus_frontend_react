@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+//Actions
 import { saleActions } from "../../../redux/sales/";
+import helpers from "../helpers";
 
-function PaymentModal({ sale, total, handleClose: _close }) {
+function PaymentModal({
+  sale,
+  total,
+  handleClose: _close,
+  handelPayments: _payments,
+}) {
   const { listBanks } = useSelector((state) => state.sales),
     dispatch = useDispatch();
   //States
   const [data, setData] = useState({
     id: 0,
     metodopago: 1,
+    metodoname: "efectivo",
     total: 0,
     bank_id: null,
     details: null,
@@ -27,10 +35,27 @@ function PaymentModal({ sale, total, handleClose: _close }) {
     },
     handleSetPayment = () => {
       const payments = [...sale.payments];
-      payments.push(data);
-      _close();
+      payments.push({
+        ...data,
+        metodoname: helpers.getMethodName(data.metodopago),
+      });
+      _payments(payments);
+      dispatch(
+        saleActions.saveSale({
+          id: sale.id,
+          data: {
+            ...sale,
+            items: JSON.stringify(sale.items),
+            payments: JSON.stringify(payments),
+          },
+        })
+      );
 
-      console.log("[DEBUG] Make payment", data, sale.id, payments);
+      console.log("[DEBUG] Make payment", payments);
+    },
+    handleSubmitForm = (e) => {
+      e.preventDefault();
+      handleSetPayment();
     };
 
   useEffect(() => {
@@ -50,7 +75,7 @@ function PaymentModal({ sale, total, handleClose: _close }) {
             </button>
           </div>
           <div className="modal-body p-2">
-            <form autoComplete="off">
+            <form autoComplete="off" onSubmit={handleSubmitForm}>
               <div className="row mb-2">
                 <div className="col">
                   <label>Metodo de pago</label>

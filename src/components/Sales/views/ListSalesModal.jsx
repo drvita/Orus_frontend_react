@@ -98,7 +98,7 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                                   href="#select"
                                   onClick={(e) => handleSelectSale(e, item)}
                                 >
-                                  {item.cliente.nombre}
+                                  {item.customer ? item.customer.nombre : "--"}
                                 </a>
                               </td>
                               <td className="text-right">

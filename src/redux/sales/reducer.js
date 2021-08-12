@@ -4,7 +4,17 @@ const DEFAULT_STATE = {
   list: [],
   metaList: {},
   messages: [],
-  sale: {},
+  sale: {
+    id: 0,
+    customer: {},
+    items: [],
+    session: null,
+    descuento: 0,
+    subtotal: 0,
+    total: 0,
+    payments: [],
+    created_at: null,
+  },
   listBanks: [],
   loading: false,
 };

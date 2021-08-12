@@ -39,7 +39,7 @@ function PaymentModal({
         ...data,
         metodoname: helpers.getMethodName(data.metodopago),
       });
-      _payments(payments);
+      _payments();
       dispatch(
         saleActions.saveSale({
           id: sale.id,

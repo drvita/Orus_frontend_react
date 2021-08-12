@@ -9,6 +9,7 @@ function InputSearchItem({
   session,
   _getList,
   _setList,
+  _setSale,
   handleAdd: _handleAdd,
 }) {
   const [textSearch, setTextSearch] = useState("");
@@ -43,7 +44,6 @@ function InputSearchItem({
       setShowList(false);
     },
     makeItem = (data) => {
-      console.log("[DEBUG] makeitem", data);
       return {
         id: 0,
         cant: data.cant,
@@ -81,7 +81,6 @@ function InputSearchItem({
         });
         _handleAdd(item);
         setCantDefault(1);
-        console.log("[DEBUG] Se encontro 1");
       } else {
         setShowList(true);
       }

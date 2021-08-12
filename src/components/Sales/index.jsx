@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
 //Components
 import SearchCustomerModal from "./views/SearchCustomerModal";
 import InputSearchItem from "./views/InputSearchItem";
@@ -8,27 +9,18 @@ import PaymentModal from "./views/PaymentModal";
 import PaymentDetails from "./views/PaymentDetails";
 //Actions
 import helpers from "./helpers";
-import moment from "moment";
+import { saleActions } from "../../redux/sales";
 
 export default function IndexSalesComponent() {
   //LocalStorage
   const ls = localStorage.getItem("OrusSales"),
     dataDefault = JSON.parse(ls ?? "{}");
   //Store
-  const { sale } = useSelector((state) => state.sales);
+  const { sale } = useSelector((state) => state.sales),
+    dispatch = useDispatch();
   const [data, setData] = useState({
-    id: 0,
-    customer: dataDefault.customer ?? null,
-    items: dataDefault.items ?? [],
-    session: dataDefault.session ? dataDefault.session : getSession(),
-    descuento: 0,
-    subtotal: 0,
-    total: 0,
-    order_id: 0,
     pagado: 0,
-    payments: [],
     payment: {},
-    created_at: null,
     showSearchCustomer: false,
     showSales: false,
     showPayment: false,
@@ -50,26 +42,32 @@ export default function IndexSalesComponent() {
     handleSelectCustomer = (customer) => {
       setData({
         ...data,
-        id: 0,
-        customer,
-        items: [],
-        session: getSession(),
-        descuento: 0,
-        subtotal: 0,
-        total: 0,
-        order_id: 0,
         pagado: 0,
-        payments: [],
         payment: {},
-        created_at: null,
         showSearchCustomer: false,
       });
+      dispatch(
+        saleActions.setSale({
+          id: 0,
+          customer,
+          items: [],
+          session: getSession(),
+          descuento: 0,
+          subtotal: 0,
+          total: 0,
+          order_id: 0,
+          pagado: 0,
+          payments: [],
+          payment: {},
+          created_at: null,
+        })
+      );
     },
     handleAddItem = (result) => {
-      const found = data.items.filter(
+      const found = sale.items.filter(
         (item) => item.store_items_id === result.store_items_id
       );
-      let newItems = data.items.filter(
+      let newItems = sale.items.filter(
         (item) => item.store_items_id !== result.store_items_id
       );
 
@@ -80,17 +78,20 @@ export default function IndexSalesComponent() {
             cant: cantidad,
             subtotal: parseFloat(result.price) * cantidad,
             inStorage: cantidad >= parseInt(result.cantInStore) ? true : false,
-            out: parseInt(data.cantInStore) - cantidad,
+            out: parseInt(result.cantInStore) - cantidad,
           };
         newItems.push(item);
       } else {
         newItems.push(result);
       }
 
-      setData({
-        ...data,
-        items: newItems,
-      });
+      //Add to redux
+      dispatch(
+        saleActions.setSale({
+          ...sale,
+          items: newItems,
+        })
+      );
     },
     handleShowListSales = () => {
       setData({
@@ -108,40 +109,46 @@ export default function IndexSalesComponent() {
       let abonado = 0;
 
       sale.payments.forEach((pay) => (abonado = pay.total));
-      //Agregar a redux
 
       setData({
         ...data,
-        id: sale.id,
-        customer: sale.cliente,
-        items: makeItems(sale.productos),
-        session: sale.session,
-        descuento: sale.descuento,
-        subtotal: sale.subtotal,
-        total: sale.total,
-        order_id: sale.pedido,
-        payments: sale.payments,
         pagado: abonado,
         payment: {},
-        created_at: sale.created_at,
         showSales: false,
       });
+      //Add to redux
+      dispatch(
+        saleActions.setSale({
+          id: sale.id,
+          customer: sale.customer,
+          items: sale.items,
+          session: sale.session,
+          descuento: sale.descuento,
+          subtotal: sale.subtotal,
+          total: sale.total,
+          order_id: sale.pedido,
+          payments: sale.payments,
+          created_at: sale.created_at,
+        })
+      );
     },
     eraseSale = () => {
+      dispatch(
+        saleActions.setSale({
+          id: 0,
+          customer: {},
+          items: [],
+          session: getSession(),
+          descuento: 0,
+          subtotal: 0,
+          total: 0,
+          payments: [],
+          created_at: null,
+        })
+      );
+
       setData({
-        ...data,
-        id: 0,
-        customer: null,
-        items: [],
-        session: getSession(),
-        descuento: 0,
-        subtotal: 0,
-        total: 0,
-        order_id: 0,
-        payments: [],
-        payment: {},
         pagado: 0,
-        created_at: null,
         showSearchCustomer: false,
         showSales: false,
         showPayment: false,
@@ -180,14 +187,20 @@ export default function IndexSalesComponent() {
       });
     },
     handleDeleteItem = (item) => {
-      const newItems = data.items.filter(
+      const newItems = sale.items.filter(
         (product) => product.store_items_id !== item.store_items_id
       );
-
-      setData({
-        ...data,
-        items: newItems,
-      });
+      //Add to redux
+      dispatch(
+        saleActions.saveSale({
+          id: sale.id,
+          data: {
+            ...sale,
+            items: JSON.stringify(newItems),
+            payments: null,
+          },
+        })
+      );
     },
     handleAddDiscount = () => {
       const discount = window.prompt("Agregue el descuento a aplicar"),
@@ -196,78 +209,97 @@ export default function IndexSalesComponent() {
 
       if (discount.match(isNumeric)) {
         const value = parseInt(discount);
-        setData({
-          ...data,
-          descuento: value,
-          total: data.total - value,
-        });
-        console.log("[DEBUG] Descuento directo", value, discount);
+        //Add to redux
+        dispatch(
+          saleActions.saveSale({
+            id: sale.id,
+            data: {
+              ...sale,
+              descuento: value,
+              total: sale.total - value,
+              items: JSON.stringify(sale.items),
+              payments: null,
+            },
+          })
+        );
       } else if (discount.match(isPercen)) {
         const percent = parseInt(discount.replace("%", "")) / 100,
-          value = data.total * percent;
-
-        setData({
-          ...data,
-          descuento: value,
-          total: data.total - value,
-        });
-        console.log("[DEBUG] Descuento porcentaje", percent, value, discount);
+          value = sale.total * percent;
+        dispatch(
+          saleActions.saveSale({
+            id: sale.id,
+            data: {
+              ...sale,
+              descuento: value,
+              total: sale.total - value,
+              items: JSON.stringify(sale.items),
+              payments: null,
+            },
+          })
+        );
       }
     },
     handleDeleteDiscount = () => {
       helpers.confirm("Realmente desea eliminar el descuento", () => {
-        setData({
-          ...data,
-          total: data.total + data.descuento,
-          descuento: 0,
-        });
+        dispatch(
+          saleActions.saveSale({
+            id: sale.id,
+            data: {
+              ...sale,
+              total: sale.total + sale.descuento,
+              descuento: 0,
+              items: JSON.stringify(sale.items),
+              payments: null,
+            },
+          })
+        );
       });
     },
-    handleChangePayments = (payments) => {
+    handleChangePayments = () => {
       setData({
         ...data,
-        payments,
         showPayment: false,
       });
     };
 
   useEffect(() => {
     const toSave = {
-      customer: data.customer,
-      items: data.items,
-      session: data.session,
-      descuento: data.descuento,
-      subtotal: data.subtotal,
-      total: data.total,
-      order_id: data.order_id,
-      payments: data.payments,
+      customer: sale.customer,
+      items: sale.items,
+      session: sale.session,
+      descuento: sale.descuento,
+      subtotal: sale.subtotal,
+      total: sale.total,
+      payments: sale.payments,
     };
     let sum = 0,
       pagado = 0;
 
-    data.items.forEach((item) => (sum += item.subtotal));
-    data.payments.forEach((pay) => (pagado += pay.total));
+    sale.items.forEach((item) => (sum += item.subtotal));
+    sale.payments.forEach((pay) => (pagado += pay.total));
 
-    if ((sum !== data.subtotal && sum) || (data.pagado !== pagado && pagado)) {
-      const total = sum - data.descuento;
+    if ((sum !== sale.subtotal && sum) || (data.pagado !== pagado && pagado)) {
+      const total = sum - sale.descuento;
       setData({
         ...data,
-        subtotal: sum,
-        total,
         pagado,
       });
+      dispatch(
+        saleActions.setSale({
+          ...sale,
+          subtotal: sum,
+          total,
+          pagado,
+        })
+      );
     }
 
-    if (sale) {
-      //Actualizar datos de la venta
-      console.log("[DEBUG] sale", sale);
-    }
-
-    localStorage.setItem("OrusSales", JSON.stringify(data.id ? {} : toSave));
+    localStorage.setItem("OrusSales", JSON.stringify(sale.id ? {} : toSave));
     return () => {
       localStorage.setItem("OrusSales", "{}");
     };
-  }, [data, sale]);
+    //eslint-disable-next-line
+  }, [sale]);
 
   return (
     <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
@@ -277,7 +309,7 @@ export default function IndexSalesComponent() {
             <i className="fas fa-user mr-1 text-indigo"></i>
             Cliente:
             <label className="text-capitalize ml-1">
-              {data.customer ? data.customer.nombre : "XXX"}
+              {sale.customer ? sale.customer.nombre : "XXX"}
             </label>
             <button
               type="button"
@@ -289,10 +321,10 @@ export default function IndexSalesComponent() {
           </div>
           <div className="col">
             <label className="mx-1">Folio:</label>
-            <span className="mx-1">{data.id ? data.id : "Nuevo"}</span>
+            <span className="mx-1">{sale.id ? sale.id : "Nuevo"}</span>
             <label className="mx-1">Fecha:</label>
             <span className="mx-1">
-              {data.id ? moment(data.created_at).format("LL") : "--"}
+              {sale.id ? moment(sale.created_at).format("LL") : "--"}
             </span>
           </div>
           <div className="col">
@@ -309,7 +341,7 @@ export default function IndexSalesComponent() {
                 className="btn btn-primary mx-1"
                 title="Agregar descuento"
                 onClick={handleAddDiscount}
-                disabled={!data.total}
+                disabled={!sale.total}
               >
                 <i className="fas fa-percent"></i>
               </button>
@@ -330,9 +362,9 @@ export default function IndexSalesComponent() {
         >
           <table className="table table-striped">
             <tbody>
-              {data.items.length ? (
+              {sale.items && sale.items.length ? (
                 <>
-                  {data.items.map((item, index) => {
+                  {sale.items.map((item, index) => {
                     if (!item.store_items_id) return null;
                     return (
                       <tr key={index}>
@@ -354,7 +386,7 @@ export default function IndexSalesComponent() {
                   })}
                 </>
               ) : null}
-              {data.descuento ? (
+              {sale.descuento ? (
                 <tr>
                   {handleDeleteBtn(handleDeleteDiscount)}
                   <td>
@@ -363,15 +395,15 @@ export default function IndexSalesComponent() {
                     </span>
                     <label className="w-full d-block">
                       <span className="ml-1 text-danger">
-                        - ${data.descuento}
+                        - ${sale.descuento}
                       </span>
                     </label>
                   </td>
                 </tr>
               ) : null}
-              {data.payments.length ? (
+              {sale.payments.length ? (
                 <>
-                  {data.payments.map((pay, index) => (
+                  {sale.payments.map((pay, index) => (
                     <tr key={index}>
                       {handleDeleteBtn()}
                       <td>
@@ -403,7 +435,7 @@ export default function IndexSalesComponent() {
                   ))}
                 </>
               ) : null}
-              {data.total === data.pagado && data.total ? (
+              {sale.total === sale.pagado && sale.total ? (
                 <tr className="table-info">
                   <td colSpan="2">
                     <span className=" w-full d-block text-uppercase text-center text-bold">
@@ -432,18 +464,18 @@ export default function IndexSalesComponent() {
           <PaymentModal
             handleClose={handleClosePayment}
             sale={{
-              id: data.id,
-              subtotal: data.subtotal,
-              descuento: data.descuento,
-              total: data.total,
+              id: sale.id,
+              subtotal: sale.subtotal,
+              descuento: sale.descuento,
+              total: sale.total,
               pagado: data.pagado,
-              contact_id: data.customer.id,
-              session: data.session,
-              items: data.items,
-              payments: data.payments,
+              contact_id: sale.customer.id,
+              session: sale.session,
+              items: sale.items,
+              payments: sale.payments,
             }}
             handelPayments={handleChangePayments}
-            total={data.total - data.pagado}
+            total={sale.total - sale.pagado}
           />
         )}
         {data.showPaymentDetails && (
@@ -457,18 +489,18 @@ export default function IndexSalesComponent() {
         <div className="row">
           <div className="col">
             <span className="text-lg">Total:</span>
-            <label className="text-lg ml-1">${data.total}</label>
+            <label className="text-lg ml-1">${sale.total}</label>
           </div>
           <div className="col">
             <span className="text-lg">Por pagar:</span>
-            <label className="text-lg ml-1">${data.total - data.pagado}</label>
+            <label className="text-lg ml-1">${sale.total - data.pagado}</label>
           </div>
           <div className="col-6 text-right">
-            <InputSearchItem handleAdd={handleAddItem} session={data.session} />
+            <InputSearchItem handleAdd={handleAddItem} session={sale.session} />
             <button
               className="btn btn-success ml-2"
               onClick={handleShowPayment}
-              disabled={!data.items.length || data.total === data.pagado}
+              disabled={!sale.items.length || sale.total === data.pagado}
             >
               <i className="fas fa-money-bill-alt"></i>
             </button>

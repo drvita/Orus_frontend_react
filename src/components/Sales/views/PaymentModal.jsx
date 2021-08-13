@@ -35,23 +35,74 @@ function PaymentModal({
     },
     handleSetPayment = () => {
       const payments = [...sale.payments];
+      let pagado = 0;
+
+      if (!data.total) {
+        window.Swal.fire({
+          icon: "warning",
+          title: "El total del abono debe ser mayor a 0",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        return false;
+      }
+
+      if (
+        data.metodopago !== 1 &&
+        data.metodopago !== 4 &&
+        data.metodopago !== 0
+      ) {
+        if (!data.bank_id) {
+          window.Swal.fire({
+            icon: "warning",
+            title: "Seleccione un banco",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          return false;
+        }
+        if (data.auth.toString().length < 4) {
+          window.Swal.fire({
+            icon: "warning",
+            title: "Espesifique los ultimos 4 numeros de la tarjeta",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          return false;
+        }
+      }
+
+      if (data.metodopago === 4) {
+        if (!data.auth) {
+          window.Swal.fire({
+            icon: "warning",
+            title: "Espesifique el numero de autorización",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          return false;
+        }
+      }
+
       payments.push({
         ...data,
         metodoname: helpers.getMethodName(data.metodopago),
+        total: total < data.total ? total : data.total,
       });
+      payments.forEach((pay) => (pagado += pay.total));
+
       _payments();
       dispatch(
         saleActions.saveSale({
           id: sale.id,
           data: {
             ...sale,
+            pagado,
             items: JSON.stringify(sale.items),
             payments: JSON.stringify(payments),
           },
         })
       );
-
-      console.log("[DEBUG] Make payment", payments);
     },
     handleSubmitForm = (e) => {
       e.preventDefault();
@@ -76,7 +127,14 @@ function PaymentModal({
           </div>
           <div className="modal-body p-2">
             <form autoComplete="off" onSubmit={handleSubmitForm}>
-              <div className="row mb-2">
+              <div className="row mb-2 bg-gray-light">
+                <div className="col">
+                  <h4 className="text-center">
+                    Por pagar: <span className="text-success">$ {total}</span>
+                  </h4>
+                </div>
+              </div>
+              <div className="row my-2">
                 <div className="col">
                   <label>Metodo de pago</label>
                   <select
@@ -85,7 +143,6 @@ function PaymentModal({
                     onChange={({ target }) => handleChangeInput(target)}
                     defaultValue={data.metodopago}
                   >
-                    <option value="0">--Seleccione un metodo--</option>
                     <option value="1">Efectivo</option>
                     <option value="2">Tarjeta de debito</option>
                     <option value="3">Tarjeta de credito</option>
@@ -111,7 +168,7 @@ function PaymentModal({
               {data.metodopago !== 1 ? (
                 <div className="row mb-2">
                   <div className="col">
-                    {data.metodopago !== 4 ? (
+                    {data.metodopago !== 4 && data.metodopago !== 0 ? (
                       <>
                         <label>Banco</label>
                         <select
@@ -146,13 +203,37 @@ function PaymentModal({
                     )}
                   </div>
                   <div className="col">
-                    <label>N. Autorización</label>
+                    <label>
+                      {data.metodopago !== 4
+                        ? "Ultimos 4 digitos"
+                        : "N. Autorización"}
+                    </label>
                     <input
                       type="text"
                       name="auth"
                       className="form-control"
                       onChange={({ target }) => handleChangeInput(target)}
                     />
+                  </div>
+                </div>
+              ) : null}
+
+              {total < data.total ? (
+                <div className="row">
+                  <div className="col">
+                    <h4 className="text-center mt-4">
+                      {data.metodopago === 1 ? (
+                        <>
+                          Cambio:
+                          <span className="ml-2">$ {data.total - total}</span>
+                        </>
+                      ) : (
+                        <span className="text-danger">
+                          <i className="fas fa-info-circle mr-2"></i>
+                          La cantidad cobrada es mayor al total
+                        </span>
+                      )}
+                    </h4>
                   </div>
                 </div>
               ) : null}

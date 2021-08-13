@@ -38,6 +38,10 @@ const getListBanks = (payload = {}) => ({
   type: TYPE.SAGA_GET_LIST_BANK,
   payload,
 });
+const deletePayment = (payload = {}) => ({
+  type: TYPE.SAGA_DELETE_PAYMENT,
+  payload,
+});
 
 const toExportActions = {
   setListSales,
@@ -49,6 +53,7 @@ const toExportActions = {
   deleteSale,
   getListBanks,
   setListBanks,
+  deletePayment,
 };
 
 export default toExportActions;

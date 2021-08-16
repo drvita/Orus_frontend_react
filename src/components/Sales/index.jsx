@@ -7,6 +7,7 @@ import InputSearchItem from "./views/InputSearchItem";
 import ListSalesModal from "./views/ListSalesModal";
 import PaymentModal from "./views/PaymentModal";
 import PaymentDetails from "./views/PaymentDetails";
+import UpdateItemModal from "./views/UpdateItemModal";
 //Actions
 import helpers from "./helpers";
 import { saleActions } from "../../redux/sales";
@@ -24,10 +25,12 @@ export default function IndexSalesComponent() {
   const [data, setData] = useState({
     pagado: 0,
     payment: {},
+    item: {},
     showSearchCustomer: false,
     showSales: false,
     showPayment: false,
     showPaymentDetails: false,
+    showUpdateItem: false,
   });
   const [paid, setPaid] = useState(sale.total <= data.pagado);
   //Functions
@@ -54,12 +57,12 @@ export default function IndexSalesComponent() {
         saleActions.setSale({
           id: 0,
           customer,
+          contact_id: customer.id,
           items: [],
           session: getSession(),
           descuento: 0,
           subtotal: 0,
           total: 0,
-          order_id: 0,
           pagado: 0,
           payments: [],
           payment: {},
@@ -97,6 +100,30 @@ export default function IndexSalesComponent() {
         })
       );
     },
+    handleDeleteItem = (item) => {
+      const newItems = sale.items.filter(
+        (product) => product.store_items_id !== item.store_items_id
+      );
+      if (sale.id) {
+        dispatch(
+          saleActions.saveSale({
+            id: sale.id,
+            data: {
+              ...sale,
+              items: JSON.stringify(newItems),
+              payments: null,
+            },
+          })
+        );
+      } else {
+        dispatch(
+          saleActions.setSale({
+            ...sale,
+            items: newItems,
+          })
+        );
+      }
+    },
     handleShowListSales = () => {
       setData({
         ...data,
@@ -125,12 +152,12 @@ export default function IndexSalesComponent() {
         saleActions.setSale({
           id: sale.id,
           customer: sale.customer,
+          contact_id: sale.customer.id,
           items: sale.items,
           session: sale.session,
           descuento: sale.descuento,
           subtotal: sale.subtotal,
           total: sale.total,
-          order_id: sale.pedido,
           payments: sale.payments,
           created_at: sale.created_at,
         })
@@ -141,6 +168,7 @@ export default function IndexSalesComponent() {
         saleActions.setSale({
           id: 0,
           customer: {},
+          contact_id: null,
           items: [],
           session: getSession(),
           descuento: 0,
@@ -189,22 +217,6 @@ export default function IndexSalesComponent() {
         showPaymentDetails: false,
         payment: {},
       });
-    },
-    handleDeleteItem = (item) => {
-      const newItems = sale.items.filter(
-        (product) => product.store_items_id !== item.store_items_id
-      );
-      //Add to redux
-      dispatch(
-        saleActions.saveSale({
-          id: sale.id,
-          data: {
-            ...sale,
-            items: JSON.stringify(newItems),
-            payments: null,
-          },
-        })
-      );
     },
     handleAddDiscount = () => {
       const discount = window.prompt("Agregue el descuento a aplicar"),
@@ -278,10 +290,50 @@ export default function IndexSalesComponent() {
         }
       );
     },
-    handleUpdateItem = (e, item) => {
+    handleShowUpdateItem = (e, item) => {
       if (e) e.preventDefault();
 
-      console.log("[DEBUG] To update item", item);
+      setData({
+        ...data,
+        showUpdateItem: true,
+        item,
+      });
+    },
+    handleCloseUpdateItem = () => {
+      setData({
+        ...data,
+        showUpdateItem: false,
+        item: {},
+      });
+    },
+    handleUpdateItem = (item) => {
+      const newItems = sale.items.filter(
+        (i) => i.store_items_id !== item.store_items_id
+      );
+
+      newItems.push(item);
+
+      if (sale.id) {
+        dispatch(
+          saleActions.saveSale({
+            id: sale.id,
+            data: {
+              ...sale,
+              items: JSON.stringify(newItems),
+              payments: null,
+            },
+          })
+        );
+      } else {
+        dispatch(
+          saleActions.setSale({
+            ...sale,
+            items: newItems,
+          })
+        );
+      }
+
+      handleCloseUpdateItem();
     };
 
   useEffect(() => {
@@ -300,7 +352,7 @@ export default function IndexSalesComponent() {
     sale.items.forEach((item) => (sum += item.subtotal));
     sale.payments.forEach((pay) => (pagado += pay.total));
 
-    if ((sum !== sale.subtotal && sum) || (data.pagado !== pagado && pagado)) {
+    if (sum !== sale.subtotal || data.pagado !== pagado) {
       const total = sum - sale.descuento;
       setData({
         ...data,
@@ -373,6 +425,7 @@ export default function IndexSalesComponent() {
                 className="btn btn-warning ml-1"
                 title="Cancelar venta"
                 onClick={handleEraseSale}
+                disabled={!sale.total}
               >
                 <i className="fas fa-ban"></i>
               </button>
@@ -399,7 +452,7 @@ export default function IndexSalesComponent() {
                           <a
                             href="#details"
                             className="text-muted w-full d-block text-uppercase"
-                            onClick={(e) => handleUpdateItem(e, item)}
+                            onClick={(e) => handleShowUpdateItem(e, item)}
                           >
                             {item.producto}
                           </a>
@@ -538,22 +591,33 @@ export default function IndexSalesComponent() {
             payment={data.payment}
           />
         )}
+        {data.showUpdateItem && (
+          <UpdateItemModal
+            item={data.item}
+            handleUpdate={handleUpdateItem}
+            close={handleCloseUpdateItem}
+          />
+        )}
       </div>
       <div className="card-footer">
         <div className="row">
           <div className="col">
-            <span className="text-lg">Total:</span>
-            <label className="text-lg ml-1">${sale.total}</label>
+            {sale.total ? (
+              <>
+                <span className="text-lg">Total:</span>
+                <label className="text-lg ml-1">${sale.total}</label>
+              </>
+            ) : null}
           </div>
           <div className="col">
-            <span className="text-lg">Por pagar:</span>
-            <label className="text-lg ml-1">
-              {sale.total - data.pagado ? (
-                <>${sale.total - data.pagado}</>
-              ) : (
-                "pagado"
-              )}
-            </label>
+            {sale.total - data.pagado ? (
+              <>
+                <span className="text-lg">Por pagar:</span>
+                <label className="text-lg ml-1">
+                  ${sale.total - data.pagado}
+                </label>
+              </>
+            ) : null}
           </div>
           <div className="col-6 text-right">
             <InputSearchItem handleAdd={handleAddItem} session={sale.session} />

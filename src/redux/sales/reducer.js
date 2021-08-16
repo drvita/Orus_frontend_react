@@ -7,6 +7,7 @@ const DEFAULT_STATE = {
   sale: {
     id: 0,
     customer: {},
+    contact_id: null,
     items: [],
     session: null,
     descuento: 0,

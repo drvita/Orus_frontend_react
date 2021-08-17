@@ -4,7 +4,7 @@ import moment from "moment";
 import SearchContact from "../Contacts/searchContactCard";
 import Items from "../Order/views/listItemsOrder";
 import Abonos from "./abonos";
-import Print from "./print_sale";
+import Print from "./views/print_sale";
 import EdoCuenta from "./edoCuenta";
 import Chat from "../Layouts/messenger";
 

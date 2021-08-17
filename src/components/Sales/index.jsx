@@ -8,6 +8,7 @@ import ListSalesModal from "./views/ListSalesModal";
 import PaymentModal from "./views/PaymentModal";
 import PaymentDetails from "./views/PaymentDetails";
 import UpdateItemModal from "./views/UpdateItemModal";
+import PrintSaleComponent from "./views/print_sale";
 //Actions
 import helpers from "./helpers";
 import { saleActions } from "../../redux/sales";
@@ -32,7 +33,6 @@ export default function IndexSalesComponent() {
     showPaymentDetails: false,
     showUpdateItem: false,
   });
-  const [paid, setPaid] = useState(sale.total <= data.pagado);
   //Functions
   const handleSetCustomer = () => {
       setData({
@@ -188,7 +188,10 @@ export default function IndexSalesComponent() {
       });
     },
     handleEraseSale = () => {
-      helpers.confirm("¿Desea eliminar esta venta?", eraseSale);
+      helpers.confirm(
+        "¿Desea terminar esta venta y crear una nueva?",
+        eraseSale
+      );
     },
     handleShowPayment = () => {
       setData({
@@ -334,6 +337,20 @@ export default function IndexSalesComponent() {
       }
 
       handleCloseUpdateItem();
+    },
+    handlePrintShow = () => {
+      dispatch(
+        saleActions.saveSale({
+          id: sale.id,
+          data: {
+            ...sale,
+            items: JSON.stringify(sale.items),
+            payments: null,
+          },
+        })
+      );
+
+      window.print();
     };
 
   useEffect(() => {
@@ -366,272 +383,300 @@ export default function IndexSalesComponent() {
           pagado,
         })
       );
-      setPaid(total <= pagado);
     }
 
     localStorage.setItem("OrusSales", JSON.stringify(sale.id ? {} : toSave));
+
     return () => {
       localStorage.setItem("OrusSales", "{}");
     };
     //eslint-disable-next-line
   }, [sale]);
 
+  const paid = sale.total <= data.pagado ? true : false;
+
   return (
-    <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
-      <div className="card-body pb-2">
-        <nav className="row mb-2">
-          <div className="col-5">
-            <i className="fas fa-user mr-1 text-indigo"></i>
-            Cliente:
-            <label className="text-capitalize ml-1">
-              {sale.customer ? sale.customer.nombre : "XXX"}
-            </label>
-            <button
-              type="button"
-              className="btn bg-indigo btn-sm ml-2"
-              onClick={handleSetCustomer}
-            >
-              <i className="fas fa-exchange-alt"></i>
-            </button>
-          </div>
-          <div className="col">
-            <label className="mx-1">Folio:</label>
-            <span className="mx-1">{sale.id ? sale.id : "Nuevo"}</span>
-            <label className="mx-1">Fecha:</label>
-            <span className="mx-1">
-              {sale.id ? moment(sale.created_at).format("LL") : "--"}
-            </span>
-          </div>
-          <div className="col">
-            <div className="card-tools text-right">
+    <>
+      <div
+        className="card border border-gray mb-4 d-print-none"
+        style={{ height: "36rem" }}
+      >
+        <div className="card-body pb-2">
+          <nav className="row mb-2">
+            <div className="col-5">
+              <i className="fas fa-user mr-1 text-indigo"></i>
+              Cliente:
+              <label className="text-capitalize ml-1">
+                {sale.customer ? sale.customer.nombre : "XXX"}
+              </label>
               <button
-                className="btn btn-primary mr-1"
-                title="Cargar una venta"
-                onClick={handleShowListSales}
+                type="button"
+                className="btn bg-indigo btn-sm ml-2"
+                onClick={handleSetCustomer}
               >
-                <i className="fas fa-list"></i>
+                <i className="fas fa-exchange-alt"></i>
               </button>
+            </div>
+            <div className="col">
+              <label className="mx-1">Folio:</label>
+              <span className="mx-1">{sale.id ? sale.id : "Nuevo"}</span>
+              <label className="mx-1">Fecha:</label>
+              <span className="mx-1">
+                {sale.id ? moment(sale.created_at).format("LL") : "--"}
+              </span>
+            </div>
+            <div className="col">
+              <div className="card-tools text-right">
+                <button
+                  className="btn btn-primary mr-1"
+                  title="Cargar una venta"
+                  onClick={handleShowListSales}
+                >
+                  <i className="fas fa-list"></i>
+                </button>
 
+                <button
+                  className="btn btn-primary mx-1"
+                  title="Agregar descuento"
+                  onClick={handleAddDiscount}
+                  disabled={!sale.total || paid || sale.payments.length}
+                >
+                  <i className="fas fa-percent"></i>
+                </button>
+
+                <button
+                  className="btn btn-warning ml-1"
+                  title="Cancelar venta"
+                  onClick={handleEraseSale}
+                  disabled={!sale.total}
+                >
+                  <i className="fas fa-ban"></i>
+                </button>
+              </div>
+            </div>
+          </nav>
+          <div
+            className="overflow-auto text-right p-0 border border-gray"
+            style={{ height: "27rem" }}
+          >
+            <table className="table table-striped">
+              <tbody>
+                {sale.items && sale.items.length ? (
+                  <>
+                    {sale.items.map((item, index) => {
+                      const disabled =
+                        paid || sale.payments.length || sale.descuento;
+                      if (!item.store_items_id) return null;
+
+                      return (
+                        <tr key={index}>
+                          {handleDeleteBtn(handleDeleteItem, item, disabled)}
+                          <td>
+                            <a
+                              href="#details"
+                              className="text-muted w-full d-block text-uppercase"
+                              onClick={(e) => handleShowUpdateItem(e, item)}
+                            >
+                              {item.producto}
+                            </a>
+                            <label className="w-full d-block">
+                              <span className="badge badge-dark mr-1">
+                                {item.cant}
+                              </span>
+                              *
+                              <span
+                                className={
+                                  item.price ? "mx-1" : "mx-1 text-danger"
+                                }
+                              >
+                                ${item.price}
+                              </span>
+                              =
+                              <span
+                                className={
+                                  item.subtotal ? "ml-1" : "ml-1 text-danger"
+                                }
+                              >
+                                ${item.subtotal}
+                              </span>
+                            </label>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </>
+                ) : null}
+                {sale.descuento ? (
+                  <tr>
+                    {handleDeleteBtn(handleDeleteDiscount, null, paid)}
+                    <td>
+                      <span className="text-danger w-full d-block text-uppercase">
+                        Descuento
+                      </span>
+                      <label className="w-full d-block">
+                        <span className="ml-1 text-danger">
+                          - ${sale.descuento}
+                        </span>
+                      </label>
+                    </td>
+                  </tr>
+                ) : null}
+                {sale.payments.length ? (
+                  <>
+                    {sale.payments.map((pay, index) => {
+                      const diffPay = moment(Date.now()).diff(
+                          moment(pay.created_at),
+                          "days"
+                        ),
+                        disabled = paid && diffPay && userMain.rol;
+
+                      return (
+                        <tr key={index}>
+                          {handleDeleteBtn(handleDeletePayment, pay, disabled)}
+                          <td>
+                            <a
+                              href="#link"
+                              className=" w-full d-block text-uppercase"
+                              onClick={(e) => handleShowPaymentDetails(e, pay)}
+                            >
+                              <span
+                                className={
+                                  pay.id
+                                    ? "text-success"
+                                    : "text-warning text-bold"
+                                }
+                              >
+                                Abono
+                              </span>
+                              <span className="ml-1 text-muted">
+                                {pay.metodoname}
+                              </span>
+                            </a>
+                            <label className="w-full d-block">
+                              <span className="ml-1 text-muted">
+                                {moment(pay.created_at).format("LL")},
+                              </span>
+
+                              <span className="ml-1">${pay.total}</span>
+                            </label>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </>
+                ) : null}
+                {paid && sale.total ? (
+                  <tr className="table-info">
+                    <td colSpan="2">
+                      <span className=" w-full d-block text-uppercase text-center text-bold">
+                        <i className="fas fa-info-circle mr-1 text-primary"></i>
+                        Cuenta pagada
+                      </span>
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+          {data.showSearchCustomer && (
+            <SearchCustomerModal
+              handleClose={handleCloseShowSearchCustomer}
+              handleSelect={handleSelectCustomer}
+            />
+          )}
+          {data.showSales && (
+            <ListSalesModal
+              handleClose={handleCloseListSales}
+              handleSelect={handleSelectSale}
+            />
+          )}
+          {data.showPayment && (
+            <PaymentModal
+              handleClose={handleClosePayment}
+              sale={{
+                id: sale.id,
+                subtotal: sale.subtotal,
+                descuento: sale.descuento,
+                total: sale.total,
+                pagado: data.pagado,
+                contact_id: sale.customer.id,
+                session: sale.session,
+                items: sale.items,
+                payments: sale.payments,
+              }}
+              handelPayments={handleChangePayments}
+              total={sale.total - data.pagado}
+            />
+          )}
+          {data.showPaymentDetails && (
+            <PaymentDetails
+              handleClose={handleClosePaymentDetails}
+              payment={data.payment}
+            />
+          )}
+          {data.showUpdateItem && (
+            <UpdateItemModal
+              item={data.item}
+              handleUpdate={handleUpdateItem}
+              close={handleCloseUpdateItem}
+            />
+          )}
+        </div>
+        <div className="card-footer">
+          <div className="row">
+            <div className="col">
+              {sale.total ? (
+                <>
+                  <span className="text-lg">Total:</span>
+                  <label className="text-lg ml-1">${sale.total}</label>
+                </>
+              ) : null}
+            </div>
+            <div className="col">
+              {!paid && (
+                <>
+                  <span className="text-lg">Por pagar:</span>
+                  <label className="text-lg ml-1">
+                    ${sale.total - data.pagado}
+                  </label>
+                </>
+              )}
+            </div>
+            <div className="col-6 text-right">
+              <InputSearchItem
+                handleAdd={handleAddItem}
+                session={sale.session}
+              />
               <button
-                className="btn btn-primary mx-1"
-                title="Agregar descuento"
-                onClick={handleAddDiscount}
-                disabled={!sale.total || paid || sale.payments.length}
+                className="btn btn-success ml-2"
+                onClick={handleShowPayment}
+                disabled={!sale.items.length || paid}
               >
-                <i className="fas fa-percent"></i>
+                <i className="fas fa-money-bill-alt"></i>
               </button>
-
               <button
-                className="btn btn-warning ml-1"
-                title="Cancelar venta"
-                onClick={handleEraseSale}
-                disabled={!sale.total}
+                className="btn btn-primary ml-2"
+                disabled={!sale.items.length}
+                onClick={handlePrintShow}
               >
-                <i className="fas fa-ban"></i>
+                <i className="fas fa-print"></i>
               </button>
             </div>
           </div>
-        </nav>
-        <div
-          className="overflow-auto text-right p-0 border border-gray"
-          style={{ height: "27rem" }}
-        >
-          <table className="table table-striped">
-            <tbody>
-              {sale.items && sale.items.length ? (
-                <>
-                  {sale.items.map((item, index) => {
-                    const disabled =
-                      paid || sale.payments.length || sale.descuento;
-                    if (!item.store_items_id) return null;
-
-                    return (
-                      <tr key={index}>
-                        {handleDeleteBtn(handleDeleteItem, item, disabled)}
-                        <td>
-                          <a
-                            href="#details"
-                            className="text-muted w-full d-block text-uppercase"
-                            onClick={(e) => handleShowUpdateItem(e, item)}
-                          >
-                            {item.producto}
-                          </a>
-                          <label className="w-full d-block">
-                            <span className="badge badge-dark mr-1">
-                              {item.cant}
-                            </span>
-                            *
-                            <span
-                              className={
-                                item.price ? "mx-1" : "mx-1 text-danger"
-                              }
-                            >
-                              ${item.price}
-                            </span>
-                            =
-                            <span
-                              className={
-                                item.subtotal ? "ml-1" : "ml-1 text-danger"
-                              }
-                            >
-                              ${item.subtotal}
-                            </span>
-                          </label>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </>
-              ) : null}
-              {sale.descuento ? (
-                <tr>
-                  {handleDeleteBtn(handleDeleteDiscount, null, paid)}
-                  <td>
-                    <span className="text-danger w-full d-block text-uppercase">
-                      Descuento
-                    </span>
-                    <label className="w-full d-block">
-                      <span className="ml-1 text-danger">
-                        - ${sale.descuento}
-                      </span>
-                    </label>
-                  </td>
-                </tr>
-              ) : null}
-              {sale.payments.length ? (
-                <>
-                  {sale.payments.map((pay, index) => {
-                    const diffPay = moment(Date.now()).diff(
-                        moment(pay.created_at),
-                        "days"
-                      ),
-                      disabled = paid && diffPay && userMain.rol;
-
-                    return (
-                      <tr key={index}>
-                        {handleDeleteBtn(handleDeletePayment, pay, disabled)}
-                        <td>
-                          <a
-                            href="#link"
-                            className=" w-full d-block text-uppercase"
-                            onClick={(e) => handleShowPaymentDetails(e, pay)}
-                          >
-                            <span
-                              className={
-                                pay.id
-                                  ? "text-success"
-                                  : "text-warning text-bold"
-                              }
-                            >
-                              Abono
-                            </span>
-                            <span className="ml-1 text-muted">
-                              {pay.metodoname}
-                            </span>
-                          </a>
-                          <label className="w-full d-block">
-                            <span className="ml-1 text-muted">
-                              {moment(pay.created_at).format("LL")},
-                            </span>
-
-                            <span className="ml-1">${pay.total}</span>
-                          </label>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </>
-              ) : null}
-              {paid && sale.total ? (
-                <tr className="table-info">
-                  <td colSpan="2">
-                    <span className=" w-full d-block text-uppercase text-center text-bold">
-                      <i className="fas fa-info-circle mr-1 text-primary"></i>
-                      Cuenta pagada
-                    </span>
-                  </td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
-        {data.showSearchCustomer && (
-          <SearchCustomerModal
-            handleClose={handleCloseShowSearchCustomer}
-            handleSelect={handleSelectCustomer}
-          />
-        )}
-        {data.showSales && (
-          <ListSalesModal
-            handleClose={handleCloseListSales}
-            handleSelect={handleSelectSale}
-          />
-        )}
-        {data.showPayment && (
-          <PaymentModal
-            handleClose={handleClosePayment}
-            sale={{
-              id: sale.id,
-              subtotal: sale.subtotal,
-              descuento: sale.descuento,
-              total: sale.total,
-              pagado: data.pagado,
-              contact_id: sale.customer.id,
-              session: sale.session,
-              items: sale.items,
-              payments: sale.payments,
-            }}
-            handelPayments={handleChangePayments}
-            total={sale.total - data.pagado}
-          />
-        )}
-        {data.showPaymentDetails && (
-          <PaymentDetails
-            handleClose={handleClosePaymentDetails}
-            payment={data.payment}
-          />
-        )}
-        {data.showUpdateItem && (
-          <UpdateItemModal
-            item={data.item}
-            handleUpdate={handleUpdateItem}
-            close={handleCloseUpdateItem}
-          />
-        )}
-      </div>
-      <div className="card-footer">
-        <div className="row">
-          <div className="col">
-            {sale.total ? (
-              <>
-                <span className="text-lg">Total:</span>
-                <label className="text-lg ml-1">${sale.total}</label>
-              </>
-            ) : null}
-          </div>
-          <div className="col">
-            {sale.total - data.pagado ? (
-              <>
-                <span className="text-lg">Por pagar:</span>
-                <label className="text-lg ml-1">
-                  ${sale.total - data.pagado}
-                </label>
-              </>
-            ) : null}
-          </div>
-          <div className="col-6 text-right">
-            <InputSearchItem handleAdd={handleAddItem} session={sale.session} />
-            <button
-              className="btn btn-success ml-2"
-              onClick={handleShowPayment}
-              disabled={!sale.items.length || paid}
-            >
-              <i className="fas fa-money-bill-alt"></i>
-            </button>
-          </div>
         </div>
       </div>
-    </div>
+      <PrintSaleComponent
+        id="print_sale"
+        folio={"P-" + sale.id}
+        date={sale.created_at}
+        items={sale.items}
+        descuento={sale.descuento ? sale.descuento : 0}
+        total={sale.total ? sale.total : 0}
+        abonado={data.pagado ? data.pagado : 0}
+        contact={sale.contact_id}
+        cliente={sale.customer}
+      />
+    </>
   );
 }
 

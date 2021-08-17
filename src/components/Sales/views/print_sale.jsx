@@ -1,12 +1,20 @@
 import React, { Component } from "react";
 import moment from "moment";
 
-export default class printSale extends Component {
+export default class printSaleComponent extends Component {
   render() {
-    const { items, descuento, total, saldo, abonado, folio, date, id } =
-      this.props;
-    let totalItems = 0,
-      client = this.props.cliente;
+    const {
+        items,
+        descuento,
+        total = 0,
+        abonado = 0,
+        folio,
+        date,
+        id,
+        cliente: client,
+      } = this.props,
+      saldo = total - abonado;
+    let totalItems = 0;
 
     return (
       <div className="d-none d-print-block" style={{ width: 340 }} id={id}>
@@ -97,12 +105,12 @@ export default class printSale extends Component {
               </thead>
               <tbody>
                 {items.map((item, index) => {
-                  const total = parseFloat(item.cantidad * item.precio);
+                  const total = parseFloat(item.cant * item.price);
                   totalItems += total;
                   return (
                     <tr key={index} className="text-capitalize">
                       <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
-                        {item.cantidad}
+                        {item.cant}
                       </td>
                       <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
                         {item.producto}
@@ -111,7 +119,7 @@ export default class printSale extends Component {
                         className="text-right"
                         style={{ fontSize: 24, fontFamily: "sans-serif" }}
                       >
-                        {total.toFixed(2)}
+                        {total}
                       </td>
                     </tr>
                   );
@@ -123,24 +131,34 @@ export default class printSale extends Component {
                     {descuento ? (
                       <React.Fragment>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Subtotal: <label>$ {totalItems.toFixed(2)}</label>
+                          Subtotal: <label>$ {totalItems}</label>
                         </h4>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Descuento: <label>$ {descuento.toFixed(2)}</label>
+                          Descuento: <label>$ {descuento}</label>
                         </h4>
                       </React.Fragment>
                     ) : null}
                     <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                      Total: <label>$ {total.toFixed(2)}</label>
+                      Total: <label>$ {total}</label>
                     </h4>
                     {abonado ? (
                       <React.Fragment>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Abonado: <label>$ {abonado.toFixed(2)}</label>
+                          Abonado: <label>$ {abonado}</label>
                         </h4>
-                        <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Saldo: <label>$ {saldo.toFixed(2)}</label>
-                        </h4>
+                        {saldo ? (
+                          <h4
+                            style={{ fontSize: 26, fontFamily: "sans-serif" }}
+                          >
+                            Saldo: <label>$ {saldo}</label>
+                          </h4>
+                        ) : (
+                          <div className="text-center d-block w-100 my-3">
+                            <h3 className="text-muted text-bold">
+                              ::: Cuenta Pagada :::
+                            </h3>
+                          </div>
+                        )}
                       </React.Fragment>
                     ) : null}
                   </td>
@@ -157,28 +175,4 @@ export default class printSale extends Component {
       </div>
     );
   }
-
-  getContact = (id) => {
-    //Variables en localStorage
-    const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-    //Realiza busqueda de contacto
-    fetch("http://" + varLocalStorage.host + "/api/contacts/" + id, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Descargando contacto: data", data);
-        this.setState({
-          dataContact: data.data,
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
 }

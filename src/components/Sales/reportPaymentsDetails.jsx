@@ -80,7 +80,9 @@ export default class ReportPaymentsDetails extends Component {
                     >
                       <th className="text-uppercase">{pay.metodoname}</th>
                       <td className="text-capitalize">
-                        {pay.sale.cliente.nombre}
+                        {pay.sale && pay.sale.customer
+                          ? pay.sale.customer.nombre
+                          : "--"}
                       </td>
                       <td>
                         <span

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 //Components
 import LabOrder from "./views/labOrder";
 import Bicelacion from "./views/bicelacionOrder";

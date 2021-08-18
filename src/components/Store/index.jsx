@@ -55,6 +55,29 @@ class IndexStoreComponent extends Component {
       _setMessage([]);
     }
   }
+  componentWillUnmount() {
+    const { _setList } = this.props;
+    _setList({
+      result: {
+        list: [],
+        metaList: {},
+        item: {},
+        options: {
+          page: 1,
+          orderby: "created_at",
+          order: "desc",
+          search: "",
+          itemsPage: 10,
+          supplier: "",
+          brand: "",
+          zero: "false",
+        },
+        brands: [],
+        messages: [],
+        loading: false,
+      },
+    });
+  }
 
   render() {
     const { panel } = this.state;
@@ -121,6 +144,7 @@ const mapStateToProps = ({ storeItem }) => {
     _getItem: storeActions.getItem,
     _setItem: storeActions.setItem,
     _setMessage: storeActions.setMessagesStore,
+    _setList: storeActions.setListStore,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexStoreComponent);

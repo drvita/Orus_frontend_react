@@ -1,6 +1,6 @@
 import { TYPE } from "./types";
 
-const setListStore = (payload = {}) => ({
+const setListStore = (payload = []) => ({
   type: TYPE.SET_LIST_STORE,
   payload,
 });

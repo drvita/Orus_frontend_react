@@ -4,12 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { saleActions } from "../../../redux/sales/";
 import helpers from "../helpers";
 
-function PaymentModal({
-  sale,
-  total,
-  handleClose: _close,
-  handelPayments: _payments,
-}) {
+function PaymentModal({ sale, forPaid, handleClose: _close }) {
   const { listBanks } = useSelector((state) => state.sales),
     dispatch = useDispatch();
   //States
@@ -87,11 +82,11 @@ function PaymentModal({
       payments.push({
         ...data,
         metodoname: helpers.getMethodName(data.metodopago),
-        total: total < data.total ? total : data.total,
+        total: forPaid < data.total ? forPaid : data.total,
       });
       payments.forEach((pay) => (pagado += pay.total));
 
-      _payments();
+      _close();
       dispatch(
         saleActions.saveSale({
           id: sale.id,
@@ -111,7 +106,6 @@ function PaymentModal({
 
   useEffect(() => {
     dispatch(saleActions.getListBanks());
-
     //eslint-disable-next-line
   }, []);
 
@@ -130,7 +124,7 @@ function PaymentModal({
               <div className="row mb-2 bg-gray-light">
                 <div className="col">
                   <h4 className="text-center">
-                    Por pagar: <span className="text-success">$ {total}</span>
+                    Por pagar: <span className="text-success">$ {forPaid}</span>
                   </h4>
                 </div>
               </div>
@@ -218,14 +212,14 @@ function PaymentModal({
                 </div>
               ) : null}
 
-              {total < data.total ? (
+              {forPaid < data.total ? (
                 <div className="row">
                   <div className="col">
                     <h4 className="text-center mt-4">
                       {data.metodopago === 1 ? (
                         <>
                           Cambio:
-                          <span className="ml-2">$ {data.total - total}</span>
+                          <span className="ml-2">$ {data.total - forPaid}</span>
                         </>
                       ) : (
                         <span className="text-danger">

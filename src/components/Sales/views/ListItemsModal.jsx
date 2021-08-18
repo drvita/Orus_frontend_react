@@ -9,6 +9,7 @@ function ListItemsModal({
   const [data, setData] = useState({
     item: null,
     cant: cantDefault ? cantDefault : 1,
+    precio: 0,
   });
   //Functions
   const handleClose = () => {
@@ -18,22 +19,32 @@ function ListItemsModal({
       e.preventDefault();
       setData({
         ...data,
+        precio: item.precio,
         item,
       });
     },
     handleSelectItem = () => {
-      _Select(data);
+      const toSend = {
+        ...data,
+        item: {
+          ...data.item,
+          precio: data.precio,
+        },
+      };
+
+      _Select(toSend);
       setData({
         item: null,
         cant: 1,
       });
       handleClose();
     },
-    handleChangeCant = ({ value }) => {
+    handleChangeCant = ({ name, value }) => {
       setData({
         ...data,
-        cant: parseInt(value),
+        [name]: parseInt(value),
       });
+      //console.log("[DEBUG] change: " + name, value);
     };
 
   return (
@@ -51,84 +62,106 @@ function ListItemsModal({
               className="table-responsive overflow-auto"
               style={{ height: "12rem" }}
             >
-              <table className="table table-sm">
-                <tbody>
-                  {items ? (
-                    <>
-                      {items.length ? (
-                        <>
-                          {items.map((item) => (
-                            <tr key={item.id}>
-                              <td className="text-right">
-                                <span className="badge badge-dark">
-                                  {item.codigo}
-                                </span>
-                              </td>
-                              <td className="text-capitalize text-left">
-                                <a
-                                  href="#select"
-                                  onClick={(e) => handleClickItem(e, item)}
-                                >
-                                  {item.producto}
-                                </a>
-                              </td>
-                            </tr>
-                          ))}
-                        </>
-                      ) : (
-                        <tr>
-                          <td>No existen productos para esta coincidencia</td>
-                        </tr>
-                      )}
-                    </>
-                  ) : (
-                    <tr>
-                      <td>
-                        <i className="fas fa-info-circle mr-1"></i> No se
-                        recibieron los productos
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+              {data.item && data.item.id ? (
+                <>
+                  <div className="text-uppercase mb-4">
+                    {data.item.producto}
+                  </div>
+                  <div className="form-group row">
+                    <label className="col-2 col-form-label">Cantidad</label>
+                    {data.cant < 2 ? (
+                      <div className="col">
+                        <input
+                          type="number"
+                          placeholder="Cantidad"
+                          name="cant"
+                          className="form-control"
+                          defaultValue={data.cant}
+                          onChange={({ target }) => handleChangeCant(target)}
+                        />
+                      </div>
+                    ) : (
+                      <span className="col text-lg">{data.cant}</span>
+                    )}
+                    <label className="col-2 col-form-label">Precio</label>
+                    {!data.item.precio ? (
+                      <div className="col">
+                        <input
+                          type="number"
+                          placeholder="Precio"
+                          name="precio"
+                          className="form-control"
+                          defaultValue={data.precio}
+                          onChange={({ target }) => handleChangeCant(target)}
+                        />
+                      </div>
+                    ) : (
+                      <span className="col text-lg">${data.precio}</span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <table className="table table-sm">
+                  <tbody>
+                    {items ? (
+                      <>
+                        {items.length ? (
+                          <>
+                            {items.map((item) => (
+                              <tr key={item.id}>
+                                <td className="text-right">
+                                  <span className="badge badge-dark">
+                                    {item.codigo}
+                                  </span>
+                                </td>
+                                <td className="text-capitalize text-left">
+                                  <a
+                                    href="#select"
+                                    onClick={(e) => handleClickItem(e, item)}
+                                  >
+                                    {item.producto}
+                                  </a>
+                                </td>
+                                <td>${item.precio}</td>
+                              </tr>
+                            ))}
+                          </>
+                        ) : (
+                          <tr>
+                            <td>No existen productos para esta coincidencia</td>
+                          </tr>
+                        )}
+                      </>
+                    ) : (
+                      <tr>
+                        <td>
+                          <i className="fas fa-info-circle mr-1"></i> No se
+                          recibieron los productos
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
           <div className="modal-footer">
-            <div className="form-group row">
-              {data.item && data.item.id ? (
-                <>
-                  <label className="col-2 col-form-label">Cantidad</label>
-                  <div className="col">
-                    <input
-                      type="number"
-                      placeholder="cantidad"
-                      className="form-control"
-                      defaultValue={data.cant}
-                      onChange={({ target }) => handleChangeCant(target)}
-                    />
-                  </div>
-                </>
-              ) : null}
-
-              <div className="btn-group col-6">
-                <button
-                  type="button"
-                  className="btn btn-default"
-                  onClick={handleClose}
-                >
-                  <i className="fas fa-ban mr-1"></i>
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleSelectItem}
-                >
-                  <i className="fas fa-check mr-1"></i>
-                  Seleccionar
-                </button>
-              </div>
-            </div>
+            <button
+              type="button"
+              className="btn btn-default"
+              onClick={handleClose}
+            >
+              <i className="fas fa-ban mr-1"></i>
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleSelectItem}
+            >
+              <i className="fas fa-check mr-1"></i>
+              Seleccionar
+            </button>
           </div>
         </div>
       </div>

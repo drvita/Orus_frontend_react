@@ -7,9 +7,10 @@ import ListModal from "./ListItemsModal";
 function InputSearchItem({
   list,
   session,
+  loading,
+  //Functions
   _getList,
   _setList,
-  _setSale,
   handleAdd: _handleAdd,
 }) {
   const [textSearch, setTextSearch] = useState("");
@@ -89,7 +90,7 @@ function InputSearchItem({
   }, [list]);
 
   return (
-    <div className="btn-group text-center">
+    <div className="btn-group text-center d-print-none">
       <input
         className="form-control"
         placeholder="Barcode"
@@ -97,14 +98,19 @@ function InputSearchItem({
         onKeyPress={({ key }) => handlePressEnter(key)}
         value={textSearch}
       />
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={searchItem}
-        disabled={textSearch.length > 2 ? false : true}
-      >
-        <i className="fas fa-barcode"></i>
-      </button>
+      {loading ? (
+        <i className="fas fa-2x fa-spinner fa-spin"></i>
+      ) : (
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={searchItem}
+          disabled={textSearch.length > 2 ? false : true}
+        >
+          <i className="fas fa-barcode"></i>
+        </button>
+      )}
+
       {showList && list.length ? (
         <ListModal
           items={list}

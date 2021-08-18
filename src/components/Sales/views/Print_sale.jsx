@@ -1,23 +1,49 @@
-import React, { Component } from "react";
 import moment from "moment";
+import { useDispatch } from "react-redux";
+import { saleActions } from "../../../redux/sales";
 
-export default class printSaleComponent extends Component {
-  render() {
-    const {
-        items,
-        descuento,
-        total = 0,
-        abonado = 0,
-        folio,
-        date,
-        id,
-        cliente: client,
-      } = this.props,
-      saldo = total - abonado;
-    let totalItems = 0;
+export default function PrintSaleComponent({ sale = {}, payed: abonado = 0 }) {
+  const {
+      items,
+      descuento,
+      total = 0,
+      created_at: date,
+      id,
+      customer: client,
+    } = sale,
+    saldo = total - abonado,
+    dispatch = useDispatch();
+  let totalItems = 0;
+  //Functions
+  const handlePrintShow = () => {
+    dispatch(
+      saleActions.saveSale({
+        id: sale.id,
+        data: {
+          ...sale,
+          items: JSON.stringify(sale.items),
+          payments: null,
+        },
+      })
+    );
+    window.print();
+  };
 
-    return (
-      <div className="d-none d-print-block" style={{ width: 340 }} id={id}>
+  return (
+    <>
+      <button
+        className="btn btn-primary ml-2 d-print-none"
+        disabled={!items.length}
+        onClick={handlePrintShow}
+      >
+        <i className="fas fa-print"></i>
+      </button>
+
+      <div
+        className="d-none d-print-block"
+        style={{ width: 340 }}
+        id={"print_sale_" + id}
+      >
         <div className="row">
           <div className="col">
             <div className="card m-0">
@@ -27,7 +53,7 @@ export default class printSaleComponent extends Component {
                   style={{ fontSize: 28, fontFamily: "sans-serif" }}
                 >
                   <i>
-                    Folio: <strong>{folio}</strong>
+                    Folio: <strong>{"S_" + id}</strong>
                   </i>
                 </h4>
                 <h6
@@ -129,20 +155,20 @@ export default class printSaleComponent extends Component {
                 <tr>
                   <td className="text-right" colSpan="3">
                     {descuento ? (
-                      <React.Fragment>
+                      <>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
                           Subtotal: <label>$ {totalItems}</label>
                         </h4>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
                           Descuento: <label>$ {descuento}</label>
                         </h4>
-                      </React.Fragment>
+                      </>
                     ) : null}
                     <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
                       Total: <label>$ {total}</label>
                     </h4>
                     {abonado ? (
-                      <React.Fragment>
+                      <>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
                           Abonado: <label>$ {abonado}</label>
                         </h4>
@@ -159,7 +185,7 @@ export default class printSaleComponent extends Component {
                             </h3>
                           </div>
                         )}
-                      </React.Fragment>
+                      </>
                     ) : null}
                   </td>
                 </tr>
@@ -167,12 +193,18 @@ export default class printSaleComponent extends Component {
             </table>
           </div>
         </div>
-        <div className="text-center">
-          <em style={{ fontSize: 22, fontFamily: "sans-serif" }}>
-            Armazones usados, viejos y/o resecos son responsabilidad del cliente
-          </em>
+        <div className="text-justify text-lg">
+          <ul className="d-block" style={{ fontFamily: "sans-serif" }}>
+            <li>
+              Armazones usados, viejos y/o resecos son responsabilidad del
+              cliente
+            </li>
+            <li>
+              Armazones reparados por el cliente pierden garantia de proovedor
+            </li>
+          </ul>
         </div>
       </div>
-    );
-  }
+    </>
+  );
 }

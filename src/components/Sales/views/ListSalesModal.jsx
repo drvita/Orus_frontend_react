@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { saleActions } from "../../../redux/sales/";
 
 function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
-  const { list: items } = useSelector((state) => state.sales),
+  const { list: items, loading } = useSelector((state) => state.sales),
     dispatch = useDispatch();
   const [search, setSearch] = useState("");
 
@@ -109,15 +109,15 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                         </>
                       ) : (
                         <tr>
-                          <td>No existen productos para esta coincidencia</td>
+                          <td>No existen ventas para esta coincidencia</td>
                         </tr>
                       )}
                     </>
                   ) : (
                     <tr>
                       <td>
-                        <i className="fas fa-info-circle mr-1"></i> No se
-                        recibieron los productos
+                        <i className="fas fa-info-circle mr-1"></i> Escriba el
+                        folio o nombre para cargar una venta
                       </td>
                     </tr>
                   )}
@@ -135,6 +135,11 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
               Cancelar
             </button>
           </div>
+          {loading ? (
+            <div className="overlay dark">
+              <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

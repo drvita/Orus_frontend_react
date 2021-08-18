@@ -171,16 +171,7 @@ class EditOrderComponent extends Component {
             <div className="card">
               <div className="text-center mailbox-controls with-border">
                 <div className="btn-group">
-                  {nota ? (
-                    <Link
-                      to={"/notas/registro/" + nota}
-                      type="button"
-                      className="btn btn-default btn-sm text-success"
-                      title={"Ver nota: " + nota}
-                    >
-                      <i className="fas fa-cash-register"></i>
-                    </Link>
-                  ) : (
+                  {!nota && (
                     <button
                       type="button"
                       className="btn btn-default btn-sm"
@@ -193,19 +184,29 @@ class EditOrderComponent extends Component {
 
                   {paciente.telefonos && paciente.telefonos.t_movil ? (
                     <a
-                      target="_blank"
                       href={
                         "https://wa.me/52" +
                         paciente.telefonos.t_movil.replace(" ", "")
                       }
-                      type="button"
                       className="btn btn-default btn-sm"
                       title="Abrir WhatsApp"
+                      target="_blank"
                       rel="noopener noreferrer"
                     >
                       <i className="fas fa-mobile-alt"></i>
                     </a>
                   ) : null}
+                  {paciente.email && (
+                    <a
+                      href={"mailto:" + paciente.email}
+                      className="btn btn-default btn-sm"
+                      title="Enviar e-mail"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i className="fas fa-at"></i>
+                    </a>
+                  )}
                 </div>
               </div>
               {LOADING ? (

@@ -32,10 +32,35 @@ const getMethodName = (status) => {
       return "otro";
   }
 };
+const getSession = () => {
+  return (
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(36).substring(2, 16) +
+    Math.random().toString(10)
+  );
+};
 
 const toExport = {
   confirm,
   getMethodName,
+  getSession,
 };
 
 export default toExport;
+
+/*
+function makeItems(items) {
+  const itemToBack = items.map((item) => ({
+    ...item,
+    cant: item.cantidad,
+    out: 0,
+    price: item.precio,
+  }));
+
+  return itemToBack;
+}
+*/

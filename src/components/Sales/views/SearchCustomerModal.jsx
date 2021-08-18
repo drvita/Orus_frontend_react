@@ -5,6 +5,7 @@ import { contactActions } from "../../../redux/contact/";
 
 function SearchCustomerModal({
   customers,
+  loading,
   //Functions
   _getListContacts,
   _setListContacts,
@@ -91,6 +92,11 @@ function SearchCustomerModal({
                   <i className="fas fa-search"></i>
                 </button>
               </div>
+              {loading && (
+                <div className="form-group pl-2">
+                  <i className="fas fa-2x fa-spinner fa-spin"></i>
+                </div>
+              )}
             </div>
             <div
               className="table-responsive overflow-auto"

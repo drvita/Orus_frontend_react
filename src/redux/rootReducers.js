@@ -7,6 +7,7 @@ import category_state from "./category/";
 import storeReducer from "./store/";
 import contactReducer from "./contact/";
 import examReducer from "./exam/";
+import saleReducer from "./sales/";
 
 const rootReducers = combineReducers({
   users: users_state,
@@ -16,6 +17,7 @@ const rootReducers = combineReducers({
   storeItem: storeReducer,
   contact: contactReducer,
   exam: examReducer,
+  sales: saleReducer,
 });
 
 export default rootReducers;

@@ -21,7 +21,7 @@ const getListSuppliers = (payload) => ({
   payload,
 });
 //SETS
-const setListContact = (payload = []) => ({
+const setListContact = (payload = {}) => ({
   type: TYPE.SET_LIST_CONTACT,
   payload,
 });

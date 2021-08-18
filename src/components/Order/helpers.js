@@ -63,7 +63,6 @@ const handleDeleteOrder = (order, options, _delete) => {
   }
 };
 const handleSaveOrder = (id, data, options, _save, _erase) => {
-  console.log("[DEBUG] save item", id, data);
   window.Swal.fire({
     title: "Almacenamiento",
     text: id

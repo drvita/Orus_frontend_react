@@ -1,15 +1,49 @@
-import React, { Component } from "react";
 import moment from "moment";
+import { useDispatch } from "react-redux";
+import { saleActions } from "../../../redux/sales";
 
-export default class printSale extends Component {
-  render() {
-    const { items, descuento, total, saldo, abonado, folio, date, id } =
-      this.props;
-    let totalItems = 0,
-      client = this.props.cliente;
+export default function PrintSaleComponent({ sale = {}, payed: abonado = 0 }) {
+  const {
+      items,
+      descuento,
+      total = 0,
+      created_at: date,
+      id,
+      customer: client,
+    } = sale,
+    saldo = total - abonado,
+    dispatch = useDispatch();
+  let totalItems = 0;
+  //Functions
+  const handlePrintShow = () => {
+    dispatch(
+      saleActions.saveSale({
+        id: sale.id,
+        data: {
+          ...sale,
+          items: JSON.stringify(sale.items),
+          payments: null,
+        },
+      })
+    );
+    window.print();
+  };
 
-    return (
-      <div className="d-none d-print-block" style={{ width: 340 }} id={id}>
+  return (
+    <>
+      <button
+        className="btn btn-primary ml-2 d-print-none"
+        disabled={!items.length}
+        onClick={handlePrintShow}
+      >
+        <i className="fas fa-print"></i>
+      </button>
+
+      <div
+        className="d-none d-print-block"
+        style={{ width: 340 }}
+        id={"print_sale_" + id}
+      >
         <div className="row">
           <div className="col">
             <div className="card m-0">
@@ -19,7 +53,7 @@ export default class printSale extends Component {
                   style={{ fontSize: 28, fontFamily: "sans-serif" }}
                 >
                   <i>
-                    Folio: <strong>{folio}</strong>
+                    Folio: <strong>{"S_" + id}</strong>
                   </i>
                 </h4>
                 <h6
@@ -97,12 +131,12 @@ export default class printSale extends Component {
               </thead>
               <tbody>
                 {items.map((item, index) => {
-                  const total = parseFloat(item.cantidad * item.precio);
+                  const total = parseFloat(item.cant * item.price);
                   totalItems += total;
                   return (
                     <tr key={index} className="text-capitalize">
                       <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
-                        {item.cantidad}
+                        {item.cant}
                       </td>
                       <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
                         {item.producto}
@@ -111,7 +145,7 @@ export default class printSale extends Component {
                         className="text-right"
                         style={{ fontSize: 24, fontFamily: "sans-serif" }}
                       >
-                        {total.toFixed(2)}
+                        {total}
                       </td>
                     </tr>
                   );
@@ -121,27 +155,37 @@ export default class printSale extends Component {
                 <tr>
                   <td className="text-right" colSpan="3">
                     {descuento ? (
-                      <React.Fragment>
+                      <>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Subtotal: <label>$ {totalItems.toFixed(2)}</label>
+                          Subtotal: <label>$ {totalItems}</label>
                         </h4>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Descuento: <label>$ {descuento.toFixed(2)}</label>
+                          Descuento: <label>$ {descuento}</label>
                         </h4>
-                      </React.Fragment>
+                      </>
                     ) : null}
                     <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                      Total: <label>$ {total.toFixed(2)}</label>
+                      Total: <label>$ {total}</label>
                     </h4>
                     {abonado ? (
-                      <React.Fragment>
+                      <>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Abonado: <label>$ {abonado.toFixed(2)}</label>
+                          Abonado: <label>$ {abonado}</label>
                         </h4>
-                        <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Saldo: <label>$ {saldo.toFixed(2)}</label>
-                        </h4>
-                      </React.Fragment>
+                        {saldo ? (
+                          <h4
+                            style={{ fontSize: 26, fontFamily: "sans-serif" }}
+                          >
+                            Saldo: <label>$ {saldo}</label>
+                          </h4>
+                        ) : (
+                          <div className="text-center d-block w-100 my-3">
+                            <h3 className="text-muted text-bold">
+                              ::: Cuenta Pagada :::
+                            </h3>
+                          </div>
+                        )}
+                      </>
                     ) : null}
                   </td>
                 </tr>
@@ -149,36 +193,18 @@ export default class printSale extends Component {
             </table>
           </div>
         </div>
-        <div className="text-center">
-          <em style={{ fontSize: 22, fontFamily: "sans-serif" }}>
-            Armazones usados, viejos y/o resecos son responsabilidad del cliente
-          </em>
+        <div className="text-justify text-lg">
+          <ul className="d-block" style={{ fontFamily: "sans-serif" }}>
+            <li>
+              Armazones usados, viejos y/o resecos son responsabilidad del
+              cliente
+            </li>
+            <li>
+              Armazones reparados por el cliente pierden garantia de proovedor
+            </li>
+          </ul>
         </div>
       </div>
-    );
-  }
-
-  getContact = (id) => {
-    //Variables en localStorage
-    const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-    //Realiza busqueda de contacto
-    fetch("http://" + varLocalStorage.host + "/api/contacts/" + id, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Descargando contacto: data", data);
-        this.setState({
-          dataContact: data.data,
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
+    </>
+  );
 }

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import Personal from "./views/add_personal";
 import Domicilio from "./views/add_domicilio";
 import Telefono from "./views/add_telefonos";
-import ListSales from "../Sales/views/listOfSales";
+import ListSales from "../Sales/views/listOfSales_delete";
 import Dashboard from "../Dashboard/dashboard_customer";
 import ListBrands from "../Store/views/listOfBrands";
 import ListOrders from "../Order/views/listOfOrders";

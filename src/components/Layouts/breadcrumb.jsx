@@ -79,7 +79,7 @@ const mapStateToProps = ({ default: system, users }) => {
   return {
     company: system.company,
     host: system.host,
-    name: users.username,
+    name: users.dataLoggin.username,
   };
 };
 export default connect(mapStateToProps)(BreadcrumbComponent);

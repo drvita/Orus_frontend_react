@@ -25,37 +25,7 @@ export default function IndexSalesComponent() {
     order_id: 0,
   });
   //Functions
-  const handleAddItem = (result) => {
-      const found = sale.items.filter(
-        (item) => item.store_items_id === result.store_items_id
-      );
-      let newItems = sale.items.filter(
-        (item) => item.store_items_id !== result.store_items_id
-      );
-
-      if (found.length) {
-        const cantidad = parseInt(result.cant) + parseInt(found[0].cant),
-          item = {
-            ...found[0],
-            cant: cantidad,
-            subtotal: parseFloat(result.price) * cantidad,
-            inStorage: cantidad >= parseInt(result.cantInStore) ? true : false,
-            out: parseInt(result.cantInStore) - cantidad,
-          };
-        newItems.push(item);
-      } else {
-        newItems.push(result);
-      }
-
-      //Add to redux
-      dispatch(
-        saleActions.setSale({
-          ...sale,
-          items: newItems,
-        })
-      );
-    },
-    handleDeleteSale = () => setData({ pagado: 0, order_id: 0 }),
+  const handleDeleteSale = () => setData({ pagado: 0, order_id: 0 }),
     handleSetSale = (res) => {
       setData({
         ...data,
@@ -157,7 +127,7 @@ export default function IndexSalesComponent() {
             className="overflow-auto text-right p-0 border border-gray"
             style={{ height: "27rem" }}
           >
-            <SalesDetailsTableComponent paid={paid} />
+            {sale.customer.id && <SalesDetailsTableComponent paid={paid} />}
           </div>
         </div>
         <div className="card-footer">
@@ -181,10 +151,7 @@ export default function IndexSalesComponent() {
               )}
             </div>
             <div className="col-6 text-right">
-              <InputSearchItem
-                handleAdd={handleAddItem}
-                session={sale.session}
-              />
+              <InputSearchItem sale={sale} />
               <PaymentBtnComponent
                 sale={sale}
                 paid={paid}

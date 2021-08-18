@@ -39,7 +39,7 @@ class NotifyComponent extends Component {
       <li className="nav-item dropdown">
         <a className="nav-link" data-toggle="dropdown" href="#end">
           {loading ? (
-            <i className="fas fa-spinner"></i>
+            <i className="fas fa-spinner fa-spin"></i>
           ) : (
             <>
               <i className="far fa-bell"></i>

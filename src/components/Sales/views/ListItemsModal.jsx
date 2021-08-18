@@ -36,6 +36,7 @@ function ListItemsModal({
       setData({
         item: null,
         cant: 1,
+        precio: 0,
       });
       handleClose();
     },

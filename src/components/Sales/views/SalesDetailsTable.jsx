@@ -149,7 +149,7 @@ export default function SalesDetailsTableComponent({ paid }) {
                 return (
                   <tr key={index}>
                     {handleDeleteBtn(handleDeleteItem, item, disabled)}
-                    <td>
+                    <td onClick={(e) => handleShowUpdateItem(null, item)}>
                       <a
                         href="#details"
                         className="text-muted w-full d-block text-uppercase"

@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
+//Actions
+import { saleActions } from "../../../redux/sales";
 import { storeActions } from "../../../redux/store/index";
 //Components
 import ListModal from "./ListItemsModal";
 
 function InputSearchItem({
+  sale,
   list,
-  session,
   loading,
   //Functions
   _getList,
   _setList,
-  handleAdd: _handleAdd,
+  _setSale,
 }) {
+  //State
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(0);
+  const { session } = sale;
   //Functions
   const handleChangeTextSearch = ({ value }) => {
       setTextSearch(value);
@@ -69,8 +73,35 @@ function InputSearchItem({
           metaList: {},
         },
       });
-      _handleAdd(item);
+      handleAddItem(item);
       setCantDefault(1);
+    },
+    handleAddItem = (result) => {
+      const found = sale.items.filter(
+        (item) => item.store_items_id === result.store_items_id
+      );
+      let newItems = sale.items.filter(
+        (item) => item.store_items_id !== result.store_items_id
+      );
+
+      if (found.length) {
+        const cantidad = parseInt(result.cant) + parseInt(found[0].cant),
+          item = {
+            ...found[0],
+            cant: cantidad,
+            subtotal: parseFloat(result.price) * cantidad,
+            inStorage: cantidad >= parseInt(result.cantInStore) ? true : false,
+            out: parseInt(result.cantInStore) - cantidad,
+          };
+        newItems.push(item);
+      } else {
+        newItems.push(result);
+      }
+
+      _setSale({
+        ...sale,
+        items: newItems,
+      });
     };
 
   useEffect(() => {
@@ -80,7 +111,7 @@ function InputSearchItem({
           item: list[0],
           cant: cantDefault ? cantDefault : 1,
         });
-        _handleAdd(item);
+        handleAddItem(item);
         setCantDefault(1);
       } else {
         setShowList(true);
@@ -133,6 +164,7 @@ const mapStateToProps = ({ storeItem }) => {
   mapActionsToProps = {
     _getList: storeActions.getListStore,
     _setList: storeActions.setListStore,
+    _setSale: saleActions.setSale,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(InputSearchItem);

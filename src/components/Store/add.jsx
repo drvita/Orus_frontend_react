@@ -103,6 +103,17 @@ class StoreAddComponent extends Component {
       }
     }
   }
+  componentWillUnmount() {
+    const { _setListStore } = this.props;
+
+    _setListStore({
+      result: {
+        list: [],
+        metaList: {},
+        item: {},
+      },
+    });
+  }
 
   render() {
     const {
@@ -714,6 +725,7 @@ const mapStateToProps = ({ storeItem, category, contact }) => {
     _getItem: storeActions.getItem,
     _saveItem: storeActions.saveItem,
     _getListStore: storeActions.getListStore,
+    _setListStore: storeActions.setListStore,
     _getListCategories: categoryActions.getListCategories,
   };
 

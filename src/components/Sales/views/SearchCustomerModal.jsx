@@ -13,7 +13,6 @@ function SearchCustomerModal({
   handleSelect: _Select,
 }) {
   const [data, setData] = useState({
-    list: null,
     textSearch: "",
   });
   //Functions
@@ -46,6 +45,10 @@ function SearchCustomerModal({
     handleClickCustomer = (e, customer) => {
       e.preventDefault();
       _Select(customer);
+    };
+
+  useEffect(() => {
+    return () => {
       _setListContacts({
         result: {
           list: [],
@@ -53,14 +56,8 @@ function SearchCustomerModal({
         },
       });
     };
-
-  useEffect(() => {
-    setData({
-      ...data,
-      list: customers,
-    });
     // eslint-disable-next-line
-  }, [customers]);
+  }, []);
 
   return (
     <div className="modal d-block" tabIndex="-1">
@@ -104,11 +101,11 @@ function SearchCustomerModal({
             >
               <table className="table table-sm">
                 <tbody>
-                  {data.list ? (
+                  {customers ? (
                     <>
-                      {data.list.length ? (
+                      {customers.length ? (
                         <>
-                          {data.list.map((customer) => (
+                          {customers.map((customer) => (
                             <tr key={customer.id}>
                               <td className="text-right">
                                 <span className="badge badge-dark">

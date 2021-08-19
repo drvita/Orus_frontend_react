@@ -59,6 +59,16 @@ const ShowContactComponent = (props) => {
       }, 1000);
       setTimer(toTimer);
     }
+
+    return () => {
+      _setListContact({
+        result: {
+          list: [],
+          metaList: {},
+          contact: {},
+        },
+      });
+    };
     //eslint-disable-next-line
   }, [input]);
 

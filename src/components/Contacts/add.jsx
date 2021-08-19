@@ -54,7 +54,7 @@ class AddContactComponent extends Component {
       load: true,
     });
   }
-  componentDidUpdate(props, state) {
+  componentDidUpdate(props) {
     const { msg_exams, msg_contact, contact, _setMsgExam, _getContact } =
         this.props,
       { load } = this.state;
@@ -86,7 +86,6 @@ class AddContactComponent extends Component {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
-      //_getContact(contact.id);
     }
 
     //Reload user
@@ -99,6 +98,17 @@ class AddContactComponent extends Component {
     if (props.load !== load && load) {
       this.getUser();
     }
+  }
+  componentWillUnmount() {
+    const { _setList } = this.props;
+
+    _setList({
+      result: {
+        list: [],
+        metaList: {},
+        contact: {},
+      },
+    });
   }
 
   render() {
@@ -468,6 +478,7 @@ const mapStateToProps = ({ contact, exam }) => {
     //contact
     _getContact: contactActions.getContact,
     _saveContact: contactActions.saveContact,
+    _setList: contactActions.setListContact,
     //Exams
     _saveExam: examActions.saveExam,
     _setMsgExam: examActions.setMessagesExam,

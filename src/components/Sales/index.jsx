@@ -13,6 +13,7 @@ import SalesDetailsTableComponent from "./views/SalesDetailsTable";
 //Actions
 import { saleActions } from "../../redux/sales";
 import helpers from "./helpers";
+import { DEFAULT_STATE } from "../../redux/sales/reducer";
 
 export default function IndexSalesComponent() {
   //Store Redux
@@ -51,6 +52,11 @@ export default function IndexSalesComponent() {
 
     if (sum !== sale.subtotal || data.pagado !== pagado) {
       const total = sum - sale.descuento;
+      console.log(
+        "[DEBUG] setData pagado",
+        sum !== sale.subtotal,
+        data.pagado !== pagado
+      );
       setData({
         pagado,
       });
@@ -86,6 +92,7 @@ export default function IndexSalesComponent() {
     });
 
     return () => {
+      dispatch(saleActions.setListSales(DEFAULT_STATE));
       localStorage.setItem("OrusSales", "{}");
     };
     //eslint-disable-next-line
@@ -127,7 +134,9 @@ export default function IndexSalesComponent() {
             className="overflow-auto text-right p-0 border border-gray"
             style={{ height: "27rem" }}
           >
-            {sale.customer.id && <SalesDetailsTableComponent paid={paid} />}
+            {sale.customer && sale.customer.id && (
+              <SalesDetailsTableComponent paid={paid} />
+            )}
           </div>
         </div>
         <div className="card-footer">
@@ -157,7 +166,11 @@ export default function IndexSalesComponent() {
                 paid={paid}
                 forPaid={sale.total - data.pagado}
               />
-              <PrintSaleComponent sale={sale} payed={data.pagado} />
+              <PrintSaleComponent
+                sale={sale}
+                order={data.order_id}
+                payed={data.pagado}
+              />
             </div>
           </div>
         </div>

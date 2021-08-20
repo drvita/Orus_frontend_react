@@ -1,6 +1,6 @@
 import { TYPE } from "./types";
 
-const DEFAULT_STATE = {
+export const DEFAULT_STATE = {
   list: [],
   metaList: {},
   messages: [],

@@ -2,7 +2,11 @@ import moment from "moment";
 import { useDispatch } from "react-redux";
 import { saleActions } from "../../../redux/sales";
 
-export default function PrintSaleComponent({ sale = {}, payed: abonado = 0 }) {
+export default function PrintSaleComponent({
+  sale = {},
+  payed: abonado = 0,
+  order,
+}) {
   const {
       items,
       descuento,
@@ -53,7 +57,8 @@ export default function PrintSaleComponent({ sale = {}, payed: abonado = 0 }) {
                   style={{ fontSize: 28, fontFamily: "sans-serif" }}
                 >
                   <i>
-                    Folio: <strong>{"S_" + id}</strong>
+                    {order ? "Pedido" : "Nota"}:{" "}
+                    <strong>{order ? order : id}</strong>
                   </i>
                 </h4>
                 <h6

@@ -117,6 +117,7 @@ function InputSearchItem({
         setShowList(true);
       }
     }
+
     //eslint-disable-next-line
   }, [list]);
 
@@ -124,7 +125,7 @@ function InputSearchItem({
     <div className="btn-group text-center d-print-none">
       <input
         className="form-control"
-        placeholder="Barcode"
+        placeholder="Codigo"
         onChange={({ target }) => handleChangeTextSearch(target)}
         onKeyPress={({ key }) => handlePressEnter(key)}
         value={textSearch}

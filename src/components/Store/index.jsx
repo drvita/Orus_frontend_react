@@ -62,19 +62,7 @@ class IndexStoreComponent extends Component {
         list: [],
         metaList: {},
         item: {},
-        options: {
-          page: 1,
-          orderby: "created_at",
-          order: "desc",
-          search: "",
-          itemsPage: 10,
-          supplier: "",
-          brand: "",
-          zero: "false",
-        },
         brands: [],
-        messages: [],
-        loading: false,
       },
     });
   }

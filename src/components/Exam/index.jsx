@@ -72,6 +72,9 @@ class IndexExamComponent extends Component {
         });
       });
       _setMessages();
+      this.setState({
+        load: false,
+      });
     }
   }
 
@@ -186,7 +189,11 @@ class IndexExamComponent extends Component {
         </div>
         <div className="col-sm-12 col-md-8 col-lg-10">
           {newOrEdit ? (
-            <AddOrNew exam={exam} handleClose={this.handleCloseEdit} />
+            <AddOrNew
+              exam={exam}
+              handleClose={this.handleCloseEdit}
+              options={options}
+            />
           ) : (
             <Inbox
               title="Lista de examenes"
@@ -466,6 +473,7 @@ class IndexExamComponent extends Component {
       },
       load: true,
     });
+    console.log("[DEBUG] Search in index exam", search);
   };
   handleChangePage = (page) => {
     const { options } = this.state;

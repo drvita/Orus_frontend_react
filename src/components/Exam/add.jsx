@@ -614,7 +614,12 @@ class ExamAddComponent extends Component {
     e.preventDefault();
     const { cilindrod, cilindroi, ejeod, ejeoi, exam } = this.state,
       id = exam.id,
-      { contact: paciente, handleClose: _handleClose, _saveExam } = this.props;
+      {
+        contact: paciente,
+        options,
+        handleClose: _handleClose,
+        _saveExam,
+      } = this.props;
 
     //Verificar si los datos son validos.
     if ((cilindrod < 0 && !ejeod) || (cilindroi < 0 && !ejeoi)) {
@@ -651,6 +656,7 @@ class ExamAddComponent extends Component {
         _saveExam({
           id,
           data: body,
+          options,
         });
         _handleClose(true);
       }

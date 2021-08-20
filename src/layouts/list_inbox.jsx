@@ -50,7 +50,8 @@ const ListInbox = (props) => {
                 onKeyPress={(e) => {
                   const { key } = e;
                   if (key === "Enter") {
-                    console.log("[DEBUG] press enter");
+                    if (timer) clearTimeout(timer);
+                    props.handleSearch(search);
                   }
                 }}
               />

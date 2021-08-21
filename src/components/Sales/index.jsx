@@ -52,11 +52,6 @@ export default function IndexSalesComponent() {
 
     if (sum !== sale.subtotal || data.pagado !== pagado) {
       const total = sum - sale.descuento;
-      console.log(
-        "[DEBUG] setData pagado",
-        sum !== sale.subtotal,
-        data.pagado !== pagado
-      );
       setData({
         pagado,
       });
@@ -113,7 +108,7 @@ export default function IndexSalesComponent() {
               <span className="mx-1">{sale.id ? sale.id : "Nuevo"}</span>
               <label className="mx-1">Fecha:</label>
               <span className="mx-1">
-                {sale.id ? moment(sale.created_at).format("LL") : "--"}
+                {moment(sale.created_at).format("L")}
               </span>
               {data.order_id ? (
                 <>
@@ -126,7 +121,11 @@ export default function IndexSalesComponent() {
               <div className="card-tools text-right">
                 <ListSalesBtn setSale={handleSetSale} />
                 <DiscountBtnComponent sale={sale} paid={paid} />
-                <EraseBtn sale={sale} erase={handleDeleteSale} />
+                <EraseBtn
+                  sale={sale}
+                  defaultState={DEFAULT_STATE}
+                  erase={handleDeleteSale}
+                />
               </div>
             </div>
           </nav>

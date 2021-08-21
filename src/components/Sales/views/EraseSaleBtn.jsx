@@ -2,22 +2,19 @@ import { useDispatch } from "react-redux";
 import { saleActions } from "../../../redux/sales/index.js";
 import helpers from "../helpers.js";
 
-export default function EraseSaleBtnComponent({ sale, erase: _erase }) {
+export default function EraseSaleBtnComponent({
+  sale,
+  defaultState,
+  erase: _erase,
+}) {
   const dispatch = useDispatch();
   //Functions
   const eraseSale = () => {
       dispatch(
         saleActions.setSale({
-          id: 0,
-          customer: {},
-          contact_id: null,
-          items: [],
+          ...defaultState.sale,
           session: helpers.getSession(),
-          descuento: 0,
-          subtotal: 0,
-          total: 0,
-          payments: [],
-          created_at: null,
+          created_at: new Date(),
         })
       );
       _erase();
@@ -34,9 +31,9 @@ export default function EraseSaleBtnComponent({ sale, erase: _erase }) {
       className="btn btn-warning ml-1"
       title="Nueva venta"
       onClick={handleEraseSale}
-      disabled={!sale.total}
+      disabled={!sale.customer.id || sale.customer.id === 2}
     >
-      <i className="fas fa-backspace"></i>
+      <i className="fas fa-window-close"></i>
     </button>
   );
 }

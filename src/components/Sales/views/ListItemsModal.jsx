@@ -2,13 +2,13 @@ import { useState } from "react";
 
 function ListItemsModal({
   items,
-  cantDefault,
+  cantDefault = 1,
   handleClose: _close,
   handleSelect: _Select,
 }) {
   const [data, setData] = useState({
     item: null,
-    cant: cantDefault ? cantDefault : 1,
+    cant: cantDefault,
     precio: 0,
   });
   //Functions
@@ -70,7 +70,7 @@ function ListItemsModal({
                   </div>
                   <div className="form-group row">
                     <label className="col-2 col-form-label">Cantidad</label>
-                    {data.cant < 2 ? (
+                    {cantDefault < 2 ? (
                       <div className="col">
                         <input
                           type="number"

@@ -1,3 +1,4 @@
+import { now } from "moment";
 import { TYPE } from "./types";
 
 export const DEFAULT_STATE = {
@@ -6,15 +7,22 @@ export const DEFAULT_STATE = {
   messages: [],
   sale: {
     id: 0,
-    customer: {},
-    contact_id: null,
+    customer: {
+      id: 2,
+      nombre: "venta de mostrador",
+      email: "",
+      telefonos: {},
+      f_nacimiento: null,
+      edad: 0,
+    },
+    contact_id: 2,
     items: [],
     session: null,
     descuento: 0,
     subtotal: 0,
     total: 0,
     payments: [],
-    created_at: null,
+    created_at: new Date(),
   },
   listBanks: [],
   loading: false,

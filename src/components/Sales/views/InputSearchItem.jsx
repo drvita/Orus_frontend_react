@@ -18,7 +18,7 @@ function InputSearchItem({
   //State
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
-  const [cantDefault, setCantDefault] = useState(0);
+  const [cantDefault, setCantDefault] = useState(1);
   const { session } = sale;
   //Functions
   const handleChangeTextSearch = ({ value }) => {

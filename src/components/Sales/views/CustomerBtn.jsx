@@ -8,7 +8,21 @@ import SearchCustomerModal from "./SearchCustomerModal";
 
 export default function CustomerBtnComponent({ sale, setSale: _setSale }) {
   const [data, setData] = useState(false),
-    dispatch = useDispatch();
+    dispatch = useDispatch(),
+    storeDefault = {
+      id: 0,
+      customer: {},
+      contact_id: 2,
+      items: [],
+      session: helpers.getSession(),
+      descuento: 0,
+      subtotal: 0,
+      total: 0,
+      pagado: 0,
+      payments: [],
+      payment: {},
+      created_at: new Date(),
+    };
   //Functions
   const handleSetCustomer = () => {
       setData(true);
@@ -23,18 +37,9 @@ export default function CustomerBtnComponent({ sale, setSale: _setSale }) {
       setData(false);
       dispatch(
         saleActions.setSale({
-          id: 0,
+          ...storeDefault,
           customer,
           contact_id: customer.id,
-          items: [],
-          session: helpers.getSession(),
-          descuento: 0,
-          subtotal: 0,
-          total: 0,
-          pagado: 0,
-          payments: [],
-          payment: {},
-          created_at: null,
         })
       );
     };
@@ -49,6 +54,7 @@ export default function CustomerBtnComponent({ sale, setSale: _setSale }) {
       <button
         type="button"
         className="btn bg-indigo btn-sm ml-2"
+        title="Buscar cliente"
         onClick={handleSetCustomer}
       >
         <i className="fas fa-exchange-alt"></i>

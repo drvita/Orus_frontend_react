@@ -1,4 +1,3 @@
-import { now } from "moment";
 import { TYPE } from "./types";
 
 export const DEFAULT_STATE = {

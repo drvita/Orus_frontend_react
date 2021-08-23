@@ -10,6 +10,8 @@ import Dashboard from "../Dashboard/dashboard_customer";
 //Actions
 import helper from "./helpers";
 import { orderActions } from "../../redux/order/";
+import ShowPaymentsComponent from "./views/ShowPayments";
+import { DEFAULT_STATE } from "../../redux/order/reducer";
 
 class EditOrderComponent extends Component {
   constructor(props) {
@@ -30,43 +32,34 @@ class EditOrderComponent extends Component {
       created_at: null,
       updated: {},
       updated_at: null,
-      nota: 0,
     };
   }
   componentDidMount() {
     const { order } = this.props;
     this.setState({
-      id: order.id,
-      paciente: order.paciente,
-      session: order.session,
+      ...order,
       lab_id: (order.laboratorio && order.laboratorio.id) ?? 0,
-      npedidolab: order.folio_lab,
-      observaciones: order.observaciones,
-      ncaja: order.caja,
-      items: order.productos,
-      exam: order.examen ?? {},
-      status: order.estado,
-      created_at: order.created_at,
-      created: order.created,
-      updated: order.updated,
-      updated_at: order.updated_at,
-      nota: (order.nota && order.nota.id) ?? 0,
     });
+  }
+  componentWillUnmount() {
+    const { _setOrder } = this.props;
+    //Eliminar datos de la orden y de la venta, falta venta
+    _setOrder(DEFAULT_STATE.order);
   }
 
   render() {
-    const {
+    const { order } = this.props,
+      {
         id,
         paciente,
         session,
-        lab_id,
+        laboratorio = {},
         npedidolab,
         ncaja,
         observaciones,
         items,
-        exam,
+        exam = {},
         codes,
-        nota,
         status,
         created,
         created_at,
@@ -82,7 +75,7 @@ class EditOrderComponent extends Component {
         (tel) => tel !== ""
       );
 
-    //console.log("[DEBUG] Render", created);
+    //console.log("[DEBUG] Render", order);
 
     return (
       <>
@@ -170,7 +163,7 @@ class EditOrderComponent extends Component {
             <div className="card">
               <div className="text-center mailbox-controls with-border">
                 <div className="btn-group">
-                  {!nota && (
+                  {!order.nota && !order.nota.id ? (
                     <button
                       type="button"
                       className="btn btn-default btn-sm"
@@ -179,7 +172,7 @@ class EditOrderComponent extends Component {
                     >
                       <i className="far fa-trash-alt"></i>
                     </button>
-                  )}
+                  ) : null}
 
                   {paciente.telefonos && paciente.telefonos.t_movil ? (
                     <a
@@ -265,7 +258,9 @@ class EditOrderComponent extends Component {
                   ) : null}
                   {status === 1 ? (
                     <LabOrder
-                      lab_id={lab_id}
+                      lab_id={
+                        laboratorio && laboratorio.id ? laboratorio.id : 0
+                      }
                       npedidolab={npedidolab}
                       status={status}
                       ChangeInput={this.handleChangeInput}
@@ -280,24 +275,27 @@ class EditOrderComponent extends Component {
                     />
                   ) : null}
                   {status >= 3 ? (
-                    <div className="m-2 border rounded card border-warning">
-                      <div className="card-body">
-                        <h5 className="card-title">Estado de la entrega</h5>
-                        <div className="ml-1 icheck-success d-inline">
-                          <input
-                            type="checkbox"
-                            checked={status === 3 ? false : true}
-                            id="checkboxSuccess1"
-                            onChange={(e) =>
-                              this.handleChangeInput(
-                                "status",
-                                status === 3 ? 4 : 3
-                              )
-                            }
-                          />
-                          <label htmlFor="checkboxSuccess1"></label>
+                    <div className="px-2">
+                      <div className="my-2 border rounded card border-warning">
+                        <div className="card-body">
+                          <h5 className="card-title">Estado de la entrega</h5>
+                          <div className="ml-1 icheck-success d-inline">
+                            <input
+                              type="checkbox"
+                              checked={status === 3 ? false : true}
+                              id="checkboxSuccess1"
+                              onChange={(e) =>
+                                this.handleChangeInput(
+                                  "status",
+                                  status === 3 ? 4 : 3
+                                )
+                              }
+                            />
+                            <label htmlFor="checkboxSuccess1"></label>
+                          </div>
                         </div>
                       </div>
+                      <ShowPaymentsComponent nota={order.nota} />
                     </div>
                   ) : null}
                 </div>
@@ -311,8 +309,8 @@ class EditOrderComponent extends Component {
           </div>
         </div>
 
-        <div className="row mt-4">
-          {exam.id ? (
+        <div className="row mt-8">
+          {exam && exam.id ? (
             <div className="col">
               <h6 className="w-100 d-block">Examen</h6>
               <div className="card mt-2">
@@ -324,7 +322,7 @@ class EditOrderComponent extends Component {
               </div>
             </div>
           ) : null}
-          <div className={`col-${exam.id ? 3 : 12}`}>
+          <div className={`col-${exam && exam.id ? 3 : 12}`}>
             <h6 className="w-100 d-block">Meta data</h6>
             <Dashboard
               register={created_at ?? ""}

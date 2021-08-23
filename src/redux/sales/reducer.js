@@ -25,6 +25,7 @@ export const DEFAULT_STATE = {
   },
   listBanks: [],
   loading: false,
+  load_save: false,
 };
 
 const default_reducer = (state = DEFAULT_STATE, action) => {
@@ -52,6 +53,7 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       return {
         ...state,
         loading: true,
+        load_save: true,
       };
     }
     case TYPE.SAGA_GET_LIST_BANK: {
@@ -88,6 +90,7 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         sale: payload,
         messages: [],
         loading: false,
+        load_save: false,
       };
     }
     case TYPE.SET_LIST_BANKS: {

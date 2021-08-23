@@ -131,7 +131,7 @@ const InboxOrderComponent = (props) => {
                     >
                       <span
                         className={
-                          pedido.estado > 2
+                          pedido.status > 2
                             ? "text-muted"
                             : "text-dark text-bold"
                         }
@@ -144,12 +144,12 @@ const InboxOrderComponent = (props) => {
                   <td className="mailbox-subject">
                     <span
                       className={`badge badge-${
-                        pedido.estado < 3 ? "primary" : "secondary"
+                        pedido.status < 3 ? "primary" : "secondary"
                       } mr-2 text-uppercase`}
                     >
-                      {helper.handleStatusString(pedido.estado)}
+                      {helper.handleStatusString(pedido.status)}
                     </span>
-                    {pedido.estado === 1 ? (
+                    {pedido.status === 1 ? (
                       <div>
                         <span className="mr-1 text-dark">
                           {pedido.laboratorio
@@ -158,21 +158,21 @@ const InboxOrderComponent = (props) => {
                         </span>
                         {pedido.laboratorio ? "/ " + pedido.folio_lab : ""}
                       </div>
-                    ) : pedido.estado === 2 ? (
+                    ) : pedido.status === 2 ? (
                       <small>
                         {pedido.caja
                           ? "CAJA: " + pedido.caja
                           : "Caja no asignada"}
                       </small>
-                    ) : !pedido.estado ? (
+                    ) : !pedido.status ? (
                       <small>
                         {pedido.examen
-                          ? pedido.examen.estado === 1
+                          ? pedido.examen.status === 1
                             ? "Examen completado"
                             : "Examen no realizado"
                           : "Examen no asignado"}
                       </small>
-                    ) : pedido.estado === 3 ? (
+                    ) : pedido.status === 3 ? (
                       <small className="text-dark">Sin entregar</small>
                     ) : null}
                   </td>

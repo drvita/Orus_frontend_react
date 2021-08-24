@@ -1,6 +1,6 @@
 import { TYPE } from "./types";
 
-export const DEFAULT_STATE = {
+export const DEFAULT_STATE_SALES = {
   list: [],
   metaList: {},
   messages: [],
@@ -28,7 +28,7 @@ export const DEFAULT_STATE = {
   load_save: false,
 };
 
-const default_reducer = (state = DEFAULT_STATE, action) => {
+const default_reducer = (state = DEFAULT_STATE_SALES, action) => {
   const { payload } = action;
   switch (action.type) {
     case TYPE.SAGA_GET_LIST_SALES: {

@@ -17,7 +17,7 @@ export default function* handledDeletePayment({ payload }) {
           },
         ])
       );
-      yield put(saleActions.getSale(sale_id));
+      if (sale_id) yield put(saleActions.getSale(sale_id));
       console.log("[Orus System] Pago eliminado con exito", ID);
     } else {
       console.error("[Orus System] Fallo al eliminar el pago", result.message);

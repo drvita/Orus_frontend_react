@@ -1,6 +1,6 @@
 import { TYPE } from "./types";
 
-export const DEFAULT_STATE = {
+export const DEFAULT_STATE_ORDER = {
   list: [],
   metaList: {},
   order: { id: 0 },
@@ -16,7 +16,7 @@ export const DEFAULT_STATE = {
   loading: false,
 };
 
-const default_reducer = (state = DEFAULT_STATE, action) => {
+const default_reducer = (state = DEFAULT_STATE_ORDER, action) => {
   const { payload } = action;
 
   switch (action.type) {

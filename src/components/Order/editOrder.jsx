@@ -7,11 +7,13 @@ import Bicelacion from "./views/bicelacionOrder";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
 import Dashboard from "../Dashboard/dashboard_customer";
+import ShowPaymentsComponent from "./views/ShowPayments";
 //Actions
 import helper from "./helpers";
 import { orderActions } from "../../redux/order/";
-import ShowPaymentsComponent from "./views/ShowPayments";
-import { DEFAULT_STATE } from "../../redux/order/reducer";
+import { saleActions } from "../../redux/sales/";
+import { DEFAULT_STATE_ORDER } from "../../redux/order/reducer";
+import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 
 class EditOrderComponent extends Component {
   constructor(props) {
@@ -42,9 +44,10 @@ class EditOrderComponent extends Component {
     });
   }
   componentWillUnmount() {
-    const { _setOrder } = this.props;
+    const { _setOrder, _setSale } = this.props;
     //Eliminar datos de la orden y de la venta, falta venta
-    _setOrder(DEFAULT_STATE.order);
+    _setOrder(DEFAULT_STATE_ORDER.order);
+    _setSale(DEFAULT_STATE_SALES.sale);
   }
 
   render() {
@@ -402,6 +405,7 @@ const mapStateToProps = ({ order, users }) => {
     _saveOrder: orderActions.saveOrder,
     _deleteOrder: orderActions.deleteOrder,
     _setOrder: orderActions.setOrder,
+    _setSale: saleActions.setSale,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(EditOrderComponent);

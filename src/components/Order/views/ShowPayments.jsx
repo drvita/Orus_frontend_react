@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { saleActions } from "../../../redux/sales";
 import PaymentModal from "../../Sales/views/PaymentModal";
+import helpers from "../../Sales/helpers";
 
 export default function ShowPaymentsComponent({ nota }) {
   //State
@@ -27,6 +28,19 @@ export default function ShowPaymentsComponent({ nota }) {
     },
     getSale = (id) => {
       if (id) dispatch(saleActions.getSale(id));
+    },
+    handleDeletePayment = ({ id, total, metodoname }) => {
+      helpers.confirm(
+        `Realmente desea eliminar el pago ${metodoname}, de ${total}`,
+        () => {
+          dispatch(
+            saleActions.deletePayment({
+              id,
+              sale_id: sale.id,
+            })
+          );
+        }
+      );
     };
 
   useEffect(() => {
@@ -75,16 +89,28 @@ export default function ShowPaymentsComponent({ nota }) {
                   <th>Total</th>
                   <th>Fecha</th>
                   <th>Recibio</th>
+                  <th style={{ width: 16 }}>
+                    <span className="sr-only">DELETE</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {sale.payments.map((pay) => (
                   <tr key={pay.id}>
-                    <td>{pay.id}</td>
+                    <th>{pay.id}</th>
                     <td className="text-uppercase">{pay.metodoname}</td>
                     <td>${pay.total}</td>
                     <td>{pay.created_at}</td>
                     <td>{pay.created.name}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-default"
+                        onClick={() => handleDeletePayment(pay)}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

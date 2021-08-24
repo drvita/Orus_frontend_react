@@ -13,7 +13,7 @@ import SalesDetailsTableComponent from "./views/SalesDetailsTable";
 //Actions
 import { saleActions } from "../../redux/sales";
 import helpers from "./helpers";
-import { DEFAULT_STATE } from "../../redux/sales/reducer";
+import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 
 export default function IndexSalesComponent() {
   //Store Redux
@@ -87,7 +87,7 @@ export default function IndexSalesComponent() {
     });
 
     return () => {
-      dispatch(saleActions.setListSales(DEFAULT_STATE));
+      dispatch(saleActions.setListSales(DEFAULT_STATE_SALES));
       localStorage.setItem("OrusSales", "{}");
     };
     //eslint-disable-next-line
@@ -123,7 +123,7 @@ export default function IndexSalesComponent() {
                 <DiscountBtnComponent sale={sale} paid={paid} />
                 <EraseBtn
                   sale={sale}
-                  defaultState={DEFAULT_STATE}
+                  defaultState={DEFAULT_STATE_SALES}
                   erase={handleDeleteSale}
                 />
               </div>

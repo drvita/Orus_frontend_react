@@ -312,9 +312,9 @@ class EditOrderComponent extends Component {
           </div>
         </div>
 
-        <div className="row mt-8">
+        <div className="row mt-4">
           {exam && exam.id ? (
-            <div className="col">
+            <div className="col pt-6">
               <h6 className="w-100 d-block">Examen</h6>
               <div className="card mt-2">
                 <div className="card-body">
@@ -325,7 +325,7 @@ class EditOrderComponent extends Component {
               </div>
             </div>
           ) : null}
-          <div className={`col-${exam && exam.id ? 3 : 12}`}>
+          <div className={`col-${exam && exam.id ? 3 : 12} pt-6`}>
             <h6 className="w-100 d-block">Meta data</h6>
             <Dashboard
               register={created_at ?? ""}

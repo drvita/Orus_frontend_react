@@ -8,7 +8,7 @@ import getOrder from "./getOrder";
 export default function* index() {
   //watchers
   console.log("[Orus System] Escuchando eventos de ordenes");
-  yield takeLatest(TYPE.SAGA_GET_LIST, getList);
+  yield takeLatest(TYPE.SAGA_GET_LIST_ORDER, getList);
   yield takeLatest(TYPE.SAGA_DELETE_ORDER, deleteOrder);
   yield takeLatest(TYPE.SAGA_SAVE_ORDER, saveOrder);
   yield takeLatest(TYPE.SAGA_GET_ORDER, getOrder);

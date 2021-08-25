@@ -36,6 +36,7 @@ export default function ListSalesBtn({ setSale: _setSale }) {
           subtotal: sale.subtotal,
           total: sale.total,
           payments: sale.payments,
+          pedido: sale.pedido,
           created_at: sale.created_at,
         })
       );

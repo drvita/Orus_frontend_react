@@ -1,7 +1,7 @@
 import { TYPE } from "./types";
 //SAGAS
 const getListOrder = (payload = {}) => ({
-  type: TYPE.SAGA_GET_LIST,
+  type: TYPE.SAGA_GET_LIST_ORDER,
   payload,
 });
 const deleteOrder = (payload = {}) => ({
@@ -19,11 +19,11 @@ const getOrder = (payload = {}) => ({
 
 //SETS
 const setListOrder = (payload = {}) => ({
-  type: TYPE.SET_LIST,
+  type: TYPE.SET_LIST_ORDER,
   payload,
 });
 const setMessageOrder = (payload = []) => ({
-  type: TYPE.SET_MESSAGE,
+  type: TYPE.SET_MESSAGE_ORDER,
   payload,
 });
 const setOrder = (payload = {}) => ({
@@ -31,7 +31,7 @@ const setOrder = (payload = {}) => ({
   payload,
 });
 const setOptions = (payload = {}) => ({
-  type: TYPE.SET_OPTIONS,
+  type: TYPE.SET_OPTIONS_ORDER,
   payload,
 });
 

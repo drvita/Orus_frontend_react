@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import moment from "moment";
-import PaymentsDetails from "../Sales/reportPaymentsDetails";
-import ReportPays from "../Sales/reportPays";
-import ReportBank from "../Sales/reportBank";
+import PaymentsDetails from "../Sales/views/reportPaymentsDetails";
+import ReportPays from "../Sales/views/reportPays";
+import ReportBank from "../Sales/views/reportBank";
 import Caja from "./cash";
 import DateUser from "./dateUser";
 import BoxCut from "./boxCut";

@@ -23,10 +23,9 @@ export default function IndexSalesComponent() {
   //Store Local
   const [data, setData] = useState({
     pagado: 0,
-    order_id: 0,
   });
   //Functions
-  const handleDeleteSale = () => setData({ pagado: 0, order_id: 0 }),
+  const handleDeleteSale = () => setData({ pagado: 0 }),
     handleSetSale = (res) => {
       setData({
         ...data,
@@ -50,7 +49,7 @@ export default function IndexSalesComponent() {
     sale.items.forEach((item) => (sum += item.subtotal));
     sale.payments.forEach((pay) => (pagado += pay.total));
 
-    if (sum !== sale.subtotal || data.pagado !== pagado) {
+    if (sale.id && (sum !== sale.subtotal || data.pagado !== pagado)) {
       const total = sum - sale.descuento;
       setData({
         pagado,
@@ -70,28 +69,28 @@ export default function IndexSalesComponent() {
       helpers.confirm("Cerrar la venta actual", () => {
         dispatch(
           saleActions.setSale({
-            id: 0,
-            customer: {},
-            contact_id: null,
-            items: [],
+            ...DEFAULT_STATE_SALES.sale,
             session: helpers.getSession(),
-            descuento: 0,
-            subtotal: 0,
-            total: 0,
-            payments: [],
-            created_at: null,
+            created_at: new Date(),
           })
         );
         handleDeleteSale();
       });
     });
-
+    //eslint-disable-next-line
+  }, [sale]);
+  useEffect(() => {
     return () => {
-      dispatch(saleActions.setListSales(DEFAULT_STATE_SALES));
+      console.log("[Orus Systme] Cerrando venta");
+      dispatch(
+        saleActions.setListSales({
+          result: DEFAULT_STATE_SALES,
+        })
+      );
       localStorage.setItem("OrusSales", "{}");
     };
     //eslint-disable-next-line
-  }, [sale]);
+  }, []);
 
   const paid = sale.total <= data.pagado ? true : false;
 
@@ -110,10 +109,10 @@ export default function IndexSalesComponent() {
               <span className="mx-1">
                 {moment(sale.created_at).format("L")}
               </span>
-              {data.order_id ? (
+              {sale.pedido ? (
                 <>
                   <label className="mx-1">Pedido:</label>
-                  <span className="mx-1">{data.order_id}</span>
+                  <span className="mx-1">{sale.pedido}</span>
                 </>
               ) : null}
             </div>
@@ -167,7 +166,7 @@ export default function IndexSalesComponent() {
               />
               <PrintSaleComponent
                 sale={sale}
-                order={data.order_id}
+                order={sale.pedido}
                 payed={data.pagado}
               />
             </div>

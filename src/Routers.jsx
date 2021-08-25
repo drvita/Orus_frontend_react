@@ -15,7 +15,7 @@ import Exam from "./components/Exam/index";
 //import ExamAdd from "./components/Exam/add";
 import Order from "./components/Order/index";
 import Sales from "./components/Sales/index";
-import SalesAdd from "./components/Sales/add";
+//import SalesAdd from "./components/Sales/add";
 import Dashboard from "./components/Dashboard/index";
 import NotifyAllShow from "./components/Layouts/notifyAll";
 
@@ -121,18 +121,7 @@ export default class Routers extends Component {
 
                       <Route
                         extric
-                        path="/notas/registro/:id?"
-                        render={(props) => (
-                          <SalesAdd
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
-                        )}
-                      />
-                      <Route
-                        extric
-                        path="/notas"
+                        path="/notas/:id?"
                         render={(props) => (
                           <Sales
                             {...props}

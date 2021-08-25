@@ -9,7 +9,9 @@ import Chat from "../Layouts/messenger";
 import Pending from "./views/pending";
 //Actions
 import { orderActions } from "../../redux/order/";
+import { saleActions } from "../../redux/sales";
 import { contactActions } from "../../redux/contact";
+import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 
 class indexOrderComponent extends Component {
   constructor(props) {
@@ -71,6 +73,20 @@ class indexOrderComponent extends Component {
       }
     }
   }
+  componentWillUnmount() {
+    const { _setList, _setSales } = this.props;
+    console.log("[Orus Systme] Cerrando pedido");
+    _setList({
+      result: {
+        list: [],
+        metaList: {},
+        order: { id: 0 },
+      },
+    });
+    _setSales({
+      result: DEFAULT_STATE_SALES,
+    });
+  }
 
   render() {
     const { panel } = this.state,
@@ -81,7 +97,7 @@ class indexOrderComponent extends Component {
 
     return (
       <div className="row">
-        <div className="col-md-2 col-sm-12">
+        <div className="col-md-2 col-sm-12 d-print-none">
           <a
             href="#new"
             className={
@@ -255,7 +271,9 @@ const mapStateToProps = ({ order, category }) => {
   mapActionsToProps = {
     _getOrder: orderActions.getOrder,
     _setOptions: orderActions.setOptions,
+    _setList: orderActions.setListOrder,
     _setContact: contactActions.setContact,
+    _setSales: saleActions.setListSales,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(indexOrderComponent);

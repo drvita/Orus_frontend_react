@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { saleActions } from "../../../redux/sales";
-import PaymentModal from "../../Sales/views/PaymentModal";
-import helpers from "../../Sales/helpers";
+import PaymentModal from "./PaymentModal";
+import helpers from "../helpers";
+import PrintSaleComponent from "./Print_sale";
 
-export default function ShowPaymentsComponent({ nota }) {
+export default function ShowPaymentsComponent({ nota, orderId }) {
   //State
   const [data, setData] = useState({
     showPayment: false,
@@ -61,7 +62,7 @@ export default function ShowPaymentsComponent({ nota }) {
   return (
     <div className="card">
       <div className="card-body">
-        <div className="row">
+        <div className="row d-print-none">
           <div className="col">
             <label>Nota:</label> {sale.id}
           </div>
@@ -79,7 +80,7 @@ export default function ShowPaymentsComponent({ nota }) {
           </div>
         </div>
 
-        <div className="row">
+        <div className="row d-print-none">
           <div className="col table-responsive">
             <table className="table table-sm">
               <thead>
@@ -120,15 +121,24 @@ export default function ShowPaymentsComponent({ nota }) {
 
         <div className="row">
           <div className="col text-right">
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled={!data.toPaid}
-              onClick={handleShowPayment}
-            >
-              <i className="fas fa-plus mr-1" />
-              Agregar
-            </button>
+            <div className="btn-group">
+              <PrintSaleComponent
+                sale={sale}
+                order={orderId}
+                payed={data.totalPayments}
+                text="Imprimir"
+                btn="default"
+              />
+              <button
+                type="button"
+                className="btn btn-primary d-print-none"
+                disabled={!data.toPaid}
+                onClick={handleShowPayment}
+              >
+                <i className="fas fa-plus mr-1" />
+                Agregar
+              </button>
+            </div>
           </div>
         </div>
 

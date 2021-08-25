@@ -7,7 +7,7 @@ import Bicelacion from "./views/bicelacionOrder";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
 import Dashboard from "../Dashboard/dashboard_customer";
-import ShowPaymentsComponent from "./views/ShowPayments";
+import ShowPaymentsComponent from "../Sales/views/ShowPayments";
 //Actions
 import helper from "./helpers";
 import { orderActions } from "../../redux/order/";
@@ -82,7 +82,7 @@ class EditOrderComponent extends Component {
 
     return (
       <>
-        <div className="card card-warning card-outline">
+        <div className="card card-warning card-outline d-print-none">
           <div className="card-header">
             <h3 className="card-title">
               <i className="mr-1 fas fa-clipboard-list"></i>Pedido
@@ -161,7 +161,7 @@ class EditOrderComponent extends Component {
         </div>
 
         <div className="row mt-4">
-          <div className="col-lg-4 col-md-6 col-sm-12">
+          <div className="col-lg-4 col-md-6 col-sm-12 d-print-none">
             <h6 className="w-100 d-block">Acciones</h6>
             <div className="card">
               <div className="text-center mailbox-controls with-border">
@@ -241,7 +241,7 @@ class EditOrderComponent extends Component {
           </div>
           <div className="col">
             <div className="card h-100 m-0">
-              <div className="card-header">
+              <div className="card-header d-print-none">
                 <h5 className="card-title w-100 d-block mb-2 text-capitalize text-bold">
                   <i className="fas fa-shield-alt mr-1"></i>
                   {helper.handleStatusString(status)}
@@ -279,7 +279,7 @@ class EditOrderComponent extends Component {
                   ) : null}
                   {status >= 3 ? (
                     <div className="px-2">
-                      <div className="my-2 border rounded card border-warning">
+                      <div className="my-2 border rounded card border-warning d-print-none">
                         <div className="card-body">
                           <h5 className="card-title">Estado de la entrega</h5>
                           <div className="ml-1 icheck-success d-inline">
@@ -298,13 +298,16 @@ class EditOrderComponent extends Component {
                           </div>
                         </div>
                       </div>
-                      <ShowPaymentsComponent nota={order.nota} />
+                      <ShowPaymentsComponent
+                        nota={order.nota}
+                        orderId={order.id}
+                      />
                     </div>
                   ) : null}
                 </div>
               </div>
               {LOADING ? (
-                <div className="overlay dark">
+                <div className="overlay dark d-print-none">
                   <i className="fas fa-2x fa-sync-alt fa-spin"></i>
                 </div>
               ) : null}
@@ -312,7 +315,7 @@ class EditOrderComponent extends Component {
           </div>
         </div>
 
-        <div className="row mt-4">
+        <div className="row mt-4 d-print-none">
           {exam && exam.id ? (
             <div className="col pt-6">
               <h6 className="w-100 d-block">Examen</h6>

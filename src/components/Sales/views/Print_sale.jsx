@@ -6,6 +6,8 @@ export default function PrintSaleComponent({
   sale = {},
   payed: abonado = 0,
   order,
+  text,
+  btn = "primary",
 }) {
   const {
       items,
@@ -36,11 +38,12 @@ export default function PrintSaleComponent({
   return (
     <>
       <button
-        className="btn btn-primary ml-2 d-print-none"
+        className={`btn btn-${btn} ml-2 d-print-none`}
         disabled={!items.length}
         onClick={handlePrintShow}
       >
-        <i className="fas fa-print"></i>
+        <i className={text ? "fas fa-print mr-1" : "fas fa-print"}></i>
+        {text}
       </button>
 
       <div

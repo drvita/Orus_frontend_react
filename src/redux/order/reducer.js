@@ -20,7 +20,7 @@ const default_reducer = (state = DEFAULT_STATE_ORDER, action) => {
   const { payload } = action;
 
   switch (action.type) {
-    case TYPE.SAGA_GET_LIST: {
+    case TYPE.SAGA_GET_LIST_ORDER: {
       return {
         ...state,
         list: [],
@@ -51,7 +51,7 @@ const default_reducer = (state = DEFAULT_STATE_ORDER, action) => {
       };
     }
 
-    case TYPE.SET_LIST: {
+    case TYPE.SET_LIST_ORDER: {
       return {
         ...state,
         ...payload.result,
@@ -60,7 +60,7 @@ const default_reducer = (state = DEFAULT_STATE_ORDER, action) => {
         loading: false,
       };
     }
-    case TYPE.SET_MESSAGE: {
+    case TYPE.SET_MESSAGE_ORDER: {
       return {
         ...state,
         loading: false,
@@ -75,7 +75,7 @@ const default_reducer = (state = DEFAULT_STATE_ORDER, action) => {
         loading: false,
       };
     }
-    case TYPE.SET_OPTIONS: {
+    case TYPE.SET_OPTIONS_ORDER: {
       const { key, value } = payload;
       return {
         ...state,

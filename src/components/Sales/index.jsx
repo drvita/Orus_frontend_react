@@ -31,6 +31,25 @@ export default function IndexSalesComponent() {
         ...data,
         ...res,
       });
+    },
+    handlePrint = () => {
+      const path = window.location.pathname;
+
+      if (path !== "/notas") {
+        console.log("[DEBUG] Impresion cancelada:", path);
+        return false;
+      }
+
+      helpers.confirm("Cerrar la venta actual", () => {
+        dispatch(
+          saleActions.setSale({
+            ...DEFAULT_STATE_SALES.sale,
+            session: helpers.getSession(),
+            created_at: new Date(),
+          })
+        );
+        handleDeleteSale();
+      });
     };
 
   useEffect(() => {
@@ -65,23 +84,13 @@ export default function IndexSalesComponent() {
     }
 
     localStorage.setItem("OrusSales", JSON.stringify(sale.id ? {} : toSave));
-    window.addEventListener("afterprint", () => {
-      helpers.confirm("Cerrar la venta actual", () => {
-        dispatch(
-          saleActions.setSale({
-            ...DEFAULT_STATE_SALES.sale,
-            session: helpers.getSession(),
-            created_at: new Date(),
-          })
-        );
-        handleDeleteSale();
-      });
-    });
+    window.addEventListener("afterprint", handlePrint);
     //eslint-disable-next-line
   }, [sale]);
   useEffect(() => {
     return () => {
       console.log("[Orus Systme] Cerrando venta");
+      window.removeEventListener("afterprint", handlePrint);
       dispatch(
         saleActions.setListSales({
           result: DEFAULT_STATE_SALES,

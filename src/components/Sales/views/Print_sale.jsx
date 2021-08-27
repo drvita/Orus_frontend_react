@@ -47,8 +47,8 @@ export default function PrintSaleComponent({
       </button>
 
       <div
-        className="d-none d-print-block"
-        style={{ width: 340 }}
+        className="d-none d-print-block fixed-top"
+        style={{ maxWidth: 380 }}
         id={"print_sale_" + id}
       >
         <div className="row">

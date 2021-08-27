@@ -156,7 +156,7 @@ const InboxOrderComponent = (props) => {
                             ? pedido.laboratorio.nombre
                             : "Sin asignar"}
                         </span>
-                        {pedido.laboratorio ? "/ " + pedido.folio_lab : ""}
+                        {pedido.laboratorio ? "/ " + pedido.npedidolab : ""}
                       </div>
                     ) : pedido.status === 2 ? (
                       <small>

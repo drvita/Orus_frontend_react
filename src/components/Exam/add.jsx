@@ -109,7 +109,9 @@ class ExamAddComponent extends Component {
                       >
                         <i
                           className={
-                            exam.estado ? "fas fa-folder" : "fas fa-folder-open"
+                            exam.estado
+                              ? "fas fa-folder mr-1"
+                              : "fas fa-folder-open mr-1"
                           }
                         ></i>
                         {exam.estado ? "Examen terminado" : "Examen en proceso"}
@@ -117,8 +119,17 @@ class ExamAddComponent extends Component {
                     </div>
                   ) : null}
                 </div>
+                <div className="col">
+                  <label>
+                    <i className="fas fa-calendar mr-1"></i>
+                    Creado:
+                  </label>
+                  <span className="ml-1">
+                    {moment(exam.created_at).format("LL")}
+                  </span>
+                </div>
                 {exam.edad !== paciente.edad || (!paciente.edad && !exam.id) ? (
-                  <div className="col-12 col-sm-3 input-group">
+                  <div className="col col-sm-12 input-group">
                     <label className="input-group-prepend mr-2">Edad</label>
                     <input
                       type="number"

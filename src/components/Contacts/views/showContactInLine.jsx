@@ -74,7 +74,7 @@ const ShowContactComponent = (props) => {
 
   return (
     <div className="w-100 d-block">
-      {legend ? (
+      {legend && !contact.id ? (
         <span className="text-sm text-muted ml-4 w-100 d-block">
           <label>Primero:</label> {legend}
         </span>

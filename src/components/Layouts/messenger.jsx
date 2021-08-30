@@ -168,7 +168,7 @@ export default class messenger extends Component {
         load: true,
       });
     }
-    console.log("Enviando mensajes a la API");
+    console.log("[DEBUG] Enviando mensajes a la API");
     //Realiza la peticion de los contactos
     fetch(url, {
       method: "POST",
@@ -218,7 +218,7 @@ export default class messenger extends Component {
         load: true,
       });
     }
-    console.log("Solicitando mensajes de la API");
+    console.log("[DEBUG] Solicitando mensajes de la API");
     //Realiza la peticion de los contactos
     fetch(url + page + type, {
       method: "GET",

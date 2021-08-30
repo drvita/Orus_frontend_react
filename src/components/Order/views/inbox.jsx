@@ -39,6 +39,7 @@ const InboxOrderComponent = (props) => {
     } else if (orderSelected.id) {
       _getOrder(orderSelected.id);
     }
+    props.handleChangePanel(null, 3);
   };
   const handleOrderSelect = ({ checked }, pedido) => {
     if (!checked) pedido = { id: 0 };

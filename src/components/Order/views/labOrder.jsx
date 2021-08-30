@@ -63,7 +63,7 @@ export default class labOrder extends Component {
   changeInput = (e) => {
     e.preventDefault();
     let { name, value } = e.target;
-    this.props.ChangeInput(name, value);
+    this.props.ChangeInput(name, parseInt(value));
   };
   getContacts = () => {
     //Variables en localStorage

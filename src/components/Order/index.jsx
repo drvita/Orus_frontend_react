@@ -7,6 +7,7 @@ import Asistent from "./asistent";
 import AddOrder from "./editOrder";
 import Chat from "../Layouts/messenger";
 import Pending from "./views/pending";
+import ReportOrder from "./views/ReportOrder";
 //Actions
 import { orderActions } from "../../redux/order/";
 import { saleActions } from "../../redux/sales";
@@ -19,6 +20,13 @@ class indexOrderComponent extends Component {
 
     this.state = {
       panel: 0,
+      /**
+       * 0 - Dashboard
+       * 1 - Pending
+       * 2 - Create new
+       * 3 - Edit Item
+       * 4 - Report
+       */
     };
   }
   componentDidMount() {
@@ -28,32 +36,32 @@ class indexOrderComponent extends Component {
     if (id && !isNaN(id)) {
       console.log("[OrusSystem] cargando orden al inicio: " + id);
       _getOrder(id);
+      this.setState({
+        panel: 3,
+      });
     }
   }
   componentDidUpdate(props, state) {
     const { order, history, messages: MSGS, _setContact } = this.props,
       { panel } = this.state;
 
-    if (props.order.id !== order.id && order.id) {
-      this.setState({
-        panel: 3,
-      });
-      _setContact();
-      history.push(`/pedidos/${order.id}`);
-    }
-    if (props.order.id !== order.id && !order.id) {
-      this.setState({
-        panel: 0,
-      });
-      history.push(`/pedidos`);
-    } else if (state.panel !== panel && !panel) {
-      history.push(`/pedidos`);
-    }
-    if (state.panel !== panel && panel === 2) {
-      history.push(`/pedidos/new`);
-    }
-    if (state.panel !== panel && panel === 1) {
-      history.push(`/pedidos/pending`);
+    if (state.panel !== panel) {
+      switch (panel) {
+        case 1:
+          history.push(`/pedidos/pending`);
+          break;
+        case 2:
+          history.push(`/pedidos/new`);
+          break;
+        case 3: {
+          _setContact();
+          if (order.id) history.push(`/pedidos/${order.id}`);
+          break;
+        }
+
+        default:
+          history.push(`/pedidos`);
+      }
     }
 
     if (props.messages.length !== MSGS.length && MSGS.length) {
@@ -76,13 +84,7 @@ class indexOrderComponent extends Component {
   componentWillUnmount() {
     const { _setList, _setSales } = this.props;
     console.log("[Orus Systme] Cerrando pedido");
-    _setList({
-      result: {
-        list: [],
-        metaList: {},
-        order: { id: 0 },
-      },
-    });
+    _setList();
     _setSales({
       result: DEFAULT_STATE_SALES,
     });
@@ -90,7 +92,7 @@ class indexOrderComponent extends Component {
 
   render() {
     const { panel } = this.state,
-      { order, options } = this.props;
+      { order, options, user } = this.props;
     let showpanel = this.showPanel(panel);
 
     //console.log("[DEBUG] List of orders", ORDERS_LIST);
@@ -144,6 +146,18 @@ class indexOrderComponent extends Component {
                     <i className="mr-2 fas fa-clipboard-list"></i> Pedidos
                   </a>
                 </li>
+                {!user.rol ? (
+                  <li className="nav-item">
+                    <a
+                      href="#item"
+                      className={panel === 4 ? "nav-link active" : "nav-link"}
+                      onClick={this.handleShowReport}
+                    >
+                      <i className="mr-2 fas fa-folder-open"></i> Reporte
+                    </a>
+                  </li>
+                ) : null}
+
                 {!panel ? (
                   <Fragment>
                     <li className="nav-item">&nbsp;</li>
@@ -221,6 +235,12 @@ class indexOrderComponent extends Component {
     );
   }
 
+  handleShowReport = (e) => {
+    const { _setList } = this.props;
+
+    _setList();
+    this.handleShowPanel(e, 4);
+  };
   showPanel = (panel) => {
     switch (panel) {
       case 1:
@@ -232,9 +252,11 @@ class indexOrderComponent extends Component {
         );
 
       case 3:
-        return <AddOrder />;
+        return <AddOrder handleChangePanel={this.handleShowPanel} />;
+      case 4:
+        return <ReportOrder handleChangePanel={this.handleShowPanel} />;
       default:
-        return <Inbox />;
+        return <Inbox handleChangePanel={this.handleShowPanel} />;
     }
   };
   handleSetSelectOptions = ({ target }) => {
@@ -261,11 +283,12 @@ class indexOrderComponent extends Component {
   };
 }
 
-const mapStateToProps = ({ order, category }) => {
+const mapStateToProps = ({ order, users }) => {
     return {
       order: order.order,
       options: order.options,
       messages: order.messages,
+      user: users.dataLoggin,
     };
   },
   mapActionsToProps = {

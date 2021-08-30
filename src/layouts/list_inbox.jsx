@@ -42,7 +42,7 @@ const ListInbox = (props) => {
                 type="text"
                 className="form-control"
                 placeholder="Buscar"
-                value={search}
+                defaultValue={search}
                 onChange={({ target }) => {
                   const { value } = target;
                   setSearch(value);
@@ -127,6 +127,17 @@ const ListInbox = (props) => {
                   onClick={(e) => props.handleSync()}
                 >
                   <i className="fas fa-sync-alt"></i>
+                </button>
+              ) : null}
+
+              {props.handlePrint ? (
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  title="Imprimir"
+                  onClick={(e) => props.handlePrint()}
+                >
+                  <i className="fas fa-print"></i>
                 </button>
               ) : null}
             </div>

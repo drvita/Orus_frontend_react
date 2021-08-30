@@ -1,4 +1,13 @@
 import { TYPE } from "./types";
+
+//Data
+const order_default = {
+  result: {
+    list: [],
+    metaList: {},
+  },
+};
+
 //SAGAS
 const getListOrder = (payload = {}) => ({
   type: TYPE.SAGA_GET_LIST_ORDER,
@@ -18,7 +27,7 @@ const getOrder = (payload = {}) => ({
 });
 
 //SETS
-const setListOrder = (payload = {}) => ({
+const setListOrder = (payload = order_default) => ({
   type: TYPE.SET_LIST_ORDER,
   payload,
 });

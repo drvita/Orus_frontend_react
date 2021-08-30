@@ -160,8 +160,8 @@ const InboxOrderComponent = (props) => {
                       </div>
                     ) : pedido.status === 2 ? (
                       <small>
-                        {pedido.caja
-                          ? "CAJA: " + pedido.caja
+                        {pedido.ncaja
+                          ? "CAJA: " + pedido.ncaja
                           : "Caja no asignada"}
                       </small>
                     ) : !pedido.status ? (

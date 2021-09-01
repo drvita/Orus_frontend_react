@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PaginationComponent from "../../../layouts/pagination";
 //Actions
 import { orderActions } from "../../../redux/order";
+import GraduacionExamComponent from "../../Exam/views/graduacionExam";
 
 export default function ReportOrderComponent({ handleChangePanel: panel }) {
   const { list, metaList, loading } = useSelector((state) => state.order),
@@ -13,26 +14,16 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
       orderby: "created_at",
       order: "desc",
       status: 0,
-      itemsPage: 10,
+      itemsPage: 1,
     });
   //Functions
-  const handlePrintReport = () => {
-      console.log("[DEBUG] Create report");
-    },
-    handlePagination = (page) => {
+  const handlePagination = (page) => {
       setData({
         ...data,
         page,
       });
     },
-    handleSetSelectOptions = ({ value: itemsPage }) => {
-      setData({
-        ...data,
-        itemsPage,
-      });
-    },
     handleViewOrder = (order) => {
-      //console.log("[DEBUG] set Order", order.id);
       dispatch(orderActions.setOrder(order));
       panel(null, 3);
     };
@@ -45,6 +36,8 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
     //eslint-disable-next-line
   }, [data]);
 
+  //console.log("[DEBUG] List", list);
+
   return (
     <div className="card">
       <div className="card-header">
@@ -54,69 +47,101 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
       <div className="card-body">
         <div className="row">
           <div className="col table-responsive">
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Paciente</th>
-                  <th>Creado</th>
-                  <th>Realizo</th>
-                  <th>
-                    <span className="sr-only">Acciones</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((order) => (
-                  <tr key={order.id} className="text-capitalize">
-                    <th>{order.id}</th>
-                    <td>{order.paciente.nombre.toLowerCase()}</td>
-                    <td>{moment(order.created_at).fromNow()}</td>
-                    <td>{order.created.name.toLowerCase()}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-default"
-                        onClick={() => handleViewOrder(order)}
-                      >
-                        <i className="fas fa-eye"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colSpan="2">
-                    <PaginationComponent
-                      meta={metaList}
-                      handlePagination={handlePagination}
+            {list.map((order) => (
+              <div key={order.id}>
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Order</th>
+                      <th>Paciente</th>
+                      <th>Creado</th>
+                      <th>Realizo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="text-capitalize">
+                      <th>{order.id}</th>
+                      <td>{order.paciente.nombre.toLowerCase()}</td>
+                      <td>{moment(order.created_at).fromNow()}</td>
+                      <td>{order.created.name.toLowerCase()}</td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colSpan="5" className="text-center">
+                        <PaginationComponent
+                          meta={metaList}
+                          handlePagination={handlePagination}
+                        />
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+
+                {order.exam && (
+                  <>
+                    <h5 className="my-4">
+                      <i className="fas fa-notes-medical mr-1"></i>
+                      Examen
+                    </h5>
+                    <GraduacionExamComponent
+                      esferaod={order.exam.esferaod ?? 0}
+                      esferaoi={order.exam.esferaoi ?? 0}
+                      cilindrod={order.exam.cilindrod ?? 0}
+                      cilindroi={order.exam.cilindroi ?? 0}
+                      ejeod={order.exam.ejeod ?? 0}
+                      ejeoi={order.exam.ejeoi ?? 0}
+                      adiciond={order.exam.adiciond ?? 0}
+                      adicioni={order.exam.adicioni ?? 0}
+                      adicion_media_od={order.exam.adicion_media_od ?? 0}
+                      adicion_media_oi={order.exam.adicion_media_oi ?? 0}
+                      dpod={order.exam.dpod ?? 0}
+                      dpoi={order.exam.dpoi ?? 0}
+                      alturaod={order.exam.alturaod ?? 0}
+                      alturaoi={order.exam.alturaoi ?? 0}
+                      lcmarca={order.exam.lcmarca ?? 0}
+                      lcgod={order.exam.lcgod ?? 0}
+                      lcgoi={order.exam.lcgoi ?? 0}
+                      showContactGlasses={false}
+                      readOnly={true}
                     />
-                  </td>
-                  <td>
-                    <select
-                      className="form-control"
-                      value={data.itemsPage}
-                      onChange={({ target }) => handleSetSelectOptions(target)}
-                    >
-                      <option value="10">ver 10</option>
-                      <option value="20">ver 20</option>
-                      <option value="50">ver 50</option>
-                      <option value="100">ver 100</option>
-                    </select>
-                  </td>
-                  <td colSpan="2" className="text-right">
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={handlePrintReport}
-                    >
-                      <i className="fas fa-print"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+                  </>
+                )}
+
+                <h5 className="my-4">
+                  <i className="fas fa-clipboard-list mr-1"></i>
+                  Productos
+                </h5>
+
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.items.map((item) => (
+                      <tr className="text-capitalize" key={item.id}>
+                        <td>{item.producto.toLowerCase()}</td>
+                        <td>{item.cantidad}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div className="text-center mt-4">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => handleViewOrder(order)}
+                  >
+                    <i className="fas fa-edit mr-1"></i>
+                    Editar pedido
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

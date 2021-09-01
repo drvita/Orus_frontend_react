@@ -39,6 +39,10 @@ class indexOrderComponent extends Component {
       this.setState({
         panel: 3,
       });
+    } else if (id === "reporte") {
+      this.setState({
+        panel: 4,
+      });
     }
   }
   componentDidUpdate(props, state) {
@@ -58,6 +62,9 @@ class indexOrderComponent extends Component {
           if (order.id) history.push(`/pedidos/${order.id}`);
           break;
         }
+        case 4:
+          history.push(`/pedidos/reporte`);
+          break;
 
         default:
           history.push(`/pedidos`);

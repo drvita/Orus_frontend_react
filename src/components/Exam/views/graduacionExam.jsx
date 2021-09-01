@@ -1,9 +1,9 @@
-import React, { Component } from "react";
+import { Component } from "react";
 
-export default class GraduacionExam extends Component {
+export default class GraduacionExamComponent extends Component {
   render() {
     const {
-      readOnly,
+      readOnly = false,
       cilindrod,
       cilindroi,
       esferaod,
@@ -21,11 +21,12 @@ export default class GraduacionExam extends Component {
       lcmarca,
       lcgod,
       lcgoi,
+      showContactGlasses = true,
     } = this.props;
 
     return (
-      <React.Fragment>
-        <table className="table table-bordered">
+      <>
+        <table className="table">
           <thead>
             <tr>
               <th>#</th>
@@ -41,8 +42,8 @@ export default class GraduacionExam extends Component {
           <tbody>
             <tr>
               <td>
-                <label>D</label>
-                <i className="fa fa-eye"></i>
+                <i className="fa fa-eye mr-1" title="Ojo derecho"></i>
+                <span className="text-sm d-block">Derecho</span>
               </td>
               <td className="text-right">
                 <input
@@ -176,8 +177,8 @@ export default class GraduacionExam extends Component {
             </tr>
             <tr>
               <td>
-                <label>I</label>
-                <i className="fa fa-eye"></i>
+                <i className="fa fa-eye ml-1" title="Ojo izquierdo"></i>
+                <span className="text-sm d-block">Izquierdo</span>
               </td>
               <td className="text-right">
                 <input
@@ -311,62 +312,65 @@ export default class GraduacionExam extends Component {
             </tr>
           </tbody>
         </table>
-        <ul className="list-group d-print-none mt-4">
-          <li className="list-group-item">
-            <div className="row">
-              <div className="col-md-12">
-                Lente de contacto
-                <input
-                  type="text"
-                  name="lcmarca"
-                  maxLength="70"
-                  className={
-                    readOnly ? "form-control disabled" : "form-control"
-                  }
-                  disabled={readOnly ? true : false}
-                  value={lcmarca}
-                  onChange={this.catchInputs}
-                />
+        {showContactGlasses && (
+          <ul className="list-group d-print-none mt-4">
+            <li className="list-group-item">
+              <div className="row">
+                <div className="col-md-12">
+                  Lente de contacto
+                  <input
+                    type="text"
+                    name="lcmarca"
+                    maxLength="70"
+                    className={
+                      readOnly ? "form-control disabled" : "form-control"
+                    }
+                    disabled={readOnly ? true : false}
+                    value={lcmarca}
+                    onChange={this.catchInputs}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="row">
-              <div className="col">
-                <i className="fa fa-eye"></i> <label>Derecho</label>
-                <input
-                  type="text"
-                  name="lcgod"
-                  maxLength="30"
-                  className={
-                    readOnly ? "form-control disabled" : "form-control"
-                  }
-                  disabled={readOnly ? true : false}
-                  value={lcgod ? lcgod : ""}
-                  onChange={this.catchInputs}
-                />
+              <div className="row">
+                <div className="col">
+                  <i className="fa fa-eye"></i> <label>Derecho</label>
+                  <input
+                    type="text"
+                    name="lcgod"
+                    maxLength="30"
+                    className={
+                      readOnly ? "form-control disabled" : "form-control"
+                    }
+                    disabled={readOnly ? true : false}
+                    value={lcgod ? lcgod : ""}
+                    onChange={this.catchInputs}
+                  />
+                </div>
+                <div className="col">
+                  <i className="fa fa-eye"></i> <label>Izquierdo</label>
+                  <input
+                    type="text"
+                    name="lcgoi"
+                    maxLength="30"
+                    className={
+                      readOnly ? "form-control disabled" : "form-control"
+                    }
+                    disabled={readOnly ? true : false}
+                    value={lcgoi ? lcgoi : ""}
+                    onChange={this.catchInputs}
+                  />
+                </div>
               </div>
-              <div className="col">
-                <i className="fa fa-eye"></i> <label>Izquierdo</label>
-                <input
-                  type="text"
-                  name="lcgoi"
-                  maxLength="30"
-                  className={
-                    readOnly ? "form-control disabled" : "form-control"
-                  }
-                  disabled={readOnly ? true : false}
-                  value={lcgoi ? lcgoi : ""}
-                  onChange={this.catchInputs}
-                />
-              </div>
-            </div>
-          </li>
-        </ul>
-      </React.Fragment>
+            </li>
+          </ul>
+        )}
+      </>
     );
   }
 
   catchInputs = (e) => {
-    const { name, type, value, checked } = e.target;
+    const { name, type, value, checked } = e.target,
+      { onChangeInput } = this.props;
     let val = value;
 
     if (type === "checkbox") val = checked;
@@ -380,6 +384,6 @@ export default class GraduacionExam extends Component {
         val = parseFloat(val);
       }
     }
-    this.props.onChangeInput(name, val);
+    if (onChangeInput) onChangeInput(name, val);
   };
 }

@@ -48,7 +48,7 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
     let totalPayments = 0;
     sale.payments.forEach((pay) => (totalPayments += parseInt(pay.total)));
 
-    if (!sale.id) getSale(nota.id);
+    if (!sale.id && nota) getSale(nota.id);
 
     setData({
       ...data,
@@ -59,100 +59,109 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
     //eslint-disable-next-line
   }, [sale]);
 
-  return (
-    <div className="card">
-      <div className="card-body">
-        <div className="row d-print-none">
-          <div className="col">
-            <label>Nota:</label> {sale.id}
-          </div>
-          <div className="col">
-            <label>Total:</label> ${sale.total}
-          </div>
-          <div className="col">
-            <label>Abonado:</label> ${data.totalPayments}
-          </div>
-          <div className="col">
-            <label>Por pagar:</label>{" "}
-            <span className="text-success text-bold">
-              ${data.toPaid >= 0 ? data.toPaid : 0}
-            </span>
-          </div>
-        </div>
-
-        <div className="row d-print-none">
-          <div className="col table-responsive">
-            <table className="table table-sm">
-              <thead>
-                <tr>
-                  <th>Folio</th>
-                  <th>Metodo</th>
-                  <th>Total</th>
-                  <th>Fecha</th>
-                  <th>Recibio</th>
-                  <th style={{ width: 16 }}>
-                    <span className="sr-only">DELETE</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {sale.payments.map((pay) => (
-                  <tr key={pay.id}>
-                    <th>{pay.id}</th>
-                    <td className="text-uppercase">{pay.metodoname}</td>
-                    <td>${pay.total}</td>
-                    <td>{pay.created_at}</td>
-                    <td>{pay.created.name}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-default"
-                        onClick={() => handleDeletePayment(pay)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col text-right">
-            <div className="btn-group">
-              <PrintSaleComponent
-                sale={sale}
-                order={orderId}
-                payed={data.totalPayments}
-                text="Imprimir"
-                btn="default"
-              />
-              <button
-                type="button"
-                className="btn btn-primary d-print-none"
-                disabled={!data.toPaid}
-                onClick={handleShowPayment}
-              >
-                <i className="fas fa-plus mr-1" />
-                Agregar
-              </button>
+  if (sale && sale.id) {
+    return (
+      <div className="card">
+        <div className="card-body">
+          <div className="row d-print-none">
+            <div className="col">
+              <label>Nota:</label> {sale.id}
+            </div>
+            <div className="col">
+              <label>Total:</label> ${sale.total}
+            </div>
+            <div className="col">
+              <label>Abonado:</label> ${data.totalPayments}
+            </div>
+            <div className="col">
+              <label>Por pagar:</label>{" "}
+              <span className="text-success text-bold">
+                ${data.toPaid >= 0 ? data.toPaid : 0}
+              </span>
             </div>
           </div>
-        </div>
 
-        {data.showPayment && (
-          <PaymentModal
-            handleClose={handleClosePayment}
-            sale={{
-              ...sale,
-              contact_id: sale.customer.id,
-            }}
-            forPaid={data.toPaid}
-          />
-        )}
+          <div className="row d-print-none">
+            <div className="col table-responsive">
+              <table className="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Folio</th>
+                    <th>Metodo</th>
+                    <th>Total</th>
+                    <th>Fecha</th>
+                    <th>Recibio</th>
+                    <th style={{ width: 16 }}>
+                      <span className="sr-only">DELETE</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sale.payments.map((pay) => (
+                    <tr key={pay.id}>
+                      <th>{pay.id}</th>
+                      <td className="text-uppercase">{pay.metodoname}</td>
+                      <td>${pay.total}</td>
+                      <td>{pay.created_at}</td>
+                      <td>{pay.created.name}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-default"
+                          onClick={() => handleDeletePayment(pay)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col text-right">
+              <div className="btn-group">
+                <PrintSaleComponent
+                  sale={sale}
+                  order={orderId}
+                  payed={data.totalPayments}
+                  text="Imprimir"
+                  btn="default"
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary d-print-none"
+                  disabled={!data.toPaid}
+                  onClick={handleShowPayment}
+                >
+                  <i className="fas fa-plus mr-1" />
+                  Agregar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {data.showPayment && (
+            <PaymentModal
+              handleClose={handleClosePayment}
+              sale={{
+                ...sale,
+                contact_id: sale.customer.id,
+              }}
+              forPaid={data.toPaid}
+            />
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <span className="d-block text-center text-dark my-4">
+        <i className="fas fa-info-circle mr-1"></i>
+        Sin datos de ventas
+      </span>
+    );
+  }
 }

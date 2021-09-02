@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-export default class bicelacionOrder extends Component {
+export default class BicelacionOrderComponent extends Component {
   render() {
     const { status, ncaja, observaciones } = this.props;
     return (
@@ -13,7 +13,7 @@ export default class bicelacionOrder extends Component {
               className={status > 2 ? "form-control disabled" : "form-control"}
               disabled={status > 2 ? true : false}
               name="ncaja"
-              value={ncaja ? ncaja : ""}
+              defaultValue={ncaja ? ncaja : ""}
               onChange={this.changeInput}
             />
           </div>
@@ -25,7 +25,7 @@ export default class bicelacionOrder extends Component {
               name="observaciones"
               className={status > 2 ? "form-control disabled" : "form-control"}
               disabled={status > 2 ? true : false}
-              value={observaciones ? observaciones : ""}
+              defaultValue={observaciones ? observaciones : ""}
               onChange={this.changeInput}
             ></textarea>
           </div>
@@ -35,9 +35,11 @@ export default class bicelacionOrder extends Component {
   }
 
   changeInput = (e) => {
+    const { ChangeInput } = this.props;
+
     e.preventDefault();
     let { name, value } = e.target;
     if (name === "caja") value = parseInt(value);
-    this.props.ChangeInput(name, value);
+    if (ChangeInput) ChangeInput(name, value);
   };
 }

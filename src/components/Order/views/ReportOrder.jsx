@@ -5,36 +5,53 @@ import PaginationComponent from "../../../layouts/pagination";
 //Actions
 import { orderActions } from "../../../redux/order";
 import GraduacionExamComponent from "../../Exam/views/graduacionExam";
+import BicelacionOrderComponent from "./bicelacionOrder";
+import LabOrderComponent from "./labOrder";
 
 export default function ReportOrderComponent({ handleChangePanel: panel }) {
   const { list, metaList, loading } = useSelector((state) => state.order),
     dispatch = useDispatch(),
-    [data, setData] = useState({
+    [options, setOptions] = useState({
       page: 1,
       orderby: "created_at",
       order: "desc",
       status: 0,
       itemsPage: 1,
+    }),
+    [data, setData] = useState({
+      lab_id: null,
+      npedidolab: null,
+      ncaja: null,
+      observaciones: null,
+      status: 0,
     });
   //Functions
   const handlePagination = (page) => {
-      setData({
-        ...data,
+      setOptions({
+        ...options,
         page,
       });
     },
     handleViewOrder = (order) => {
       dispatch(orderActions.setOrder(order));
       panel(null, 3);
+    },
+    handleChangeData = (name, value) => {
+      if (name) {
+        setData({
+          ...data,
+          [name]: value,
+        });
+      }
     };
 
   useEffect(() => {
-    dispatch(orderActions.getListOrder(data));
+    dispatch(orderActions.getListOrder(options));
     return () => {
       dispatch(orderActions.setListOrder());
     };
     //eslint-disable-next-line
-  }, [data]);
+  }, [options]);
 
   //console.log("[DEBUG] List", list);
 
@@ -129,6 +146,57 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
                     ))}
                   </tbody>
                 </table>
+
+                <h5 className="my-4">
+                  <i className="fas fa-cog mr-1"></i>
+                  Proceso
+                </h5>
+
+                <div className="my-4 py-4">
+                  <div className="row">
+                    <div className="col">
+                      <div className="form-group">
+                        <label htmlFor="status">
+                          ¿Cual es la siguiente accion de este pedido?
+                        </label>
+                        <select
+                          id="status"
+                          className="form-control"
+                          defaultValue={order.status}
+                          onChange={({ target }) => {
+                            const { value } = target;
+                            handleChangeData("status", parseInt(value));
+                          }}
+                        >
+                          <option>-- Seleccione primero una accion --</option>
+                          <option value="1">Laboratorio</option>
+                          <option value="2">Bicelación</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    {data.status === 1 ? (
+                      <div className="col">
+                        <h5>Laboratorio</h5>
+                        <LabOrderComponent
+                          lab_id={data.lab_id}
+                          npedidolab={data.npedidolab}
+                        />
+                      </div>
+                    ) : null}
+
+                    {data.status === 2 ? (
+                      <div className="col">
+                        <h5>Bicelación</h5>
+                        <BicelacionOrderComponent
+                          ncaja={data.ncaja}
+                          observaciones={data.observaciones}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
 
                 <div className="text-center mt-4">
                   <button

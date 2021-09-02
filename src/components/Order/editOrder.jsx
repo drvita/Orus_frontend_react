@@ -304,10 +304,12 @@ class EditOrderComponent extends Component {
                               </div>
                             </div>
                           </div>
-                          <ShowPaymentsComponent
-                            nota={order.nota}
-                            orderId={order.id}
-                          />
+                          {order && order.id ? (
+                            <ShowPaymentsComponent
+                              nota={order.nota}
+                              orderId={order.id}
+                            />
+                          ) : null}
                         </div>
                       ) : null}
                     </div>

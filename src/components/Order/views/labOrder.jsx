@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-export default class labOrder extends Component {
+export default class LabOrderComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -12,7 +12,8 @@ export default class labOrder extends Component {
   }
 
   render() {
-    const { lab_id } = this.props;
+    const { lab_id, status, npedidolab } = this.props,
+      { supplies } = this.state;
 
     return (
       <div className="row m-2">
@@ -20,24 +21,22 @@ export default class labOrder extends Component {
           <div className="border border-warning rounded p-2">
             <label>Laboratorio</label>
             <select
-              className={
-                this.props.status > 1 ? "form-control disabled" : "form-control"
-              }
-              disabled={this.props.status > 1 ? true : false}
+              className={status > 1 ? "form-control disabled" : "form-control"}
+              disabled={status > 1 ? true : false}
               name="lab_id"
-              value={lab_id}
+              defaultValue={lab_id}
               onChange={this.changeInput}
             >
               <option value="0">Seleccione un proveedor</option>
-              {this.state.supplies.length
-                ? this.state.supplies.map((s) => {
+              {supplies && supplies.length
+                ? supplies.map((s) => {
                     return (
                       <option key={s.id} value={s.id}>
                         {s.nombre}
                       </option>
                     );
                   })
-                : ""}
+                : null}
             </select>
           </div>
         </div>
@@ -46,12 +45,10 @@ export default class labOrder extends Component {
             <label>Folio</label>
             <input
               type="text"
-              className={
-                this.props.status > 1 ? "form-control disabled" : "form-control"
-              }
-              disabled={this.props.status > 1 ? true : false}
+              className={status > 1 ? "form-control disabled" : "form-control"}
+              disabled={status > 1 ? true : false}
               name="npedidolab"
-              value={this.props.npedidolab ? this.props.npedidolab : ""}
+              defaultValue={npedidolab ? npedidolab : ""}
               onChange={this.changeInput}
             />
           </div>
@@ -61,25 +58,27 @@ export default class labOrder extends Component {
   }
 
   changeInput = (e) => {
+    const { ChangeInput } = this.props;
+
     e.preventDefault();
     let { name, value } = e.target;
-    this.props.ChangeInput(name, parseInt(value));
+    if (ChangeInput) ChangeInput(name, parseInt(value));
   };
   getContacts = () => {
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + varLocalStorage.host + "/api/contacts",
+    const { host, token } = JSON.parse(localStorage.getItem("OrusSystem")),
+      url = "http://" + host + "/api/contacts",
       type = "&type=1&business=1",
-      //search = word ? `&search=${word}` : "",
       page = "?page=1";
-    console.log("Descargando proveedores de la API");
+
+    console.log("[Orus System] Descargando proveedores");
     //Realiza la peticion de los contactos
     fetch(url + page + type, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: "Bearer " + varLocalStorage.token,
+        Authorization: "Bearer " + token,
       },
     })
       .then((res) => {
@@ -90,7 +89,6 @@ export default class labOrder extends Component {
       })
       .then((data) => {
         if (data.data) {
-          console.log("Almacenado proveedores");
           this.setState({
             supplies: data.data,
           });

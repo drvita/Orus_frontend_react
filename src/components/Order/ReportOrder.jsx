@@ -1,12 +1,13 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import PaginationComponent from "../../../layouts/pagination";
+import PaginationComponent from "../../layouts/pagination";
+import GraduacionExamComponent from "../Exam/views/graduacionExam";
+import BicelacionOrderComponent from "./views/bicelacionOrder";
+import LabOrderComponent from "./views/labOrder";
 //Actions
-import { orderActions } from "../../../redux/order";
-import GraduacionExamComponent from "../../Exam/views/graduacionExam";
-import BicelacionOrderComponent from "./bicelacionOrder";
-import LabOrderComponent from "./labOrder";
+import { orderActions } from "../../redux/order";
+import helpers from "./helpers";
 
 export default function ReportOrderComponent({ handleChangePanel: panel }) {
   const { list, metaList, loading } = useSelector((state) => state.order),
@@ -32,9 +33,52 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
         page,
       });
     },
-    handleViewOrder = (order) => {
-      dispatch(orderActions.setOrder(order));
-      panel(null, 3);
+    handleSaveOrder = (order) => {
+      const _save = (payload) => dispatch(orderActions.saveOrder(payload));
+
+      if (!data.status) {
+        window.Swal.fire({
+          title: "Verificacion",
+          text: "Seleccione una accion, antes de guardar",
+          icon: "warning",
+        });
+        return false;
+      }
+      if (data.status === 1) {
+        if (!data.lab_id) {
+          window.Swal.fire({
+            title: "Verificacion",
+            text: "Seleccione un laboratorio",
+            icon: "warning",
+          });
+          return false;
+        }
+        if (!data.npedidolab) {
+          window.Swal.fire({
+            title: "Verificacion",
+            text: "Escriba el folio del laboratorio",
+            icon: "warning",
+          });
+          return false;
+        }
+      }
+      if (data.status === 2) {
+        if (!data.ncaja) {
+          window.Swal.fire({
+            title: "Verificacion",
+            text: "Escriba el numero de la caja de bicelación",
+            icon: "warning",
+          });
+          return false;
+        }
+      }
+
+      if (order.id) helpers.handleSaveOrder(order.id, data, options, _save);
+      else
+        console.error(
+          "[error] Se perdio el identificador del pedido",
+          order.id
+        );
     },
     handleChangeData = (name, value) => {
       if (name) {
@@ -182,6 +226,7 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
                         <LabOrderComponent
                           lab_id={data.lab_id}
                           npedidolab={data.npedidolab}
+                          handleChange={handleChangeData}
                         />
                       </div>
                     ) : null}
@@ -192,6 +237,7 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
                         <BicelacionOrderComponent
                           ncaja={data.ncaja}
                           observaciones={data.observaciones}
+                          handleChange={handleChangeData}
                         />
                       </div>
                     ) : null}
@@ -202,10 +248,10 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={() => handleViewOrder(order)}
+                    onClick={() => handleSaveOrder(order)}
                   >
-                    <i className="fas fa-edit mr-1"></i>
-                    Editar pedido
+                    <i className="fas fa-save mr-1"></i>
+                    Actualizar pedido
                   </button>
                 </div>
               </div>

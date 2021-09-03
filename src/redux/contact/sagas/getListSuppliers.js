@@ -2,11 +2,11 @@ import { call, put } from "redux-saga/effects";
 import { api, getUrl } from "../../sagas/api";
 import { contactActions } from "../../contact/index";
 
-export default function* handleGetListSuppliers() {
+export default function* handleGetListSuppliers({ payload = 0 }) {
   try {
     const options = {
         type: 1,
-        business: 0,
+        business: payload,
         orderby: "name",
         order: "asc",
       },

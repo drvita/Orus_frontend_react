@@ -270,7 +270,7 @@ class EditOrderComponent extends Component {
                           lab_id={lab_id}
                           npedidolab={npedidolab}
                           status={status}
-                          ChangeInput={this.handleChangeInput}
+                          handleChange={this.handleChangeInput}
                         />
                       ) : null}
                       {status === 2 ? (
@@ -278,7 +278,7 @@ class EditOrderComponent extends Component {
                           ncaja={ncaja}
                           observaciones={observaciones}
                           status={status}
-                          ChangeInput={this.handleChangeInput}
+                          handleChange={this.handleChangeInput}
                         />
                       ) : null}
                       {status >= 3 ? (

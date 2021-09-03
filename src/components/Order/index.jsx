@@ -7,7 +7,7 @@ import Asistent from "./asistent";
 import AddOrder from "./editOrder";
 import Chat from "../Layouts/messenger";
 import Pending from "./views/pending";
-import ReportOrder from "./views/ReportOrder";
+import ReportOrder from "./ReportOrder";
 //Actions
 import { orderActions } from "../../redux/order/";
 import { saleActions } from "../../redux/sales";
@@ -81,7 +81,7 @@ class indexOrderComponent extends Component {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
-      if (this.state.panel) {
+      if (panel && panel !== 4) {
         this.setState({
           panel: 0,
         });
@@ -102,7 +102,7 @@ class indexOrderComponent extends Component {
       { order, options, user } = this.props;
     let showpanel = this.showPanel(panel);
 
-    //console.log("[DEBUG] List of orders", ORDERS_LIST);
+    //console.log("[DEBUG] orders", order);
 
     return (
       <div className="row">

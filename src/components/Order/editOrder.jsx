@@ -371,6 +371,7 @@ class EditOrderComponent extends Component {
     this.props.handleChangePanel(null, 0);
   };
   handleChangeInput = (key, value) => {
+    console.log("[DEBUG] Handle change", key, value);
     this.setState({
       [key]: value,
     });

@@ -15,8 +15,11 @@ export default function LabOrderComponent({
   const changeInput = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
+    let val = value;
 
-    if (_handleChange) _handleChange(name, parseInt(value));
+    if (name === "lab_id") val = parseInt(value);
+
+    if (_handleChange) _handleChange(name, val);
   };
 
   useEffect(() => {

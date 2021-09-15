@@ -244,10 +244,9 @@ class IndexExamComponent extends Component {
                                 checked={
                                   examSelected === exam.id ? true : false
                                 }
-                                onChange={(e) => {
-                                  console.log("[DEBUG] exam change", exam);
-                                  this.handleChangeCheckbox(e, exam);
-                                }}
+                                onChange={(e) =>
+                                  this.handleChangeCheckbox(e, exam)
+                                }
                                 disabled={exam.estado || exam.orders.length}
                               />
                               <label
@@ -500,7 +499,7 @@ class IndexExamComponent extends Component {
     if (!examSelected) {
       window.Swal.fire({
         title: "Verificacion",
-        text: "Debe de selecionar al menos un contacto para eliminar",
+        text: "Debe de selecionar al menos un examen para eliminar",
         icon: "warning",
       });
       return false;

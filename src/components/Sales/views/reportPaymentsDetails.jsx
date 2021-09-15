@@ -37,6 +37,8 @@ export default class ReportPaymentsDetails extends Component {
     const { data } = this.props;
     const { payments, meta, page, load } = this.state;
 
+    //console.log("[DEBUG] Payments", payments);
+
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
@@ -52,7 +54,7 @@ export default class ReportPaymentsDetails extends Component {
               <tr>
                 <th>Metodo</th>
                 <th>Cliente</th>
-                <th>Nota</th>
+                <th>Pedido</th>
                 <th>Total</th>
               </tr>
             </thead>
@@ -90,7 +92,7 @@ export default class ReportPaymentsDetails extends Component {
                           alt={"Cobrado por: " + pay.created_user}
                           title={"Cobrado por: " + pay.created_user}
                         >
-                          {pay.sale.id}
+                          {pay.sale && pay.sale.pedido ? pay.sale.pedido : "--"}
                         </span>
                       </td>
                       <td className="text-right">$ {pay.total.toFixed(2)}</td>

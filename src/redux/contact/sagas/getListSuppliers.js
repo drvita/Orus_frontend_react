@@ -6,7 +6,7 @@ export default function* handleGetListSuppliers({ payload = 0 }) {
   try {
     const options = {
         type: 1,
-        business: payload,
+        business: payload !== null ? payload : "",
         orderby: "name",
         order: "asc",
       },

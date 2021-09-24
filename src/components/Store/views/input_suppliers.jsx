@@ -20,7 +20,7 @@ function InputSuppliersComponent(props) {
   };
 
   useEffect(() => {
-    _getSuppliers();
+    _getSuppliers(null);
     //eslint-disable-next-line
   }, []);
 

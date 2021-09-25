@@ -6,6 +6,7 @@ import UserName from "./views/userNameInput";
 import UserEmail from "./views/userEmailInput";
 //Actions
 import { userActions } from "../../redux/user/index";
+import { configActions } from "../../redux/config";
 import helper from "./helpers";
 
 class UserAddComponent extends Component {
@@ -24,6 +25,7 @@ class UserAddComponent extends Component {
       updated_at: "",
       created_at: "",
       session: {},
+      branch_id: 12,
       load: false,
     };
   }
@@ -39,10 +41,12 @@ class UserAddComponent extends Component {
         updated_at: user.updated_at,
         created_at: user.created_at,
         session: user.session,
+        branch_id: user.branch.id,
         validUserName: true,
         validUserEmail: true,
       });
     }
+    this.getBranchs();
   }
 
   render() {
@@ -57,11 +61,13 @@ class UserAddComponent extends Component {
         updated_at,
         created_at,
         session,
+        branch_id,
         validUserName,
         validUserEmail,
       } = this.state,
       send =
-        !load && validUserName && name.length && validUserEmail ? false : true;
+        !load && validUserName && name.length && validUserEmail ? false : true,
+      { branchs } = this.props;
 
     return (
       <div className="row">
@@ -175,12 +181,36 @@ class UserAddComponent extends Component {
                         <select
                           className="custom-select"
                           name="rol"
-                          defaultValue={rol}
+                          value={rol}
                           onChange={({ target }) => this.catchInputs(target)}
                         >
                           <option value="0">Administrador</option>
                           <option value="1">Ventas</option>
                           <option value="2">Optometrista</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <small>
+                        <label>Sucursal</label>
+                      </small>
+                      <div className="input-group mb-3">
+                        <div className="input-group-prepend">
+                          <span className="input-group-text bg-blue">
+                            <i className="fas fa-store"></i>
+                          </span>
+                        </div>
+                        <select
+                          className="custom-select text-uppercase"
+                          name="branch_id"
+                          value={branch_id}
+                          onChange={({ target }) => this.catchInputs(target)}
+                        >
+                          {branchs.map((branch) => (
+                            <option value={branch.id} key={branch.id}>
+                              {branch.values.name}
+                            </option>
+                          ))}
                         </select>
                       </div>
                     </div>
@@ -289,6 +319,15 @@ class UserAddComponent extends Component {
     );
   }
 
+  getBranchs = () => {
+    const { _getBranchs } = this.props;
+
+    _getBranchs({
+      page: 1,
+      name: "branches",
+      itemsPage: 10,
+    });
+  };
   handleCloseSession = (id) => {
     const { _clearToken } = this.props;
 
@@ -334,6 +373,7 @@ class UserAddComponent extends Component {
         rol,
         password,
         email,
+        branch_id,
         validUserName,
         validUserEmail,
       } = this.state,
@@ -343,6 +383,7 @@ class UserAddComponent extends Component {
       username,
       rol,
       email,
+      branch_id,
     };
     if (password.length > 8) data.password = password;
 
@@ -370,17 +411,19 @@ class UserAddComponent extends Component {
   };
 }
 
-const mapStateToProps = ({ users }) => {
+const mapStateToProps = ({ users, config }) => {
     return {
       loading: users.loading,
       user: users.user,
       options: users.options,
+      branchs: config.list,
     };
   },
   mapActionsToProps = {
     _setUser: userActions.setUser,
     _saveUser: userActions.saveUser,
     _clearToken: userActions.clearTokenUser,
+    _getBranchs: configActions.getListConfig,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(UserAddComponent);

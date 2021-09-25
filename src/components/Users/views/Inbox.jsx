@@ -75,10 +75,10 @@ function InboxComponent(props) {
         <thead>
           <tr>
             <th></th>
-            <th>Nombre corto</th>
             <th>Nombre</th>
             <th>Email/Usuario</th>
             <th>Rol</th>
+            <th>Sucursal</th>
             {options.orderby === "created_at" ? (
               <th>Creado</th>
             ) : (
@@ -108,11 +108,6 @@ function InboxComponent(props) {
                         className="sr-only"
                       ></label>
                     </td>
-                    <td className="icheck-primary">
-                      <div className="badge badge-dark text-uppercase">
-                        {user.username}
-                      </div>
-                    </td>
                     <td className="mailbox-name text-capitalize text-truncate">
                       <a
                         href="·link"
@@ -127,6 +122,11 @@ function InboxComponent(props) {
                     </td>
                     <td className="mailbox-name text-dark text-bold text-truncate">
                       <span>{helper.getNameRol(user.rol)}</span>
+                    </td>
+                    <td className="text-truncate">
+                      <span className="text-capitalize">
+                        {user.branch.values.name}
+                      </span>
                     </td>
                     {options.orderby === "created_at" ? (
                       <td className="mailbox-date text-muted text-truncate">

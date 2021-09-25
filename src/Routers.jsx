@@ -10,7 +10,7 @@ import Store from "./components/Store/index";
 import Contacts from "./components/Contacts/index";
 //import ContactsAdd from "./components/Contacts/add";
 //import AddByContact from "./components/Contacts/addByContact";
-import Tools from "./components/Layouts/tools";
+import Tools from "./components/Tools/tools";
 import Exam from "./components/Exam/index";
 //import ExamAdd from "./components/Exam/add";
 import Order from "./components/Order/index";

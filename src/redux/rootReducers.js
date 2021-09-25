@@ -8,6 +8,7 @@ import storeReducer from "./store/";
 import contactReducer from "./contact/";
 import examReducer from "./exam/";
 import saleReducer from "./sales/";
+import configReducer from "./config/";
 
 const rootReducers = combineReducers({
   users: users_state,
@@ -18,6 +19,7 @@ const rootReducers = combineReducers({
   contact: contactReducer,
   exam: examReducer,
   sales: saleReducer,
+  config: configReducer,
 });
 
 export default rootReducers;

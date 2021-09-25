@@ -9,6 +9,7 @@ const LS = localStorage.getItem("OrusSystem"),
     rol: ROL = null,
     email: EMAIL = null,
     token: TOKEN = null,
+    branch: BRANCH = null,
   } = JSON.parse(LS ? LS : "{}"),
   DEFAULT_STATE = {
     dataLoggin: {
@@ -19,6 +20,7 @@ const LS = localStorage.getItem("OrusSystem"),
       rol: ROL,
       email: EMAIL,
       token: TOKEN,
+      branch: BRANCH,
     },
     options: {
       page: 1,
@@ -111,18 +113,16 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       ls.rol = data.rol;
       ls.email = data.email;
       ls.token = token;
+      ls.branch = {
+        id: data.branch.id,
+        ...data.branch.values,
+      };
       localStorage.setItem("OrusSystem", JSON.stringify(ls));
-      console.log("[Orus System] Acceso a sistema exitoso");
+      console.log("[Orus System] Acceso a sistema exitoso", ls.username);
       return {
         ...state,
         dataLoggin: {
-          isLogged: true,
-          idUser: data.id,
-          username: data.username,
-          name: data.name,
-          rol: data.rol,
-          email: data.email,
-          token: token,
+          ...ls,
         },
         loading: false,
       };
@@ -140,6 +140,7 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       delete ls.rol;
       delete ls.token;
       delete ls.username;
+      delete ls.branch;
 
       localStorage.setItem("OrusSystem", JSON.stringify(ls));
       console.log("[Orus System] Cierre de sistema exitoso");

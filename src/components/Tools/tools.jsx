@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import Category from "./tools_category";
+import Category from "./views/tools_category";
+import BranchsList from "./views/Branchs";
 //import { Link } from 'react-router-dom';
 
 export default class StoreAdd extends Component {
@@ -161,6 +162,8 @@ export default class StoreAdd extends Component {
               </button>
             </div>
           </div>
+
+          <BranchsList />
         </div>
       </div>
     );

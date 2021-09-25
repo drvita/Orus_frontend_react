@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Pagination from "./pagination";
+import Pagination from "../../../layouts/pagination";
 
 export default class ToolsCategory extends Component {
   constructor(props) {
@@ -401,7 +401,8 @@ export default class ToolsCategory extends Component {
     //Variables en localStorage
     let { host, token, load } = this.state,
       url = "http://" + host + "/api/categories",
-      categoryid = "&categoryid=raiz",
+      //categoryid = "&categoryid=raiz",
+      itemsPage = "&itemsPage=5",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
 
     //Mandamos señal de carga si no lo he hecho
@@ -412,7 +413,7 @@ export default class ToolsCategory extends Component {
     }
 
     console.log("Descargando lista de categorias");
-    fetch(url + page, {
+    fetch(url + page + itemsPage, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -449,6 +450,7 @@ export default class ToolsCategory extends Component {
         );
       });
     //Category_select
+    /*
     fetch(url + page + categoryid, {
       method: "GET",
       headers: {
@@ -478,6 +480,7 @@ export default class ToolsCategory extends Component {
           "error"
         );
       });
+    */
   };
   handleClickAdd = () => {
     this.setState({

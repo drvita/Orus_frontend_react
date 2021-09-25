@@ -23,13 +23,10 @@ class BreadcrumbComponent extends Component {
   }
 
   render() {
-    const {
-        title: TITLE,
-        host: HOST,
-        company: INC,
-        name: USER_NAME,
-      } = this.props,
+    const { title: TITLE, host: HOST, currentUser } = this.props,
+      { name: USER_NAME, branch = {} } = currentUser,
       { date } = this.state;
+
     return (
       <div className="content-header">
         <div className="container-fluid">
@@ -53,7 +50,8 @@ class BreadcrumbComponent extends Component {
                 alt="Almacenando en"
                 title="Almacenando en"
               >
-                <i className="mr-1 fas fa-server text-success"></i> {INC}
+                <i className="mr-1 fas fa-server text-success"></i>
+                {branch.name}
               </small>
               <small
                 className="p-2 mt-1 ml-2 badge badge-secondary text-capitalize"
@@ -79,7 +77,7 @@ const mapStateToProps = ({ default: system, users }) => {
   return {
     company: system.company,
     host: system.host,
-    name: users.dataLoggin.username,
+    currentUser: users.dataLoggin,
   };
 };
 export default connect(mapStateToProps)(BreadcrumbComponent);

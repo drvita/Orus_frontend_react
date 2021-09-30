@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 import { configActions } from "../../redux/config";
+import { userActions } from "../../redux/user";
+
 import Modal from "../../layouts/modal";
 
 class BreadcrumbComponent extends Component {
@@ -11,16 +13,27 @@ class BreadcrumbComponent extends Component {
       date: moment().format("LLLL"),
       showChangeBranchs: false,
       currentBranch: null,
+      idUser: null,
+      selectBranch: null,
     };
     this.timerNotify = null;
   }
   componentDidMount() {
+    const { currentUser } = this.props,
+      { branch: currentBranch = {}, idUser } = currentUser;
+
     this.timerNotify = setInterval(() => {
       console.log("[Orus System] Actualizando hora de sistema");
       this.setState({
         date: moment().format("LLLL"),
       });
     }, 60000);
+
+    this.setState({
+      date: moment().format("LLLL"),
+      idUser,
+      currentBranch,
+    });
     this.getBranchs();
   }
   componentWillUnmount() {
@@ -125,7 +138,7 @@ class BreadcrumbComponent extends Component {
     _getListExams(options);
   };
   getHtmlBody = (branchs, currentBranch) => {
-    const { currentBranch: branchState } = this.state;
+    const { selectBranch: branchState } = this.state;
 
     return (
       <div className="form-group">
@@ -157,13 +170,35 @@ class BreadcrumbComponent extends Component {
     const { value } = branch.target;
 
     this.setState({
-      currentBranch: value,
+      selectBranch: parseInt(value),
     });
-
-    console.log("[DEBUG] Cambio de branch", value);
   };
   handleClickChangeBranch = () => {
-    console.log("[DEBUG] Guardar");
+    const { _saveUser } = this.props,
+      { selectBranch: branch_id, idUser } = this.state;
+
+    this.handleCancelModal();
+
+    window.Swal.fire({
+      text: "El cambio de sucursal, necesita volver a cargar la pagina",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Confirmar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        _saveUser({
+          data: {
+            branch_id,
+          },
+          id: idUser,
+        });
+        setTimeout(() => document.location.reload(), 1500);
+        return true;
+      }
+    });
   };
 }
 
@@ -177,5 +212,6 @@ const mapStateToProps = ({ default: system, users, config }) => {
   },
   mapActionsToProps = {
     _getListExams: configActions.getListConfig,
+    _saveUser: userActions.saveUser,
   };
 export default connect(mapStateToProps, mapActionsToProps)(BreadcrumbComponent);

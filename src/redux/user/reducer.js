@@ -112,13 +112,14 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       ls.name = data.name;
       ls.rol = data.rol;
       ls.email = data.email;
-      ls.token = token;
+      ls.token = token ? token : ls.token;
       ls.branch = {
         id: data.branch.id,
         ...data.branch.values,
       };
       localStorage.setItem("OrusSystem", JSON.stringify(ls));
-      console.log("[Orus System] Acceso a sistema exitoso", ls.username);
+      if (!state.dataLoggin.isLogged)
+        console.log("[Orus System] Acceso a sistema exitoso", ls.username);
       return {
         ...state,
         dataLoggin: {

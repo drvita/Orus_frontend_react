@@ -24,8 +24,13 @@ export default function* handleSaveUser({ payload }) {
         },
       ])
     );
-    yield put(userActions.setUser());
-    yield put(userActions.getListUsers(OPT));
+    yield put(userActions.setUser(result.data));
+    yield put(
+      userActions.setLoggin({
+        data: result.data,
+      })
+    );
+    if (OPT) yield put(userActions.getListUsers(OPT));
   } catch (e) {
     console.error("[Orus System] Error en saga/users handleSaveUser", e);
     yield put(

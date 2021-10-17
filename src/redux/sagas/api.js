@@ -6,6 +6,8 @@ export function api(url, method = "GET", body) {
       token: TOKEN = "",
     } = JSON.parse(LS ? LS : "{}");
 
+  console.log("[Orus System] Consultando API:", url);
+
   return fetch(`${PORT}://${HOST}/api/${url}`, {
     method,
     body: JSON.stringify(body),

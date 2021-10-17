@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import InventoryTableView from "./views/Inventory_table";
 
 export default class Inventory extends Component {
   constructor(props) {
@@ -28,20 +28,20 @@ export default class Inventory extends Component {
 
   render() {
     const {
-      catid_1,
-      catData_1,
-      catid_2,
-      catData_2,
-      catid_3,
-      catData_3,
-      load,
-      items,
-      meta,
-      price,
-    } = this.state;
-    let header = [],
-      body = [],
-      i = 0;
+        catid_1,
+        catData_1,
+        catid_2,
+        catData_2,
+        catid_3,
+        catData_3,
+        load,
+        items,
+        meta,
+        price,
+      } = this.state,
+      header = [],
+      body = [];
+    let i = 0;
 
     do {
       header.push(<th key={i}>{i.toFixed(2)}</th>);
@@ -66,6 +66,9 @@ export default class Inventory extends Component {
           <div className="card">
             <div className="card-header">
               <div className="row">
+                {/* <div className="col">
+                  <label>Seleccione la sucursal</label>
+                </div> */}
                 <div className="col">
                   <select
                     className="custom-select"
@@ -179,89 +182,11 @@ export default class Inventory extends Component {
                         </div>
                       </div>
 
-                      <div className="table-responsive">
-                        <table className="table table-sm table-bordered table-hover">
-                          <thead>
-                            <tr>
-                              <th>/</th>
-                              {header}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {body.map((row, i) => {
-                              const zero =
-                                row.props.children.type === "label"
-                                  ? true
-                                  : false;
-                              return (
-                                <tr
-                                  className={zero ? "table-secondary" : ""}
-                                  key={i}
-                                >
-                                  {row}
-                                  {header.map((h, i) => {
-                                    let grad = zero
-                                      ? parseFloat(
-                                          row.props.children.props.children
-                                        )
-                                          .toFixed(2)
-                                          .replace(".", "")
-                                      : parseFloat(row.props.children)
-                                          .toFixed(2)
-                                          .replace(".", "");
-                                    if (parseInt(grad) >= 0) grad = "+" + grad;
-                                    grad += parseFloat(h.props.children)
-                                      .toFixed(2)
-                                      .replace(/[-.]/g, "");
-
-                                    //console.log("G", grad);
-                                    return (
-                                      <td
-                                        key={grad + i}
-                                        className="text-center"
-                                      >
-                                        {items.length ? (
-                                          items.map((item, index) => {
-                                            //console.log("comp: ");
-                                            return grad === item.graduacion ? (
-                                              <React.Fragment>
-                                                {item.cantidades ? (
-                                                  <span
-                                                    key={item.id + index}
-                                                    className={
-                                                      item.cantidades > 0
-                                                        ? "badge badge-success"
-                                                        : "badge badge-danger"
-                                                    }
-                                                  >
-                                                    <Link
-                                                      to={
-                                                        "/almacen/registro/" +
-                                                        item.id
-                                                      }
-                                                      className="text-light"
-                                                    >
-                                                      {item.cantidades}
-                                                    </Link>
-                                                  </span>
-                                                ) : null}
-                                              </React.Fragment>
-                                            ) : null;
-                                          })
-                                        ) : (
-                                          <Link to="/almacen/registro">
-                                            <i className="fas fa-plus text-secondary"></i>
-                                          </Link>
-                                        )}
-                                      </td>
-                                    );
-                                  })}
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
+                      <InventoryTableView
+                        header={header}
+                        body={body}
+                        items={items}
+                      />
                     </React.Fragment>
                   )}
                 </React.Fragment>

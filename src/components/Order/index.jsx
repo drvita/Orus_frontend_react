@@ -13,6 +13,7 @@ import { orderActions } from "../../redux/order/";
 import { saleActions } from "../../redux/sales";
 import { contactActions } from "../../redux/contact";
 import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
+import { defaultActions } from "../../redux/default/";
 
 class indexOrderComponent extends Component {
   constructor(props) {
@@ -30,7 +31,7 @@ class indexOrderComponent extends Component {
     };
   }
   componentDidMount() {
-    const { match, _getOrder } = this.props,
+    const { match, _getOrder, _setPageName } = this.props,
       { id } = match.params;
 
     if (id && !isNaN(id)) {
@@ -44,6 +45,7 @@ class indexOrderComponent extends Component {
         panel: 4,
       });
     }
+    _setPageName("pedidos");
   }
   componentDidUpdate(props, state) {
     const { order, history, messages: MSGS, _setContact } = this.props,
@@ -304,6 +306,7 @@ const mapStateToProps = ({ order, users }) => {
     _setList: orderActions.setListOrder,
     _setContact: contactActions.setContact,
     _setSales: saleActions.setListSales,
+    _setPageName: defaultActions.changeNamePage,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(indexOrderComponent);

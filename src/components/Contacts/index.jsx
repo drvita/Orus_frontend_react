@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+
 import moment from "moment";
 import Inbox from "../../layouts/list_inbox";
 import AddContact from "./add";
 import CardMenu from "../../layouts/card_menu";
-import { contactActions } from "../../redux/contact/.";
+//Actions
+import { contactActions } from "../../redux/contact/";
+import { defaultActions } from "../../redux/default/";
 
 class IndexContactComponent extends Component {
   constructor(props) {
@@ -28,7 +31,7 @@ class IndexContactComponent extends Component {
     this.timeInterval = 0;
   }
   componentDidMount() {
-    const { match, _getContact } = this.props,
+    const { match, _getContact, _setPageName } = this.props,
       { id } = match.params;
 
     if (id) {
@@ -43,6 +46,7 @@ class IndexContactComponent extends Component {
         load: true,
       });
     }
+    _setPageName("Contactos");
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
@@ -463,6 +467,7 @@ const mapStateToProps = ({ contact }) => {
     _getContact: contactActions.getContact,
     _setMessage: contactActions.setMessageContact,
     _setContact: contactActions.setContact,
+    _setPageName: defaultActions.changeNamePage,
     //_setList: contactActions.setListContact,
   };
 

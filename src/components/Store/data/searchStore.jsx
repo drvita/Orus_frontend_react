@@ -59,6 +59,14 @@ function SearchItemsComponent(props) {
       });
       setLoad(false);
     }
+    return () => {
+      _setList({
+        result: {
+          list: [],
+          metaList: {},
+        },
+      });
+    };
     // eslint-disable-next-line
   }, [search]);
 
@@ -83,14 +91,14 @@ function SearchItemsComponent(props) {
         value={search}
         onChange={handleChangeSearch}
       />
-      {items.length ? (
+      {items.length && search.length > 2 ? (
         <div
           className="position-absolute shadow p-0 pt-2 pl-1 bg-white rounded w-100 mh-50 overflow-auto"
           style={{ maxHeight: "18rem", zIndex: "100" }}
         >
           <div className="list-group m-0 list-group-flush">
             {items.map((i) => {
-              const total = i.cantidades > 0 ? i.cantidades : 0;
+              const total = i.cant_total > 0 ? i.cant_total : 0;
 
               return (
                 <a

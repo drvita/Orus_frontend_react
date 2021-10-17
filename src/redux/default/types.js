@@ -1,3 +1,4 @@
 export const TYPE = {
-    CHANGE_HOST: "CHANGE_HOST",
+  CHANGE_HOST: "CHANGE_HOST",
+  CHANGE_PAGE: "CHANGE_PAGE",
 };

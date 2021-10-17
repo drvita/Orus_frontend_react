@@ -6,6 +6,7 @@ import CardMenu from "../../layouts/card_menu";
 import { examActions } from "../../redux/exam/";
 import { contactActions } from "../../redux/contact";
 import AddOrNew from "./add";
+import { defaultActions } from "../../redux/default/";
 
 class IndexExamComponent extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class IndexExamComponent extends Component {
     };
   }
   componentDidMount() {
-    const { match, _getExam } = this.props,
+    const { match, _getExam, _setPageName } = this.props,
       { id } = match.params;
 
     if (id) {
@@ -37,6 +38,7 @@ class IndexExamComponent extends Component {
         load: true,
       });
     }
+    _setPageName("consultorio");
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
@@ -554,6 +556,7 @@ const mapStateToProps = ({ exam }) => {
     _getExam: examActions.getExam,
     _setContact: contactActions.setContact,
     _setMessages: examActions.setMessagesExam,
+    _setPageName: defaultActions.changeNamePage,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexExamComponent);

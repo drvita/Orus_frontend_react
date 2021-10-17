@@ -4,7 +4,12 @@ import { userActions } from "../index";
 
 export default function* handleSaveUser({ payload }) {
   try {
-    const { data: DATA = {}, id: ID = null, options: OPT = {} } = payload,
+    const {
+        data: DATA = {},
+        id: ID = null,
+        options: OPT = {},
+        currentUser = 0,
+      } = payload,
       url = getUrl("users", ID),
       method = ID ? "PUT" : "POST",
       result = yield call(api, url, method, DATA);
@@ -25,11 +30,14 @@ export default function* handleSaveUser({ payload }) {
       ])
     );
     yield put(userActions.setUser(result.data));
-    yield put(
-      userActions.setLoggin({
-        data: result.data,
-      })
-    );
+    if (ID === currentUser) {
+      yield put(
+        userActions.setLoggin({
+          data: result.data,
+        })
+      );
+    }
+
     if (OPT) yield put(userActions.getListUsers(OPT));
   } catch (e) {
     console.error("[Orus System] Error en saga/users handleSaveUser", e);

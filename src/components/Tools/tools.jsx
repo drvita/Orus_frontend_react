@@ -1,9 +1,12 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+
 import Category from "./views/tools_category";
 import BranchsList from "./views/Branchs";
-//import { Link } from 'react-router-dom';
+// Actions
+import { defaultActions } from "../../redux/default/";
 
-export default class StoreAdd extends Component {
+class ToolsComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -20,7 +23,9 @@ export default class StoreAdd extends Component {
 
   componentDidMount() {
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+    const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
+      { _setPageName } = this.props;
+
     this.setState({
       server: varLocalStorage.host
         ? varLocalStorage.host
@@ -30,6 +35,8 @@ export default class StoreAdd extends Component {
       name: varLocalStorage.name ? varLocalStorage.name : "",
       username: varLocalStorage.username ? varLocalStorage.username : "",
     });
+
+    _setPageName("configuraciones");
   }
 
   render() {
@@ -191,3 +198,12 @@ export default class StoreAdd extends Component {
     });
   };
 }
+
+const mapStateToProps = ({ default: system }) => {
+    return {};
+  },
+  mapActionsToProps = {
+    _setPageName: defaultActions.changeNamePage,
+  };
+
+export default connect(mapStateToProps, mapActionsToProps)(ToolsComponent);

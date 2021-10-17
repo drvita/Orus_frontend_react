@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 //Reducers
-import default_state from "./default/reducer";
+import default_state from "./default/";
 import users_state from "./user/";
 import order_state from "./order/";
 import category_state from "./category/";

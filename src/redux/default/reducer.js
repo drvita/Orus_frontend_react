@@ -10,17 +10,20 @@ const LS = localStorage.getItem("OrusSystem"),
     port: PORT,
     host: HOST,
     company: COMPANY,
+    namePage: "dashboard",
     success: undefined,
   };
 
 const default_reducer = (state = DEFAULT_STATE, action) => {
+  const { payload } = action;
+
   switch (action.type) {
     case TYPE.CHANGE_HOST: {
       const LS = localStorage.getItem("OrusSystem"),
         {
           host: HOST = window.location.hostname,
           port: PORT = window.location.protocol.toString().replace(":", ""),
-        } = action.payload,
+        } = payload,
         { ls = {} } = {
           ls: JSON.parse(LS ? LS : "{}"),
         };
@@ -33,6 +36,12 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         port: PORT,
         host: HOST,
         success: true,
+      };
+    }
+    case TYPE.CHANGE_PAGE: {
+      return {
+        ...state,
+        namePage: payload,
       };
     }
     default:

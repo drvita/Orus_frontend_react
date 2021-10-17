@@ -44,7 +44,7 @@ export default class Routers extends Component {
             active={page}
           />
           <div className="content-wrapper">
-            <Breadcrumb title={page} />
+            <Breadcrumb />
             <div className="content">
               <div className="container-fluid">
                 <div className="row">
@@ -167,7 +167,7 @@ export default class Routers extends Component {
   }
 
   handlePage = (title) => {
-    let page = this.handleTitleSection(title);
+    const page = this.handleTitleSection(title);
     this.setState({
       page,
     });
@@ -178,7 +178,7 @@ export default class Routers extends Component {
     //Maneja el renderiazado del componentes cuando se cambíe el componentes
     if (page === "" || typeof page === "undefined" || typeof page === "object")
       page = "/";
-    let locations = page.split("/");
+    const locations = page.split("/");
     if (locations[1] === "") {
       return "dashboard";
     } else {

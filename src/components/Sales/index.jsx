@@ -14,6 +14,7 @@ import SalesDetailsTableComponent from "./views/SalesDetailsTable";
 import { saleActions } from "../../redux/sales";
 import helpers from "./helpers";
 import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
+import { defaultActions } from "../../redux/default/";
 
 export default function IndexSalesComponent() {
   //Store Redux
@@ -88,6 +89,8 @@ export default function IndexSalesComponent() {
     //eslint-disable-next-line
   }, [sale]);
   useEffect(() => {
+    dispatch(defaultActions.changeNamePage("punto de venta"));
+
     return () => {
       console.log("[Orus Systme] Cerrando venta");
       window.removeEventListener("afterprint", handlePrint);

@@ -2,10 +2,11 @@ import React, { Component, Fragment, createRef } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 //Components
-import StoreLote from "./views/add_lote";
 import InputCategory from "./views/input_category";
 import Suppliers from "./views/input_suppliers";
 import Brands from "./views/input_brand";
+import BranchesSelect from "./views/BranchesSelect";
+import BranchesForm from "./views/BranchesForm";
 //Actions
 import { storeActions } from "../../redux/store/index";
 import { categoryActions } from "../../redux/category/index";
@@ -40,6 +41,8 @@ class StoreAddComponent extends Component {
       category_list2: [],
       category_list3: [],
       category_list4: [],
+      branch_default: 0,
+      inBranches: [],
     };
     this.category1 = createRef(); //Primera categoria
     this.category2 = createRef(); //Segunda categoria
@@ -133,8 +136,8 @@ class StoreAddComponent extends Component {
         name,
         grad,
         unit,
-        cant,
-        price,
+        branch_default,
+        inBranches,
       } = this.state,
       { list, loadStore, loadCategory, loadContact } = this.props,
       LOADING = loadStore || loadCategory || loadContact;
@@ -451,60 +454,6 @@ class StoreAddComponent extends Component {
                             />
                           </div>
                         </div>
-                        <div className="col">
-                          <small>
-                            <label>Cantidad en existencia</label>
-                          </small>
-                          <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                              <span
-                                className={
-                                  cant > 0
-                                    ? "input-group-text bg-primary"
-                                    : cant < 0
-                                    ? "input-group-text bg-warning"
-                                    : "input-group-text"
-                                }
-                              >
-                                <i className="fas fa-database"></i>
-                              </span>
-                            </div>
-                            <input
-                              type="number"
-                              className="form-control text-right"
-                              placeholder="Cantidades en existencia"
-                              name="cant"
-                              value={cant}
-                              onChange={this.catchInputs}
-                            />
-                          </div>
-                        </div>
-                        <div className="col">
-                          <small>
-                            <label>Precio</label>
-                          </small>
-                          <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                              <span
-                                className={
-                                  price > 0
-                                    ? "input-group-text bg-primary"
-                                    : "input-group-text bg-warning"
-                                }
-                              >
-                                <i className="fas fa-money-bill"></i>
-                              </span>
-                            </div>
-                            <input
-                              type="number"
-                              className="form-control text-right"
-                              placeholder="Precio"
-                              name="price"
-                              value={price}
-                              onChange={this.catchInputs}
-                            />
-                          </div>
-                        </div>
                       </div>
                     </Fragment>
                   ) : (
@@ -559,11 +508,35 @@ class StoreAddComponent extends Component {
         </div>
         {id ? (
           <div className="col">
-            <StoreLote
-              id={id}
-              price={this.state.price}
-              refresh={this.getItem}
-            />
+            <div className="row">
+              <div className="col">
+                <div className="card card-primary card-outline">
+                  <div className="card-header">
+                    <h5 className="card-title text-primary">
+                      Sucursal por defecto
+                    </h5>
+                  </div>
+                  <div className="card-body">
+                    <BranchesSelect
+                      branch_default={branch_default}
+                      showIcon={false}
+                      setBranchId={(id) =>
+                        this.setState({ branch_default: id })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col">
+                <BranchesForm
+                  inBranches={inBranches}
+                  store_item_id={id}
+                  branch_default={branch_default}
+                />
+              </div>
+            </div>
           </div>
         ) : null}
       </div>
@@ -606,6 +579,7 @@ class StoreAddComponent extends Component {
         cant,
         price,
         grad,
+        branch_default,
       } = this.state,
       { list, options, _saveItem } = this.props;
     //Verificamos campos validos
@@ -629,6 +603,7 @@ class StoreAddComponent extends Component {
       grad: grad ? grad : "+000000",
       brand_id: brand_id ? brand_id : "",
       contact_id: supplier ? supplier : "",
+      branch_default: branch_default ? branch_default : null,
     };
     //Save
     helper.handleSaveItem(id, body, options, _saveItem, this.handleClose);
@@ -641,7 +616,7 @@ class StoreAddComponent extends Component {
       category_id2 = 0,
       category_id3 = 0,
       category_id4 = 0;
-    const { item: data } = this.props; //listCategories.filter((cat) => cat.name === "lentes")[0];
+    const { item: data } = this.props;
 
     if (data.categoria && data.categoria.depende_de) {
       if (data.categoria.depende_de && data.categoria.depende_de.depende_de) {
@@ -690,9 +665,11 @@ class StoreAddComponent extends Component {
       price: data.precio,
       supplier: data.proveedor ? data.proveedor.id : 0,
       category: data.categoria,
+      branch_default: data.branch_default ?? 0,
       created_at: data.created_at,
       created: data.created,
       updated_at: data.updated_at,
+      inBranches: data.inBranches,
       //Data need
       category_id: data.categoria.id,
       category_id1,

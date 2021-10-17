@@ -11,7 +11,7 @@ export default function* handleGetListConfig({ payload: options }) {
       yield put(configActions.setListConfig(result));
     } else if (result.message) {
       console.error(
-        "[Orus system] Error en la cosnulta de configuraciones",
+        "[Orus system] Error en la consulta de configuraciones",
         result.message
       );
     }

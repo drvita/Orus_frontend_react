@@ -74,6 +74,12 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         loading: true,
       };
     }
+    case TYPE.SAGA_SAVE_INBRANCH: {
+      return {
+        ...state,
+        loading: true,
+      };
+    }
 
     case TYPE.SET_LIST_STORE: {
       const { result } = payload;

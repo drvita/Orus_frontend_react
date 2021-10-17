@@ -41,14 +41,14 @@ class BreadcrumbComponent extends Component {
   }
 
   render() {
-    const { title: TITLE, host: HOST, currentUser, config } = this.props,
+    const { namePage, host: HOST, currentUser, config } = this.props,
       { name: USER_NAME, branch = {}, rol } = currentUser,
       { date, showChangeBranchs } = this.state,
-      branchs = [];
+      branches = [];
 
     if (config && config.length) {
       config.forEach((co) => {
-        branchs.push({
+        branches.push({
           id: co.id,
           ...co.values,
         });
@@ -63,7 +63,7 @@ class BreadcrumbComponent extends Component {
           <div className="row">
             <div className="col">
               <h1 className="m-0 text-dark text-capitalize">
-                <i className="mr-1 fas fa-file"></i> {TITLE}
+                <i className="mr-1 fas fa-file"></i> {namePage}
               </h1>
             </div>
             <div className="text-center col">
@@ -103,7 +103,7 @@ class BreadcrumbComponent extends Component {
               {showChangeBranchs ? (
                 <Modal
                   title="Cambiar de sucursal"
-                  body={this.getHtmlBody(branchs, branch.id)}
+                  body={this.getHtmlBody(branches, branch.id)}
                   handleCancel={this.handleCancelModal}
                 />
               ) : null}
@@ -134,10 +134,10 @@ class BreadcrumbComponent extends Component {
         name: "branches",
         itemsPage: 10,
       },
-      { _getListExams } = this.props;
-    _getListExams(options);
+      { _getListBranches } = this.props;
+    _getListBranches(options);
   };
-  getHtmlBody = (branchs, currentBranch) => {
+  getHtmlBody = (branches, currentBranch) => {
     const { selectBranch: branchState } = this.state;
 
     return (
@@ -148,7 +148,7 @@ class BreadcrumbComponent extends Component {
           onChange={this.handleChangeSelectBranchs}
           value={branchState ? branchState : currentBranch}
         >
-          {branchs.map((branch) => (
+          {branches.map((branch) => (
             <option key={branch.id} value={branch.id}>
               {branch.name}
             </option>
@@ -194,6 +194,7 @@ class BreadcrumbComponent extends Component {
             branch_id,
           },
           id: idUser,
+          currentUser: idUser,
         });
         setTimeout(() => document.location.reload(), 1500);
         return true;
@@ -208,10 +209,11 @@ const mapStateToProps = ({ default: system, users, config }) => {
       host: system.host,
       currentUser: users.dataLoggin,
       config: config.list,
+      namePage: system.namePage,
     };
   },
   mapActionsToProps = {
-    _getListExams: configActions.getListConfig,
+    _getListBranches: configActions.getListConfig,
     _saveUser: userActions.saveUser,
   };
 export default connect(mapStateToProps, mapActionsToProps)(BreadcrumbComponent);

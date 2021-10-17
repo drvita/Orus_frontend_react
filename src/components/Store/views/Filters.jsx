@@ -105,7 +105,7 @@ function FiltersComponent(props) {
           Marcas
         </a>
       </li>
-      <li className="nav-item">
+      {/* <li className="nav-item">
         <a
           href="#item"
           className={panel === "inventory" ? "nav-link text-dark" : "nav-link"}
@@ -121,7 +121,7 @@ function FiltersComponent(props) {
           ></i>
           Inventario
         </a>
-      </li>
+      </li> */}
       {panel === "inbox" && (
         <>
           <li className="nav-item p-1">

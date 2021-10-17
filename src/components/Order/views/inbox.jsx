@@ -108,7 +108,7 @@ const InboxOrderComponent = (props) => {
                         type="checkbox"
                         className="form-check-input mt-4"
                         value={pedido.id}
-                        id={"exam_" + pedido.id}
+                        id={"order_" + pedido.id}
                         checked={orderSelected.id === pedido.id ? true : false}
                         disabled={pedido.estado > 2}
                         onChange={({ target }) =>
@@ -116,7 +116,7 @@ const InboxOrderComponent = (props) => {
                         }
                       />
                       <label
-                        htmlFor={"exam_" + pedido.id}
+                        htmlFor={"order_" + pedido.id}
                         className="sr-only"
                       ></label>
                     </div>
@@ -167,8 +167,8 @@ const InboxOrderComponent = (props) => {
                       </small>
                     ) : !pedido.status ? (
                       <small>
-                        {pedido.examen
-                          ? pedido.examen.status === 1
+                        {pedido.exam
+                          ? pedido.exam.status === 1
                             ? "Examen completado"
                             : "Examen no realizado"
                           : "Examen no asignado"}

@@ -10,6 +10,7 @@ import Brands from "./brands";
 
 //Actions
 import { storeActions } from "../../redux/store/index";
+import { defaultActions } from "../../redux/default/";
 
 class IndexStoreComponent extends Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class IndexStoreComponent extends Component {
     };
   }
   componentDidMount() {
-    const { match, history, _getItem, _setItem } = this.props,
+    const { match, history, _getItem, _setItem, _setPageName } = this.props,
       { id } = match.params;
 
     if (parseInt(id)) {
@@ -31,6 +32,8 @@ class IndexStoreComponent extends Component {
       history.push(`/almacen/new`);
       _setItem({});
     }
+
+    _setPageName("almacen");
   }
   componentDidUpdate(props) {
     const { messages: MSGS, item, history, _setMessage } = this.props;
@@ -133,6 +136,7 @@ const mapStateToProps = ({ storeItem }) => {
     _setItem: storeActions.setItem,
     _setMessage: storeActions.setMessagesStore,
     _setList: storeActions.setListStore,
+    _setPageName: defaultActions.changeNamePage,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexStoreComponent);

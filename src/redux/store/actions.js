@@ -50,6 +50,10 @@ const deleteBrand = (payload = {}) => ({
   type: TYPE.SAGA_DELETE_BRAND,
   payload,
 });
+const saveInBranch = (payload = {}) => ({
+  type: TYPE.SAGA_SAVE_INBRANCH,
+  payload,
+});
 
 const toExportActions = {
   getListStore,
@@ -64,6 +68,7 @@ const toExportActions = {
   setListBrand,
   saveBrand,
   deleteBrand,
+  saveInBranch,
 };
 
 export default toExportActions;

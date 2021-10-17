@@ -7,6 +7,10 @@ export default function* handleGetList({ payload: options }) {
     const url = getUrl("store", null, options),
       result = yield call(api, url);
 
+    if (result.message) {
+      throw new Error(result.message);
+    }
+
     yield put(
       storeActions.setListStore({
         result: {
@@ -20,6 +24,13 @@ export default function* handleGetList({ payload: options }) {
       "[Orus System] Error en saga/store handleGetList:",
       e.message
     );
-    yield put(storeActions.setMessagesStore([]));
+    yield put(
+      storeActions.setMessagesStore([
+        {
+          type: "error",
+          text: "En servidor al traer la lista de productos",
+        },
+      ])
+    );
   }
 }

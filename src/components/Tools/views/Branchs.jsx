@@ -21,7 +21,6 @@ export default function BranchsListComponent() {
 
   //Actions
   const handleUpdateConfig = ({ id, values }) => {
-      console.log("[DEBUG] Handle updated", id);
       setData({
         ...data,
         showForm: true,
@@ -54,9 +53,9 @@ export default function BranchsListComponent() {
         helper.saveConfig(data, options, dispatch);
         handleCancelForm();
       }
-    },
-    handleDeleteConf = ({ id, values }) =>
-      helper.deleteConfig(id, options, values.name, dispatch);
+    };
+  // handleDeleteConf = ({ id, values }) =>
+  //   helper.deleteConfig(id, options, values.name, dispatch);
 
   useEffect(() => {
     dispatch(configActions.getListConfig(options));
@@ -140,13 +139,13 @@ export default function BranchsListComponent() {
                       {branch.values.address ?? "--"}
                     </td>
                     <td className="text-right">
-                      <button
+                      {/* <button
                         type="button"
                         className="btn btn-sm btn-warning"
                         onClick={() => handleDeleteConf(branch)}
                       >
                         <i className="fas fa-trash"></i>
-                      </button>
+                      </button> */}
                       <button
                         type="button"
                         className="btn btn-sm btn-primary ml-1"

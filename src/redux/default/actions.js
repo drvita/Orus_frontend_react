@@ -1,6 +1,17 @@
-import {TYPE} from "./types";
+import { TYPE } from "./types";
 
-export const changeHost = (payload) => ({
+const changeHost = (payload) => ({
   type: TYPE.CHANGE_HOST,
   payload,
 });
+const changeNamePage = (payload) => ({
+  type: TYPE.CHANGE_PAGE,
+  payload,
+});
+
+const toExportActions = {
+  changeHost,
+  changeNamePage,
+};
+
+export default toExportActions;

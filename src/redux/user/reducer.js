@@ -106,6 +106,14 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
         { ls = {} } = {
           ls: JSON.parse(LS ? LS : "{}"),
         };
+      let branch;
+      if (data.branch && data.branch.id) {
+        branch = {
+          id: data.branch.id,
+          ...data.branch.values,
+        };
+      }
+
       ls.isLogged = true;
       ls.idUser = data.id;
       ls.username = data.username;
@@ -113,11 +121,9 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       ls.rol = data.rol;
       ls.email = data.email;
       ls.token = token ? token : ls.token;
-      ls.branch = {
-        id: data.branch.id,
-        ...data.branch.values,
-      };
+      ls.branch = branch;
       localStorage.setItem("OrusSystem", JSON.stringify(ls));
+
       if (!state.dataLoggin.isLogged)
         console.log("[Orus System] Acceso a sistema exitoso", ls.username);
       return {

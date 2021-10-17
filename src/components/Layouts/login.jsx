@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 //Actions
-import { changeHost } from "../../redux/default/actions";
+import { defaultActions } from "../../redux/default/";
 import { userActions } from "../../redux/user/";
 import helper from "../Users/helpers";
 
@@ -265,7 +265,7 @@ const mapStateToProps = ({ default: system, users }) => {
   mapDispatchToProps = {
     loggin: userActions.loggin,
     setMessage: userActions.setMessages,
-    changeHost,
+    changeHost: defaultActions.changeHost,
   };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LogginComponent);

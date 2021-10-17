@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+
 import moment from "moment";
 import PaymentsDetails from "../Sales/views/reportPaymentsDetails";
 import ReportPays from "../Sales/views/reportPays";
@@ -6,8 +8,10 @@ import ReportBank from "../Sales/views/reportBank";
 import Caja from "./cash";
 import DateUser from "./dateUser";
 import BoxCut from "./boxCut";
+// Actions
+import { defaultActions } from "../../redux/default/";
 
-export default class Dashboard extends Component {
+class DashboardComponent extends Component {
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
@@ -19,6 +23,11 @@ export default class Dashboard extends Component {
       caja: 0,
       ventas: 0,
     };
+  }
+  componentDidMount() {
+    const { _setPageName } = this.props;
+
+    _setPageName("panel de control");
   }
 
   render() {
@@ -84,3 +93,12 @@ export default class Dashboard extends Component {
     });
   };
 }
+
+const mapStateToProps = ({ default: system }) => {
+    return {};
+  },
+  mapActionsToProps = {
+    _setPageName: defaultActions.changeNamePage,
+  };
+
+export default connect(mapStateToProps, mapActionsToProps)(DashboardComponent);

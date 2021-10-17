@@ -10,13 +10,12 @@ function InboxComponent(props) {
   const {
     loading,
     meta,
-    list,
+    list = [],
     options,
     //Functions
     _getList,
     _setOptions,
     _deleteItem,
-    _setItem,
     _getItem,
   } = props;
   //States
@@ -38,11 +37,11 @@ function InboxComponent(props) {
       if (!checked) item = { id: 0 };
       setItemSelected(item);
     },
-    handleSelectItem = (e, order = { id: 0 }) => {
+    handleSelectItem = (e, item = { id: 0 }) => {
       if (e) e.preventDefault();
 
-      if (order.id) {
-        _setItem(order);
+      if (item.id) {
+        _getItem(item.id);
       } else if (itemSelected.id) {
         _getItem(itemSelected.id);
       }
@@ -125,7 +124,7 @@ function InboxComponent(props) {
                       <span>{item.marca ? item.marca.marca : "--"}</span>
                     </td>
                     <td className="mailbox-date text-muted text-truncate text-right">
-                      <span>{item.cantidades}</span>
+                      <span>{item.cant_total}</span>
                     </td>
                   </tr>
                 );

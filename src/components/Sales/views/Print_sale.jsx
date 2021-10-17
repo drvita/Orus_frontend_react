@@ -1,5 +1,5 @@
 import moment from "moment";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { saleActions } from "../../../redux/sales";
 
 export default function PrintSaleComponent({
@@ -18,6 +18,7 @@ export default function PrintSaleComponent({
       customer: client,
     } = sale,
     saldo = total - abonado,
+    { branch } = useSelector((state) => state.users.dataLoggin),
     dispatch = useDispatch();
   let totalItems = 0;
   //Functions
@@ -85,9 +86,13 @@ export default function PrintSaleComponent({
                   <em>
                     Julio Cesar Cardenas Martinez
                     <br />
-                    Tel: 312 312 5353
+                    <span className="text-capitalize">
+                      sucursal: {branch.name}
+                    </span>
                     <br />
-                    Av. Tecnologico 32-A, Vistahermosa, Colima, Col.
+                    <span>Tel: {branch.telefono}</span>
+                    <br />
+                    <span className="text-capitalize">{branch.domicilio}</span>
                   </em>
                 </h4>
                 <h4

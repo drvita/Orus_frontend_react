@@ -5,6 +5,7 @@ import Inbox from "./views/Inbox";
 import EditAndNewUser from "./add";
 //Actions
 import { userActions } from "../../redux/user/index";
+import { defaultActions } from "../../redux/default/";
 
 class UsersComponent extends Component {
   constructor(props) {
@@ -12,6 +13,12 @@ class UsersComponent extends Component {
     this.state = {
       panel: "inbox",
     };
+  }
+
+  componentDidMount() {
+    const { _setPageName } = this.props;
+
+    _setPageName("usuarios");
   }
   componentDidUpdate(props, state) {
     const { user } = this.props;
@@ -150,6 +157,7 @@ const mapStateToProps = ({ users }) => {
   },
   mapActionsToProps = {
     _setOptions: userActions.setOptions,
+    _setPageName: defaultActions.changeNamePage,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(UsersComponent);

@@ -7,6 +7,7 @@ import saveItem from "./saveItem";
 import getListBrands from "./getListBrands";
 import saveBrand from "./saveBrand";
 import deleteBrand from "./deleteBrand";
+import saveInBranch from "./saveItemBranch";
 
 export default function* index() {
   //watchers
@@ -18,4 +19,5 @@ export default function* index() {
   yield takeLatest(TYPE.SAGA_GET_LIST_BRANDS, getListBrands);
   yield takeLatest(TYPE.SAGA_SAVE_BRAND, saveBrand);
   yield takeLatest(TYPE.SAGA_DELETE_BRAND, deleteBrand);
+  yield takeLatest(TYPE.SAGA_SAVE_INBRANCH, saveInBranch);
 }

@@ -55,7 +55,7 @@ const ListExamComponent = (props) => {
                         id={"exam_" + row.id}
                         value={select}
                         onChange={(e) => handleSelect(row)}
-                        disabled={allSelect ? false : row.estado ? false : true}
+                        disabled={allSelect ? false : row.status ? false : true}
                         checked={select === row.id}
                       />
                       <label htmlFor={"exam_" + row.id}></label>
@@ -71,7 +71,7 @@ const ListExamComponent = (props) => {
                 {moment(row.created_at).fromNow()}
               </td>
               <td>
-                {row.estado ? (
+                {row.status ? (
                   <span className="badge badge-success">
                     <i className="fas fa-check"></i> Terminado
                   </span>

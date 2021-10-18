@@ -193,7 +193,7 @@ class AsistentComponent extends Component {
                         </div>
                       </div>
 
-                      {(exam.id > 0 && exam.estado) || !exam.id ? (
+                      {(exam.id > 0 && exam.status) || !exam.id ? (
                         <Items
                           items={items}
                           session={session}

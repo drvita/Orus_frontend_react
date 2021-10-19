@@ -64,7 +64,6 @@ class StoreAddComponent extends Component {
       result: {
         list: [],
         metaList: {},
-        item: {},
       },
     });
   }

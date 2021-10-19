@@ -54,10 +54,18 @@ class StoreAddComponent extends Component {
     this.nameRef = createRef(); //REferencia del nombre del producto
   }
   componentDidMount() {
-    const { _getListCategories } = this.props;
+    const { _getListCategories, _setListStore } = this.props;
 
     _getListCategories({
       categoryid: "raiz",
+    });
+
+    _setListStore({
+      result: {
+        list: [],
+        metaList: {},
+        item: {},
+      },
     });
   }
   componentDidUpdate(props, state) {
@@ -77,6 +85,11 @@ class StoreAddComponent extends Component {
       if (item.id) {
         this.getItem();
       }
+    }
+    if (item && props.item && item.id && props.item.id !== item.id) {
+      this.setState({
+        id: item.id,
+      });
     }
 
     if (state.category_id !== category_id) {
@@ -544,12 +557,23 @@ class StoreAddComponent extends Component {
   }
 
   handleSearchCode = (event) => {
-    const { _getListStore } = this.props,
+    const { _getListStore, _setListStore } = this.props,
       { code } = this.state;
 
-    _getListStore({
-      code,
-    });
+    console.log("[DEBUG] Start search code...");
+    if (code.length < 3) {
+      _setListStore({
+        result: {
+          list: [],
+          metaList: {},
+          item: {},
+        },
+      });
+    } else {
+      _getListStore({
+        code,
+      });
+    }
   };
   handleClose = () => {
     const { handleClose: _handleClose } = this.props;
@@ -581,7 +605,7 @@ class StoreAddComponent extends Component {
         grad,
         branch_default,
       } = this.state,
-      { list, options, _saveItem } = this.props;
+      { list, _saveItem } = this.props;
     //Verificamos campos validos
     if (!helper.handleVerifyData(this.state, this.codeRef)) {
       return false;
@@ -606,7 +630,7 @@ class StoreAddComponent extends Component {
       branch_default: branch_default ? branch_default : null,
     };
     //Save
-    helper.handleSaveItem(id, body, options, _saveItem, this.handleClose);
+    helper.handleSaveItem(id, body, null, _saveItem);
   };
   getItem = () => {
     let category_id1 = 0,

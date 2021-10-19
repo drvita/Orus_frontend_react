@@ -39,7 +39,9 @@ export default function* handleSaveItem({ payload }) {
         },
       ])
     );
-    yield put(storeActions.getListStore(OPT));
+    if (OPT) yield put(storeActions.getListStore(OPT));
+    else if (result.data && result.data.id)
+      yield put(storeActions.getItem(result.data.id));
   } catch (e) {
     console.error("[Orus System] Error en saga handleSaveItem", e.message);
     yield put(

@@ -11,7 +11,7 @@ export default function BranchesFormInputs({
   const [data, setData] = useState({
     id: inBranch.id ?? 0,
     cant: inBranch.cant ?? 0,
-    price: inBranch.price ?? 0,
+    price: inBranch.price ?? 1,
     store_item_id,
     branch_id: branch.id,
   });

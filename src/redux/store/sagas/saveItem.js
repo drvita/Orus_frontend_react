@@ -10,19 +10,6 @@ export default function* handleSaveItem({ payload }) {
       result = yield call(api, url, method, DATA);
 
     if (result.message) {
-      if (result.errors) {
-        if (result.errors.code.length) {
-          yield put(
-            storeActions.setMessagesStore([
-              {
-                type: "error",
-                text: "El codigo del producto ya esta en uso",
-              },
-            ])
-          );
-          return;
-        }
-      }
       throw new Error(result.message);
     }
 
@@ -48,7 +35,7 @@ export default function* handleSaveItem({ payload }) {
       storeActions.setMessagesStore([
         {
           type: "error",
-          text: "al almacenar el producto, intentelo mas tarde",
+          text: e.message,
         },
       ])
     );

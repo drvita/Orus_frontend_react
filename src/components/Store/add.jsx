@@ -348,6 +348,7 @@ class StoreAddComponent extends Component {
                               onChange={this.catchInputs}
                               onBlur={this.handleSearchCode}
                               autoComplete="off"
+                              maxLength="18"
                             />
                             {!id && list.length ? (
                               <span className="text-muted text-xs d-block w-100">
@@ -374,6 +375,7 @@ class StoreAddComponent extends Component {
                               value={this.state.codebar}
                               onChange={this.catchInputs}
                               autoComplete="off"
+                              maxLength="100"
                             />
                           </div>
                         </div>
@@ -463,6 +465,7 @@ class StoreAddComponent extends Component {
                               name="unit"
                               value={unit}
                               onChange={this.catchInputs}
+                              maxLength="4"
                             />
                           </div>
                         </div>

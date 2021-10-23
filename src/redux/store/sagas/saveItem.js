@@ -10,6 +10,11 @@ export default function* handleSaveItem({ payload }) {
       result = yield call(api, url, method, DATA);
 
     if (result.message) {
+      if (result.errors && Object.keys(result.errors).length) {
+        Object.keys(result.errors).forEach((e) => {
+          throw new Error(result.errors[e]);
+        });
+      }
       throw new Error(result.message);
     }
 
@@ -31,6 +36,7 @@ export default function* handleSaveItem({ payload }) {
       yield put(storeActions.getItem(result.data.id));
   } catch (e) {
     console.error("[Orus System] Error en saga handleSaveItem", e.message);
+
     yield put(
       storeActions.setMessagesStore([
         {

@@ -381,29 +381,6 @@ class StoreAddComponent extends Component {
                         </div>
                       </div>
                       <div className="row">
-                        {category_id1 === 1 ? (
-                          <div className="col-3">
-                            <small>
-                              <label>Graduacion</label>
-                            </small>
-                            <div className="input-group mb-3">
-                              <div className="input-group-prepend">
-                                <span className="input-group-text bg-primary">
-                                  <i className="fas fa-glasses"></i>
-                                </span>
-                              </div>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="+100100"
-                                name="grad"
-                                value={grad}
-                                onChange={this.catchInputs}
-                                autoComplete="off"
-                              />
-                            </div>
-                          </div>
-                        ) : null}
                         <div className="col">
                           {nameValue ? (
                             <small>
@@ -438,6 +415,29 @@ class StoreAddComponent extends Component {
                         </div>
                       </div>
                       <div className="row">
+                        {category_id1 === 1 ? (
+                          <div className="col-3">
+                            <small>
+                              <label>Graduacion</label>
+                            </small>
+                            <div className="input-group mb-3">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text bg-primary">
+                                  <i className="fas fa-glasses"></i>
+                                </span>
+                              </div>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="+100100"
+                                name="grad"
+                                value={grad}
+                                onChange={this.catchInputs}
+                                autoComplete="off"
+                              />
+                            </div>
+                          </div>
+                        ) : null}
                         <div className="col">
                           {this.state.unit ? (
                             <small>
@@ -644,34 +644,33 @@ class StoreAddComponent extends Component {
       category_id4 = 0;
     const { item: data } = this.props;
 
-    if (data.categoria && data.categoria.depende_de) {
-      if (data.categoria.depende_de && data.categoria.depende_de.depende_de) {
+    if (data.categoria && data.categoria.parent) {
+      if (data.categoria.parent && data.categoria.parent.parent) {
         if (
-          data.categoria.depende_de.depende_de &&
-          data.categoria.depende_de.depende_de.depende_de
+          data.categoria.parent.parent &&
+          data.categoria.parent.parent.parent
         ) {
-          category_id1 = data.categoria.depende_de.depende_de.depende_de.id;
-          category_id2 = data.categoria.depende_de.depende_de.id;
-          category_id3 = data.categoria.depende_de.id;
+          category_id1 = data.categoria.parent.parent.parent.id;
+          category_id2 = data.categoria.parent.parent.id;
+          category_id3 = data.categoria.parent.id;
           category_id4 = data.categoria.id;
           //Listas
-          category_list2 =
-            data.categoria.depende_de.depende_de.depende_de.hijos;
-          category_list3 = data.categoria.depende_de.depende_de.hijos;
-          category_list4 = data.categoria.depende_de.hijos;
+          category_list2 = data.categoria.parent.parent.parent.hijos;
+          category_list3 = data.categoria.parent.parent.hijos;
+          category_list4 = data.categoria.parent.hijos;
         } else {
-          category_id1 = data.categoria.depende_de.depende_de.id;
-          category_id2 = data.categoria.depende_de.id;
+          category_id1 = data.categoria.parent.parent.id;
+          category_id2 = data.categoria.parent.id;
           category_id3 = data.categoria.id;
           //Lista
-          category_list2 = data.categoria.depende_de.depende_de.hijos;
-          category_list3 = data.categoria.depende_de.hijos;
+          category_list2 = data.categoria.parent.parent.hijos;
+          category_list3 = data.categoria.parent.hijos;
         }
       } else {
-        category_id1 = data.categoria.depende_de.id;
+        category_id1 = data.categoria.parent.id;
         category_id2 = data.categoria.id;
         //Lista
-        category_list2 = data.categoria.depende_de.hijos;
+        category_list2 = data.categoria.parent.hijos;
       }
     } else {
       category_id1 = data.categoria.id;

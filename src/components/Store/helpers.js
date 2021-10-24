@@ -169,7 +169,7 @@ const handleCatOne = (data) => ({
     category_id4: 0,
     category_list4: data.hijos,
   });
-const handleCodeString = (code, stringcode = "armazon", category, brand) => {
+const handleCodeString = (stringcode = "armazon", category, brand) => {
     stringcode +=
       category.current !== null && category.current.selectedIndex
         ? " " +
@@ -182,8 +182,6 @@ const handleCodeString = (code, stringcode = "armazon", category, brand) => {
             .trim()
             .replace(/\s/gim, "")
         : "";
-
-    stringcode += " " + code.toString();
 
     return stringcode.toLowerCase();
   },
@@ -237,8 +235,20 @@ const handleCodeString = (code, stringcode = "armazon", category, brand) => {
         return "XX";
     }
   },
-  handleCodeLent = (grad, category2, category3, category4) => {
+  handleCodeLent = (grad, category1, category2, category3) => {
+    if (!category1.current || !category2.current || !category3.current) {
+      return "";
+    }
+
     let stringcode =
+      category1.current !== null
+        ? codeLentString(
+            category1.current.options[category1.current.selectedIndex].text
+              .trim()
+              .toLowerCase()
+          )
+        : "";
+    stringcode +=
       category2.current !== null
         ? codeLentString(
             category2.current.options[category2.current.selectedIndex].text
@@ -254,31 +264,28 @@ const handleCodeString = (code, stringcode = "armazon", category, brand) => {
               .toLowerCase()
           )
         : "";
-    stringcode +=
-      category4.current !== null
-        ? codeLentString(
-            category4.current.options[category4.current.selectedIndex].text
-              .trim()
-              .toLowerCase()
-          )
-        : "";
+
     return stringcode + grad.toString().trim().replace(/\s/gim, "");
   },
-  handleNameLent = (grad, category2, category3, category4) => {
+  handleNameLent = (grad, category1, category2, category3) => {
+    if (!category1.current || !category2.current || !category3.current) {
+      return "";
+    }
+
     let stringcode = "";
     stringcode +=
+      category1.current !== null
+        ? category1.current.options[category1.current.selectedIndex].text.trim()
+        : "";
+    stringcode +=
       category2.current !== null
-        ? category2.current.options[category2.current.selectedIndex].text.trim()
+        ? " " +
+          category2.current.options[category2.current.selectedIndex].text.trim()
         : "";
     stringcode +=
       category3.current !== null
         ? " " +
           category3.current.options[category3.current.selectedIndex].text.trim()
-        : "";
-    stringcode +=
-      category4.current !== null
-        ? " " +
-          category4.current.options[category4.current.selectedIndex].text.trim()
         : "";
 
     stringcode += " " + grad.toString();

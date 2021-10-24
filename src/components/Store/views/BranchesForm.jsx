@@ -1,13 +1,11 @@
 import { useSelector } from "react-redux";
 import BranchesFormInputs from "./BranchesFormInputs";
 
-export default function BranchesForm({
-  inBranches,
-  store_item_id,
-  branch_default,
-}) {
+export default function BranchesForm({ store_item_id, branch_default }) {
   const { list } = useSelector((state) => state.config);
+  const { item } = useSelector((state) => state.storeItem);
   const branches = [];
+  const inBranches = item && item.inBranches ? item.inBranches : [];
 
   if (list && list.length) {
     let branchesList = list;

@@ -14,6 +14,7 @@ function InputBrandComponents(props) {
     showIcon = true,
     //Funtions
     _getBrands,
+    onBlur: _onBlur,
     handleChangeBrand: _handleChangeBrand,
   } = props;
   //Funtions
@@ -59,6 +60,7 @@ function InputBrandComponents(props) {
               value={brand}
               ref={brandRef}
               onChange={handleChangeCategory}
+              onBlur={_onBlur}
             >
               <option value="0">--{textSelect}--</option>
               {brands.map((brand) => {

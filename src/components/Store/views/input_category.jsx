@@ -1,20 +1,18 @@
 export default function InputCategoryComponent(props) {
-  const { categoryData, categoryName, category, textSelect, categoryRef } =
-    props;
+  const {
+    categoryData,
+    category,
+    textSelect,
+    index,
+    references,
+    handleChangeCategory: _handleChangeCategory,
+  } = props;
 
   const handleChangeCategory = (target) => {
-    const { value } = target,
-      { categoryData, handleChangeCategory: _handleChangeCategory } = props;
+    const { value } = target;
 
-    let search = parseInt(value),
-      category = categoryData.find((i) => i.id === search);
-    if (!search) {
-      category = {
-        id: 0,
-      };
-    }
-
-    _handleChangeCategory(category);
+    if (_handleChangeCategory)
+      _handleChangeCategory({ index, value: parseInt(value) });
   };
 
   return (
@@ -32,10 +30,10 @@ export default function InputCategoryComponent(props) {
       </div>
       <select
         className="custom-select text-uppercase"
-        name={categoryName}
-        value={category}
+        name={"category" + index}
+        value={category ?? ""}
         onChange={({ target }) => handleChangeCategory(target)}
-        ref={categoryRef}
+        ref={references}
       >
         <option value="0">--{textSelect}--</option>
         {categoryData.map((cat) => {

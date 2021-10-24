@@ -14,13 +14,26 @@ export default function BranchesFormInputs({
     price: inBranch.price ?? 1,
     store_item_id,
     branch_id: branch.id,
+    readyToSave: false,
   });
   const dispatch = useDispatch();
   // functions
   const handleChangeInput = ({ name, value }) => {
+    let readyToSave = false;
+
+    if (name === "cant") {
+      value = parseInt(value);
+    } else {
+      value = parseFloat(value);
+    }
+
+    if (inBranch[name] !== value) {
+      readyToSave = true;
+    }
     setData({
       ...data,
-      [name]: name === "cant" ? parseInt(value) : parseFloat(value),
+      readyToSave,
+      [name]: value,
     });
   };
   const handleSaveInBranch = () => {
@@ -30,7 +43,10 @@ export default function BranchesFormInputs({
         data,
       })
     );
-    // document.location.reload();
+    setData({
+      ...data,
+      readyToSave: false,
+    });
   };
 
   useEffect(() => {
@@ -86,9 +102,12 @@ export default function BranchesFormInputs({
       <div className="row">
         <div className="col text-right">
           <button
-            className="btn btn-primary"
+            className={
+              !data.readyToSave ? "btn btn-secondary" : "btn btn-success"
+            }
             type="button"
             onClick={handleSaveInBranch}
+            disabled={!data.readyToSave}
           >
             <i className="fas fa-save mr-1"></i> Guardar
           </button>

@@ -2,7 +2,6 @@ import React, { Component, Fragment, createRef } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 //Components
-import InputCategory from "./views/input_category";
 import Suppliers from "./views/input_suppliers";
 import Brands from "./views/input_brand";
 import BranchesSelect from "./views/BranchesSelect";
@@ -11,6 +10,7 @@ import BranchesForm from "./views/BranchesForm";
 import { storeActions } from "../../redux/store/index";
 import { categoryActions } from "../../redux/category/index";
 import helper from "./helpers";
+import CategoriesProcess from "./data/CategoriesProcess";
 
 class StoreAddComponent extends Component {
   constructor(props) {
@@ -27,27 +27,19 @@ class StoreAddComponent extends Component {
       cant: 1,
       price: 1,
       supplier: 0,
-      category: "",
+      category: { code: "|||" },
+      categories: [],
       created_at: null,
       created: {},
       updated_at: null,
       category_id: 0,
-      category_data: {},
-      category_id1: 0,
-      category_id2: 0,
-      category_id3: 0,
-      category_id4: 0,
-      category_list1: [],
-      category_list2: [],
-      category_list3: [],
-      category_list4: [],
       branch_default: 0,
       inBranches: [],
     };
-    this.category1 = createRef(); //Primera categoria
-    this.category2 = createRef(); //Segunda categoria
-    this.category3 = createRef(); //Tercera categoria
-    this.category4 = createRef(); //Cuarta categoria
+    this.category0 = createRef(); //Primera categoria
+    this.category1 = createRef(); //Segunda categoria
+    this.category2 = createRef(); //Tercera categoria
+    this.category3 = createRef(); //Cuarta categoria
     this.supplierRef = createRef(); //Referencia de proveedor
     this.brandRef = createRef(); //Referencia de proveedor
     this.codeRef = createRef(); //Referencia del codigo
@@ -78,11 +70,12 @@ class StoreAddComponent extends Component {
     const { listCategories, item } = this.props;
 
     if (props.listCategories !== listCategories && listCategories.length) {
-      this.setState({
-        category_list1: listCategories,
-      });
       if (item.id) {
         this.getItem();
+      } else {
+        this.setState({
+          categories: listCategories,
+        });
       }
     }
     if (item && props.item && item.id && props.item.id !== item.id) {
@@ -132,73 +125,30 @@ class StoreAddComponent extends Component {
 
   render() {
     const {
-        id,
-        supplier,
-        category_id,
-        category_id1,
-        category_id2,
-        category_id3,
-        category_id4,
-        category_list1,
-        category_list2,
-        category_list3,
-        category_list4,
-        brand_id,
-        code,
-        name,
-        grad,
-        unit,
-        branch_default,
-        inBranches,
-      } = this.state,
-      { list, loadStore, loadCategory, loadContact } = this.props,
-      LOADING = loadStore || loadCategory || loadContact;
-    let codeValue = code,
-      nameValue = name;
-
-    //Make a code and name if no exist
-    if (
-      this.category1.current !== null &&
-      parseInt(this.category1.current.value) !== 1
-    ) {
-      //Make name of other categories
-      if (name.length <= 3) {
-        const type =
-          this.category1.current !== null &&
-          this.category1.current.selectedIndex
-            ? this.category1.current.options[
-                this.category1.current.selectedIndex
-              ].text
-                .trim()
-                .replace(/\s/gim, "")
-                .slice(0, 7)
-            : "";
-
-        nameValue = helper.handleCodeString(
-          codeValue,
-          type === "varios" ? "" : type,
-          this.category2,
-          this.brandRef
-        );
-      }
+      id,
+      supplier,
+      category_id,
+      category,
+      categories,
+      brand_id,
+      code,
+      name,
+      grad,
+      unit,
+      branch_default,
+      inBranches,
+    } = this.state;
+    console.log("[DEBUG] :::category:::: ", category.code);
+    const { list, loadStore, loadCategory, loadContact } = this.props,
+      LOADING = loadStore || loadCategory || loadContact,
+      idsCategory = category.code
+        ? category.code.split("|").filter((i) => i !== "")
+        : [];
+    let readyToSave = false;
+    if (idsCategory.includes("1")) {
+      readyToSave = category_id && code && name;
     } else {
-      //Make code and name of glass
-      if (code.length <= 3) {
-        codeValue = helper.handleCodeLent(
-          grad,
-          this.category2,
-          this.category3,
-          this.category4
-        );
-      }
-      if (name.length <= 3) {
-        nameValue = helper.handleNameLent(
-          grad,
-          this.category2,
-          this.category3,
-          this.category4
-        );
-      }
+      readyToSave = category_id && code && name && supplier && brand_id;
     }
 
     return (
@@ -212,7 +162,7 @@ class StoreAddComponent extends Component {
               </h3>
             </div>
             <form className="card-body" autoComplete="off">
-              {category_list1 && category_list1.length ? (
+              {categories && categories.length ? (
                 <Fragment>
                   <div className="row">
                     <div className="col">
@@ -221,73 +171,22 @@ class StoreAddComponent extends Component {
                           <label>Categoria</label>
                         </small>
 
-                        <InputCategory
-                          data={this.props.data}
-                          category={category_id1}
-                          categoryName="category_id1"
-                          categoryData={category_list1}
-                          textSelect="Seleciona la categoria"
-                          categoryRef={this.category1}
-                          handleChangeCategory={(data) => {
-                            this.setState(helper.handleCatOne(data));
-                          }}
+                        <CategoriesProcess
+                          categories={categories}
+                          category={category}
+                          setCategoryId={this.handleCategoriesChange}
+                          references={[
+                            this.category0,
+                            this.category1,
+                            this.category2,
+                            this.category3,
+                          ]}
                         />
-
-                        {category_id1 &&
-                        category_list2 &&
-                        category_list2.length ? (
-                          <InputCategory
-                            data={this.props.data}
-                            category={category_id2}
-                            categoryName="category_id2"
-                            categoryData={category_list2}
-                            textSelect="Seleciona el tipo"
-                            categoryRef={this.category2}
-                            handleChangeCategory={(data) => {
-                              this.setState(helper.handleCatTwo(data));
-                            }}
-                          />
-                        ) : null}
-
-                        {category_id2 &&
-                        category_list3 &&
-                        category_list3.length ? (
-                          <InputCategory
-                            data={this.props.data}
-                            category={category_id3}
-                            categoryName="category_id3"
-                            categoryData={category_list3}
-                            textSelect="Seleciona el material"
-                            categoryRef={this.category3}
-                            handleChangeCategory={(data) => {
-                              this.setState(helper.handleCatTree(data));
-                            }}
-                          />
-                        ) : null}
-
-                        {category_id3 &&
-                        category_list4 &&
-                        category_list4.length ? (
-                          <InputCategory
-                            data={this.props.data}
-                            category={category_id4}
-                            categoryName="category_id4"
-                            categoryData={category_list4}
-                            textSelect="Seleciona el tratamiento"
-                            categoryRef={this.category4}
-                            handleChangeCategory={(data) => {
-                              this.setState({
-                                category_id: data.id,
-                                category_id4: data.id,
-                              });
-                            }}
-                          />
-                        ) : null}
                       </fieldset>
                     </div>
                   </div>
 
-                  {category_id1 && category_id1 !== 1 ? (
+                  {idsCategory.length && !idsCategory.includes("1") ? (
                     <Suppliers
                       supplier={supplier}
                       supplierRef={this.supplierRef}
@@ -299,7 +198,7 @@ class StoreAddComponent extends Component {
                     />
                   ) : null}
 
-                  {category_id1 && category_id1 !== 1 && supplier ? (
+                  {supplier ? (
                     <Brands
                       brand={brand_id}
                       supplier={supplier}
@@ -310,112 +209,14 @@ class StoreAddComponent extends Component {
                           brand_id: e,
                         });
                       }}
+                      onBlur={this.handleSetNameNCode}
                     />
                   ) : null}
 
                   {category_id ? (
                     <Fragment>
                       <div className="row">
-                        <div className="col-5">
-                          {codeValue ? (
-                            <small>
-                              <label>Codigo</label>
-                            </small>
-                          ) : (
-                            <br />
-                          )}
-                          <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                              <span
-                                className={
-                                  codeValue
-                                    ? !id && list.length
-                                      ? "input-group-text bg-warning"
-                                      : "input-group-text bg-primary"
-                                    : "input-group-text bg-warning"
-                                }
-                              >
-                                <i className="fas fa-code"></i>
-                              </span>
-                            </div>
-                            <input
-                              type="text"
-                              className="form-control text-uppercase"
-                              placeholder="Codigo"
-                              name="code"
-                              ref={this.codeRef}
-                              value={codeValue}
-                              onChange={this.catchInputs}
-                              onBlur={this.handleSearchCode}
-                              autoComplete="off"
-                              maxLength="18"
-                            />
-                            {!id && list.length ? (
-                              <span className="text-muted text-xs d-block w-100">
-                                El codigo ya esta en uso
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-                        <div className="col">
-                          <small>
-                            <label>Codigo de barras</label>
-                          </small>
-                          <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                              <span className="input-group-text bg-primary">
-                                <i className="fas fa-barcode"></i>
-                              </span>
-                            </div>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Codigo de barras"
-                              name="codebar"
-                              value={this.state.codebar}
-                              onChange={this.catchInputs}
-                              autoComplete="off"
-                              maxLength="100"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col">
-                          {nameValue ? (
-                            <small>
-                              <label>Nombre del producto</label>
-                            </small>
-                          ) : (
-                            <br />
-                          )}
-                          <div className="input-group mb-3">
-                            <div className="input-group-prepend">
-                              <span
-                                className={
-                                  nameValue
-                                    ? "input-group-text bg-primary"
-                                    : "input-group-text bg-warning"
-                                }
-                              >
-                                <i className="fas fa-archive"></i>
-                              </span>
-                            </div>
-                            <input
-                              type="text"
-                              className="form-control text-uppercase"
-                              placeholder="Nombre del producto"
-                              name="name"
-                              ref={this.nameRef}
-                              value={nameValue}
-                              onChange={this.catchInputs}
-                              maxLength="149"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        {category_id1 === 1 ? (
+                        {idsCategory.includes("1") ? (
                           <div className="col-3">
                             <small>
                               <label>Graduacion</label>
@@ -433,6 +234,8 @@ class StoreAddComponent extends Component {
                                 name="grad"
                                 value={grad}
                                 onChange={this.catchInputs}
+                                onBlur={this.handleSetNameNCode}
+                                maxLength="7"
                                 autoComplete="off"
                               />
                             </div>
@@ -466,6 +269,105 @@ class StoreAddComponent extends Component {
                               value={unit}
                               onChange={this.catchInputs}
                               maxLength="4"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-5">
+                          {code ? (
+                            <small>
+                              <label>Codigo</label>
+                            </small>
+                          ) : (
+                            <br />
+                          )}
+                          <div className="input-group mb-3">
+                            <div className="input-group-prepend">
+                              <span
+                                className={
+                                  code
+                                    ? !id && list.length
+                                      ? "input-group-text bg-warning"
+                                      : "input-group-text bg-primary"
+                                    : "input-group-text bg-warning"
+                                }
+                              >
+                                <i className="fas fa-code"></i>
+                              </span>
+                            </div>
+                            <input
+                              type="text"
+                              className="form-control text-uppercase"
+                              placeholder="Codigo"
+                              name="code"
+                              ref={this.codeRef}
+                              defaultValue={code}
+                              onChange={this.catchInputs}
+                              onBlur={this.handleSearchCode}
+                              autoComplete="off"
+                              maxLength="18"
+                            />
+                            {!id && list.length ? (
+                              <span className="text-muted text-xs d-block w-100">
+                                El codigo ya esta en uso
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="col">
+                          <small>
+                            <label>Codigo de barras</label>
+                          </small>
+                          <div className="input-group mb-3">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text bg-primary">
+                                <i className="fas fa-barcode"></i>
+                              </span>
+                            </div>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Codigo de barras"
+                              name="codebar"
+                              defaultValue={this.state.codebar}
+                              onChange={this.catchInputs}
+                              autoComplete="off"
+                              maxLength="100"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col">
+                          {name ? (
+                            <small>
+                              <label>Nombre del producto</label>
+                            </small>
+                          ) : (
+                            <br />
+                          )}
+                          <div className="input-group mb-3">
+                            <div className="input-group-prepend">
+                              <span
+                                className={
+                                  name
+                                    ? "input-group-text bg-primary"
+                                    : "input-group-text bg-warning"
+                                }
+                              >
+                                <i className="fas fa-archive"></i>
+                              </span>
+                            </div>
+                            <input
+                              type="text"
+                              className="form-control text-uppercase"
+                              placeholder="Nombre del producto"
+                              name="name"
+                              ref={this.nameRef}
+                              defaultValue={name}
+                              onChange={this.catchInputs}
+                              maxLength="149"
                             />
                           </div>
                         </div>
@@ -505,7 +407,10 @@ class StoreAddComponent extends Component {
                     <button
                       type="button"
                       onClick={this.handleSave}
-                      className="btn btn-primary"
+                      className={
+                        !readyToSave ? "btn btn-secondary" : "btn btn-primary"
+                      }
+                      disabled={!readyToSave}
                     >
                       <i className="fas fa-save mr-1"></i>
                       Guardar
@@ -558,17 +463,106 @@ class StoreAddComponent extends Component {
     );
   }
 
-  handleSearchCode = (event) => {
+  getNameCodeDefault = (grad = "") => {
+    // Make name
+    if (parseInt(this.category0.current.value) !== 1) {
+      // To other categories
+      const type =
+          this.category0.current !== null &&
+          this.category0.current.selectedIndex
+            ? this.category0.current.options[
+                this.category0.current.selectedIndex
+              ].text
+                .trim()
+                .replace(/\s/gim, "")
+                .slice(0, 7)
+            : "",
+        name = helper.handleCodeString(
+          type === "varios" ? "" : type,
+          this.category1,
+          this.brandRef
+        ),
+        code = "";
+
+      return {
+        name,
+        code,
+      };
+    } else {
+      // To lent categories
+      const name = helper.handleNameLent(
+          grad,
+          this.category1,
+          this.category2,
+          this.category3
+        ),
+        code = helper.handleCodeLent(
+          grad,
+          this.category1,
+          this.category2,
+          this.category3
+        );
+
+      return {
+        name,
+        code,
+      };
+    }
+  };
+
+  handleCategoriesChange = (select) => {
+    const countCategories = select.parents.split("|").filter((i) => i !== "");
+    let { id, code, name } = this.state;
+
+    if (!id) {
+      name = "";
+      code = "";
+      if (countCategories.includes("1")) {
+        if (countCategories.length === 4) {
+          // Get names default if no define
+          const data = this.getNameCodeDefault();
+          code = data.code;
+          name = data.name;
+        }
+      }
+    }
+
+    this.setState({
+      category_id: select.id,
+      supplier: 0,
+      brand_id: 0,
+      category: {
+        ...this.state.category,
+        code: select.parents,
+      },
+      code,
+      name,
+    });
+  };
+  handleSetNameNCode = () => {
+    let { id, code, name, grad } = this.state;
+
+    if (!id) {
+      // Get names default if no define
+      const data = this.getNameCodeDefault(grad);
+      code = data.code;
+      name = data.name;
+    }
+
+    this.setState({
+      code,
+      name,
+    });
+  };
+  handleSearchCode = () => {
     const { _getListStore, _setListStore } = this.props,
       { code } = this.state;
 
-    console.log("[DEBUG] Start search code...");
     if (code.length < 3) {
       _setListStore({
         result: {
           list: [],
           metaList: {},
-          item: {},
         },
       });
     } else {
@@ -620,7 +614,7 @@ class StoreAddComponent extends Component {
     //Make a body data
     const body = {
       code: code ? code : this.codeRef.current.value,
-      codebar,
+      codebar: codebar ? codebar : null,
       name: name ? name : this.nameRef.current.value,
       unit,
       cant,
@@ -635,48 +629,7 @@ class StoreAddComponent extends Component {
     helper.handleSaveItem(id, body, null, _saveItem);
   };
   getItem = () => {
-    let category_id1 = 0,
-      category_list2 = [],
-      category_list3 = [],
-      category_list4 = [],
-      category_id2 = 0,
-      category_id3 = 0,
-      category_id4 = 0;
-    const { item: data } = this.props;
-
-    if (data.categoria && data.categoria.parent) {
-      if (data.categoria.parent && data.categoria.parent.parent) {
-        if (
-          data.categoria.parent.parent &&
-          data.categoria.parent.parent.parent
-        ) {
-          category_id1 = data.categoria.parent.parent.parent.id;
-          category_id2 = data.categoria.parent.parent.id;
-          category_id3 = data.categoria.parent.id;
-          category_id4 = data.categoria.id;
-          //Listas
-          category_list2 = data.categoria.parent.parent.parent.hijos;
-          category_list3 = data.categoria.parent.parent.hijos;
-          category_list4 = data.categoria.parent.hijos;
-        } else {
-          category_id1 = data.categoria.parent.parent.id;
-          category_id2 = data.categoria.parent.id;
-          category_id3 = data.categoria.id;
-          //Lista
-          category_list2 = data.categoria.parent.parent.hijos;
-          category_list3 = data.categoria.parent.hijos;
-        }
-      } else {
-        category_id1 = data.categoria.parent.id;
-        category_id2 = data.categoria.id;
-        //Lista
-        category_list2 = data.categoria.parent.hijos;
-      }
-    } else {
-      category_id1 = data.categoria.id;
-      //Lista
-      category_list2 = data.categoria.hijos;
-    }
+    const { item: data, listCategories: categories } = this.props;
 
     this.setState({
       id: data.id,
@@ -697,14 +650,7 @@ class StoreAddComponent extends Component {
       inBranches: data.inBranches,
       //Data need
       category_id: data.categoria.id,
-      category_id1,
-      category_list2,
-      category_list3,
-      category_list4,
-      category_id2,
-      category_id3,
-      category_id4,
-      category_data: data.categoria,
+      categories,
       load: false,
     });
   };
@@ -719,7 +665,7 @@ const mapStateToProps = ({ storeItem, category, contact }) => {
       listCategories: category.list,
       loadStore: storeItem.loading,
       loadCategory: category.loading,
-      loadContact: category.loading,
+      loadContact: contact.loading,
     };
   },
   mapActionsToProps = {

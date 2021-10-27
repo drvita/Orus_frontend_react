@@ -36,13 +36,19 @@ class IndexStoreComponent extends Component {
     _setPageName("almacen");
   }
   componentDidUpdate(props) {
-    const { messages: MSGS, item, history, _setMessage } = this.props;
+    const { messages: MSGS, item, history, _setMessage, _setList } = this.props;
 
     if (props.item.id !== item.id && item.id) {
       this.setState({
         panel: "neworedit",
       });
       history.push(`/almacen/${item.id}`);
+      _setList({
+        result: {
+          list: [],
+          metaList: {},
+        },
+      });
     }
 
     if (props.messages.length !== MSGS.length && MSGS.length) {

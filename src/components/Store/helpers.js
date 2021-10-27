@@ -169,7 +169,12 @@ const handleCatOne = (data) => ({
     category_id4: 0,
     category_list4: data.hijos,
   });
-const handleCodeString = (stringcode = "armazon", category, brand) => {
+const handleCodeString = (
+    stringcode = "armazon",
+    category,
+    brand,
+    code = ""
+  ) => {
     stringcode +=
       category.current !== null && category.current.selectedIndex
         ? " " +
@@ -182,6 +187,10 @@ const handleCodeString = (stringcode = "armazon", category, brand) => {
             .trim()
             .replace(/\s/gim, "")
         : "";
+
+    if (code) {
+      stringcode += " " + code.replace(/[-\s]+/gm, "");
+    }
 
     return stringcode.toLowerCase();
   },

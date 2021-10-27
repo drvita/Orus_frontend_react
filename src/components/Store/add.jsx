@@ -138,7 +138,7 @@ class StoreAddComponent extends Component {
       branch_default,
       inBranches,
     } = this.state;
-    console.log("[DEBUG] :::category:::: ", category.code);
+
     const { list, loadStore, loadCategory, loadContact } = this.props,
       LOADING = loadStore || loadCategory || loadContact,
       idsCategory = category.code
@@ -209,7 +209,6 @@ class StoreAddComponent extends Component {
                           brand_id: e,
                         });
                       }}
-                      onBlur={this.handleSetNameNCode}
                     />
                   ) : null}
 
@@ -282,6 +281,7 @@ class StoreAddComponent extends Component {
                           ) : (
                             <br />
                           )}
+
                           <div className="input-group mb-3">
                             <div className="input-group-prepend">
                               <span
@@ -464,6 +464,7 @@ class StoreAddComponent extends Component {
   }
 
   getNameCodeDefault = (grad = "") => {
+    const { code: currentCode } = this.state;
     // Make name
     if (parseInt(this.category0.current.value) !== 1) {
       // To other categories
@@ -480,7 +481,8 @@ class StoreAddComponent extends Component {
         name = helper.handleCodeString(
           type === "varios" ? "" : type,
           this.category1,
-          this.brandRef
+          this.brandRef,
+          currentCode
         ),
         code = "";
 
@@ -545,7 +547,7 @@ class StoreAddComponent extends Component {
     if (!id) {
       // Get names default if no define
       const data = this.getNameCodeDefault(grad);
-      code = data.code;
+      code = data.code ? data.code : code;
       name = data.name;
     }
 
@@ -569,6 +571,7 @@ class StoreAddComponent extends Component {
       _getListStore({
         code,
       });
+      this.handleSetNameNCode();
     }
   };
   handleClose = () => {

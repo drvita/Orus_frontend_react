@@ -272,7 +272,7 @@ class IndexExamComponent extends Component {
                                   }
                                 >
                                   <i className="fas fa-user text-sm mr-2"></i>
-                                  {exam.paciente.nombre}
+                                  {exam.paciente.nombre.toLowerCase()}
                                 </span>
                               </a>
                             </td>

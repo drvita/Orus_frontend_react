@@ -88,8 +88,8 @@ const ShowContactComponent = (props) => {
         </div>
         {contact.id ? (
           <>
-            <span className="form-control text-capitalize bg-light">
-              {contact.nombre}
+            <span className="form-control bg-light">
+              {contact.nombre.toUpperCase()}
               {contact.email && !domain.exec(contact.email) ? (
                 <span className="badge badge-secondary mx-1">
                   <i className="fas fa-envelope mr-1"></i>

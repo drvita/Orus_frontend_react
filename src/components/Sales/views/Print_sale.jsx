@@ -36,6 +36,8 @@ export default function PrintSaleComponent({
     window.print();
   };
 
+  // console.log("[DEBUG] branch:", branch);
+
   return (
     <>
       <button
@@ -48,7 +50,7 @@ export default function PrintSaleComponent({
       </button>
 
       <div
-        className="d-none d-print-block fixed-top"
+        className="d-none d-print-block fixed-top bg-white"
         style={{ maxWidth: 380 }}
         id={"print_sale_" + id}
       >
@@ -90,9 +92,9 @@ export default function PrintSaleComponent({
                       sucursal: {branch.name}
                     </span>
                     <br />
-                    <span>Tel: {branch.telefono}</span>
+                    <span>Tel: {branch.phone}</span>
                     <br />
-                    <span className="text-capitalize">{branch.domicilio}</span>
+                    <span className="text-capitalize">{branch.address}</span>
                   </em>
                 </h4>
                 <h4

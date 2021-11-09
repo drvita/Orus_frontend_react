@@ -22,6 +22,7 @@ class IndexExamComponent extends Component {
         status: "",
         itemsPage: 10,
         date: "",
+        branch: "all",
       },
       examSelected: "",
       exam: {},
@@ -81,7 +82,7 @@ class IndexExamComponent extends Component {
   }
 
   render() {
-    const { meta, loading, exams } = this.props,
+    const { meta, loading, exams, branches } = this.props,
       { newOrEdit, options, examSelected, exam } = this.state;
 
     return (
@@ -184,6 +185,21 @@ class IndexExamComponent extends Component {
                   <option value="">-- Todos --</option>
                   <option value="1">Solo terminados</option>
                   <option value="0">En proceso</option>
+                </select>
+              </li>
+              <li className="nav-item p-2">
+                <label htmlFor="status">Sucursales</label>
+                <select
+                  className="form-control text-capitalize"
+                  name="branch"
+                  id="branch"
+                  value={options.branch}
+                  onChange={this.handleSetSelectOptions}
+                >
+                  <option value="all">-- Todas --</option>
+                  {branches.map((branch) => (
+                    <option value={branch.id}>{branch.values.name}</option>
+                  ))}
                 </select>
               </li>
             </CardMenu>
@@ -539,13 +555,14 @@ class IndexExamComponent extends Component {
   }
 }
 
-const mapStateToProps = ({ exam }) => {
+const mapStateToProps = ({ exam, config }) => {
     return {
       exams: exam.list,
       messages: exam.messages,
       meta: exam.metaList,
       loading: exam.loading,
       exam: exam.exam,
+      branches: config.list,
     };
   },
   mapActionsToProps = {

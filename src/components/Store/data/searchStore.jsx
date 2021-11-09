@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 //Actions
@@ -59,6 +60,8 @@ function SearchItemsComponent(props) {
       });
       setLoad(false);
     }
+  }, [search]);
+  useEffect(() => {
     return () => {
       _setList({
         result: {
@@ -67,8 +70,7 @@ function SearchItemsComponent(props) {
         },
       });
     };
-    // eslint-disable-next-line
-  }, [search]);
+  }, []);
 
   return (
     <>

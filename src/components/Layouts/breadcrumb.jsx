@@ -42,7 +42,7 @@ class BreadcrumbComponent extends Component {
 
   render() {
     const { namePage, host: HOST, currentUser, config } = this.props,
-      { name: USER_NAME, branch = {}, rol } = currentUser,
+      { name: USER_NAME, branch = {}, permissions } = currentUser,
       { date, showChangeBranchs } = this.state,
       branches = [];
 
@@ -55,7 +55,7 @@ class BreadcrumbComponent extends Component {
       });
     }
 
-    //console.log("[DEBUG] State", showChangeBranchs);
+    // console.log("[DEBUG] includes", permissions.includes("auth.changeBranch"));
 
     return (
       <div className="content-header">
@@ -81,7 +81,7 @@ class BreadcrumbComponent extends Component {
                 title="Almacenando en"
               >
                 <i className="mr-1 fas fa-server text-success"></i>
-                {!rol ? (
+                {permissions.includes("auth.changeBranch") ? (
                   <a
                     href="#link"
                     className="text-white"

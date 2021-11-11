@@ -7,6 +7,8 @@ const LS = localStorage.getItem("OrusSystem"),
     username: USERNAME = null,
     name: NAME = null,
     rol: ROL = null,
+    roles: ROLES = null,
+    permissions: PERMISSIONS = null,
     email: EMAIL = null,
     token: TOKEN = null,
     branch: BRANCH = null,
@@ -21,6 +23,8 @@ const LS = localStorage.getItem("OrusSystem"),
       email: EMAIL,
       token: TOKEN,
       branch: BRANCH,
+      roles: ROLES,
+      permissions: PERMISSIONS,
     },
     options: {
       page: 1,
@@ -119,6 +123,8 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       ls.username = data.username;
       ls.name = data.name;
       ls.rol = data.rol;
+      ls.roles = data.roles;
+      ls.permissions = data.permissions;
       ls.email = data.email;
       ls.token = token ? token : ls.token;
       ls.branch = branch;
@@ -148,6 +154,8 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       delete ls.token;
       delete ls.username;
       delete ls.branch;
+      delete ls.roles;
+      delete ls.permissions;
 
       localStorage.setItem("OrusSystem", JSON.stringify(ls));
       console.log("[Orus System] Cierre de sistema exitoso");
@@ -159,6 +167,8 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
           username: null,
           name: null,
           rol: null,
+          roles: null,
+          permissions: null,
           email: null,
           token: null,
         },

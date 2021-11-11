@@ -15,7 +15,6 @@ export default function* handleSaveUser({ payload }) {
       result = yield call(api, url, method, DATA);
 
     if (result.message) throw new Error(result.message);
-
     if (ID) console.log("[Orus System] Usuario actualizada con exito: " + ID);
     else console.log("[Orus system] Usuario creado con exito", result.data.id);
 
@@ -40,7 +39,10 @@ export default function* handleSaveUser({ payload }) {
 
     if (OPT) yield put(userActions.getListUsers(OPT));
   } catch (e) {
-    console.error("[Orus System] Error en saga/users handleSaveUser", e);
+    console.error(
+      "[Orus System] Error en saga/users handleSaveUser",
+      e.message
+    );
     yield put(
       userActions.setMessages([
         {

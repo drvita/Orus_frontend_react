@@ -26,20 +26,19 @@ const validInputs = (body) => {
       };
     }
   },
-  getNameRol = (rolNumber) => {
-    switch (rolNumber) {
-      case 0: {
-        return "Administracion";
-      }
-      case 1: {
-        return "Ventas";
-      }
-      case 2: {
-        return "Optometria";
-      }
-      default:
-        return "Indefinido";
-    }
+  getNameRoles = (array) => {
+    let htmlResponse = [];
+
+    array.forEach((rol) => {
+      htmlResponse.push(
+        <span className="text-capitalize badge badge-dark">{rol}</span>
+      );
+    });
+
+    if (htmlResponse.length === 1) return htmlResponse;
+    else if (htmlResponse.length > 1)
+      return <span className="text-capitalize badge badge-dark">+1</span>;
+    else return;
   };
 const handleDelete = (item, options, _delete, text) => {
   if (item.id) {
@@ -97,7 +96,7 @@ const handleSave = (id, data, options, _save, _close, text) => {
 
 const toExport = {
   validInputs,
-  getNameRol,
+  getNameRoles,
   handleDelete,
   handleSave,
 };

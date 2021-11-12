@@ -16,6 +16,8 @@ class UserAddComponent extends Component {
     this.state = {
       id: 0,
       rol: 1,
+      roles: [],
+      permissions: [],
       username: "",
       validUserName: false,
       name: "",
@@ -35,6 +37,8 @@ class UserAddComponent extends Component {
       this.setState({
         id: user.id,
         rol: user.rol,
+        roles: user.roles,
+        permissions: user.permissions,
         username: user.username,
         name: user.name,
         email: user.email,
@@ -54,6 +58,8 @@ class UserAddComponent extends Component {
         load,
         id,
         rol,
+        roles,
+        permissions,
         username,
         name,
         email,
@@ -246,6 +252,20 @@ class UserAddComponent extends Component {
               </div>
             </div>
           </form>
+
+          <div className="card card-primary card-outline mt-4">
+            <div className="card-header">
+              <h5 className="card-title text-primary">Roles y permisos</h5>
+            </div>
+            <div className="card-body">
+              {roles.map((rol) => (
+                <span className="badge badge-dark m-1">{rol}</span>
+              ))}
+              {permissions.map((permission) => (
+                <span className="badge badge-primary m-1">{permission}</span>
+              ))}
+            </div>
+          </div>
         </div>
         {id ? (
           <div className="col-4">

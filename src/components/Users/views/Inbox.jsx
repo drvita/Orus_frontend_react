@@ -121,7 +121,7 @@ function InboxComponent(props) {
                       <span>{user.email}</span>
                     </td>
                     <td className="mailbox-name text-dark text-bold text-truncate">
-                      <span>{helper.getNameRol(user.rol)}</span>
+                      {helper.getNameRoles(user.roles)}
                     </td>
                     <td className="text-truncate">
                       <span className="text-capitalize">

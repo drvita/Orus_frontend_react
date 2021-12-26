@@ -4,10 +4,10 @@ const confirm = (text, _make) => {
     text,
     icon: "question",
     showCancelButton: true,
-    //confirmButtonColor: "#007bff",
+    // confirmButtonColor: "#007bff",
     confirmButtonText: "Aceptar",
     cancelButtonText: "Cancelar",
-    showLoaderOnConfirm: true,
+    // showLoaderOnConfirm: true,
   }).then(({ dismiss }) => {
     if (!dismiss) {
       if (_make) _make();

@@ -47,7 +47,7 @@ self.addEventListener("fetch", (e) => {
   const cacheResolve = caches.open(CACHE_NAME).then((cache) => {
     return fetch(e.request)
       .then((response) => {
-        if (e.request.method === "GET") cache.put(e.request, response.clone());
+        // if (e.request.method === "GET") cache.put(e.request, response.clone());
         return response;
       })
       .catch((error) => {

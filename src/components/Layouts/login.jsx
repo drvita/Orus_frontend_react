@@ -90,7 +90,8 @@ class LogginComponent extends Component {
                     name="username"
                     autoFocus={HSHOW ? false : true}
                     onChange={({ target }) => this.catchInputs(target)}
-                    value={U}
+                    defaultValue={U}
+                    autoComplete="false"
                   />
                   <div className="input-group-append">
                     <div className="input-group-text">
@@ -112,8 +113,9 @@ class LogginComponent extends Component {
                     placeholder="Contraseña"
                     name="password"
                     onChange={({ target }) => this.catchInputs(target)}
-                    value={P}
                     onKeyPress={({ key }) => this.handleKeyEnter(key)}
+                    defaultValue={P}
+                    autoComplete="false"
                   />
                   <div className="input-group-append">
                     <div className="input-group-text">

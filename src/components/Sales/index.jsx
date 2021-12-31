@@ -37,7 +37,7 @@ export default function IndexSalesComponent() {
       const path = window.location.pathname;
 
       if (path !== "/notas") {
-        console.log("[DEBUG] Impresion cancelada:", path);
+        // console.log("[DEBUG] Impresion cancelada:", path);
         return false;
       }
 

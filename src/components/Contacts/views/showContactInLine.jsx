@@ -59,7 +59,9 @@ const ShowContactComponent = (props) => {
       }, 1000);
       setTimer(toTimer);
     }
-
+    //eslint-disable-next-line
+  }, [input]);
+  useEffect(() => {
     return () => {
       _setListContact({
         result: {
@@ -70,7 +72,7 @@ const ShowContactComponent = (props) => {
       });
     };
     //eslint-disable-next-line
-  }, [input]);
+  }, []);
 
   return (
     <div className="w-100 d-block">

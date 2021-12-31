@@ -9,16 +9,19 @@ import ListModal from "./ListItemsModal";
 function InputSearchItem({
   sale,
   list,
+  messages,
   loading,
   //Functions
   _getList,
   _setList,
   _setSale,
+  _setMessage,
 }) {
   //State
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(1);
+  // const [startSearch, setStartSearch] = useState(false);
   const { session } = sale;
   //Functions
   const handleChangeTextSearch = ({ value }) => {
@@ -116,6 +119,17 @@ function InputSearchItem({
       } else {
         setShowList(true);
       }
+    } else if (!list.length && messages.length) {
+      messages.forEach((msg) => {
+        const { type, text } = msg;
+        window.Swal.fire({
+          icon: type,
+          title: text,
+          showConfirmButton: type !== "error" ? false : true,
+          timer: type !== "error" ? 1500 : 9000,
+        });
+      });
+      _setMessage();
     }
 
     //eslint-disable-next-line
@@ -159,6 +173,7 @@ const mapStateToProps = ({ storeItem }) => {
     return {
       loading: storeItem.loading,
       list: storeItem.list,
+      messages: storeItem.messages,
       meta: storeItem.metaList,
     };
   },
@@ -166,6 +181,7 @@ const mapStateToProps = ({ storeItem }) => {
     _getList: storeActions.getListStore,
     _setList: storeActions.setListStore,
     _setSale: saleActions.setSale,
+    _setMessage: storeActions.setMessagesStore,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(InputSearchItem);

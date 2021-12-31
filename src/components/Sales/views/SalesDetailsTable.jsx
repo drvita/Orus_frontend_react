@@ -143,7 +143,10 @@ export default function SalesDetailsTableComponent({ paid }) {
           {sale.items && sale.items.length ? (
             <>
               {sale.items.map((item, index) => {
-                const disabled = paid || sale.payments.length || sale.descuento;
+                const disabled =
+                  (sale.total && paid) ||
+                  sale.payments.length ||
+                  sale.descuento;
                 if (!item.store_items_id) return null;
 
                 return (

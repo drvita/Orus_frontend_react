@@ -24,7 +24,7 @@ export default function PaymentBtnComponent({ sale, paid, forPaid }) {
       <button
         className="btn btn-success ml-2 d-print-none"
         onClick={handleShowPayment}
-        disabled={!sale.items.length || paid}
+        disabled={!sale.items.length || (sale.total && paid)}
       >
         <i className="fas fa-money-bill-alt"></i>
       </button>

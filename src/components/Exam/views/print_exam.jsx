@@ -26,8 +26,6 @@ export default function PrintExamComponent(props) {
   // bg-white mt-5 p-5
   // d-none d-print-block fixed-top
 
-  console.log("[DEBUG] ", list);
-
   return (
     <div className="d-none d-print-block fixed-top">
       <div className="row">

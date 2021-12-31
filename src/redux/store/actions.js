@@ -4,7 +4,7 @@ const setListStore = (payload = []) => ({
   type: TYPE.SET_LIST_STORE,
   payload,
 });
-const setMessagesStore = (payload = {}) => ({
+const setMessagesStore = (payload = []) => ({
   type: TYPE.SET_MESSAGE_STORE,
   payload,
 });

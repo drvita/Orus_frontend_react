@@ -37,21 +37,33 @@ const ListContactComponent = (props) => {
         {contacts.length ? (
           <>
             {contacts.map((contact) => {
-              return (
-                <li
-                  key={contact.id}
-                  className="list-group-item text-capitalize"
-                >
-                  <a
-                    href="#selecte"
-                    className="text-indigo"
-                    onClick={(e) => handleSelect(e, contact)}
+              if (contact.id === 2) {
+                return (
+                  <li
+                    key={contact.id}
+                    className="list-group-item text-capitalize"
                   >
-                    <i className="fas fa-user mr-1"></i>
+                    <i className="fas fa-user mr-1 text-secondary"></i>
                     {contact.nombre}
-                  </a>
-                </li>
-              );
+                  </li>
+                );
+              } else {
+                return (
+                  <li
+                    key={contact.id}
+                    className="list-group-item text-capitalize"
+                  >
+                    <a
+                      href="#selecte"
+                      className="text-indigo"
+                      onClick={(e) => handleSelect(e, contact)}
+                    >
+                      <i className="fas fa-user mr-1"></i>
+                      {contact.nombre}
+                    </a>
+                  </li>
+                );
+              }
             })}
             {meta.total > perPage ? (
               <li className="list-group-item text-muted">

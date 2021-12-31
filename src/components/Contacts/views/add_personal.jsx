@@ -25,7 +25,6 @@ const DataPersonalComponent = (props) => {
     if (name === "type") val = parseInt(value);
     if (name === "business") val = checked;
     if (name !== "name" && contacts.length) {
-      console.log("[DEBUG] add_personal catch input", name);
       _setList({
         result: {
           list: [],
@@ -50,7 +49,6 @@ const DataPersonalComponent = (props) => {
         }, 1000);
         setTime(timeTemp);
       } else if (name.length === 1) {
-        console.log("[DEBUG] add_personal effect:", name.length);
         _setList({
           result: {
             list: [],

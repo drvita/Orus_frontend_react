@@ -16,6 +16,14 @@ export default function* handleGetList({ payload: options }) {
         result: {
           list: result.data,
           metaList: result.meta,
+          messages: !result.data?.length
+            ? [
+                {
+                  type: "info",
+                  text: `El codigo ${options.search} no existe en el almacen`,
+                },
+              ]
+            : [],
         },
       })
     );

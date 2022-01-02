@@ -51,16 +51,3 @@ const toExport = {
 };
 
 export default toExport;
-
-/*
-function makeItems(items) {
-  const itemToBack = items.map((item) => ({
-    ...item,
-    cant: item.cantidad,
-    out: 0,
-    price: item.precio,
-  }));
-
-  return itemToBack;
-}
-*/

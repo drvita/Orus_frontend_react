@@ -69,19 +69,18 @@ export default function IndexSalesComponent() {
     sale.items.forEach((item) => (sum += item.subtotal));
     sale.payments.forEach((pay) => (pagado += pay.total));
 
-    if (sale.id && (sum !== sale.subtotal || data.pagado !== pagado)) {
-      const total = sum - sale.descuento;
+    if (sum !== sale.subtotal || data.pagado !== pagado) {
+      sale.subtotal = sum;
+      sale.total = sum - sale.descuento;
+      sale.pagado = pagado;
+      // console.log("[DEBUG] sale start:", sale);
+      if (sale.id) {
+        dispatch(saleActions.setSale(sale));
+      }
+
       setData({
         pagado,
       });
-      dispatch(
-        saleActions.setSale({
-          ...sale,
-          subtotal: sum,
-          total,
-          pagado,
-        })
-      );
     }
 
     localStorage.setItem("OrusSales", JSON.stringify(sale.id ? {} : toSave));

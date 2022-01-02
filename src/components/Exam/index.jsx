@@ -198,7 +198,9 @@ class IndexExamComponent extends Component {
                 >
                   <option value="all">-- Todas --</option>
                   {branches.map((branch) => (
-                    <option value={branch.id}>{branch.values.name}</option>
+                    <option value={branch.id} key={branch.id}>
+                      {branch.values.name}
+                    </option>
                   ))}
                 </select>
               </li>

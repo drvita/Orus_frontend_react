@@ -1,4 +1,5 @@
 import { TYPE } from "./types";
+import saleHelper from "../../components/Sales/helpers";
 
 export const DEFAULT_STATE_SALES = {
   list: [],
@@ -16,7 +17,7 @@ export const DEFAULT_STATE_SALES = {
     },
     contact_id: 2,
     items: [],
-    session: null,
+    session: saleHelper.getSession(),
     descuento: 0,
     subtotal: 0,
     total: 0,

@@ -44,13 +44,15 @@ export default function DiscountBtnComponent({ sale, paid }) {
       );
     }
   };
+  // const
+  const total = sale.total - sale.pagado;
 
   return (
     <button
       className="btn btn-primary mx-1"
       title="Agregar descuento"
       onClick={handleAddDiscount}
-      disabled={!sale.total || paid || sale.payments.length}
+      disabled={total || paid}
     >
       <i className="fas fa-percent"></i>
     </button>

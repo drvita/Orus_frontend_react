@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { useState, useEffect } from "react";
+import { connect, useSelector } from "react-redux";
 //Actions
 import { storeActions } from "../../../redux/store/";
 
@@ -18,7 +18,8 @@ function SearchItemsComponent(props) {
   //States
   const [search, setSearch] = useState(item.producto),
     [timer, setTimer] = useState(""),
-    [load, setLoad] = useState(false);
+    [load, setLoad] = useState(false),
+    { dataLoggin: user } = useSelector((state) => state.users);
   //Functions
   const handleChangeSearch = ({ target }) => {
       const { value } = target;
@@ -41,9 +42,11 @@ function SearchItemsComponent(props) {
     if (search.length > 2 && !item.store_items_id) {
       if (timer) clearTimeout(timer);
       toTimer = setTimeout(() => {
+        console.log("[DEBUG] user", user.branch.id);
         _getList({
           search: search,
           itemsPage: perPage,
+          // branch: user.branch.id ? user.branch.id : null,
         });
         setTimer("");
         setLoad(false);
@@ -99,40 +102,19 @@ function SearchItemsComponent(props) {
           style={{ maxHeight: "18rem", zIndex: "100" }}
         >
           <div className="list-group m-0 list-group-flush">
-            {items.map((i) => {
-              const total = i.cant_total > 0 ? i.cant_total : 0;
-
-              return (
-                <a
-                  key={i.id}
-                  className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                  href="#l"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleSelect(i);
-                  }}
-                >
-                  <span
-                    className={
-                      total
-                        ? "text-truncate text-uppercase text-primary text-bold"
-                        : "text-truncate text-uppercase text-muted"
-                    }
-                  >
-                    {i.producto}
-                  </span>
-                  <span
-                    className={
-                      total
-                        ? "badge badge-primary badge-pill"
-                        : "badge badge-dark badge-pill"
-                    }
-                  >
-                    {total}
-                  </span>
-                </a>
-              );
-            })}
+            {items
+              .sort((a, b) => {
+                if (a.cant > b.cant) {
+                  return -1;
+                }
+                if (a.cant < b.cant) {
+                  return 1;
+                }
+                return 0;
+              })
+              .map((product) => {
+                return getItemToShow(product, handleSelect);
+              })}
             {meta.total > perPage && (
               <a
                 href="#more"
@@ -166,3 +148,76 @@ export default connect(
   mapStateToProps,
   mapActionsToProps
 )(SearchItemsComponent);
+
+function getItemToShow(i, handleSelect) {
+  if (i.cant !== i.cant_total) {
+    if (!i.cant && i.cant_total) {
+      return (
+        <a
+          key={i.id}
+          className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+          href="#l"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSelect(i);
+          }}
+        >
+          <span className="text-truncate text-uppercase text-muted">
+            [S]-{i.producto}
+          </span>
+          <span className="badge badge-dark badge-pill">{i.cant_total}</span>
+        </a>
+      );
+    }
+    return (
+      <a
+        key={i.id}
+        className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        href="#l"
+        onClick={(e) => {
+          e.preventDefault();
+          handleSelect(i);
+        }}
+      >
+        <span className="text-truncate text-uppercase text-primary">
+          {i.producto}
+        </span>
+        <span className="badge badge-dark badge-pill">{i.cant_total}</span>
+      </a>
+    );
+  } else if (!i.cant_total && !i.cant) {
+    return (
+      <a
+        key={i.id}
+        className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        href="#l"
+        onClick={(e) => {
+          e.preventDefault();
+          handleSelect(i);
+        }}
+      >
+        <span className="text-truncate text-uppercase text-danger">
+          [X]-{i.producto}
+        </span>
+        <span className="badge badge-dark badge-pill">{i.cant_total}</span>
+      </a>
+    );
+  }
+
+  return (
+    <a
+      key={i.id}
+      className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+      href="#l"
+      onClick={(e) => {
+        e.preventDefault();
+        handleSelect(i);
+      }}
+    >
+      <span className="text-truncate text-uppercase text-primary">
+        {i.producto}
+      </span>
+      <span className="badge badge-dark badge-pill">{i.cant}</span>
+    </a>
+  );
+}

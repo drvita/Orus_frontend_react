@@ -12,21 +12,14 @@ import { categoryActions } from "../../redux/category";
 import { orderActions } from "../../redux/order";
 import helper_exam from "../Exam/helpers";
 import helper from "./helpers";
+import saleHelper from "../Sales/helpers";
 
 class AsistentComponent extends Component {
   constructor(props) {
     super(props);
-    const session =
-      Math.random().toString(36).substring(2, 16) +
-      Math.random().toString(36).substring(2, 16) +
-      Math.random().toString(36).substring(2, 16) +
-      Math.random().toString(36).substring(2, 16) +
-      Math.random().toString(36).substring(2, 16) +
-      Math.random().toString(36).substring(2, 16) +
-      Math.random().toString(10);
 
     this.state = {
-      session,
+      session: saleHelper.getSession(),
       contact_id: 0,
       items: [],
       codes: {},

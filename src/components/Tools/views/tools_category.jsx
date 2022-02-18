@@ -282,7 +282,15 @@ export default class ToolsCategory extends Component {
               return back;
             })
             .catch((e) => {
-              console.error("Orus fetch", e);
+              if (e.code === 20) {
+                console.error(
+                  "[Orus system] Salida por error:",
+                  e.code,
+                  e.message
+                );
+                return false;
+              }
+
               window.Swal.fire(
                 "Fallo de conexion",
                 "Verifique la conexion al servidor",
@@ -365,11 +373,15 @@ export default class ToolsCategory extends Component {
             })
             .catch((e) => {
               console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
+              if (e.code === 20) {
+                return false;
+              } else {
+                window.Swal.fire(
+                  "Fallo de conexion",
+                  "Verifique la conexion al servidor",
+                  "error"
+                );
+              }
             });
         }
       },
@@ -442,45 +454,17 @@ export default class ToolsCategory extends Component {
         }
       })
       .catch((e) => {
-        console.error("Orus: " + e);
+        if (e.code === 20) {
+          console.error("[Orus system] Salida por error:", e.code, e.message);
+          return false;
+        }
+
         window.Swal.fire(
           "Fallo de conexion",
           "Verifique la conexion al servidor",
           "error"
         );
       });
-    //Category_select
-    /*
-    fetch(url + page + categoryid, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((cat) => {
-        if (cat.data) {
-          this.setState({
-            category_select: cat.data,
-          });
-        }
-      })
-      .catch((e) => {
-        console.error("Orus: " + e);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-      });
-    */
   };
   handleClickAdd = () => {
     this.setState({

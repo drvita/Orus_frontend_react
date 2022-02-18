@@ -203,16 +203,20 @@ export default class ReportPaymentsDetails extends Component {
           }
         })
         .catch((e) => {
-          console.error(e);
-          window.Swal.fire({
-            title: "Error!",
-            text: "Ups!\n Hubo un error de procesamiento, intentelo mas tarde",
-            icon: "error",
-            confirmButtonText: "Ok",
-          });
           this.setState({
             load: false,
           });
+
+          if (e.code === 20) {
+            console.error("[Orus system] Salida por error:", e.code, e.message);
+            return false;
+          }
+
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          );
         });
     }
   };

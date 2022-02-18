@@ -181,7 +181,15 @@ export default class Cash extends Component {
               return back;
             })
             .catch((e) => {
-              console.error("Orus fetch", e);
+              if (e.code === 20) {
+                console.error(
+                  "[Orus system] Salida por error:",
+                  e.code,
+                  e.message
+                );
+                return false;
+              }
+
               window.Swal.fire(
                 "Fallo de conexion",
                 "Verifique la conexion al servidor",
@@ -252,7 +260,15 @@ export default class Cash extends Component {
               return response.json();
             })
             .catch((e) => {
-              console.error("Orus fetch", e);
+              if (e.code === 20) {
+                console.error(
+                  "[Orus system] Salida por error:",
+                  e.code,
+                  e.message
+                );
+                return false;
+              }
+
               window.Swal.fire(
                 "Fallo de conexion",
                 "Verifique la conexion al servidor",
@@ -326,12 +342,16 @@ export default class Cash extends Component {
         }
       })
       .catch((e) => {
-        console.error(e);
-        window.Swal.fire({
-          title: "Error!",
-          text: "Ups!\n Hubo un error, intentelo mas tarde",
-          icon: "error",
-        });
+        if (e.code === 20) {
+          console.error("[Orus system] Salida por error:", e.code, e.message);
+          return false;
+        }
+
+        window.Swal.fire(
+          "Fallo de conexion",
+          "Verifique la conexion al servidor",
+          "error"
+        );
       });
   };
 }

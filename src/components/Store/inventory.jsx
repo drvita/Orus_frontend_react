@@ -372,11 +372,16 @@ export default class Inventory extends Component {
       })
       .catch((e) => {
         console.error("Orus: " + e);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
+        if(e.code === 20){
+          return false
+        }
+        else{
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          ); 
+        }
       });
   };
 }

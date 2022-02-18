@@ -181,12 +181,17 @@ export default class Cash extends Component {
               return back;
             })
             .catch((e) => {
-              console.error("Orus fetch", e);
-              window.Swal.fire(
+              if(e.code === 20){
+                return false
+              }
+              else{
+                window.Swal.fire(
                 "Fallo de conexion",
                 "Verifique la conexion al servidor",
                 "error"
               );
+              }
+              
             });
         }
       },
@@ -252,12 +257,16 @@ export default class Cash extends Component {
               return response.json();
             })
             .catch((e) => {
-              console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
+              if(e.code === 20){
+                return false
+              }
+              else{
+                window.Swal.fire(
+                  "Fallo de conexion",
+                  "Verifique la conexion al servidor",
+                  "error"
+                );
+              }
             });
         }
       },
@@ -326,12 +335,17 @@ export default class Cash extends Component {
         }
       })
       .catch((e) => {
-        console.error(e);
-        window.Swal.fire({
-          title: "Error!",
-          text: "Ups!\n Hubo un error, intentelo mas tarde",
-          icon: "error",
-        });
+        console.error("Error Modal", e.message, e.code);
+        if(e.code === 20){
+          return false
+        }
+        else{
+          window.Swal.fire({
+            title: "Error!",
+            text: "Ups!\n Hubo un error, intentelo mas tarde",
+            icon: "error",
+          });
+        }
       });
   };
 }

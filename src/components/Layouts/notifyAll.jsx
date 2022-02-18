@@ -118,12 +118,17 @@ export default class NotifyAll extends Component {
         if (url) this.props.history.push(url);
       })
       .catch((e) => {
+        if(e.code === 20){
+          return false
+        }
+        else{
+          window.Swal.fire(
+            "Notificaciones",
+            "Verifique la conexion al servidor",
+            "error"
+          );
+        }
         console.error("[Orus] Notify error \n", e);
-        window.Swal.fire(
-          "Notificaciones",
-          "Verifique la conexion al servidor",
-          "error"
-        );
       });
   };
   checkNotify = () => {
@@ -158,14 +163,20 @@ export default class NotifyAll extends Component {
         })
         .catch((e) => {
           console.error("[Orus] User session in API error \n", e);
-          this.setState({
-            load: false,
-          });
-          window.Swal.fire(
-            "Notificaciones",
-            "Verifique la conexion al servidor",
-            "error"
-          );
+          if(e.code === 20){
+            return false
+          }
+          else{
+            this.setState({
+              load: false,
+            });
+            window.Swal.fire(
+              "Notificaciones",
+              "Verifique la conexion al servidor",
+              "error"
+            );
+          }
+          
         });
     }
   };

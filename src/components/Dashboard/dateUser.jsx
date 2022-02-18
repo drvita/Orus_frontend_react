@@ -113,13 +113,19 @@ export default class DateUser extends Component {
         }
       })
       .catch((e) => {
-        console.error(e);
-        window.Swal.fire({
-          title: "Error!",
-          text: "Ups!\n Hubo un error de usuario, intentelo mas tarde",
-          icon: "error",
-          confirmButtonText: "Ok",
-        });
+        if(e.code === 20){
+          console.error("Error Modal", e.message, e.code);
+          return false
+        }
+        else{
+          window.Swal.fire({
+            title: "Error!",
+            text: "Ups!\n Hubo un error de usuario, intentelo mas tarde error de usuario",
+            icon: "error",
+            confirmButtonText: "Ok",
+          });
+        }
+       
       });
   };
 }

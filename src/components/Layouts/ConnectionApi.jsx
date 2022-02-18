@@ -12,12 +12,16 @@ export async function ApiGet(action) {
       },
     });
   } catch (e) {
-    console.error(e);
-    window.Swal.fire(
-      "Fallo de conexion",
-      "Verifique la conexion al servidor",
-      "error"
-    );
+    if(e.code === 20){
+      return false
+    }
+    else{
+      window.Swal.fire(
+        "Fallo de conexion",
+        "Verifique la conexion al servidor",
+        "error"
+      ); 
+    }
     return {};
   }
 }
@@ -52,12 +56,16 @@ export function ApiPost(action, body, TextConfirm) {
             return response.json();
           })
           .catch((e) => {
-            console.error(e);
-            window.Swal.fire(
-              "Fallo de conexion",
-              "Verifique la conexion al servidor",
-              "error"
-            );
+            if(e.code === 20){
+              return false
+            }
+            else{
+              window.Swal.fire(
+                "Fallo de conexion",
+                "Verifique la conexion al servidor",
+                "error"
+              ); 
+            }
           });
       }
     },

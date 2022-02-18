@@ -297,11 +297,16 @@ class StoreLote extends Component {
             })
             .catch((e) => {
               console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
+              if(e.code === 20){
+                return false
+              }
+              else{
+                window.Swal.fire(
+                  "Fallo de conexion",
+                  "Verifique la conexion al servidor",
+                  "error"
+                ); 
+              }
             });
         }
       },
@@ -358,11 +363,16 @@ class StoreLote extends Component {
       })
       .catch((error) => {
         console.log("Orus:", error);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
+        if(e.code === 20){
+          return false
+        }
+        else{
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          ); 
+        }
         this.setState({
           load: false,
         });
@@ -411,11 +421,16 @@ class StoreLote extends Component {
             })
             .catch((e) => {
               console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
+              if(e.code === 20){
+                return false
+              }
+              else{
+                window.Swal.fire(
+                  "Fallo de conexion",
+                  "Verifique la conexion al servidor",
+                  "error"
+                ); 
+              }
             });
         }
       },

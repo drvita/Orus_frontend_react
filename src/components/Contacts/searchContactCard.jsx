@@ -400,12 +400,17 @@ export default class searchContactLine extends Component {
           }
         })
         .catch((e) => {
-          console.error("Orus fetch", e);
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
+          if(e.code === 20)
+          {
+            return false
+          }
+          else{
+            window.Swal.fire(
+              "Fallo de conexion",
+              "Verifique la conexion al servidor",
+              "error"
+            );
+          }         
         });
     }, 1500);
   };

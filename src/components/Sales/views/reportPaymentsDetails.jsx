@@ -203,16 +203,23 @@ export default class ReportPaymentsDetails extends Component {
           }
         })
         .catch((e) => {
-          console.error(e);
-          window.Swal.fire({
-            title: "Error!",
-            text: "Ups!\n Hubo un error de procesamiento, intentelo mas tarde",
-            icon: "error",
-            confirmButtonText: "Ok",
-          });
-          this.setState({
-            load: false,
-          });
+          if(e.code === 20)
+          {
+            console.error("Error Modal", e.message, e.code);
+            return false
+          }
+          else{
+            window.Swal.fire({
+              title: "Error!",
+              text: "Ups!\n Hubo un error de procesamiento, intentelo mas tarde",
+              icon: "error",
+              confirmButtonText: "Ok",
+            });
+            this.setState({
+              load: false,
+            });
+          }
+         
         });
     }
   };

@@ -24,7 +24,7 @@ class DashboardComponent extends Component {
       ventas: 0,
     };
   }
-  componentDidMount() {
+  componentDidMount() {     
     const { _setPageName } = this.props;
 
     _setPageName("panel de control");

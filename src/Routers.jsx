@@ -18,24 +18,27 @@ import Sales from "./components/Sales/index";
 //import SalesAdd from "./components/Sales/add";
 import Dashboard from "./components/Dashboard/index";
 import NotifyAllShow from "./components/Layouts/notifyAll";
+import NotFound from "./components/404NotFound";
 
 export default class Routers extends Component {
   constructor(props) {
     super(props);
     this.state = {
       page: this.handleTitleSection(window.location.pathname),
-      company: props.data.company,
+      company: props.data.company
     };
   }
 
   render() {
     const { data, logOut } = this.props,
       { page } = this.state;
+      const userRol = data.dataLoggin.roles[0];  
+      //console.log("User Rol" + " " + userRol);
 
     return (
       <Router>
         <div className="wrapper">
-          <Navtop logOut={logOut} data={data} page={this.handlePage} />
+          <Navtop logOut={logOut} data={data} page={this.handlePage}/>
           <Menu
             companyName={this.state.company}
             user={data}
@@ -49,19 +52,40 @@ export default class Routers extends Component {
               <div className="container-fluid">
                 <div className="row">
                   <div className="col-lg-12">
+
                     <Switch>
+
+                      <Route
+                        exact path="/"
+                        render={(props) => 
+                          {
+                            switch(userRol){
+                              case 'doctor': 
+                                return( <Exam {...props} /> )                                 
+
+                              case "ventas":
+                                return( <Order  {...props} data={data} page={this.handlePage}/> )
+
+                              default:
+                                return( <Dashboard {...props} data={data} page={this.handlePage} /> )                                
+                            }
+                          }
+                        }
+                      />
+
+
                       <Route
                         path="/usuarios/registro/:id?"
-                        render={(props) => (
+                        render={(props) => 
                           <UserAdd
                             {...props}
                             data={data}
                             page={this.handlePage}
                           />
-                        )}
+                        }
                       />
+
                       <Route
-                        extric
                         path="/usuarios"
                         render={(props) => (
                           <Users
@@ -73,7 +97,6 @@ export default class Routers extends Component {
                       />
 
                       <Route
-                        extric
                         path="/almacen/:id?"
                         render={(props) => (
                           <Store
@@ -85,7 +108,6 @@ export default class Routers extends Component {
                       />
 
                       <Route
-                        extric
                         path="/contactos/:id?"
                         render={(props) => (
                           <Contacts
@@ -95,14 +117,15 @@ export default class Routers extends Component {
                           />
                         )}
                       />
-                      <Route
-                        extric
-                        path="/consultorio/:id?"
-                        render={(props) => <Exam {...props} />}
-                      />
 
                       <Route
-                        extric
+                        path="/consultorio/:id?"
+                        render={(props) => (
+                          <Exam {...props} />
+                        )}
+                      />
+
+                      <Route                        
                         path="/configuraciones"
                         render={(props) => (
                           <Tools
@@ -113,26 +136,22 @@ export default class Routers extends Component {
                         )}
                       />
 
-                      <Route
-                        extric
+                      <Route                        
                         path="/pedidos/:id?"
                         render={(props) => <Order {...props} />}
                       />
 
                       <Route
-                        extric
                         path="/notas/:id?"
                         render={(props) => (
-                          <Sales
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
-                          />
+                            <Sales 
+                              {...props} 
+                              data={data} 
+                              page={this.handlePage} />
                         )}
                       />
 
                       <Route
-                        extric
                         path="/notificaciones"
                         render={(props) => (
                           <NotifyAllShow
@@ -144,21 +163,18 @@ export default class Routers extends Component {
                       />
 
                       <Route
-                        extric
-                        path="/"
+                        path="*"
                         render={(props) => (
-                          <Dashboard
-                            {...props}
-                            data={data}
-                            page={this.handlePage}
+                          <NotFound
                           />
                         )}
                       />
                     </Switch>
+
                   </div>
                 </div>
               </div>
-            </div>
+            </div>  
           </div>
           <Footer />
         </div>
@@ -173,11 +189,13 @@ export default class Routers extends Component {
     });
   };
   handleTitleSection = (page) => {
+    console.log("Esta es la página actual" + page);
     //Verificamos que la variable no este vacia
     page = page ? page : window.location.pathname;
     //Maneja el renderiazado del componentes cuando se cambíe el componentes
     if (page === "" || typeof page === "undefined" || typeof page === "object")
       page = "/";
+
     const locations = page.split("/");
     if (locations[1] === "") {
       return "dashboard";

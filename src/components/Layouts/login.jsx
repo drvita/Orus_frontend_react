@@ -102,7 +102,7 @@ class LogginComponent extends Component {
                 {E.input && E.input === "email" ? (
                   <span className="text-center text-danger text-wrap font-weight-bold text-monospace">
                     <small>
-                      <i className="mx-2 fas fa-info"></i>Los datos son errones
+                      <i className="mx-2 fas fa-info"></i>Los datos son erroneos
                     </small>
                   </span>
                 ) : null}
@@ -126,7 +126,7 @@ class LogginComponent extends Component {
                 {E.input && E.input === "password" ? (
                   <span className="mb-3 text-center text-danger text-wrap font-weight-bold text-monospace">
                     <small>
-                      <i className="mx-2 fas fa-info"></i>Los datos son errones
+                      <i className="mx-2 fas fa-info"></i>Los datos son erroneos
                     </small>
                   </span>
                 ) : null}

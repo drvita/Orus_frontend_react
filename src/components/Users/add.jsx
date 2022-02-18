@@ -52,7 +52,7 @@ class UserAddComponent extends Component {
     }
     this.getBranchs();
   }
-
+  
   render() {
     let {
         load,
@@ -187,12 +187,12 @@ class UserAddComponent extends Component {
                         <select
                           className="custom-select"
                           name="rol"
-                          value={rol}
+                          value={roles[0]}
                           onChange={({ target }) => this.catchInputs(target)}
                         >
-                          <option value="0">Administrador</option>
-                          <option value="1">Ventas</option>
-                          <option value="2">Optometrista</option>
+                          <option value="admin">Administrador</option>
+                          <option value="ventas">Ventas</option>
+                          <option value="doctor">Optometrista</option>
                         </select>
                       </div>
                     </div>
@@ -401,11 +401,11 @@ class UserAddComponent extends Component {
     let data = {
       name,
       username,
-      rol,
+      role: rol,
       email,
       branch_id,
     };
-    if (password.length > 8) data.password = password;
+    if (password.length >= 8) data.password = password;
 
     //Valid primary data
     if (!validUserName) {

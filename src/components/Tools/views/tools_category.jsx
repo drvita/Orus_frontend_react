@@ -283,11 +283,16 @@ export default class ToolsCategory extends Component {
             })
             .catch((e) => {
               console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
+              if(e.code === 20){
+                return false
+              }
+              else{
+                window.Swal.fire(
+                  "Fallo de conexion",
+                  "Verifique la conexion al servidor",
+                  "error"
+                ); 
+              }
             });
         }
       },
@@ -365,11 +370,16 @@ export default class ToolsCategory extends Component {
             })
             .catch((e) => {
               console.error("Orus fetch", e);
-              window.Swal.fire(
-                "Fallo de conexion",
-                "Verifique la conexion al servidor",
-                "error"
-              );
+              if(e.code === 20){
+                return false
+              }
+              else{
+                window.Swal.fire(
+                  "Fallo de conexion",
+                  "Verifique la conexion al servidor",
+                  "error"
+                ); 
+              }
             });
         }
       },
@@ -443,11 +453,16 @@ export default class ToolsCategory extends Component {
       })
       .catch((e) => {
         console.error("Orus: " + e);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
+        if(e.code === 20){
+          return false
+        }
+        else{
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          ); 
+        }
       });
     //Category_select
     /*

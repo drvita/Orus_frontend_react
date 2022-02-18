@@ -165,12 +165,18 @@ export default class ReportPay extends Component {
         })
         .catch((e) => {
           console.error(e);
-          window.Swal.fire({
-            title: "Error!",
-            text: "Ups!\n Hubo un error de usuario, intentelo mas tarde",
-            icon: "error",
-            confirmButtonText: "Ok",
-          });
+          if(e.code === 20)
+          {
+            return false
+          }
+          else{
+            window.Swal.fire({
+              title: "Error!",
+              text: "Ups!\n Hubo un error de usuario, intentelo mas tarde",
+              icon: "error",
+              confirmButtonText: "Ok",
+            });
+          }
         });
     }
   };

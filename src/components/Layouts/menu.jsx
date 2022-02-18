@@ -27,6 +27,11 @@ const MenuComponent = (props) => {
   const { companyName, user } = props,
     active = useLocation().pathname.replace("/", "");
 
+    //Pruebas Temporales-----
+    const mainRole = user.roles[0];
+    console.log("[USER DEL MENU LATERAL]", mainRole);
+    
+
   let avatar = "/img/avatars/avatar5.png";
   if (user.rol === 1) avatar = "/img/avatars/avatar2.png";
   if (!user.rol) avatar = "/img/avatars/avatar3.png";
@@ -70,13 +75,10 @@ const MenuComponent = (props) => {
           </div>
         </div>
         <nav className="mt-2">
-          <ul
-            className="nav nav-pills nav-sidebar flex-column"
-            data-widget="treeview"
-            role="menu"
-            data-accordion="false"
-          >
-            {user.rol !== 2 ? (
+          <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+
+          {mainRole === 'admin' ? (	
               <li className="nav-item">
                 <Link
                   to="/"
@@ -90,42 +92,51 @@ const MenuComponent = (props) => {
                 </Link>
               </li>
             ) : null}
-            <li className="nav-item">
-              <Link
-                to="/contactos"
-                className={
-                  active === "contactos" ? "nav-link active" : "nav-link"
-                }
-              >
-                <i className="nav-icon fas fa-address-book"></i>
-                <p>
-                  Contactos
-                  <i className="right fas fa-angle-left"></i>
-                </p>
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                to="/consultorio"
-                className={
-                  active === "consultorio" ? "nav-link active" : "nav-link"
-                }
-              >
-                <i className="nav-icon fas fa-notes-medical"></i>
-                <p>
-                  Examenes
-                  <i className="right fas fa-angle-left"></i>
-                </p>
-              </Link>
-            </li>
 
-            {user.rol <= 1 ? (
+            
+                <li className="nav-item">
+                  <Link
+                    to="/contactos"
+                    className={
+                      active === "contactos" ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <i className="nav-icon fas fa-address-book"></i>
+                    <p>
+                      Contactos
+                      <i className="right fas fa-angle-left"></i>
+                    </p>
+                  </Link>
+                </li>
+
+
+                <li className="nav-item">
+                  <Link
+                    to="/consultorio"
+                    className={
+                      active === "consultorio" || active === "" && (mainRole === 'doctor') ? "nav-link active" : "nav-link"
+                    }
+                  >
+                    <i className="nav-icon fas fa-notes-medical"></i>
+                    <p>
+                      Examenes
+                      <i className="right fas fa-angle-left"></i>
+                    </p>
+                  </Link>
+                </li>
+
+
+
+
+
+
+            {mainRole === 'admin' || mainRole === 'ventas' ? (
               <React.Fragment>
                 <li className="nav-item">
                   <Link
                     to="/pedidos"
                     className={
-                      active === "pedidos" ? "nav-link active" : "nav-link"
+                      active === "pedidos" || active === "" && (mainRole === 'ventas') ? "nav-link active" : "nav-link"
                     }
                   >
                     <i className="nav-icon fas fa-clipboard-list"></i>
@@ -152,7 +163,12 @@ const MenuComponent = (props) => {
               </React.Fragment>
             ) : null}
 
-            {!user.rol ? (
+
+
+
+
+
+            {mainRole  !== 'ventas' && mainRole !== 'doctor'?  (
               <React.Fragment>
                 <li
                   className={
@@ -213,6 +229,7 @@ const MenuComponent = (props) => {
                 <p>Cerrar sesion</p>
               </Link>
             </li>
+                 
           </ul>
         </nav>
       </div>

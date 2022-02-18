@@ -138,15 +138,20 @@ export default class ReportBank extends Component {
         })
         .catch((e) => {
           console.error("[reportBank] " + e);
-          window.Swal.fire({
-            title: "Error!",
-            text: "Ups!\n Hubo un error en la consulta, revise la conexion",
-            icon: "error",
-            confirmButtonText: "Ok",
-          });
-          this.setState({
-            load: false,
-          });
+          if(e.code === 20){
+            return false
+          }
+          else{
+            window.Swal.fire({
+              title: "Error!",
+              text: "Ups!\n Hubo un error en la consulta, revise la conexion",
+              icon: "error",
+              confirmButtonText: "Ok",
+            });
+            this.setState({
+              load: false,
+            });
+          }
         });
     }
   };
@@ -182,11 +187,16 @@ export default class ReportBank extends Component {
       })
       .catch((e) => {
         console.error("[Orus system] ", e);
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
+        if(e.code === 20){
+          return false
+        }
+        else{
+          window.Swal.fire(
+            "Fallo de conexion",
+            "Verifique la conexion al servidor",
+            "error"
+          ); 
+        }
       });
   };
 }

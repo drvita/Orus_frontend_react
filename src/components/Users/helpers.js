@@ -29,9 +29,11 @@ const validInputs = (body) => {
   getNameRoles = (array) => {
     let htmlResponse = [];
 
-    array.forEach((rol) => {
+    array.forEach((rol, i) => {
       htmlResponse.push(
-        <span className="text-capitalize badge badge-dark">{rol}</span>
+        <span className="text-capitalize badge badge-dark" key={i}>
+          {rol}
+        </span>
       );
     });
 

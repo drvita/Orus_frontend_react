@@ -15,7 +15,7 @@ class UserAddComponent extends Component {
 
     this.state = {
       id: 0,
-      rol: 1,
+      role: "",
       roles: [],
       permissions: [],
       username: "",
@@ -36,7 +36,7 @@ class UserAddComponent extends Component {
     if (user && user.id) {
       this.setState({
         id: user.id,
-        rol: user.rol,
+        role: user.roles[0],
         roles: user.roles,
         permissions: user.permissions,
         username: user.username,
@@ -57,8 +57,7 @@ class UserAddComponent extends Component {
     let {
         load,
         id,
-        rol,
-        roles,
+        role,
         permissions,
         username,
         name,
@@ -176,7 +175,7 @@ class UserAddComponent extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <small>
-                        <label>Rol</label>
+                        <label>Tipo de usuario</label>
                       </small>
                       <div className="input-group mb-3">
                         <div className="input-group-prepend">
@@ -186,13 +185,13 @@ class UserAddComponent extends Component {
                         </div>
                         <select
                           className="custom-select"
-                          name="rol"
-                          value={rol}
+                          name="role"
+                          value={role}
                           onChange={({ target }) => this.catchInputs(target)}
                         >
-                          <option value="0">Administrador</option>
-                          <option value="1">Ventas</option>
-                          <option value="2">Optometrista</option>
+                          <option value="admin">Administrador</option>
+                          <option value="ventas">Ventas</option>
+                          <option value="doctor">Optometrista</option>
                         </select>
                       </div>
                     </div>
@@ -255,14 +254,14 @@ class UserAddComponent extends Component {
 
           <div className="card card-primary card-outline mt-4">
             <div className="card-header">
-              <h5 className="card-title text-primary">Roles y permisos</h5>
+              <h5 className="card-title text-primary">Tipo y permisos</h5>
             </div>
             <div className="card-body">
-              {roles.map((rol) => (
-                <span className="badge badge-dark m-1">{rol}</span>
-              ))}
-              {permissions.map((permission) => (
-                <span className="badge badge-primary m-1">{permission}</span>
+              <span className="badge badge-dark m-1">{role}</span>
+              {permissions.map((permission, i) => (
+                <span className="badge badge-primary m-1" key={i}>
+                  {permission}
+                </span>
               ))}
             </div>
           </div>
@@ -390,22 +389,22 @@ class UserAddComponent extends Component {
         id,
         name,
         username,
-        rol,
+        role,
         password,
         email,
         branch_id,
         validUserName,
         validUserEmail,
       } = this.state,
-      { options, _saveUser } = this.props;
+      { _saveUser, options } = this.props;
     let data = {
       name,
       username,
-      rol,
+      role,
       email,
       branch_id,
     };
-    if (password.length > 8) data.password = password;
+    if (password.length >= 8) data.password = password;
 
     //Valid primary data
     if (!validUserName) {

@@ -12,7 +12,11 @@ export async function ApiGet(action) {
       },
     });
   } catch (e) {
-    console.error(e);
+    if (e.code === 20) {
+      console.error("[Orus system] Salida por error:", e.code, e.message);
+      return false;
+    }
+
     window.Swal.fire(
       "Fallo de conexion",
       "Verifique la conexion al servidor",
@@ -52,7 +56,15 @@ export function ApiPost(action, body, TextConfirm) {
             return response.json();
           })
           .catch((e) => {
-            console.error(e);
+            if (e.code === 20) {
+              console.error(
+                "[Orus system] Salida por error:",
+                e.code,
+                e.message
+              );
+              return false;
+            }
+
             window.Swal.fire(
               "Fallo de conexion",
               "Verifique la conexion al servidor",

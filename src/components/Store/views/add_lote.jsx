@@ -296,7 +296,15 @@ class StoreLote extends Component {
               return response.json();
             })
             .catch((e) => {
-              console.error("Orus fetch", e);
+              if (e.code === 20) {
+                console.error(
+                  "[Orus system] Salida por error:",
+                  e.code,
+                  e.message
+                );
+                return false;
+              }
+
               window.Swal.fire(
                 "Fallo de conexion",
                 "Verifique la conexion al servidor",
@@ -356,16 +364,21 @@ class StoreLote extends Component {
           load: false,
         });
       })
-      .catch((error) => {
-        console.log("Orus:", error);
+      .catch((e) => {
+        this.setState({
+          load: false,
+        });
+
+        if (e.code === 20) {
+          console.error("[Orus system] Salida por error:", e.code, e.message);
+          return false;
+        }
+
         window.Swal.fire(
           "Fallo de conexion",
           "Verifique la conexion al servidor",
           "error"
         );
-        this.setState({
-          load: false,
-        });
       });
   }
   handleDelete = (e, id, item) => {
@@ -410,7 +423,19 @@ class StoreLote extends Component {
               return back;
             })
             .catch((e) => {
-              console.error("Orus fetch", e);
+              this.setState({
+                load: false,
+              });
+
+              if (e.code === 20) {
+                console.error(
+                  "[Orus system] Salida por error:",
+                  e.code,
+                  e.message
+                );
+                return false;
+              }
+
               window.Swal.fire(
                 "Fallo de conexion",
                 "Verifique la conexion al servidor",

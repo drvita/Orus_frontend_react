@@ -27,6 +27,10 @@ const MenuComponent = (props) => {
   const { companyName, user } = props,
     active = useLocation().pathname.replace("/", "");
 
+  //Pruebas Temporales-----
+  const mainRole = user.roles[0];
+  console.log("[USER DEL MENU LATERAL]", mainRole);
+
   let avatar = "/img/avatars/avatar5.png";
   if (user.rol === 1) avatar = "/img/avatars/avatar2.png";
   if (!user.rol) avatar = "/img/avatars/avatar3.png";
@@ -76,7 +80,7 @@ const MenuComponent = (props) => {
             role="menu"
             data-accordion="false"
           >
-            {user.rol !== 2 ? (
+            {mainRole === "admin" ? (
               <li className="nav-item">
                 <Link
                   to="/"
@@ -90,6 +94,7 @@ const MenuComponent = (props) => {
                 </Link>
               </li>
             ) : null}
+
             <li className="nav-item">
               <Link
                 to="/contactos"
@@ -104,11 +109,15 @@ const MenuComponent = (props) => {
                 </p>
               </Link>
             </li>
+
             <li className="nav-item">
               <Link
                 to="/consultorio"
                 className={
-                  active === "consultorio" ? "nav-link active" : "nav-link"
+                  active === "consultorio" ||
+                  (active === "" && mainRole === "doctor")
+                    ? "nav-link active"
+                    : "nav-link"
                 }
               >
                 <i className="nav-icon fas fa-notes-medical"></i>
@@ -119,13 +128,16 @@ const MenuComponent = (props) => {
               </Link>
             </li>
 
-            {user.rol <= 1 ? (
+            {mainRole !== "doctor" ? (
               <React.Fragment>
                 <li className="nav-item">
                   <Link
                     to="/pedidos"
                     className={
-                      active === "pedidos" ? "nav-link active" : "nav-link"
+                      active === "pedidos" ||
+                      (active === "" && mainRole === "ventas")
+                        ? "nav-link active"
+                        : "nav-link"
                     }
                   >
                     <i className="nav-icon fas fa-clipboard-list"></i>
@@ -152,7 +164,7 @@ const MenuComponent = (props) => {
               </React.Fragment>
             ) : null}
 
-            {!user.rol ? (
+            {mainRole === "admin" ? (
               <React.Fragment>
                 <li
                   className={

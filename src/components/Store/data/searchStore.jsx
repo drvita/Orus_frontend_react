@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 //Actions
 import { storeActions } from "../../../redux/store/";
 
 function SearchItemsComponent(props) {
-  //Props and vars
+  // Props and vars
   const {
       items,
       meta,
@@ -15,12 +15,12 @@ function SearchItemsComponent(props) {
       handleItemSelect: _handleItemSelect,
     } = props,
     perPage = 10;
-  //States
+  // States
   const [search, setSearch] = useState(item.producto),
     [timer, setTimer] = useState(""),
-    [load, setLoad] = useState(false),
-    { dataLoggin: user } = useSelector((state) => state.users);
-  //Functions
+    [load, setLoad] = useState(false);
+  // { dataLoggin: user } = useSelector((state) => state.users);
+  // Functions
   const handleChangeSearch = ({ target }) => {
       const { value } = target;
       setSearch(value.toLowerCase());
@@ -42,7 +42,6 @@ function SearchItemsComponent(props) {
     if (search.length > 2 && !item.store_items_id) {
       if (timer) clearTimeout(timer);
       toTimer = setTimeout(() => {
-        console.log("[DEBUG] user", user.branch.id);
         _getList({
           search: search,
           itemsPage: perPage,

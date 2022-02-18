@@ -118,9 +118,13 @@ export default class NotifyAll extends Component {
         if (url) this.props.history.push(url);
       })
       .catch((e) => {
-        console.error("[Orus] Notify error \n", e);
+        if (e.code === 20) {
+          console.error("[Orus system] Salida por error:", e.code, e.message);
+          return false;
+        }
+
         window.Swal.fire(
-          "Notificaciones",
+          "Fallo de conexion",
           "Verifique la conexion al servidor",
           "error"
         );
@@ -157,12 +161,17 @@ export default class NotifyAll extends Component {
           });
         })
         .catch((e) => {
-          console.error("[Orus] User session in API error \n", e);
           this.setState({
             load: false,
           });
+
+          if (e.code === 20) {
+            console.error("[Orus system] Salida por error:", e.code, e.message);
+            return false;
+          }
+
           window.Swal.fire(
-            "Notificaciones",
+            "Fallo de conexion",
             "Verifique la conexion al servidor",
             "error"
           );

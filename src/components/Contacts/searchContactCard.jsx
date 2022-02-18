@@ -66,18 +66,6 @@ export default class searchContactLine extends Component {
             ? moment(f_nacimiento).fromNow()
             : 0,
           domain = /.*@domain(.com)?/gim;
-        /*
-        console.log(
-          "[searchContactCard] Almacenando datos de contacto en local storage"
-        );
-        localStorage.setItem(
-          "OrusContactInUse",
-          JSON.stringify({
-            id,
-            nombre,
-          })
-        );
-        */
 
         return (
           <div className="card card-danger card-outline">
@@ -400,7 +388,11 @@ export default class searchContactLine extends Component {
           }
         })
         .catch((e) => {
-          console.error("Orus fetch", e);
+          if (e.code === 20) {
+            console.error("[Orus system] Salida por error:", e.code, e.message);
+            return false;
+          }
+
           window.Swal.fire(
             "Fallo de conexion",
             "Verifique la conexion al servidor",

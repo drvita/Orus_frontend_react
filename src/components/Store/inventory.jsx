@@ -292,15 +292,20 @@ export default class Inventory extends Component {
         });
       })
       .catch((e) => {
-        console.error("Orus: " + e);
+        this.setState({
+          load: false,
+        });
+
+        if (e.code === 20) {
+          console.error("[Orus system] Salida por error:", e.code, e.message);
+          return false;
+        }
+
         window.Swal.fire(
           "Fallo de conexion",
           "Verifique la conexion al servidor",
           "error"
         );
-        this.setState({
-          load: false,
-        });
       });
   };
   handleClickCat = (e) => {
@@ -371,7 +376,11 @@ export default class Inventory extends Component {
         }
       })
       .catch((e) => {
-        console.error("Orus: " + e);
+        if (e.code === 20) {
+          console.error("[Orus system] Salida por error:", e.code, e.message);
+          return false;
+        }
+
         window.Swal.fire(
           "Fallo de conexion",
           "Verifique la conexion al servidor",

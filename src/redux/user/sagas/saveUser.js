@@ -29,7 +29,7 @@ export default function* handleSaveUser({ payload }) {
       ])
     );
 
-    if (OPT) {
+    if (Object.keys(OPT).length) {
       yield put(userActions.getListUsers(OPT));
       yield put(userActions.setUser({}));
     } else {

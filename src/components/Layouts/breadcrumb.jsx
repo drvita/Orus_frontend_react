@@ -181,9 +181,14 @@ class BreadcrumbComponent extends Component {
   handleClickChangeBranch = () => {
     const { _saveUser } = this.props,
       { selectBranch: branch_id, idUser } = this.state;
-      console.log('[Sucursal seleccionada seteada al state del componente]',this.state.selectBranch);
-
+    const branch_id = selectBranch ? selectBranch : currentBranch.id;
     this.handleCancelModal();
+
+    if (!branch_id) {
+      console.error("[Orus System][ERROR] branch id is empty");
+      window.location.reload();
+      return;
+    }
 
     window.Swal.fire({
       text: "El cambio de sucursal, necesita volver a cargar la pagina",

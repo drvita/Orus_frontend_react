@@ -188,7 +188,6 @@ export default class Routers extends Component {
     });
   };
   handleTitleSection = (page) => {
-    console.log("Esta es la página actual" + page);
     //Verificamos que la variable no este vacia
     page = page ? page : window.location.pathname;
     //Maneja el renderiazado del componentes cuando se cambíe el componentes

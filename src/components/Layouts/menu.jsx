@@ -25,11 +25,8 @@ const MenuComponent = (props) => {
   };
 
   const { companyName, user } = props,
-    active = useLocation().pathname.replace("/", "");
-
-  //Pruebas Temporales-----
-  const mainRole = user.roles[0];
-  console.log("[USER DEL MENU LATERAL]", mainRole);
+    active = useLocation().pathname.replace("/", ""),
+    mainRole = user.roles[0];
 
   let avatar = "/img/avatars/avatar5.png";
   if (user.rol === 1) avatar = "/img/avatars/avatar2.png";

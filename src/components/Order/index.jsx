@@ -20,7 +20,7 @@ class indexOrderComponent extends Component {
     super(props);
 
     this.state = {
-      panel: 0,
+      panel: null,
       /**
        * 0 - Dashboard
        * 1 - Pending
@@ -28,6 +28,7 @@ class indexOrderComponent extends Component {
        * 3 - Edit Item
        * 4 - Report
        */
+      idOrder: 0,
     };
   }
   componentDidMount() {
@@ -35,7 +36,7 @@ class indexOrderComponent extends Component {
       { id } = match.params;
 
     if (id && !isNaN(id)) {
-      console.log("[OrusSystem] cargando orden al inicio: " + id);
+      console.log("[OrusSystem] cargando orden al inicio: ", id);
       _getOrder(id);
       this.setState({
         panel: 3,
@@ -43,6 +44,7 @@ class indexOrderComponent extends Component {
     } else if (id === "reporte") {
       this.setState({
         panel: 4,
+        idOrder: id,
       });
     }
     _setPageName("pedidos");
@@ -91,12 +93,13 @@ class indexOrderComponent extends Component {
     }
   }
   componentWillUnmount() {
-    const { _setList, _setSales } = this.props;
+    const { _setList, _setSales, _setOrder } = this.props;
     console.log("[Orus Systme] Cerrando pedido");
     _setList();
     _setSales({
       result: DEFAULT_STATE_SALES,
     });
+    _setOrder();
   }
 
   render() {
@@ -307,6 +310,7 @@ const mapStateToProps = ({ order, users }) => {
     _setContact: contactActions.setContact,
     _setSales: saleActions.setListSales,
     _setPageName: defaultActions.changeNamePage,
+    _setOrder:orderActions.setOrder
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(indexOrderComponent);

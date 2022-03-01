@@ -25,40 +25,80 @@ export default class DateUser extends Component {
   render() {
     const { date, user, users } = this.state;
     return (
-      <div className="card border border-info rounded">
+        <div className="card border border-info rounded">
+
         <div className="card-body bg-light">
-          <div className="row mb-4">
+
+          <div className="row">
             <h5 className="card-title text-secondary">Filtros</h5>
           </div>
-          <div className="form-group row">
-            <label className="col col-form-label">Fecha</label>
-            <div className="col">
-              <input
-                type="date"
-                name="date"
-                className="form-control"
-                value={date}
-                onChange={this.changeState}
-              />
-            </div>
-            <label className="col col-form-label">Usuario</label>
-            <div className="col">
-              <select
-                name="user"
-                className="form-control"
-                value={user}
-                onChange={this.changeState}
-              >
-                <option value="0">Todos</option>
-                {users.map((user) => {
-                  return (
-                    <option key={user.id} value={user.id}>
-                      {user.name}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+
+          <div className="form-group row col-lg-12">
+
+              <div className="col-lg-2">
+                <label className="col-lg-12 col-form-label">Sucursal</label>
+                <div className="col-lg-12">
+                  <select
+                    name="user"
+                    className="form-control"
+                  >
+                    <option value="0">Constitución</option>
+                    <option value="0">Tecnológico</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="col-lg-2">
+                <label className="col-lg-12 col-form-label">Usuario</label>
+                <div className="col-lg-12">
+                  <select
+                    name="user"
+                    className="form-control"
+                    value={user}
+                    onChange={this.changeState}
+                  >
+                    <option value="0">Todos</option>
+                    {users.map((user) => {
+                      return (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              </div>
+
+              <div className="col-lg-2">
+                <label className="col-lg-12 col-form-label">Fecha Inicial</label>
+                <div className="col-lg-12">
+                  <input
+                    type="date"
+                    name="date"
+                    className="form-control"
+                    value={date}
+                    onChange={this.changeState}
+                  />
+                </div>
+              </div>
+
+              <div className="col-lg-2">
+                <label className="col-lg-12 col-form-label">Fecha Final</label>
+                <div className="col-lg-12">
+                  <input
+                    type="date"
+                    name="date"
+                    className="form-control"
+                    value={date}
+                    onChange={this.changeState}
+                  />
+                </div>
+              </div>
+
+              <div className="col-lg-4 d-flex justify-content-center align-items-end">
+                <button className="btn w-50 btn-success btn-lg">Aplicar Filtro</button>            
+              </div>
+
           </div>
         </div>
       </div>

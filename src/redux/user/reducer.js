@@ -105,6 +105,7 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
     }
 
     case TYPE.SET_LOGGIN: {
+      console.log("[Pruebaaaaaaaaaaaaaaaaaaaa]", payload);
       const LS = localStorage.getItem("OrusSystem"),
         { data, token } = payload,
         { ls = {} } = {

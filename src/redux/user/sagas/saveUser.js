@@ -3,11 +3,13 @@ import { api, getUrl } from "../../sagas/api";
 import { userActions } from "../index";
 
 export default function* handleSaveUser({ payload }) {
+  
   try {
+    console.log("[SAVE FUNCTION EJECUTADA----------------]")
     const {
         data: DATA = {},
         id: ID = null,
-        options: OPT = {},
+        options: OPT = {}, 
         currentUser = 0,
       } = payload,
       url = getUrl("users", ID),

@@ -55,7 +55,6 @@ const default_reducer = (state = DEFAULT_STATE_ORDER, action) => {
       return {
         ...state,
         ...payload.result,
-        order: { id: 0 },
         messages: [],
         loading: false,
       };

@@ -162,7 +162,7 @@ export default class ReportPaymentsDetails extends Component {
       url = "http://" + host + "/api/payments",
       saleDay = "?date=" + date,
       pagina = page > 0 ? "&page=" + page : "&page=1",
-      itemsShow = "&itemsPage=10",
+      itemsShow = "&itemsPage=25",
       saleUser = user ? "&user=" + user : "";
 
     if (token && host) {

@@ -45,19 +45,27 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
     };
 
   useEffect(() => {
-    let totalPayments = 0;
-    sale.payments.forEach((pay) => (totalPayments += parseInt(pay.total)));
+    if (sale.id) {
+      let totalPayments = 0;
+      sale.payments.forEach((pay) => (totalPayments += parseInt(pay.total)));
 
-    if (!sale.id && nota) getSale(nota.id);
-
-    setData({
-      ...data,
-      totalPayments,
-      toPaid: parseInt(sale.total) - totalPayments,
-    });
-
+      setData({
+        ...data,
+        totalPayments,
+        toPaid: parseInt(sale.total) - totalPayments,
+      });
+    } else {
+      getSale(nota.id);
+    }
     //eslint-disable-next-line
   }, [sale]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(saleActions.setSale());
+    };
+    // eslint-disable-next-line
+  }, []);
 
   if (sale && sale.id) {
     return (

@@ -5,7 +5,7 @@ import moment from "moment";
 import PaymentsDetails from "../Sales/views/reportPaymentsDetails";
 import ReportPays from "../Sales/views/reportPays";
 import ReportBank from "../Sales/views/reportBank";
-import Caja from "./cash";
+//import Caja from "./cash";
 import DateUser from "./dateUser";
 import BoxCut from "./boxCut";
 // Actions
@@ -36,51 +36,62 @@ class DashboardComponent extends Component {
     return (
       <div className="content">
         <div className="row">
-          <div className="col">
-            <Caja
-              data={data}
-              user={user}
-              date={date}
-              changeState={this.changeState}
-            />
-          </div>
-
-          <div className="col col-md-3 col-lg-3">
+          <div className="col col-md-12 col-lg-12">
             <div className="row">
               {!data.rol ? (
-                <div className="col">
+                <div className="col-lg-12 col-md-12">
                   <DateUser data={data} changeState={this.changeState} />
                 </div>
               ) : null}
-              <div className="col">
-                <BoxCut caja={caja} ventas={ventas} />
-              </div>
             </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col col-md-4 col-lg-4">
-            <ReportBank
-              data={data}
-              user={user}
-              date={date}
-              changeState={this.changeState}
-            />
 
-            <ReportPays
-              data={data}
-              user={user}
-              date={date}
-              changeState={this.changeState}
-            />
+        <p className="h4 border-bottom mb-4">
+          Bienvenido
+          <span className="font-weight-bold mx-2">
+            {this.props.data.dataLoggin.name}
+          </span>
+          este es el resumen.
+        </p>
+
+        <div className="row">
+          <div className="col-lg-4 col-md-12">
+            <div className="row">
+              <div className="col-lg-12 col-md-12">
+                <BoxCut caja={caja} ventas={ventas} />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-lg-12 col-md-12">
+                <ReportPays
+                  data={data}
+                  user={user}
+                  date={date}
+                  changeState={this.changeState}
+                />
+              </div>
+            </div>
           </div>
-          <div className="col">
-            <PaymentsDetails
-              data={data}
-              user={user}
-              date={date}
-              changeState={this.changeState}
-            />
+          <div className="col-lg-8 col-md-12">
+            <div className="row">
+              <div className="col-lg-4 col-md-12">
+                <ReportBank
+                  data={data}
+                  user={user}
+                  date={date}
+                  changeState={this.changeState}
+                />
+              </div>
+              <div className="col-lg-8 col-md-12">
+                <PaymentsDetails
+                  data={data}
+                  user={user}
+                  date={date}
+                  changeState={this.changeState}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -88,9 +99,7 @@ class DashboardComponent extends Component {
   }
 
   changeState = (name, value) => {
-    this.setState({
-      [name]: value,
-    });
+    this.setState({ [name]: value });
   };
 }
 

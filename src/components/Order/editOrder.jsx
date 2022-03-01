@@ -44,7 +44,7 @@ class EditOrderComponent extends Component {
 
     if (props.order.id !== order.id && order.id) {
       this.getOrderData();
-    }
+    } 
   }
   componentWillUnmount() {
     const { _setOrder, _setSale } = this.props;
@@ -71,7 +71,7 @@ class EditOrderComponent extends Component {
         updated,
         updated_at,
       } = this.state,
-      { order, loading: LOADING, userRole: ROL } = this.props,
+      { order, loading: LOADING } = this.props,
       fNacimiento =
         new Date(paciente.f_nacimiento ?? "") < new Date()
           ? moment(paciente.f_nacimiento)
@@ -100,11 +100,11 @@ class EditOrderComponent extends Component {
                   <h5>
                     <i className="mr-1 fas fa-user"></i>
                     <span className="text-capitalize">{paciente.nombre}</span>
-                    {!ROL ? (
+                    {this.props.role === 'admin' ? (
                       <span className="float-right mailbox-read-time">
                         Fecha de nacimiento:{" "}
                         {fNacimiento ? (
-                          <>
+                          <>  
                             {fNacimiento.format("LL")}
                             <label className="ml-1">
                               ({moment().diff(fNacimiento, "years")} años)
@@ -379,7 +379,7 @@ class EditOrderComponent extends Component {
     //Validid data
     const { id, npedidolab, ncaja, status, lab_id, observaciones, items } =
         this.state,
-      { options, _saveOrder } = this.props,
+      { options, _saveOrder, currentUser } = this.props,
       itemsToJson = items.map((item) => {
         return {
           ...item,
@@ -393,6 +393,7 @@ class EditOrderComponent extends Component {
       status,
       observaciones,
       items: JSON.stringify(itemsToJson),
+      branch_id:currentUser.branch.id,
     };
     if (lab_id) data.lab_id = lab_id;
     //Validity
@@ -416,7 +417,9 @@ class EditOrderComponent extends Component {
 const mapStateToProps = ({ order, users }) => {
     return {
       order: order.order,
-      userRole: users.dataLoggin.rol,
+      //userRole: users.dataLoggin.rol,
+      role: users.dataLoggin.roles[0],
+      currentUser: users.dataLoggin,
       options: order.options,
       loading: order.loading,
     };

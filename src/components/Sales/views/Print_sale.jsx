@@ -16,6 +16,7 @@ export default function PrintSaleComponent({
       created_at: date,
       id,
       customer: client,
+      payments
     } = sale,
     saldo = total - abonado,
     { branch } = useSelector((state) => state.users.dataLoggin),
@@ -37,12 +38,13 @@ export default function PrintSaleComponent({
   };
 
   // console.log("[DEBUG] branch:", branch);
+  
 
   return (
     <>
       <button
         className={`btn btn-${btn} ml-2 d-print-none`}
-        disabled={!items.length}
+        disabled={!payments.length}
         onClick={handlePrintShow}
       >
         <i className={text ? "fas fa-print mr-1" : "fas fa-print"}></i>

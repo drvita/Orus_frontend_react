@@ -18,6 +18,7 @@ class BreadcrumbComponent extends Component {
     };
     this.timerNotify = null;
   }
+
   componentDidMount() {
     const { currentUser } = this.props,
       { branch: currentBranch = {}, idUser } = currentUser;
@@ -36,6 +37,7 @@ class BreadcrumbComponent extends Component {
     });
     this.getBranchs();
   }
+
   componentWillUnmount() {
     if (this.timerNotify) clearInterval(this.timerNotify);
   }
@@ -166,17 +168,20 @@ class BreadcrumbComponent extends Component {
       </div>
     );
   };
+
   handleChangeSelectBranchs = (branch) => {
     const { value } = branch.target;
+    console.log("[Sucursal Seleccionada en el select]", value);
 
     this.setState({
       selectBranch: parseInt(value),
     });
   };
+
   handleClickChangeBranch = () => {
     const { _saveUser } = this.props,
-      { selectBranch, idUser, currentBranch } = this.state;
-    const branch_id = selectBranch ? selectBranch : currentBranch.id;
+      { selectBranch: branch_id, idUser } = this.state;
+    // const branch_id = selectBranch ? selectBranch : currentBranch.id;
     this.handleCancelModal();
 
     if (!branch_id) {

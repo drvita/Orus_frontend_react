@@ -9,8 +9,6 @@ const DataTelefonosComponent = (props) => {
       pattern = /^\d+$/gim;
     let val = telefonos;
 
-    //console.log("[DEBUG] catch inputs:", name, val);
-
     if (name === "t_casa") {
       if (pattern.test(value)) {
         val.t_casa = value;

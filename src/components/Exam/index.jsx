@@ -47,7 +47,6 @@ class IndexExamComponent extends Component {
 
     if (state.load !== load && load === true) {
       console.log("[Orus System] Cargando examenes");
-      //console.log("[DEBUG] updates state", state, this.state);
       this.getExams();
       this.setState({
         load: false,

@@ -4,7 +4,13 @@ import Search from "../data/searchStore";
 //Actions
 import helper from "../helpers";
 
+//Current User
+import {useSelector} from 'react-redux';
+
 function AddItemModalComponent(props) {
+
+  const currentUser = useSelector((state)=> state.users.dataLoggin);
+
   //Props and vars
   const {
     codeDefault = "",
@@ -74,7 +80,7 @@ function AddItemModalComponent(props) {
       item.inStorage = item.out >= item.cantidad ? true : false;
       item.out = item.out >= item.cantidad ? 0 : item.cantidad - item.out;
       item.subtotal = parseFloat(item.cantidad * item.precio);
-
+      item.branch_id = currentUser.branch.id;
       _handleAddItem(item);
       close();
     };

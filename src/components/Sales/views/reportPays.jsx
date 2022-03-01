@@ -67,13 +67,12 @@ export default class ReportPay extends Component {
     //Variables en localStorage
     let { host, token } = this.state,
       { date, user } = this.props,
-      url = "http://" + host + "/api/saleday",
-      saleDay = "?date=" + date,
+      url = "http://" + host + "/api/payments",
+      saleDay = "?date_start=" + date + "&type=methods",
       saleUser = user ? "&user=" + user : "";
 
     if (token && host) {
       //Realiza la peticion del pedido
-      console.log("[ReportPay] Solicitando datos a la API");
       fetch(url + saleDay + saleUser, {
         method: "GET",
         signal: this.signal,
@@ -94,7 +93,7 @@ export default class ReportPay extends Component {
           }
           return res.json();
         })
-        .then(async (data) => {
+        .then(async ({ data }) => {
           var donutChartCanvas = window
               .$("#donutChart")
               .get(0)
@@ -114,9 +113,9 @@ export default class ReportPay extends Component {
             console.log("[ReportPay] Almacenando datos de la venta del dia");
             if (data && data.length) {
               await data.map((mp) => {
-                labels.push(this.SetMethodPayment(mp.metodopago));
+                labels.push(mp.method);
                 values.push(mp.total.toFixed(2));
-                if (mp.metodopago === 1) {
+                if (mp.method === "efectivo") {
                   this.props.changeState("ventas", mp.total);
                   efectivo = mp.total;
                 }
@@ -125,7 +124,7 @@ export default class ReportPay extends Component {
               });
             } else {
               labels = ["No hay datos"];
-              values = [100];
+              values = [0];
             }
 
             this.setState({

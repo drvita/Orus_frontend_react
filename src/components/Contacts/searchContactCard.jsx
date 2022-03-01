@@ -271,7 +271,6 @@ export default class searchContactLine extends Component {
         return back;
       })
       .then((data) => {
-        console.log("Descargando contacto");
         this.setState({
           dataContact: data.data,
           load: false,
@@ -296,7 +295,7 @@ export default class searchContactLine extends Component {
         data: [],
         dataContact: {},
       });
-      console.log("[Contact][search] Eliminando datos local storage");
+      console.log("[Orus System][contact] Eliminando datos local storage");
       localStorage.setItem("OrusContactInUse", JSON.stringify({}));
       this.props.getIdContact(0);
     }
@@ -343,7 +342,6 @@ export default class searchContactLine extends Component {
         type = "&type=0",
         search = word ? `&search=${word}` : "",
         page = "?page=1&itemsPage=4";
-      console.log("Descargando contactos de la API");
       //Realiza la peticion de los contactos
       fetch(url + page + search + type, {
         method: "GET",
@@ -363,7 +361,6 @@ export default class searchContactLine extends Component {
         })
         .then((data) => {
           if (data.data && data.data.length) {
-            console.log("Mostrando información del contacto");
             this.setState({
               data: data.data,
               load: false,

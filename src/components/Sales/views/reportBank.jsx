@@ -20,7 +20,7 @@ export default class ReportBank extends Component {
   }
   componentDidMount() {
     this.getSaleDay();
-    this.getBaks();
+    // this.getBaks();
   }
   componentDidUpdate(props, state) {
     if (props.date !== this.props.date || props.user !== this.props.user) {
@@ -30,7 +30,8 @@ export default class ReportBank extends Component {
   }
 
   render() {
-    const { listBank, data, load } = this.state;
+    const { data, load } = this.state;
+
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
@@ -51,19 +52,13 @@ export default class ReportBank extends Component {
           ) : (
             <ul className="list-group">
               {data.length ? (
-                data.map((bank) => {
+                data.map((bank, i) => {
                   return (
                     <li
                       className="list-group-item d-flex justify-content-between align-items-center"
-                      key={bank.bank_id}
+                      key={i}
                     >
-                      <label className="text-uppercase">
-                        {listBank.map((bankname) => {
-                          if (bankname.id === bank.bank_id)
-                            return bankname.name;
-                          else return null;
-                        })}
-                      </label>
+                      <label className="text-uppercase">{bank.name}</label>
                       <span className="badge badge-primary badge-pill">
                         $ {bank.total.toFixed(2)}
                       </span>
@@ -96,8 +91,8 @@ export default class ReportBank extends Component {
     //Variables en localStorage
     const { host, token } = this.state,
       { date, user } = this.props,
-      url = "http://" + host + "/api/bankdetails",
-      saleDay = "?date=" + date,
+      url = "http://" + host + "/api/payments",
+      saleDay = "?date_start=" + date + "&type=banks",
       saleUser = user ? "&user=" + user : "";
 
     if (token && host) {
@@ -122,12 +117,9 @@ export default class ReportBank extends Component {
           }
           return back;
         })
-        .then(async (data) => {
+        .then(async ({ data }) => {
           if (!data.message) {
-            console.log(
-              "[reportBank] Almacenando detalles bancarios",
-              data.data
-            );
+            console.log("[reportBank] Almacenando detalles bancarios", data);
             this.setState({
               data,
               load: false,

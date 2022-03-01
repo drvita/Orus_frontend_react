@@ -45,8 +45,8 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
     };
 
   useEffect(() => {
-    if(sale.id){
-        let totalPayments = 0;
+    if (sale.id) {
+      let totalPayments = 0;
       sale.payments.forEach((pay) => (totalPayments += parseInt(pay.total)));
 
       setData({
@@ -54,19 +54,18 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
         totalPayments,
         toPaid: parseInt(sale.total) - totalPayments,
       });
-
-    }
-    else{
+    } else {
       getSale(nota.id);
     }
     //eslint-disable-next-line
   }, [sale]);
 
-  useEffect(()=>{
-    return ()=>{
+  useEffect(() => {
+    return () => {
       dispatch(saleActions.setSale());
-    }
-  },[]);
+    };
+    // eslint-disable-next-line
+  }, []);
 
   if (sale && sale.id) {
     return (
@@ -138,7 +137,7 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
                   payed={data.totalPayments}
                   text="Imprimir"
                   btn="default"
-                />  
+                />
                 <button
                   type="button"
                   className="btn btn-primary d-print-none"

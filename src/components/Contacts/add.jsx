@@ -378,7 +378,6 @@ class AddContactComponent extends Component {
     });
   };
   handleSelectExam = ({ id }) => {
-    console.log("[DEBUG] select exam", id);
     this.setState({
       showModal: true,
       idExamSelect: id,

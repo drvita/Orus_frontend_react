@@ -33,7 +33,6 @@ const FormAddContactComponent = (props) => {
         telnumbers: JSON.stringify(data.telnumbers),
       };
     if (!valid) return false;
-    //console.log("[DEBUG] Save data", body);
 
     helper.saveContact(title, body, _save);
   };

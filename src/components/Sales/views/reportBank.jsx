@@ -23,8 +23,11 @@ export default class ReportBank extends Component {
     // this.getBaks();
   }
   componentDidUpdate(props, state) {
-    if (props.date !== this.props.date || props.user !== this.props.user) {
+    if (props.fechaInicial !== this.props.fechaInicial || props.user !== this.props.user) {
       console.log("[ReportBank] Recarga datos de char");
+      this.getSaleDay();
+    }
+    else if(props.fechaFinal !== this.props.fechaFinal || props.user !== this.props.user){
       this.getSaleDay();
     }
   }
@@ -87,12 +90,19 @@ export default class ReportBank extends Component {
       [name]: value,
     });
   };
+
+
   getSaleDay = () => {
     //Variables en localStorage
     const { host, token } = this.state,
-      { date, user } = this.props,
-      url = "http://" + host + "/api/payments",
-      saleDay = "?date_start=" + date + "&type=banks",
+      { user, fechaInicial, fechaFinal } = this.props,
+
+      url = "http://" + host + "/api/payments?",
+
+      date_start = "date_start=" + fechaInicial + "&type=banks",
+
+      date_end = "&date_end=" + fechaFinal + "&type=banks",
+
       saleUser = user ? "&user=" + user : "";
 
     if (token && host) {
@@ -101,7 +111,7 @@ export default class ReportBank extends Component {
       this.setState({
         load: true,
       });
-      fetch(url + saleDay + saleUser, {
+      fetch(url + date_start + date_end + saleUser, {
         method: "GET",
         signal: this.signal,
         headers: {
@@ -146,6 +156,8 @@ export default class ReportBank extends Component {
         });
     }
   };
+
+  
   getBaks = () => {
     const { host, token } = this.state,
       type = "?name=bank";

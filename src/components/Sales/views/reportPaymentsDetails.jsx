@@ -24,11 +24,18 @@ export default class ReportPaymentsDetails extends Component {
   }
   componentDidUpdate(props, state) {
     if (
-      props.date !== this.props.date ||
+      props.fechaInicial !== this.props.fechaInicial ||
       props.user !== this.props.user ||
       state.page !== this.state.page
     ) {
       console.log("[reportPaymentsDetails] Recarga datos");
+      this.getSaleDay();
+    }
+    else if(
+      props.fechaFinal !== this.props.fechaFinal ||
+      props.user !== this.props.user ||
+      state.page !== this.state.page
+    ){
       this.getSaleDay();
     }
   }
@@ -37,7 +44,6 @@ export default class ReportPaymentsDetails extends Component {
     const { data } = this.props;
     const { payments, meta, page, load } = this.state;
 
-    //console.log("[DEBUG] Payments", payments);
 
     return (
       <div className="card card-success card-outline">
@@ -158,12 +164,15 @@ export default class ReportPaymentsDetails extends Component {
   getSaleDay = () => {
     //Variables en localStorage
     let { host, token, page } = this.state,
-      { date, user } = this.props,
-      url = "http://" + host + "/api/payments",
-      saleDay = "?date=" + date,
-      pagina = page > 0 ? "&page=" + page : "&page=1",
+      { user, fechaInicial, fechaFinal } = this.props,
+
+      url = "http://" + host + "/api/payments?",
+      date_start = "date_start=" + fechaInicial,
+      date_end = "&date_end=" + fechaFinal,
+      saleUser = user ? "&user=" + user : "",
       itemsShow = "&itemsPage=25",
-      saleUser = user ? "&user=" + user : "";
+      pagina = page > 0 ? "&page=" + page : "&page=1"
+      
 
     if (token && host) {
       //Realiza la peticion del pedido
@@ -171,7 +180,7 @@ export default class ReportPaymentsDetails extends Component {
       this.setState({
         load: true,
       });
-      fetch(url + saleDay + saleUser + itemsShow + pagina, {
+      fetch(url + date_start + date_end + saleUser + itemsShow + pagina, {
         method: "GET",
         signal: this.signal,
         headers: {
@@ -181,7 +190,6 @@ export default class ReportPaymentsDetails extends Component {
       })
         .then((res) => {
           if (!res.ok) {
-            console.log(res);
             throw new Error(res);
           }
           return res.json();

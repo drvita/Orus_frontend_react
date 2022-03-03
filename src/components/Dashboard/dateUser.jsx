@@ -1,17 +1,25 @@
 import React, { Component } from "react";
 import moment from "moment";
+import { connect } from "react-redux";
 
-export default class DateUser extends Component {
+class DateUser extends Component {
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+    
     this.state = {
       host: ls.host,
       token: ls.token,
+      users: [],
+      sucursal:'',
+      usuario:'',
+      fechaInicial:moment().format("YYYY-MM-DD"),
+      fechaFinal:moment().format("YYYY-MM-DD"),
+      branches:[],
       date: moment().format("YYYY-MM-DD"),
       user: !props.data.rol ? 0 : props.data.idUser,
-      users: [],
     };
+
     this.controller = new AbortController();
     this.signal = this.controller.signal;
   }
@@ -22,42 +30,59 @@ export default class DateUser extends Component {
     this.getUsers();
   }
 
+  componentDidUpdate(props, state){
+    if(!props.branches.length && this.props.branches.length){
+      this.setState({
+        branches: this.props.branches,
+      });
+    }
+  }
+
+
+  sendDatFilter = ()=>{
+    this.props.changeState(this.state);
+  }
+
   render() {
-    const { date, user, users } = this.state;
+    const { users, sucursal, usuario, fechaInicial, fechaFinal } = this.state;
     return (
-        <div className="card border border-info rounded">
+        <div className="border-bottom pb-3 mb-5">
+        
+        
+        <span className="col-lg-1 ml-3 m-0 p-0 mt-2 pl-2 font-weight-bold text-secondary">Filtros</span>
 
-        <div className="card-body bg-light">
+        <div className="card-body p-0 bg-light">
+          <div className="form-group row col-lg-12 m-0">
 
-          <div className="row">
-            <h5 className="card-title text-secondary">Filtros</h5>
-          </div>
-
-          <div className="form-group row col-lg-12">
-
-              <div className="col-lg-2">
-                <label className="col-lg-12 col-form-label">Sucursal</label>
+              <div className="col-lg-2 mt-sm-3">
                 <div className="col-lg-12">
-                  <select
-                    name="user"
+                <select
+                    name="sucursal"
                     className="form-control"
+                    value={sucursal}
+                    onChange={this.changeState}
                   >
-                    <option value="0">Constitución</option>
-                    <option value="0">Tecnológico</option>
+                     <option value="">Sucursal</option>
+                      {this.state.branches.map((branch) => {
+                        return (
+                        <option key={branch.id} value={branch.id}>
+                          {branch.values.name}
+                        </option>
+                      );
+                      })} 
                   </select>
                 </div>
               </div>
 
-              <div className="col-lg-2">
-                <label className="col-lg-12 col-form-label">Usuario</label>
+              <div className="col-lg-2 mt-sm-3">
                 <div className="col-lg-12">
                   <select
-                    name="user"
+                    name="usuario"
                     className="form-control"
-                    value={user}
+                    value={usuario}
                     onChange={this.changeState}
                   >
-                    <option value="0">Todos</option>
+                    <option value="0">Usuario</option>
                     {users.map((user) => {
                       return (
                         <option key={user.id} value={user.id}>
@@ -69,34 +94,35 @@ export default class DateUser extends Component {
                 </div>
               </div>
 
-              <div className="col-lg-2">
-                <label className="col-lg-12 col-form-label">Fecha Inicial</label>
-                <div className="col-lg-12">
+              <div className="col-lg-3 row mt-sm-3 m-0">                
+                <label className="col-lg-1 col-form-label p-0 ml-5 mt-2 ml-sm-3">De:</label>
+                <div className="col-lg-7">
                   <input
                     type="date"
-                    name="date"
+                    name="fechaInicial"
                     className="form-control"
-                    value={date}
+                    value={fechaInicial}
+                    onChange={this.changeState}
+                    placeholder="Periodo"
+                  />
+                </div>
+              </div>
+
+              <div className="col-lg-3 row mt-sm-3 m-0">
+                <label className="col-lg-2 col-form-label p-0 mt-2 ml-sm-3">Hasta:</label>
+                <div className="col-lg-7">
+                  <input
+                    type="date"
+                    name="fechaFinal"
+                    className="form-control"
+                    value={fechaFinal}                                                                                          
                     onChange={this.changeState}
                   />
                 </div>
               </div>
 
-              <div className="col-lg-2">
-                <label className="col-lg-12 col-form-label">Fecha Final</label>
-                <div className="col-lg-12">
-                  <input
-                    type="date"
-                    name="date"
-                    className="form-control"
-                    value={date}
-                    onChange={this.changeState}
-                  />
-                </div>
-              </div>
-
-              <div className="col-lg-4 d-flex justify-content-center align-items-end">
-                <button className="btn w-50 btn-success btn-lg">Aplicar Filtro</button>            
+              <div className="col-lg-2 row mt-sm-3 d-flex justify-content-center m-0">
+                <button onClick={this.sendDatFilter} className="btn w-75 btn-success font-weight-bold">Aplicar Filtro</button>   
               </div>
 
           </div>
@@ -110,8 +136,9 @@ export default class DateUser extends Component {
     this.setState({
       [name]: value,
     });
-    this.props.changeState(name, value);
   };
+
+
   getUsers = () => {
     let { host, token } = this.state,
       url = "http://" + host + "/api/users",
@@ -166,3 +193,16 @@ export default class DateUser extends Component {
       });
   };
 }
+
+const mapStateToProps = ({config }) => {
+  return {
+    branches: config.list
+  };
+},
+
+mapActionsToProps = {
+ // _setPageName: defaultActions.changeNamePage,
+};
+
+
+export default connect(mapStateToProps, mapActionsToProps)(DateUser)

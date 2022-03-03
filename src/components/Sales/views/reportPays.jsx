@@ -22,8 +22,14 @@ export default class ReportPay extends Component {
     this.getSaleDay();
   }
   componentDidUpdate(props, state) {
-    if (props.date !== this.props.date || props.user !== this.props.user) {
+    if (props.fechaInicial !== this.props.fechaInicial) {
       console.log("[reportPays] Recarga datos de char");
+      this.getSaleDay();
+    }else if (props.fechaFinal !== this.props.fechaFinal) {
+      console.log("[reportPays] Recarga datos de char");
+      this.getSaleDay();
+    }
+    else if (props.user !== this.props.user){
       this.getSaleDay();
     }
   }
@@ -66,14 +72,16 @@ export default class ReportPay extends Component {
   getSaleDay = () => {
     //Variables en localStorage
     let { host, token } = this.state,
-      { date, user } = this.props,
-      url = "http://" + host + "/api/payments",
-      saleDay = "?date_start=" + date + "&type=methods",
+      { user,fechaInicial, fechaFinal } = this.props,
+      url = "http://" + host + "/api/payments?",
+      date_start = "date_start=" + fechaInicial,
+      date_end = "&date_end=" + fechaFinal,
+      method = "&type=methods",
       saleUser = user ? "&user=" + user : "";
 
     if (token && host) {
       //Realiza la peticion del pedido
-      fetch(url + saleDay + saleUser, {
+      fetch(url + date_start + date_end + method + saleUser, {
         method: "GET",
         signal: this.signal,
         headers: {
@@ -110,7 +118,7 @@ export default class ReportPay extends Component {
           if (this.char) this.char.destroy();
 
           if (!data.message) {
-            console.log("[ReportPay] Almacenando datos de la venta del dia");
+            console.log("[ReportPay] Almacenando datos de la venta del dia", data);
             if (data && data.length) {
               await data.map((mp) => {
                 labels.push(mp.method);

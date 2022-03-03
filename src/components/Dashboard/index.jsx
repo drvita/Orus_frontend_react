@@ -19,11 +19,14 @@ class DashboardComponent extends Component {
       host: ls.host,
       token: ls.token,
       user: !props.data.rol ? "" : props.data.idUser,
-      date: moment().format("YYYY-MM-DD"),
+      fechaInicial: moment().format("YYYY-MM-DD"),
+      fechaFinal: moment().format("YYYY-MM-DD"),
       caja: 0,
       ventas: 0,
+      filterData:{},
     };
   }
+
   componentDidMount() {
     const { _setPageName } = this.props;
 
@@ -31,7 +34,7 @@ class DashboardComponent extends Component {
   }
 
   render() {
-    const { user, date, caja, ventas } = this.state;
+    const { user, fechaInicial, fechaFinal, caja, ventas } = this.state;
     const { data } = this.props;
     return (
       <div className="content">
@@ -40,7 +43,7 @@ class DashboardComponent extends Component {
             <div className="row">
               {!data.rol ? (
                 <div className="col-lg-12 col-md-12">
-                  <DateUser data={data} changeState={this.changeState} />
+                  <DateUser data={data} changeState={this.changeAllState} />
                 </div>
               ) : null}
             </div>
@@ -67,7 +70,8 @@ class DashboardComponent extends Component {
                 <ReportPays
                   data={data}
                   user={user}
-                  date={date}
+                  fechaInicial={fechaInicial}
+                  fechaFinal={fechaFinal}
                   changeState={this.changeState}
                 />
               </div>
@@ -79,7 +83,8 @@ class DashboardComponent extends Component {
                 <ReportBank
                   data={data}
                   user={user}
-                  date={date}
+                  fechaInicial={fechaInicial}
+                  fechaFinal={fechaFinal}
                   changeState={this.changeState}
                 />
               </div>
@@ -87,7 +92,8 @@ class DashboardComponent extends Component {
                 <PaymentsDetails
                   data={data}
                   user={user}
-                  date={date}
+                  fechaInicial={fechaInicial}
+                  fechaFinal={fechaFinal}
                   changeState={this.changeState}
                 />
               </div>
@@ -101,6 +107,10 @@ class DashboardComponent extends Component {
   changeState = (name, value) => {
     this.setState({ [name]: value });
   };
+  changeAllState = (obj) => {
+    this.setState({ ...obj });
+  };
+
 }
 
 const mapStateToProps = ({ default: system }) => {

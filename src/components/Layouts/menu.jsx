@@ -29,8 +29,8 @@ const MenuComponent = (props) => {
     mainRole = user.roles[0];
 
   let avatar = "/img/avatars/avatar5.png";
-  if (user.rol === 1) avatar = "/img/avatars/avatar2.png";
-  if (!user.rol) avatar = "/img/avatars/avatar3.png";
+  if (mainRole === 'ventas') avatar = "/img/avatars/avatar2.png";
+  if (!mainRole) avatar = "/img/avatars/avatar3.png";
   if (user.idUser === 2) avatar = "/img/avatars/avatar4.png";
 
   return (
@@ -62,7 +62,7 @@ const MenuComponent = (props) => {
               <br />
               <span className="badge badge-light">
                 {user.rol > 0
-                  ? user.rol === 1
+                  ? mainRole === 'ventas'
                     ? "Ventas"
                     : "Optometrista"
                   : "Administrador"}

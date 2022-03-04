@@ -38,6 +38,7 @@ const saveItem = (payload = {}) => ({
   type: TYPE.SAGA_SAVE_ITEM,
   payload,
 });
+
 const getListBrands = (payload = {}) => ({
   type: TYPE.SAGA_GET_LIST_BRANDS,
   payload,
@@ -54,6 +55,7 @@ const saveInBranch = (payload = {}) => ({
   type: TYPE.SAGA_SAVE_INBRANCH,
   payload,
 });
+
 
 const toExportActions = {
   getListStore,

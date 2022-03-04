@@ -140,7 +140,22 @@ const ListInbox = (props) => {
                   <i className="fas fa-print"></i>
                 </button>
               ) : null}
+
+
+              {props.handleDownloadItem ? (
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  title="Exportar"
+                  onClick={(e) => props.handleDownloadItem()}
+                >
+                  <i className="fas fa-file-csv"></i>
+                </button>
+              ) : null}
+
             </div>
+
+
             <div className="float-right">
               {props.meta && (
                 <Pagination

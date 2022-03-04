@@ -260,7 +260,6 @@ class EditOrderComponent extends Component {
                           items={items}
                           codes={codes}
                           session={session}
-                          //status={!ROL}
                           noPrice
                           ChangeInput={this.handleChangeInput}
                         />
@@ -417,7 +416,6 @@ class EditOrderComponent extends Component {
 const mapStateToProps = ({ order, users }) => {
     return {
       order: order.order,
-      //userRole: users.dataLoggin.rol,
       role: users.dataLoggin.roles[0],
       currentUser: users.dataLoggin,
       options: order.options,

@@ -10,6 +10,7 @@ class NotifyComponent extends Component {
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
       rol: ls.rol,
+      mainRole: props.dataLoggin.roles[0],
     };
     this.timerNotify = null;
   }
@@ -31,7 +32,7 @@ class NotifyComponent extends Component {
 
   render() {
     const { notifications, loading } = this.props,
-      { rol } = this.state,
+      { mainRole} = this.state,
       countNotify = notifications ? notifications.length : 0,
       showNotifications = notifications.slice(0, 10);
 
@@ -64,7 +65,7 @@ class NotifyComponent extends Component {
             //page = "/";
 
             if (notiFyType[2] === "ExamNotification") {
-              if (rol === 2) {
+              if (mainRole === 'doctor') {
                 title = "Examen creado";
                 url = "/consultorio/registro/" + notify.data.id;
                 //page = "/consultorio";

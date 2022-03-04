@@ -52,7 +52,7 @@ export default function DiscountBtnComponent({ sale, paid }) {
       className="btn btn-primary mx-1"
       title="Agregar descuento"
       onClick={handleAddDiscount}
-      disabled={total || paid}
+      disabled={!total || paid}
     >
       <i className="fas fa-percent"></i>
     </button>

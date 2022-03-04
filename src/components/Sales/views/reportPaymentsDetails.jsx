@@ -12,6 +12,7 @@ export default class ReportPaymentsDetails extends Component {
       meta: {},
       page: 1,
       load: false,
+      mainRole: this.props.data.dataLoggin.roles[0],
     };
     this.controller = new AbortController();
     this.signal = this.controller.signal;
@@ -23,33 +24,26 @@ export default class ReportPaymentsDetails extends Component {
     this.getSaleDay();
   }
   componentDidUpdate(props, state) {
-    if (
-      props.fechaInicial !== this.props.fechaInicial ||
-      props.user !== this.props.user ||
-      state.page !== this.state.page
-    ) {
-      console.log("[reportPaymentsDetails] Recarga datos");
-      this.getSaleDay();
+
+
+    if (props.fechaInicial !== this.props.fechaInicial || state.page !== this.state.page || props.user !== this.props.user){
+        console.log("[reportPaymentsDetails] Recarga datos");
+        this.getSaleDay();
     }
-    else if(
-      props.fechaFinal !== this.props.fechaFinal ||
-      props.user !== this.props.user ||
-      state.page !== this.state.page
-    ){
-      this.getSaleDay();
+    else if(props.fechaFinal !== this.props.fechaFinal || state.page !== this.state.page || props.user !== this.props.user){
+        this.getSaleDay();
     }
+
   }
 
   render() {
-    const { data } = this.props;
     const { payments, meta, page, load } = this.state;
-
 
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
           <h3 className="card-title text-success">
-            {data.rol
+            {this.state.mainRole !== 'admin'
               ? "Mis pagos del dia [Detallado]"
               : "Pagos del dia [Detallado]"}
           </h3>
@@ -166,12 +160,18 @@ export default class ReportPaymentsDetails extends Component {
     let { host, token, page } = this.state,
       { user, fechaInicial, fechaFinal } = this.props,
 
+
       url = "http://" + host + "/api/payments?",
       date_start = "date_start=" + fechaInicial,
       date_end = "&date_end=" + fechaFinal,
       saleUser = user ? "&user=" + user : "",
       itemsShow = "&itemsPage=25",
       pagina = page > 0 ? "&page=" + page : "&page=1"
+
+      //const urlFinal = url + date_start + date_end + saleUser + itemsShow + pagina;
+      //console.log(urlFinal);
+      //console.log(token);
+      console.log("USERRRRRR-----", user);
       
 
     if (token && host) {

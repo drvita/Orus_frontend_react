@@ -29,6 +29,7 @@ export default class messenger extends Component {
   render() {
     const { messages, load, message, user } = this.state,
       { idRow } = this.props;
+      console.log("MESAGEEEEEE----------",message)
 
     return (
       <div className="card direct-chat direct-chat-primary d-print-none">

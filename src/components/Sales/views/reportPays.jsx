@@ -37,6 +37,8 @@ export default class ReportPay extends Component {
   render() {
     const { total, efectivo, rol } = this.state;
     const { data } = this.props;
+
+    //console.log("rooooooooooooooooooool", rol);
     return (
       <div className="card card-success card-outline">
         <div className="card-header">

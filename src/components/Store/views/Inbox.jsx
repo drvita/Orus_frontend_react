@@ -66,6 +66,7 @@ function InboxComponent(props) {
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleDeleteItem={deleteItem}
       handleEditItem={handleSelectItem}
+      handleDownloadItem={" "}
       handleSync={() => _getList(options)}
     >
       <table className="table table-hover table-striped">
@@ -158,6 +159,7 @@ const mapStateToProps = ({ storeItem }) => {
     _deleteItem: storeActions.deleteItem,
     _setItem: storeActions.setItem,
     _getItem: storeActions.getItem,
+    //_downloadItem:storeActions.downloadItem,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(InboxComponent);

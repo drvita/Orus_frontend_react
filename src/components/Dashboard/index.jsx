@@ -6,7 +6,7 @@ import PaymentsDetails from "../Sales/views/reportPaymentsDetails";
 import ReportPays from "../Sales/views/reportPays";
 import ReportBank from "../Sales/views/reportBank";
 //import Caja from "./cash";
-import DateUser from "./dateUser";
+import Filters from "./Filters";
 import BoxCut from "./boxCut";
 // Actions
 import { defaultActions } from "../../redux/default/";
@@ -15,15 +15,17 @@ class DashboardComponent extends Component {
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+
     this.state = {
       host: ls.host,
       token: ls.token,
-      user: !props.data.rol ? "" : props.data.idUser,
-      fechaInicial: moment().format("YYYY-MM-DD"),
-      fechaFinal: moment().format("YYYY-MM-DD"),
+      user: "",
+      date_start: moment().format("YYYY-MM-DD"),
+      date_end: moment().format("YYYY-MM-DD"),
+      branch_id: "",
       caja: 0,
       ventas: 0,
-      filterData:{},
+      filterData: {},
     };
   }
 
@@ -34,8 +36,15 @@ class DashboardComponent extends Component {
   }
 
   render() {
-    const { user, fechaInicial, fechaFinal, caja, ventas } = this.state;
+    const { user, date_start, date_end, branch_id, caja, ventas } = this.state;
     const { data } = this.props;
+    const filters = {
+      user,
+      date_start,
+      date_end,
+      branch_id,
+    };
+
     return (
       <div className="content">
         <div className="row">
@@ -43,7 +52,11 @@ class DashboardComponent extends Component {
             <div className="row">
               {!data.rol ? (
                 <div className="col-lg-12 col-md-12">
-                  <DateUser data={data} changeState={this.changeAllState} />
+                  <Filters
+                    data={data}
+                    filters={filters}
+                    changeState={this.changeAllState}
+                  />
                 </div>
               ) : null}
             </div>
@@ -70,8 +83,9 @@ class DashboardComponent extends Component {
                 <ReportPays
                   data={data}
                   user={user}
-                  fechaInicial={fechaInicial}
-                  fechaFinal={fechaFinal}
+                  fechaInicial={date_start}
+                  fechaFinal={date_end}
+                  filters={filters}
                   changeState={this.changeState}
                 />
               </div>
@@ -83,17 +97,15 @@ class DashboardComponent extends Component {
                 <ReportBank
                   data={data}
                   user={user}
-                  fechaInicial={fechaInicial}
-                  fechaFinal={fechaFinal}
+                  fechaInicial={date_start}
+                  fechaFinal={date_end}
+                  filters={filters}
                   changeState={this.changeState}
                 />
               </div>
               <div className="col-lg-8 col-md-12">
                 <PaymentsDetails
-                  data={data}
-                  user={user}
-                  fechaInicial={fechaInicial}
-                  fechaFinal={fechaFinal}
+                  filters={filters}
                   changeState={this.changeState}
                 />
               </div>
@@ -110,7 +122,6 @@ class DashboardComponent extends Component {
   changeAllState = (obj) => {
     this.setState({ ...obj });
   };
-
 }
 
 const mapStateToProps = ({ default: system }) => {

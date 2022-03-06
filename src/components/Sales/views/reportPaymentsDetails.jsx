@@ -1,39 +1,30 @@
 import React, { Component } from "react";
+import { api, getUrl } from "../../../redux/sagas/api";
 
 export default class ReportPaymentsDetails extends Component {
   constructor(props) {
     super(props);
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+
     this.state = {
-      host: ls.host,
-      rol: ls.rol,
-      token: ls.token,
       payments: [],
       meta: {},
       page: 1,
       load: false,
-      mainRole: this.props.data.dataLoggin.roles[0],
     };
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
-  }
-  componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
   }
   componentDidMount() {
     this.getSaleDay();
   }
   componentDidUpdate(props, state) {
-
-
-    if (props.fechaInicial !== this.props.fechaInicial || state.page !== this.state.page || props.user !== this.props.user){
-        console.log("[reportPaymentsDetails] Recarga datos");
-        this.getSaleDay();
+    if (
+      props.filters.date_start !== this.props.filters.date_start ||
+      props.filters.date_end !== this.props.filters.date_end ||
+      props.filters.user !== this.props.filters.user ||
+      props.filters.branch_id !== this.props.filters.branch_id ||
+      state.page !== this.state.page
+    ) {
+      this.getSaleDay();
     }
-    else if(props.fechaFinal !== this.props.fechaFinal || state.page !== this.state.page || props.user !== this.props.user){
-        this.getSaleDay();
-    }
-
   }
 
   render() {
@@ -42,11 +33,7 @@ export default class ReportPaymentsDetails extends Component {
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
-          <h3 className="card-title text-success">
-            {this.state.mainRole !== 'admin'
-              ? "Mis pagos del dia [Detallado]"
-              : "Pagos del dia [Detallado]"}
-          </h3>
+          <h3 className="card-title text-success">Pagos del dia [Detallado]</h3>
         </div>
         <div className="card-body">
           <table className="table table-sm">
@@ -155,77 +142,29 @@ export default class ReportPaymentsDetails extends Component {
     );
   }
 
-  getSaleDay = () => {
-    //Variables en localStorage
-    let { host, token, page } = this.state,
-      { user, fechaInicial, fechaFinal } = this.props,
+  getSaleDay = async () => {
+    const { page } = this.state,
+      { filters } = this.props;
 
+    filters.itemsPage = 12;
+    filters.page = page;
 
-      url = "http://" + host + "/api/payments?",
-      date_start = "date_start=" + fechaInicial,
-      date_end = "&date_end=" + fechaFinal,
-      saleUser = user ? "&user=" + user : "",
-      itemsShow = "&itemsPage=25",
-      pagina = page > 0 ? "&page=" + page : "&page=1"
+    const url = getUrl("payments", null, filters);
+    const { data, meta, message } = await api(url);
 
-      //const urlFinal = url + date_start + date_end + saleUser + itemsShow + pagina;
-      //console.log(urlFinal);
-      //console.log(token);
-      console.log("USERRRRRR-----", user);
-      
-
-    if (token && host) {
-      //Realiza la peticion del pedido
-      console.log("[ReportPaymentsDetails] Solicitando datos a la API");
+    if (data) {
       this.setState({
-        load: true,
+        payments: data,
+        meta: meta,
+        load: false,
       });
-      fetch(url + date_start + date_end + saleUser + itemsShow + pagina, {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(res);
-          }
-          return res.json();
-        })
-        .then(async (data) => {
-          if (!data.message) {
-            console.log(
-              "[ReportPayments] Almacenando datos de la venta del dia"
-            );
-            if (data.data) {
-              this.setState({
-                payments: data.data,
-                meta: data.meta,
-                load: false,
-              });
-            }
-          } else {
-            throw new Error(data.message);
-          }
-        })
-        .catch((e) => {
-          this.setState({
-            load: false,
-          });
+    } else if (message) {
+      this.setState({
+        load: false,
+      });
 
-          if (e.code === 20) {
-            console.error("[Orus system] Salida por error:", e.code, e.message);
-            return false;
-          }
-
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
-        });
+      console.error("[Orus system] Error in report payments details:", message);
+      window.Swal.fire("Fallo de conexion", message, "error");
     }
   };
 }

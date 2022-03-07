@@ -16,7 +16,7 @@ class Filters extends Component {
       date_end: date_end,
       currentUser: user,
 
-      branches: [],
+      branches: [], 
       users: [],
     };
 
@@ -53,13 +53,15 @@ class Filters extends Component {
     const { users, branch_id, currentUser, date_start, date_end } = this.state;
 
     return (
-      <div className="border-bottom pb-3 mb-5">
-        <span className="col-lg-1 ml-3 m-0 p-0 mt-2 pl-2 font-weight-bold text-secondary">
-          Filtros
-        </span>
+      <div className="border-bottom pb-3 mb-4">
 
         <div className="card-body p-0 bg-light">
           <div className="form-group row col-lg-12 m-0">
+
+            <div className="col-lg-1 mt-sm-3">
+              <p className="mt-2 font-weight-bold text-secondary h5">Filtros</p>
+            </div>
+
             <div className="col-lg-2 mt-sm-3">
               <div className="col-lg-12">
                 <select
@@ -104,11 +106,11 @@ class Filters extends Component {
               </div>
             </div>
 
-            <div className="col-lg-3 row mt-sm-3 m-0">
+            <div className="row mt-sm-3 m-0">
               <label className="col-lg-1 col-form-label p-0 ml-5 mt-2 ml-sm-3">
                 De:
               </label>
-              <div className="col-lg-7">
+              <div className="col-lg-10">
                 <input
                   type="date"
                   name="date_start"
@@ -120,11 +122,11 @@ class Filters extends Component {
               </div>
             </div>
 
-            <div className="col-lg-3 row mt-sm-3 m-0">
-              <label className="col-lg-2 col-form-label p-0 mt-2 ml-sm-3">
+            <div className="row mt-sm-3 m-0">
+              <label className="col-lg-1 col-form-label p-0 mt-2 ml-sm-3">
                 a:
               </label>
-              <div className="col-lg-7">
+              <div className="col-lg-10">
                 <input
                   type="date"
                   name="date_end"
@@ -135,14 +137,15 @@ class Filters extends Component {
               </div>
             </div>
 
-            <div className="col-lg-2 row mt-sm-3 d-flex justify-content-center m-0">
+            <div className="col-lg-2 row mt-sm-3 d-flex justify-content-center m-0 h-50">
               <button
                 onClick={this.sendDatFilter}
-                className="btn w-75 btn-success font-weight-bold"
+                className="btn w-50 btn-success font-weight-bold"
               >
-                Aplicar Filtro
+                Filtrar
               </button>
             </div>
+    
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {api, getUrl} from '../../../redux/sagas/api';
 
 export default class ReportPay extends Component {
   constructor(props) {
@@ -10,6 +11,7 @@ export default class ReportPay extends Component {
       token: ls.token,
       total: 0,
       efectivo: 0,
+      page:1
     };
     this.char = null;
     this.controller = new AbortController();
@@ -22,14 +24,13 @@ export default class ReportPay extends Component {
     this.getSaleDay();
   }
   componentDidUpdate(props, state) {
-    if (props.fechaInicial !== this.props.fechaInicial) {
-      console.log("[reportPays] Recarga datos de char");
-      this.getSaleDay();
-    }else if (props.fechaFinal !== this.props.fechaFinal) {
-      console.log("[reportPays] Recarga datos de char");
-      this.getSaleDay();
-    }
-    else if (props.user !== this.props.user){
+    if (
+      props.filters.date_start !== this.props.filters.date_start ||
+      props.filters.date_end !== this.props.filters.date_end ||
+      props.filters.user !== this.props.filters.user ||
+      props.filters.branch_id !== this.props.filters.branch_id ||
+      state.page !== this.state.page
+    ) {
       this.getSaleDay();
     }
   }
@@ -71,40 +72,31 @@ export default class ReportPay extends Component {
       [name]: value,
     });
   };
-  getSaleDay = () => {
+  getSaleDay = async () => {
+    
     //Variables en localStorage
-    let { host, token } = this.state,
-      { user,fechaInicial, fechaFinal } = this.props,
-      url = "http://" + host + "/api/payments?",
-      date_start = "date_start=" + fechaInicial,
-      date_end = "&date_end=" + fechaFinal,
-      method = "&type=methods",
-      saleUser = user ? "&user=" + user : "";
+    let { host, token, page } = this.state,
 
-    if (token && host) {
-      //Realiza la peticion del pedido
-      fetch(url + date_start + date_end + method + saleUser, {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            window.Swal.fire({
-              title: "Error!",
-              text: "Ups!\n Hubo un error al descargar las ventas",
-              icon: "error",
-              confirmButtonText: "Ok",
-            });
-            console.log(res);
-          }
-          return res.json();
-        })
-        .then(async ({ data }) => {
-          var donutChartCanvas = window
+    {filters} = this.props;
+
+    const newFiltersPays = {
+      ...filters,
+    }
+
+    newFiltersPays.itemsPage = 12;
+    newFiltersPays.page = page;
+    newFiltersPays.type = 'methods';
+
+    const url = getUrl("payments", null, newFiltersPays);
+    const {data, meta, message} = await api(url);
+
+    console.log("[DATAAA CURRENT]",data);
+    console.log("[URLLL CURRENT]",data);
+
+
+    if(data){
+
+      var donutChartCanvas = window
               .$("#donutChart")
               .get(0)
               .getContext("2d"),
@@ -171,21 +163,29 @@ export default class ReportPay extends Component {
             data: donutData,
             options: donutOptions,
           });
-        })
-        .catch((e) => {
-          if (e.code === 20) {
-            console.error("[Orus system] Salida por error:", e.code, e.message);
-            return false;
-          }
-
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
-        });
     }
+    else if(message){
+      window.Swal.fire({
+        title: "Error!",
+        text: "Ups!\n Hubo un error al descargar las ventas",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+      console.log(message);
+      return message;
+    }
+
+
+      //url = "http://" + host + "/api/payments?",
+      //date_start = "date_start=" + fechaInicial,
+      //date_end = "&date_end=" + fechaFinal,
+      //method = "&type=methods",
+      //saleUser = user ? "&user=" + user : "";
+
+     
   };
+
+
   SetMethodPayment = (status) => {
     switch (status) {
       case 1:

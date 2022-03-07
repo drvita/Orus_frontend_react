@@ -1,19 +1,26 @@
 import React, { Component } from "react";
+import { api, getUrl } from "../../../redux/sagas/api";
 
 export default class ReportBank extends Component {
+
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+
     this.state = {
       host: ls.host,
       token: ls.token,
       listBank: [],
+
+      page: 1,
+
       data: [],
+      meta:{},
       load: false,
     };
+
+
     this.char = null;
-    this.controller = new AbortController();
-    this.signal = this.controller.signal;
   }
   componentWillUnmount() {
     this.controller.abort(); // Cancelando cualquier carga de fetch
@@ -23,11 +30,13 @@ export default class ReportBank extends Component {
     // this.getBaks();
   }
   componentDidUpdate(props, state) {
-    if (props.fechaInicial !== this.props.fechaInicial || props.user !== this.props.user) {
-      console.log("[ReportBank] Recarga datos de char");
-      this.getSaleDay();
-    }
-    else if(props.fechaFinal !== this.props.fechaFinal || props.user !== this.props.user){
+    if (
+      props.filters.date_start !== this.props.filters.date_start ||
+      props.filters.date_end !== this.props.filters.date_end ||
+      props.filters.user !== this.props.filters.user ||
+      props.filters.branch_id !== this.props.filters.branch_id ||
+      state.page !== this.state.page
+    ) {
       this.getSaleDay();
     }
   }
@@ -92,20 +101,50 @@ export default class ReportBank extends Component {
   };
 
 
-  getSaleDay = () => {
-    //Variables en localStorage
-    const { host, token } = this.state,
-      { user, fechaInicial, fechaFinal } = this.props,
+  getSaleDay = async () => {
+    const { filters } = this.props;
 
-      url = "http://" + host + "/api/payments?",
+    const newFiltersBank = {
+      ...filters,
+    }
 
-      date_start = "date_start=" + fechaInicial + "&type=banks",
+    newFiltersBank.itemsPage = 12;
+    newFiltersBank.page = this.state.page;
+    newFiltersBank.type = 'banks';
 
-      date_end = "&date_end=" + fechaFinal + "&type=banks",
 
-      saleUser = user ? "&user=" + user : "";
+    const url = getUrl("payments", null, newFiltersBank);
 
-    if (token && host) {
+    const {data, meta, message} = await api(url);
+
+    //console.log("URl STRING",url);
+
+    //console.log("Report bank DATA", data);
+
+    if(data){
+      this.setState({
+        data:data,
+        meta:meta,
+        load:false
+      })
+    }else if(message){
+
+      this.setState({
+        load:false
+      })
+      console.error("[Orus system] Error in report payments details:", message);
+      window.Swal.fire("Fallo de conexion", message, "error");
+    }
+
+      //url = "http://" + host + "/api/payments?"
+
+      //date_start = "date_start=" + fechaInicial + "&type=banks",
+
+      //date_end = "&date_end=" + fechaFinal + "&type=banks",
+
+      //saleUser = user ? "&user=" + user : "";
+
+   /*  if (token && host) {
       //Realiza la peticion del pedido
       console.log("Solicitando datos a la API");
       this.setState({
@@ -154,7 +193,7 @@ export default class ReportBank extends Component {
             "error"
           );
         });
-    }
+    } */
   };
 
   

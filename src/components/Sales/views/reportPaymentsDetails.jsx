@@ -29,6 +29,7 @@ export default class ReportPaymentsDetails extends Component {
 
   render() {
     const { payments, meta, page, load } = this.state;
+    //console.log("´DEBUG payments", payments);
 
     return (
       <div className="card card-success card-outline">
@@ -62,6 +63,7 @@ export default class ReportPaymentsDetails extends Component {
                 </tr>
               ) : payments.length ? (
                 payments.map((pay) => {
+                  
                   return (
                     <tr
                       key={pay.id}
@@ -82,7 +84,7 @@ export default class ReportPaymentsDetails extends Component {
                           {pay.sale && pay.sale.pedido ? pay.sale.pedido : "--"}
                         </span>
                       </td>
-                      <td className="text-right">$ {pay.total.toFixed(2)}</td>
+                      <td className="text-right">$ {pay.total?.toFixed(2)}</td>
                     </tr>
                   );
                 })
@@ -144,13 +146,22 @@ export default class ReportPaymentsDetails extends Component {
 
   getSaleDay = async () => {
     const { page } = this.state,
+
       { filters } = this.props;
 
-    filters.itemsPage = 12;
-    filters.page = page;
+      const newFiltersDetails = {
+        ...filters,
+      };
 
-    const url = getUrl("payments", null, filters);
+      newFiltersDetails.itemsPage = 12;
+      newFiltersDetails.page = page;
+
+    const url = getUrl("payments", null, newFiltersDetails);
     const { data, meta, message } = await api(url);
+
+    //console.log("Report payments details DATA", data);
+
+
 
     if (data) {
       this.setState({

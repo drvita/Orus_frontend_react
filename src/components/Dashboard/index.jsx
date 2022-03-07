@@ -80,11 +80,8 @@ class DashboardComponent extends Component {
             </div>
             <div className="row">
               <div className="col-lg-12 col-md-12">
-                <ReportPays
+                 <ReportPays
                   data={data}
-                  user={user}
-                  fechaInicial={date_start}
-                  fechaFinal={date_end}
                   filters={filters}
                   changeState={this.changeState}
                 />
@@ -96,9 +93,6 @@ class DashboardComponent extends Component {
               <div className="col-lg-4 col-md-12">
                 <ReportBank
                   data={data}
-                  user={user}
-                  fechaInicial={date_start}
-                  fechaFinal={date_end}
                   filters={filters}
                   changeState={this.changeState}
                 />

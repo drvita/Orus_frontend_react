@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { getUrl, api } from '../../redux/sagas/api';
+import actions from '../../redux/config/actions';
 
 class Filters extends Component {
   constructor(props) {
@@ -19,15 +21,19 @@ class Filters extends Component {
       branches: [], 
       users: [],
     };
-
+    
     this.controller = new AbortController();
-    this.signal = this.controller.signal;
+    //this.signal = this.controller.signal;
   }
   componentWillUnmount() {
     this.controller.abort();
   }
   componentDidMount() {
     this.getUsers();
+
+    
+
+    this.getBranches();
   }
 
   componentDidUpdate(props) {
@@ -36,6 +42,8 @@ class Filters extends Component {
         branches: this.props.branches,
       });
     }
+
+    //console.log("BRANCHES",this.state.branches);
   }
 
   sendDatFilter = () => {
@@ -58,7 +66,7 @@ class Filters extends Component {
         <div className="card-body p-0 bg-light">
           <div className="form-group row col-lg-12 m-0">
 
-            <div className="col-lg-1 mt-sm-3">
+            <div className="col-lg-1 mt-sm-3 ml-sm-3">
               <p className="mt-2 font-weight-bold text-secondary h5">Filtros</p>
             </div>
 
@@ -95,18 +103,17 @@ class Filters extends Component {
                   <option value="">
                     {currentUser === "" ? "Usuarios" : "Todos"}
                   </option>
-                  {users.map((user) => {
-                    return (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    );
+                  {users.map((user)=>{
+                   //console.log(user.roles[0]);
+                   return(
+                     user.roles[0] !== 'doctor' ? <option key={user.id} value={user.id}>{user.name}</option> : null
+                   )
                   })}
                 </select>
               </div>
             </div>
 
-            <div className="row mt-sm-3 m-0">
+            <div className="row mt-sm-3 m-0 ml-sm-2">
               <label className="col-lg-1 col-form-label p-0 ml-5 mt-2 ml-sm-3">
                 De:
               </label>
@@ -159,68 +166,52 @@ class Filters extends Component {
     });
   };
 
-  getUsers = () => {
-    let { host, token } = this.state,
-      url = "http://" + host + "/api/users",
-      orderby = "&orderby=username&order=asc",
-      rol = "&rol=10",
-      page = "?page=1";
+  getUsers = async () => {
 
-    //Realiza la peticion de los usuarios
-    console.log("Descargando usuarios de API");
-    fetch(url + page + orderby + rol, {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          window.Swal.fire({
-            title: "Error!",
-            text: "Ups!\n Hubo un error al descargar usuarios de sistema",
-            icon: "error",
-            confirmButtonText: "Ok",
-          });
-          console.error(res);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (!data.message) {
-          console.log("Almacenando usuarios");
+      const usersFilters = {
+        orderby: "username",
+        order: "asc",
+        rol: 10,
+        page: 1
+      }
+
+      const newUsersUrl = getUrl("users", null, usersFilters);
+      const {data, message} = await api(newUsersUrl);
+
+      if(data){
+        if(!message){
+          //console.log("[USUARIOS DEL FILTRO]",data);
           this.setState({
-            users: data.data,
-          });
-        } else {
-          console.error("Error en la descarga de usuarios", data.message);
+          users: data,
+        });
+        }else{
+          console.error("Error en la descarga de usuarios", message);          
         }
-      })
-      .catch((e) => {
-        if (e.code === 20) {
-          console.error("[Orus system] Salida por error:", e.code, e.message);
-          return false;
-        }
-
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-      });
+      }else {
+        window.Swal.fire({
+          title: "Error!",
+          text: "Ups!\n Hubo un error al descargar usuarios de sistema",
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
+      }
   };
+
+  getBranches = ()=>{
+    //console.log("entradndo a la funcion que ejecuta la action get branches");
+    this.props._getBranches()
+  }
+
 }
 
 const mapStateToProps = ({ config }) => {
     return {
-      branches: config.list,
+      branches: config.branches,
     };
   },
   mapActionsToProps = {
     // _setPageName: defaultActions.changeNamePage,
+    _getBranches: actions.getBranches
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(Filters);

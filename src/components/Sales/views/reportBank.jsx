@@ -13,7 +13,6 @@ export default class ReportBank extends Component {
       listBank: [],
 
       page: 1,
-
       data: [],
       meta:{},
       load: false,
@@ -21,14 +20,16 @@ export default class ReportBank extends Component {
 
 
     this.char = null;
+    this.controller = new AbortController();
   }
   componentWillUnmount() {
     this.controller.abort(); // Cancelando cualquier carga de fetch
   }
+  
   componentDidMount() {
     this.getSaleDay();
-    // this.getBaks();
   }
+
   componentDidUpdate(props, state) {
     if (
       props.filters.date_start !== this.props.filters.date_start ||
@@ -135,109 +136,8 @@ export default class ReportBank extends Component {
       console.error("[Orus system] Error in report payments details:", message);
       window.Swal.fire("Fallo de conexion", message, "error");
     }
-
-      //url = "http://" + host + "/api/payments?"
-
-      //date_start = "date_start=" + fechaInicial + "&type=banks",
-
-      //date_end = "&date_end=" + fechaFinal + "&type=banks",
-
-      //saleUser = user ? "&user=" + user : "";
-
-   /*  if (token && host) {
-      //Realiza la peticion del pedido
-      console.log("Solicitando datos a la API");
-      this.setState({
-        load: true,
-      });
-      fetch(url + date_start + date_end + saleUser, {
-        method: "GET",
-        signal: this.signal,
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + token,
-        },
-      })
-        .then(async (response) => {
-          let back = {};
-          if (response.status !== 204) back = await response.json();
-          if (!response.ok) {
-            throw new Error(back.message);
-          }
-          return back;
-        })
-        .then(async ({ data }) => {
-          if (!data.message) {
-            console.log("[reportBank] Almacenando detalles bancarios", data);
-            this.setState({
-              data,
-              load: false,
-            });
-          } else {
-            throw new Error(data.message);
-          }
-        })
-        .catch((e) => {
-          this.setState({
-            load: false,
-          });
-
-          if (e.code === 20) {
-            console.error("[Orus system] Salida por error:", e.code, e.message);
-            return false;
-          }
-
-          window.Swal.fire(
-            "Fallo de conexion",
-            "Verifique la conexion al servidor",
-            "error"
-          );
-        });
-    } */
   };
 
   
-  getBaks = () => {
-    const { host, token } = this.state,
-      type = "?name=bank";
-
-    //Peticion ajax de listado de bancos
-    console.log("[reportBank] Descargando listado de bancos");
-    fetch("http://" + host + "/api/config" + type, {
-      method: "GET",
-      signal: this.signal,
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then(async (response) => {
-        let back = {};
-        if (response.status !== 204) back = await response.json();
-        if (!response.ok) {
-          throw new Error(back.message);
-        }
-        return back;
-      })
-      .then((data) => {
-        if (data.meta && data.meta.total) {
-          console.log("[reportBank] Listado de bancos descargado");
-          this.setState({
-            listBank: data.data,
-          });
-        }
-      })
-      .catch((e) => {
-        if (e.code === 20) {
-          console.error("[Orus system] Salida por error:", e.code, e.message);
-          return false;
-        }
-
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-      });
-  };
+  
 }

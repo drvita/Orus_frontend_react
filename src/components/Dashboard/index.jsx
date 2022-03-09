@@ -18,7 +18,7 @@ class DashboardComponent extends Component {
 
     this.state = {
       host: ls.host,
-      token: ls.token,
+      token: ls.token,  
       user: "",
       date_start: moment().format("YYYY-MM-DD"),
       date_end: moment().format("YYYY-MM-DD"),

@@ -1,4 +1,5 @@
-export async function api(url, method = "GET", body) {
+export async function api(url, method = "GET", body, controller = null) {
+  //console.log("PARAMENTERS RECEIVED", url, method, body, controller);
   const LS = localStorage.getItem("OrusSystem"),
     {
       port: PORT = window.location.protocol.toString().replace(":", ""),
@@ -7,8 +8,8 @@ export async function api(url, method = "GET", body) {
     } = JSON.parse(LS ? LS : "{}");
 
   //TODO: Integrate
-  // this.controller = new AbortController();
-  // this.signal = this.controller.signal;
+  // controller = new AbortController();
+  // signal = controller.signal;
 
   return await fetch(`${PORT}://${HOST}/api/${url}`, {
     method,
@@ -18,6 +19,7 @@ export async function api(url, method = "GET", body) {
       "Content-Type": "application/json",
       Authorization: "Bearer " + TOKEN,
     },
+    //signal: controller.signal
   })
     .then(async (res) => {
       let back = null;
@@ -40,6 +42,10 @@ export function getUrl(endpoint, id, param = {}) {
     url += `/${id}`;
   }
 
+  if(typeof param !== "object" || Array.isArray(param)){ 
+    return url;
+  }
+
   if (paramKeys) {
     paramKeys.map((k) => {
       if (param[k] === null || param[k] === "") {
@@ -56,3 +62,4 @@ export function getUrl(endpoint, id, param = {}) {
 
   return url;
 }
+

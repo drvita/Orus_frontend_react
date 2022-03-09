@@ -30,6 +30,16 @@ const setConfig = (payload = {}) => ({
   payload,
 });
 
+const getBranches = (payload)=>({
+  type:TYPE.SAGA_GET_BRANCHES,
+  payload
+});
+
+const setBranches = (payload)=>({
+  type:TYPE.SET_BRANCHES,
+  payload
+});
+
 const toExportActions = {
   setMessages,
   getListConfig,
@@ -38,6 +48,8 @@ const toExportActions = {
   saveConfig,
   setListConfig,
   setConfig,
+  getBranches,
+  setBranches,
 };
 
 export default toExportActions;

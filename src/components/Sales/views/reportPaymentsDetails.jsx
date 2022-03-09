@@ -11,6 +11,11 @@ export default class ReportPaymentsDetails extends Component {
       page: 1,
       load: false,
     };
+
+    this.controller = new AbortController();
+  }
+  componentWillUnmount(){
+    this.controller.abort();
   }
   componentDidMount() {
     this.getSaleDay();

@@ -1,10 +1,12 @@
 import { TYPE } from "./types";
 
 const DEFAULT_STATE = {
+  // BRANCHES
   list: [],
   meta: {},
   config: {},
   messages: [],
+  branches:[],
   loading: false,
 };
 
@@ -63,6 +65,19 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
         loading: false,
         messages: [],
       };
+    }
+
+    case TYPE.SAGA_GET_BRANCHES:{
+      return{
+        ...state,
+      }
+    }
+
+    case TYPE.SET_BRANCHES:{
+          return{
+            ...state,
+            branches: payload,
+          }
     }
 
     default:

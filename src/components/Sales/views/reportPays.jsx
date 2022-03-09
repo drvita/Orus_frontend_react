@@ -14,8 +14,9 @@ export default class ReportPay extends Component {
       page:1
     };
     this.char = null;
+
     this.controller = new AbortController();
-    this.signal = this.controller.signal;
+    //this.signal = this.controller.signal;
   }
   componentWillUnmount() {
     this.controller.abort(); // Cancelando cualquier carga de fetch
@@ -75,7 +76,7 @@ export default class ReportPay extends Component {
   getSaleDay = async () => {
     
     //Variables en localStorage
-    let { host, token, page } = this.state,
+    let { page } = this.state,
 
     {filters} = this.props;
 
@@ -88,10 +89,10 @@ export default class ReportPay extends Component {
     newFiltersPays.type = 'methods';
 
     const url = getUrl("payments", null, newFiltersPays);
-    const {data, meta, message} = await api(url);
+    const {data, message} = await api(url);
 
-    console.log("[DATAAA CURRENT]",data);
-    console.log("[URLLL CURRENT]",data);
+    //console.log("[DATAAA CURRENT]",data);
+    //console.log("[URLLL CURRENT]",data);
 
 
     if(data){

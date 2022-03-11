@@ -375,7 +375,6 @@ class AsistentComponent extends Component {
   getCategories = (category, exam) => {
     const { category_id, esferaod, esferaoi, cilindrod, cilindroi, id } = exam;
 
-    console.log("[Asistent order] Recomendacion descargada");
     let code =
         category_id && category.id ? this.handleCodeName(category) : "XX",
       gradod = "+000000",

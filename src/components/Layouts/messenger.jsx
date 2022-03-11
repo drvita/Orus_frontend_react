@@ -21,7 +21,6 @@ export default class messenger extends Component {
   }
   componentDidUpdate(props, state) {
     if (props.pagado !== this.props.pagado) {
-      console.log("Recargando chat");
       this.getMessengers();
     }
   }
@@ -56,7 +55,10 @@ export default class messenger extends Component {
               <div className="direct-chat-messages" id="boxchat">
                 {messages.map((message) => {
                   let avatar = "/img/avatars/avatar5.png";
-
+                  // eslint-disable-next-line
+                  {
+                    /** TODO: chage to role */
+                  }
                   if (message.created_user.rol === 1)
                     avatar = "/img/avatars/avatar2.png";
                   if (!message.created_user.rol)
@@ -170,6 +172,7 @@ export default class messenger extends Component {
     }
     // console.log("[DEBUG] Enviando mensajes a la API");
     //Realiza la peticion de los contactos
+    // TODO:  chage to API
     fetch(url, {
       method: "POST",
       body: JSON.stringify(body),
@@ -187,7 +190,6 @@ export default class messenger extends Component {
       })
       .then((data) => {
         if (data.data) {
-          console.log("Almacenado mensajes");
           this.getMessengers();
         } else {
           console.error(data.message);
@@ -220,6 +222,7 @@ export default class messenger extends Component {
     }
     // console.log("[DEBUG] Solicitando mensajes de la API");
     //Realiza la peticion de los contactos
+    // TODO:  chage to API
     fetch(url + page + type, {
       method: "GET",
       headers: {
@@ -236,7 +239,6 @@ export default class messenger extends Component {
       })
       .then((data) => {
         if (data.data) {
-          console.log("Almacenado mensajes");
           this.setState({
             messages: data.data,
             message: "",

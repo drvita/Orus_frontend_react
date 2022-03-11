@@ -234,6 +234,7 @@ export default class Inventory extends Component {
         });
       }
       //Categories main
+      // TODO:  chage to API
       fetch(url, {
         method: "POST",
         headers: {
@@ -270,6 +271,7 @@ export default class Inventory extends Component {
       });
     }
     //Categories main
+    // TODO:  chage to API
     fetch(url, {
       method: "GET",
       headers: {
@@ -353,6 +355,7 @@ export default class Inventory extends Component {
       url = "http://" + ls.host + "/api/categories/1";
 
     //Categories main
+    // TODO:  chage to API
     fetch(url, {
       method: "GET",
       headers: {

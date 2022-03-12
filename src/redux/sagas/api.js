@@ -22,13 +22,26 @@ export async function api(url, method = "GET", body, controller = null) {
     //signal: controller.signal
   })
     .then(async (res) => {
-      let back = null;
-      if (res.status !== 204) back = await res.json();
-      return back;
+      if (res.status >= 200 && res.status < 300) {
+        for (var pair of res.headers.entries()) {
+          if (pair[0] === "content-type") {
+            switch (pair[1]) {
+              case "application/json":
+                return await res.json();
+              case "text/csv; charset=UTF-8":
+                return await res.blob();
+              default:
+                return null;
+            }
+          }
+        }
+      }
+
+      return null;
     })
     .catch((err) => {
-      console.log("[Orus System] Query API failer:", url);
-      console.log("[Orus System] Query API message:", err.message);
+      console.error("[Orus System] Query API failer:", url);
+      console.error("[Orus System] Query API message:", err.message);
       return null;
     });
 }
@@ -42,7 +55,7 @@ export function getUrl(endpoint, id, param = {}) {
     url += `/${id}`;
   }
 
-  if(typeof param !== "object" || Array.isArray(param)){ 
+  if (typeof param !== "object" || Array.isArray(param)) {
     return url;
   }
 
@@ -62,4 +75,3 @@ export function getUrl(endpoint, id, param = {}) {
 
   return url;
 }
-

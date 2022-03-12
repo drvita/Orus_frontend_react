@@ -125,6 +125,12 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
         loading: false,
       };
     }
+    case TYPE.SET_LOADING: {
+      return {
+        ...state,
+        loading: payload ? payload : false,
+      };
+    }
     default:
       return {
         ...state,

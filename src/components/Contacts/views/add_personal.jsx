@@ -6,6 +6,7 @@ const DataPersonalComponent = (props) => {
   const {
     id,
     type,
+    gender,
     business,
     name,
     rfc,
@@ -18,6 +19,7 @@ const DataPersonalComponent = (props) => {
     _getList,
     _setList,
   } = props;
+  
   const catchInputs = (e) => {
     const { name, value, checked } = e.target;
     let val = value;
@@ -34,6 +36,9 @@ const DataPersonalComponent = (props) => {
     }
     handleChangeData(name, val);
   };
+
+
+
   const [time, setTime] = useState(null);
 
   useEffect(() => {
@@ -106,6 +111,22 @@ const DataPersonalComponent = (props) => {
             minLength="10"
           />
         </div>
+
+        <div className="form-group">
+          <label>Género</label>
+          <select
+            className="custom-select"
+            name="gender"
+            value={gender ?? ""}
+            onChange={catchInputs}
+          >
+            <option value="male">Hombre</option>
+            <option value="female">Mujer</option>
+          </select>
+        </div>
+
+        
+        
       </div>
       <div className="col">
         <div className="form-group position-relative">

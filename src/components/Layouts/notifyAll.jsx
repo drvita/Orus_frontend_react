@@ -88,6 +88,9 @@ export default class NotifyAll extends Component {
       { host, token } = ls;
 
     console.log("[Orus System] Enviando datos de leidos");
+
+    
+    //TODO:Revisar funcion fetch
     fetch("http://" + host + "/api/user/readAllNotifications", {
       method: "POST",
       body: JSON.stringify({

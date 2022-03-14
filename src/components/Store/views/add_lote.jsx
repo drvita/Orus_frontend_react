@@ -405,6 +405,8 @@ class StoreLote extends Component {
 
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación de lote por API");
+
+          //TODO:Revisar funcion fetch
           return fetch("http://" + ls.host + "/api/items/" + id, {
             method: "DELETE",
             signal: this.signal,

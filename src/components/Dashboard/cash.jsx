@@ -306,6 +306,8 @@ export default class Cash extends Component {
 
     //Realiza la peticion de los productos faltantes
     console.log("Descargando datos de efectivo");
+
+    //TODO:Revisar funcion fetch
     fetch(url + atmDate + atmUser, {
       method: "GET",
       signal: this.signal,

@@ -353,6 +353,9 @@ export default class Inventory extends Component {
       url = "http://" + ls.host + "/api/categories/1";
 
     //Categories main
+
+    
+    //TODO:Revisar funcion fetch
     fetch(url, {
       method: "GET",
       headers: {

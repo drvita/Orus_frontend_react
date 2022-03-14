@@ -425,6 +425,8 @@ export default class ToolsCategory extends Component {
     }
 
     console.log("Descargando lista de categorias");
+
+    //TODO:Revisar funcion fetch
     fetch(url + page + itemsPage, {
       method: "GET",
       headers: {

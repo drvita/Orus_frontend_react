@@ -246,6 +246,8 @@ class RecomendationGlassComponent extends Component {
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
 
     if (id) {
+
+      //TODO:Revisar funcion fetch
       fetch("http://" + ls.host + "/api/categories/" + id, {
         method: "GET",
         headers: {

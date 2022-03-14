@@ -343,6 +343,9 @@ export default class searchContactLine extends Component {
         search = word ? `&search=${word}` : "",
         page = "?page=1&itemsPage=4";
       //Realiza la peticion de los contactos
+
+
+      //TODO:Revisar funcion fetch
       fetch(url + page + search + type, {
         method: "GET",
         headers: {

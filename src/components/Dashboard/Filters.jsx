@@ -30,11 +30,10 @@ class Filters extends Component {
   }
   componentDidMount() {
     this.getUsers();
-
-    
-
     this.getBranches();
+    //console.log("ESTADO AL MONTAR", this.state);
   }
+
 
   componentDidUpdate(props) {
     if (!props.branches.length && this.props.branches.length) {
@@ -42,8 +41,9 @@ class Filters extends Component {
         branches: this.props.branches,
       });
     }
-
-    //console.log("BRANCHES",this.state.branches);
+    console.log("Componente DID UPDATE")
+    console.log("BRANCH SELECCIONADA",this.state.branch_id);
+    //console.log("updated");
   }
 
   sendDatFilter = () => {
@@ -104,10 +104,30 @@ class Filters extends Component {
                     {currentUser === "" ? "Usuarios" : "Todos"}
                   </option>
                   {users.map((user)=>{
-                   //console.log(user.roles[0]);
-                   return(
-                     user.roles[0] !== 'doctor' ? <option key={user.id} value={user.id}>{user.name}</option> : null
-                   )
+                    
+
+                    if(!branch_id){
+                      return(
+                        <option key={user.id} value={user.id}>{user.name}</option>
+                      )
+                    } else {
+                      console.log("BRANCH:", branch_id, user.branch.id, user.branch.id === branch_id);
+                      return(
+                        user.branch.id === branch_id ? <option key={user.id} value={user.id}>{user.name}</option> : null
+                      )
+                    }
+
+                    
+
+
+                    //TODO:Revisar la condicion, no retorna el option con los usuarios
+
+                    /* */
+
+                    /* return(
+                      this.state.branch_id !== "" ? user.roles[0] !== 'doctor' && user.branch.id === this.state.branch_id ? <option key={user.id} value={user.id}>{user.name}</option> : null : null
+                    ) */
+
                   })}
                 </select>
               </div>

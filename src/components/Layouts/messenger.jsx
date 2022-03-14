@@ -220,6 +220,8 @@ export default class messenger extends Component {
     }
     // console.log("[DEBUG] Solicitando mensajes de la API");
     //Realiza la peticion de los contactos
+    
+    //TODO:Revisar funcion fetch
     fetch(url + page + type, {
       method: "GET",
       headers: {

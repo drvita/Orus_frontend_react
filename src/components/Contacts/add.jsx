@@ -27,6 +27,7 @@ class AddContactComponent extends Component {
       rfc: "",
       email: "",
       type: 0,
+      gender:"",
       birthday: "",
       domicilios: {
         calle: "",
@@ -118,6 +119,7 @@ class AddContactComponent extends Component {
         rfc,
         email,
         type,
+        gender,
         birthday,
         domicilios,
         telnumbers,
@@ -143,7 +145,11 @@ class AddContactComponent extends Component {
         updated_at,
         updated,
       } = contact,
+
       hasTel = Object.values(telnumbers).filter((tel) => tel.length === 10);
+
+
+      //console.log("HASTEL------",hasTel);
 
     //console.log("[DEBUG] Render");
 
@@ -202,6 +208,7 @@ class AddContactComponent extends Component {
                     rfc={rfc}
                     email={email}
                     type={type}
+                    gender={gender}
                     birthday={birthday}
                     business={business}
                     verification={verification}
@@ -385,10 +392,16 @@ class AddContactComponent extends Component {
     //window.location.href = `/consultorio/${id}`;
   };
   handleChangeData = (key, value) => {
-    const { verification } = this.state,
+      //PRUEBAA//
+      console.log("Input Seleccionado:" + key + "---" + "Valor:" + value);
+
+      const { verification } = this.state,
       dataObject = helper.handleGetDataObject(key, value, verification);
 
-    this.setState(dataObject);
+      //PRUEBAAA//
+      console.log("DATAOBJECT------", dataObject);
+
+      this.setState(dataObject);
   };
   handleSave = (e) => {
     e.preventDefault();
@@ -398,12 +411,15 @@ class AddContactComponent extends Component {
         rfc,
         email,
         type,
+        gender,
         birthday,
         domicilios,
         telnumbers,
         business,
       } = this.state,
+
       { _saveContact } = this.props;
+      
     //Data verification
     if (!helper.handleVerificationData(this.state)) return false;
     //make data location
@@ -420,11 +436,17 @@ class AddContactComponent extends Component {
       rfc: rfc.trim().toLocaleLowerCase(),
       email: email.trim().toLocaleLowerCase(),
       type,
+      gender,
       birthday: new Date(birthday),
       domicilio: JSON.stringify(dataDom),
       telnumbers: JSON.stringify(telnumbers),
       business: business ? 1 : 0,
     };
+
+    //PRUBEA//
+    console.log("DATA TO SAVE", data);
+
+
     //Save
     helper.saveContact("contacto", data, _saveContact, id);
   };

@@ -32,9 +32,8 @@ class indexOrderComponent extends Component {
     };
   }
   componentDidMount() {
-    const { match, _getOrder, _setPageName, mainRole } = this.props,
+    const { match, _getOrder, _setPageName } = this.props,
       { id } = match.params;
-      console.log("MAIN ROLE", mainRole)
 
     if (id && !isNaN(id)) {
       console.log("[OrusSystem] cargando orden al inicio: ", id);
@@ -105,7 +104,7 @@ class indexOrderComponent extends Component {
 
   render() {
     const { panel } = this.state,
-      { order, options, mainRole} = this.props;
+      { order, options, mainRole } = this.props;
     let showpanel = this.showPanel(panel);
 
     //console.log("[DEBUG] orders", order);
@@ -159,7 +158,7 @@ class indexOrderComponent extends Component {
                     <i className="mr-2 fas fa-clipboard-list"></i> Pedidos
                   </a>
                 </li>
-                {mainRole === 'admin' ? (
+                {mainRole === "admin" ? (
                   <li className="nav-item">
                     <a
                       href="#item"
@@ -302,7 +301,7 @@ const mapStateToProps = ({ order, users }) => {
       options: order.options,
       messages: order.messages,
       user: users.dataLoggin,
-      mainRole: users.dataLoggin.roles[0]
+      mainRole: users.dataLoggin.roles[0],
     };
   },
   mapActionsToProps = {
@@ -312,7 +311,7 @@ const mapStateToProps = ({ order, users }) => {
     _setContact: contactActions.setContact,
     _setSales: saleActions.setListSales,
     _setPageName: defaultActions.changeNamePage,
-    _setOrder:orderActions.setOrder
+    _setOrder: orderActions.setOrder,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(indexOrderComponent);

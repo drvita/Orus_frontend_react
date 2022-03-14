@@ -264,6 +264,7 @@ export default class ToolsCategory extends Component {
 
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación de categoria por API");
+          // TODO:  chage to API
           return fetch("http://" + host + "/api/categories/" + id, {
             method: "DELETE",
             signal: this.signal,
@@ -354,6 +355,7 @@ export default class ToolsCategory extends Component {
 
           //Actualiza el pedido o creamos un pedido nuevo según el ID
           console.log("Enviando datos a API para almacenar");
+          // TODO:  chage to API
           return fetch("http://" + host + "/api/categories", {
             method: "POST",
             body: JSON.stringify(body),

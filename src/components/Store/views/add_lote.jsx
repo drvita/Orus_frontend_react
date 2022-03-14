@@ -280,6 +280,7 @@ class StoreLote extends Component {
 
           //Actualiza el pedido o creamos un pedido nuevo según el ID
           console.log("Enviando datos del producto a API");
+          // TODO:  chage to API
           return fetch("http://" + ls.host + "/api/items", {
             method: "POST",
             body: JSON.stringify(body),
@@ -342,6 +343,8 @@ class StoreLote extends Component {
       id = this.props.id,
       url =
         "http://" + varLocalStorage.host + "/api/items?store_items_id=" + id;
+
+    // TODO:  chage to API
     fetch(url + "&page=" + page, {
       method: "GET",
       headers: {

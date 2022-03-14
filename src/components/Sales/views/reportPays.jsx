@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {api, getUrl} from '../../../redux/sagas/api';
+import { api, getUrl } from "../../../redux/sagas/api";
 
 export default class ReportPay extends Component {
   constructor(props) {
@@ -11,7 +11,7 @@ export default class ReportPay extends Component {
       token: ls.token,
       total: 0,
       efectivo: 0,
-      page:1
+      page: 1,
     };
     this.char = null;
 
@@ -74,118 +74,102 @@ export default class ReportPay extends Component {
     });
   };
   getSaleDay = async () => {
-    
     //Variables en localStorage
     let { page } = this.state,
-
-    {filters} = this.props;
+      { filters } = this.props;
 
     const newFiltersPays = {
       ...filters,
-    }
+    };
 
     newFiltersPays.itemsPage = 12;
     newFiltersPays.page = page;
-    newFiltersPays.type = 'methods';
+    newFiltersPays.type = "methods";
 
     const url = getUrl("payments", null, newFiltersPays);
-    const {data, message} = await api(url);
+    const { data, message } = await api(url);
 
     //console.log("[DATAAA CURRENT]",data);
     //console.log("[URLLL CURRENT]",data);
 
+    if (data) {
+      var donutChartCanvas = window.$("#donutChart").get(0).getContext("2d"),
+        donutOptions = {
+          maintainAspectRatio: true,
+          responsive: true,
+        },
+        labels = [],
+        values = [],
+        total = 0,
+        efectivo = 0,
+        donutData = {};
+      if (this.char) this.char.destroy();
 
-    if(data){
-
-      var donutChartCanvas = window
-              .$("#donutChart")
-              .get(0)
-              .getContext("2d"),
-            donutOptions = {
-              maintainAspectRatio: true,
-              responsive: true,
-            },
-            labels = [],
-            values = [],
-            total = 0,
-            efectivo = 0,
-            donutData = {};
-          if (this.char) this.char.destroy();
-
-          if (!data.message) {
-            console.log("[ReportPay] Almacenando datos de la venta del dia", data);
-            if (data && data.length) {
-              await data.map((mp) => {
-                labels.push(mp.method);
-                values.push(mp.total.toFixed(2));
-                if (mp.method === "efectivo") {
-                  this.props.changeState("ventas", mp.total);
-                  efectivo = mp.total;
-                }
-                total += mp.total;
-                return null;
-              });
-            } else {
-              labels = ["No hay datos"];
-              values = [0];
+      if (!data.message) {
+        console.log("[ReportPay] Almacenando datos de la venta del dia", data);
+        if (data && data.length) {
+          await data.map((mp) => {
+            labels.push(mp.method);
+            values.push(mp.total.toFixed(2));
+            if (mp.method === "efectivo") {
+              this.props.changeState("ventas", mp.total);
+              efectivo = mp.total;
             }
-
-            this.setState({
-              total,
-              efectivo,
-            });
-          } else {
-            console.error(
-              "[ORUS] Error al cargar la venta del dia",
-              data.message
-            );
-            labels = ["No hay datos"];
-            values = [100];
-          }
-          donutData = {
-            labels: labels,
-            datasets: [
-              {
-                data: values,
-                backgroundColor: [
-                  "#f56954",
-                  "#00a65a",
-                  "#f39c12",
-                  "#00c0ef",
-                  "#3c8dbc",
-                  "#d2d6de",
-                  "#000",
-                ],
-              },
-            ],
-          };
-          this.char = new window.Chart(donutChartCanvas, {
-            type: "pie",
-            data: donutData,
-            options: donutOptions,
+            total += mp.total;
+            return null;
           });
-    }
-    else if(message){
+        } else {
+          labels = ["No hay datos"];
+          values = [0];
+        }
+
+        this.setState({
+          total,
+          efectivo,
+        });
+      } else {
+        console.error("[ORUS] Error al cargar la venta del dia", data.message);
+        labels = ["No hay datos"];
+        values = [100];
+      }
+      donutData = {
+        labels: labels,
+        datasets: [
+          {
+            data: values,
+            backgroundColor: [
+              "#f56954",
+              "#00a65a",
+              "#f39c12",
+              "#00c0ef",
+              "#3c8dbc",
+              "#d2d6de",
+              "#000",
+            ],
+          },
+        ],
+      };
+      this.char = new window.Chart(donutChartCanvas, {
+        type: "pie",
+        data: donutData,
+        options: donutOptions,
+      });
+    } else if (message) {
       window.Swal.fire({
         title: "Error!",
         text: "Ups!\n Hubo un error al descargar las ventas",
         icon: "error",
         confirmButtonText: "Ok",
       });
-      console.log(message);
       return message;
     }
 
-
-      //url = "http://" + host + "/api/payments?",
-      //date_start = "date_start=" + fechaInicial,
-      //date_end = "&date_end=" + fechaFinal,
-      //method = "&type=methods",
-      //saleUser = user ? "&user=" + user : "";
-
-     
+    //url = "http://" + host + "/api/payments?",
+    //date_start = "date_start=" + fechaInicial,
+    //date_end = "&date_end=" + fechaFinal,
+    //method = "&type=methods",
+    //saleUser = user ? "&user=" + user : "";
   };
-
 
   SetMethodPayment = (status) => {
     switch (status) {

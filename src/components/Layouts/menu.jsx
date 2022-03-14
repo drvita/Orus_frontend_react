@@ -29,7 +29,7 @@ const MenuComponent = (props) => {
     mainRole = user.roles[0];
 
   let avatar = "/img/avatars/avatar5.png";
-  if (mainRole === 'ventas') avatar = "/img/avatars/avatar2.png";
+  if (mainRole === "ventas") avatar = "/img/avatars/avatar2.png";
   if (!mainRole) avatar = "/img/avatars/avatar3.png";
   if (user.idUser === 2) avatar = "/img/avatars/avatar4.png";
 
@@ -61,8 +61,9 @@ const MenuComponent = (props) => {
               <small className="text-lowercase">({user.username})</small>
               <br />
               <span className="badge badge-light">
+                {/** TODO: chage to role */}
                 {user.rol > 0
-                  ? mainRole === 'ventas'
+                  ? mainRole === "ventas"
                     ? "Ventas"
                     : "Optometrista"
                   : "Administrador"}

@@ -18,13 +18,12 @@ class DashboardComponent extends Component {
 
     this.state = {
       host: ls.host,
-      token: ls.token,  
+      token: ls.token,
       user: "",
       //date_start:moment().subtract(7, "day").endOf("day").format("YYYY-MM-DD"),
       date_start: moment().startOf('week').format("YYYY-MM-DD"),
       date_end: moment().format("YYYY-MM-DD"),
       branch_id: "",
-      caja: 0,
       ventas: 0,
       filterData: {},
     };
@@ -37,7 +36,7 @@ class DashboardComponent extends Component {
   }
 
   render() {
-    const { user, date_start, date_end, branch_id, caja, ventas } = this.state;
+    const { user, date_start, date_end, branch_id, ventas } = this.state;
     const { data } = this.props;
     const filters = {
       user,
@@ -76,12 +75,12 @@ class DashboardComponent extends Component {
           <div className="col-lg-4 col-md-12">
             <div className="row">
               <div className="col-lg-12 col-md-12">
-                <BoxCut caja={caja} ventas={ventas} />
+                <BoxCut ventas={ventas} />
               </div>
             </div>
             <div className="row">
               <div className="col-lg-12 col-md-12">
-                 <ReportPays
+                <ReportPays
                   data={data}
                   filters={filters}
                   changeState={this.changeState}

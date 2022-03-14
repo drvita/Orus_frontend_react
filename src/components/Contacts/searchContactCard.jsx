@@ -254,6 +254,7 @@ export default class searchContactLine extends Component {
     //Variables en localStorage
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
     //Realiza busqueda de contacto
+    // TODO:  chage to API
     fetch("http://" + varLocalStorage.host + "/api/contacts/" + id, {
       method: "GET",
       headers: {

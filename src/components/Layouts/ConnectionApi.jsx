@@ -2,7 +2,7 @@ export async function ApiGet(action) {
   try {
     let ls = JSON.parse(localStorage.getItem("OrusSystem")),
       url = "http://" + ls.host + "/api/" + action;
-    console.log("Ajax: ", action, url, ls.token);
+    // TODO:  chage to API
     return await fetch(url, {
       method: "GET",
       headers: {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 //Components
 import ListInbox from "../../../layouts/list_inbox";
+import { api, getUrl } from "../../../redux/sagas/api";
 //Actions
 import { storeActions } from "../../../redux/store/index";
 import helper from "../helpers";
@@ -17,6 +18,7 @@ function InboxComponent(props) {
     _setOptions,
     _deleteItem,
     _getItem,
+    _setLoading,
   } = props;
   //States
   const [itemSelected, setItemSelected] = useState({ id: 0 });
@@ -45,6 +47,34 @@ function InboxComponent(props) {
       } else if (itemSelected.id) {
         _getItem(itemSelected.id);
       }
+    },
+    handleDownload = async () => {
+      _setLoading(true);
+      const newOptions = { ...options, responseType: "csv" };
+      console.log("[Orus Sytem] Start donwload csv");
+      const url = getUrl("store", null, newOptions);
+      const data = await api(url);
+      _setLoading();
+      if (data) {
+        console.log("[Orus Sytem] Process data csv");
+        window.open(URL.createObjectURL(data));
+        console.log("[Orus Sytem] Donwload is ok");
+        window.Swal.fire({
+          title: "Descargas",
+          text: "El archivo CSV fue generado correctamente",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        window.Swal.fire({
+          title: "Descargas",
+          text: "El archivo CSV no se genero correctamente",
+          icon: "error",
+          showConfirmButton: false,
+          timer: 3000,
+        });
+      }
     };
 
   useEffect(() => {
@@ -66,7 +96,7 @@ function InboxComponent(props) {
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleDeleteItem={deleteItem}
       handleEditItem={handleSelectItem}
-      handleDownloadItem={" "}
+      handleDownload={handleDownload}
       handleSync={() => _getList(options)}
     >
       <table className="table table-hover table-striped">
@@ -159,7 +189,7 @@ const mapStateToProps = ({ storeItem }) => {
     _deleteItem: storeActions.deleteItem,
     _setItem: storeActions.setItem,
     _getItem: storeActions.getItem,
-    //_downloadItem:storeActions.downloadItem,
+    _setLoading: storeActions.setLoading,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(InboxComponent);

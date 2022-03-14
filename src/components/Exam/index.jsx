@@ -491,7 +491,6 @@ class IndexExamComponent extends Component {
       },
       load: true,
     });
-    console.log("[DEBUG] Search in index exam", search);
   };
   handleChangePage = (page) => {
     const { options } = this.state;

@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import action from "../helpers";
 import { categoryActions } from "../../../redux/category";
 
+import {getUrl, api} from '../../../redux/sagas/api';
+
 class RecomendationGlassComponent extends Component {
   constructor(props) {
     super(props);
@@ -242,32 +244,30 @@ class RecomendationGlassComponent extends Component {
     );
   }
 
-  getCategory = (id) => {
+  getCategory = async (id) => {
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
 
     if (id) {
+      const url = getUrl("categories", id);
+      console.log("url", url);
 
-      //TODO:Revisar funcion fetch
-      fetch("http://" + ls.host + "/api/categories/" + id, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + ls.token,
-        },
-      })
-        .then((response) => response.json())
-        .then(({ data }) => {
-          if (data) {
-            this.setState({
-              category: data,
-            });
-          }
+      const {data, message} = await api(url)
+
+      if(data){
+        console.log("NEW DATA",data)
+        this.setState({
+          category: data,
         });
+      }else{
+        console.log("NEW ERROR", message);
+      }
     }
 
     return {};
   };
+
+
+
   handleClickCategory = (e) => {
     e.preventDefault();
     const { onChangeInput, nameCategory } = this.props;
@@ -284,6 +284,8 @@ class RecomendationGlassComponent extends Component {
       [nameCategory]: null,
     });
   };
+
+  
   handleCategoryChange = (e) => {
     const { name, value } = e.target,
       { onChangeInput: _onChangeInput, nameCategory } = this.props,

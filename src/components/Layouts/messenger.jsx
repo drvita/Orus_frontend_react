@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
 
+import {api, getUrl} from '../../redux/sagas/api';
+
 export default class messenger extends Component {
   constructor(props) {
     super(props);
@@ -152,28 +154,67 @@ export default class messenger extends Component {
     this.setState({
       [name]: value.toLowerCase(),
     });
+    console.log(value);
   };
-  sendMessenger = () => {
-    const { message, load, host, token } = this.state,
-      { table, idRow } = this.props,
-      url = "http://" + host + "/api/messengers",
-      body = {
+
+
+  sendMessenger = async () => {
+
+    const { message, load, host, token } = this.state;
+
+    //const { table, idRow } = this.props;
+
+    //const url = "http://" + host + "/api/messengers";
+
+  /*   const  body = {
         table,
         idRow,
         user: "",
         message,
-      };
+      }; */
 
+   /*  const sendMessengerFilters = {
+
+    }
+
+    const filters = {
+      table:table,
+      idRow:idRow,
+      page:1
+    }
+ */
     //Mandamos señal de procesamiento
     if (!load) {
       this.setState({
         load: true,
       });
     }
+
+
+    //TODO: FETCH CON BODY PENDIENTE
+    const sendMessengerUrl = getUrl("messengers", null)
+    console.log("url send message", sendMessengerUrl);
+
+
+    const data = await api(sendMessengerUrl, 'POST', message)
+
+    if(data){
+      console.log(data);
+    }
+    else{
+      console.log("ERROR al enviar");
+      this.setState({
+        load: false,
+      });
+    }
+
+
+
+
+
     // console.log("[DEBUG] Enviando mensajes a la API");
     //Realiza la peticion de los contactos
-    // TODO:  chage to API
-    fetch(url, {
+    /* fetch(url, {
       method: "POST",
       body: JSON.stringify(body),
       headers: {
@@ -204,27 +245,63 @@ export default class messenger extends Component {
         this.setState({
           load: false,
         });
-      });
+      }); */
   };
-  getMessengers = () => {
-    //Variables en localStorage
-    const { load, host, token } = this.state,
-      { table, idRow } = this.props,
-      url = "http://" + host + "/api/messengers",
-      type = "&table=" + table + "&idRow=" + idRow,
-      page = "?page=1";
+
+
+
+
+
+
+  getMessengers = async () => {
+
+    const { load} = this.state;
+
+     const { table, idRow } = this.props;
+
+      const filters = {
+        table:table,
+        idRow:idRow,
+        page:1
+      }
+
+      const getMessengerUrl = getUrl("messengers",null, filters);
+
+      if (!load) {
+        this.setState({
+          load: true,
+        });
+      }
+
+      const {data, message} = await api(getMessengerUrl);
+
+      if(data){
+        this.setState({
+          messages: data,
+          message: "",
+          load: false,
+        });
+        //console.log("MESSENGER DATA", data);
+      }
+      else if(message){
+        window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+        this.setState({
+          load: false,
+        });
+        console.log(message);
+      }
 
     //Mandamos señal de procesamiento
-    if (!load) {
+    /* if (!load) {
       this.setState({
         load: true,
       });
-    }
+    } */
     // console.log("[DEBUG] Solicitando mensajes de la API");
     //Realiza la peticion de los contactos
-    
-    //TODO:Revisar funcion fetch
-    fetch(url + page + type, {
+
+    /* fetch(url + page + type, {
+
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -258,6 +335,6 @@ export default class messenger extends Component {
         this.setState({
           load: false,
         });
-      });
+      }); */
   };
 }

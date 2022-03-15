@@ -31,7 +31,6 @@ class Filters extends Component {
   componentDidMount() {
     this.getUsers();
     this.getBranches();
-    //console.log("ESTADO AL MONTAR", this.state);
   }
 
 
@@ -41,9 +40,6 @@ class Filters extends Component {
         branches: this.props.branches,
       });
     }
-    console.log("Componente DID UPDATE")
-    console.log("BRANCH SELECCIONADA",this.state.branch_id);
-    //console.log("updated");
   }
 
   sendDatFilter = () => {
@@ -104,30 +100,15 @@ class Filters extends Component {
                     {currentUser === "" ? "Usuarios" : "Todos"}
                   </option>
                   {users.map((user)=>{
-                    
-
                     if(!branch_id){
                       return(
                         <option key={user.id} value={user.id}>{user.name}</option>
                       )
                     } else {
-                      console.log("BRANCH:", branch_id, user.branch.id, user.branch.id === branch_id);
                       return(
-                        user.branch.id === branch_id ? <option key={user.id} value={user.id}>{user.name}</option> : null
+                        user.branch.id.toString() === branch_id ? <option key={user.id} value={user.id}>{user.name}</option> : null
                       )
                     }
-
-                    
-
-
-                    //TODO:Revisar la condicion, no retorna el option con los usuarios
-
-                    /* */
-
-                    /* return(
-                      this.state.branch_id !== "" ? user.roles[0] !== 'doctor' && user.branch.id === this.state.branch_id ? <option key={user.id} value={user.id}>{user.name}</option> : null : null
-                    ) */
-
                   })}
                 </select>
               </div>
@@ -200,7 +181,6 @@ class Filters extends Component {
 
       if(data){
         if(!message){
-          //console.log("[USUARIOS DEL FILTRO]",data);
           this.setState({
           users: data,
         });
@@ -218,7 +198,6 @@ class Filters extends Component {
   };
 
   getBranches = ()=>{
-    //console.log("entradndo a la funcion que ejecuta la action get branches");
     this.props._getBranches()
   }
 
@@ -230,7 +209,6 @@ const mapStateToProps = ({ config }) => {
     };
   },
   mapActionsToProps = {
-    // _setPageName: defaultActions.changeNamePage,
     _getBranches: actions.getBranches
   };
 

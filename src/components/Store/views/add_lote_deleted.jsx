@@ -280,7 +280,9 @@ class StoreLote extends Component {
 
           //Actualiza el pedido o creamos un pedido nuevo según el ID
           console.log("Enviando datos del producto a API");
-          // TODO:  chage to API
+
+          
+          
           return fetch("http://" + ls.host + "/api/items", {
             method: "POST",
             body: JSON.stringify(body),
@@ -344,7 +346,7 @@ class StoreLote extends Component {
       url =
         "http://" + varLocalStorage.host + "/api/items?store_items_id=" + id;
 
-    // TODO:  chage to API
+    
     fetch(url + "&page=" + page, {
       method: "GET",
       headers: {
@@ -409,7 +411,7 @@ class StoreLote extends Component {
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación de lote por API");
 
-          //TODO:Revisar funcion fetch
+          
           return fetch("http://" + ls.host + "/api/items/" + id, {
             method: "DELETE",
             signal: this.signal,

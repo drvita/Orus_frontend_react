@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import InventoryTableView from "./views/Inventory_table";
 
+import { getUrl, api } from "../../redux/sagas/api";
+
 export default class Inventory extends Component {
   constructor(props) {
     super(props);
@@ -233,8 +235,9 @@ export default class Inventory extends Component {
           load: true,
         });
       }
+
       //Categories main
-      // TODO:  chage to API
+      // TODO:  FETCH CON BODY PENDIENTE
       fetch(url, {
         method: "POST",
         headers: {
@@ -252,17 +255,27 @@ export default class Inventory extends Component {
         });
     }
   };
+
+
+
   handelChangePrice = (e) => {
     const { value } = e.target;
     this.setState({
       price: parseInt(value),
     });
   };
-  getItems = (catid) => {
-    //Variables en localStorage
-    const ls = JSON.parse(localStorage.getItem("OrusSystem")),
-      { load } = this.state,
-      url = "http://" + ls.host + "/api/store?cat=" + catid + "&itemsPage=500";
+
+
+
+
+  getItems = async (catid) => {
+    const { load } = this.state;
+    
+    const getItemsParams = {
+      cat:catid,
+      itemsPage:500
+    };
+    const urlGetItems = getUrl("store", null, getItemsParams );
 
     //Cargando
     if (!load) {
@@ -270,46 +283,27 @@ export default class Inventory extends Component {
         load: true,
       });
     }
+
     //Categories main
-    // TODO:  chage to API
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + ls.token,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((res) => {
-        console.log("[Orus System] Descarga de producto exitosa");
-        this.setState({
-          items: res.data && res.data.length ? res.data : [],
-          load: false,
-        });
-      })
-      .catch((e) => {
-        this.setState({
-          load: false,
-        });
+    const {data, message} = await api(urlGetItems);
 
-        if (e.code === 20) {
-          console.error("[Orus system] Salida por error:", e.code, e.message);
-          return false;
-        }
-
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
+    if(data){
+      console.log("[Orus System] Descarga de producto exitosa");
+      this.setState({
+        items: data && data.length ? data : [],
+        load: false,
       });
+    }else{
+      console.error("[Orus system] Salida por error:", message);
+      this.setState({
+        load: false,
+      });
+    }
   };
+
+
+
+  
   handleClickCat = (e) => {
     const { name, value } = e.target,
       { catData_1, catData_2 } = this.state;
@@ -324,7 +318,6 @@ export default class Inventory extends Component {
           return true;
         } else return false;
       });
-      //console.log("Meta: ", meta);
 
       this.setState({
         catid_1: parseInt(value),
@@ -349,48 +342,36 @@ export default class Inventory extends Component {
       });
     }
   };
-  getCategories = () => {
+
+
+
+
+  getCategories = async () => {
     //Variables en localStorage
-    const ls = JSON.parse(localStorage.getItem("OrusSystem")),
-      url = "http://" + ls.host + "/api/categories/1";
+    //url = "http://" + ls.host + "/api/categories/1";
 
     //Categories main
 
-    
-    //TODO:Revisar funcion fetch
-    fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + ls.token,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((cat) => {
-        if (cat.data && cat.data.hijos.length) {
-          console.log("Descarga de categoria exitos");
-          this.setState({
-            catData_1: cat.data.hijos,
-          });
-        }
-      })
-      .catch((e) => {
-        if (e.code === 20) {
-          console.error("[Orus system] Salida por error:", e.code, e.message);
-          return false;
-        }
 
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-      });
+    const urlGetCategories = getUrl("categories", 1)
+
+    const {data, message} = await api(urlGetCategories);
+
+    if(data){
+      if (data && data.hijos.length) {
+        console.log("Descarga de categoria exitos");
+        this.setState({
+          catData_1: data.hijos,
+        });
+      }
+    }else{
+      console.log("Error al descargar categorías");
+      console.error("[Orus system] Salida por error:", message);
+      window.Swal.fire(
+        "Fallo de conexion",
+        "Verifique la conexion al servidor",
+        "error"
+      );
+    }
   };
 }

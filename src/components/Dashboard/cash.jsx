@@ -243,7 +243,7 @@ export default class Cash extends Component {
           url = "http://" + host + "/api/atms";
         if (confirm && efectivo) {
           //Actualiza el pedido o creamos un pedido nuevo según el ID
-          // TODO:  chage to API
+          
           console.log("Enviando datos ATM a API");
           return fetch(url, {
             method: "POST",
@@ -306,10 +306,8 @@ export default class Cash extends Component {
       atmUser = user ? "&user=" + user : "";
 
     //Realiza la peticion de los productos faltantes
-    // TODO:  chage to API
     console.log("Descargando datos de efectivo");
 
-    //TODO:Revisar funcion fetch
     fetch(url + atmDate + atmUser, {
       method: "GET",
       signal: this.signal,

@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
-import Category from "./views/tools_category";
 import BranchsList from "./views/Branchs";
 // Actions
 import { defaultActions } from "../../redux/default/";
@@ -90,7 +88,7 @@ class ToolsComponent extends Component {
             </div>
           </div>
 
-          <Category data={data} />
+          
         </div>
         <div className="col-6">
           <div className="card card-primary card-outline">

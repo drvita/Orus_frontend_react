@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Pagination from "../../../layouts/pagination";
+import { api, getUrl } from "../../../redux/sagas/api";
 
 export default class ToolsCategory extends Component {
   constructor(props) {
@@ -243,11 +244,16 @@ export default class ToolsCategory extends Component {
       [name]: value,
     });
   };
+
+
   handleChangePage = (id) => {
     this.setState({
       page: id,
     });
   };
+
+
+
   handleClickDelete = (id, name) => {
     window.Swal.fire({
       title: "Eliminar",
@@ -264,7 +270,6 @@ export default class ToolsCategory extends Component {
 
           //Inicio de proceso de eliminción por API
           console.log("Solicitud de eliminación de categoria por API");
-          // TODO:  chage to API
           return fetch("http://" + host + "/api/categories/" + id, {
             method: "DELETE",
             signal: this.signal,
@@ -319,6 +324,8 @@ export default class ToolsCategory extends Component {
       }
     });
   };
+
+
   handleClickSave = () => {
     //Verificamos campos validos
     if (this.state.name.length < 4) {
@@ -355,7 +362,6 @@ export default class ToolsCategory extends Component {
 
           //Actualiza el pedido o creamos un pedido nuevo según el ID
           console.log("Enviando datos a API para almacenar");
-          // TODO:  chage to API
           return fetch("http://" + host + "/api/categories", {
             method: "POST",
             body: JSON.stringify(body),
@@ -411,25 +417,65 @@ export default class ToolsCategory extends Component {
       }
     });
   };
-  getCategories = () => {
+
+
+
+
+  getCategories = async () => {
     //Variables en localStorage
     let { host, token, load } = this.state,
+
+
       url = "http://" + host + "/api/categories",
       //categoryid = "&categoryid=raiz",
+
+
       itemsPage = "&itemsPage=5",
       page = this.state.page > 0 ? "?page=" + this.state.page : "?page=1";
 
-    //Mandamos señal de carga si no lo he hecho
-    if (!load) {
-      this.setState({
-        load: true,
-      });
-    }
 
-    console.log("Descargando lista de categorias");
+      const filterGetCategories = {
+        itemsPage: 5,
+        page: this.state.page > 0 ? this.state.page : 1,
+      };
 
-    //TODO:Revisar funcion fetch
-    fetch(url + page + itemsPage, {
+      const urlGetCategories = getUrl("categories",null, filterGetCategories);
+
+      //Mandamos señal de carga si no lo he hecho
+      if (!load) {
+        this.setState({
+          load: true,
+        });
+      }
+
+      console.log("Descargando lista de categorias");
+
+
+      const {data} = await api(urlGetCategories);
+
+      if(data){
+        console.log("DATA CATEGORIES HERE", data);
+
+        console.log("Lista de categorias descargadas");
+       /*  this.setState({
+            category_list: data,
+            meta: data.meta,
+            newItem: 0,
+            add: false,
+            category_id: 0,
+            name: "",
+            load: false,
+          }); */
+
+      }
+      else{
+        console.log("Error al descargar categorias");
+      }
+
+
+   
+
+    /* fetch(url + page + itemsPage, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -468,8 +514,11 @@ export default class ToolsCategory extends Component {
           "Verifique la conexion al servidor",
           "error"
         );
-      });
+      }); */
   };
+
+
+
   handleClickAdd = () => {
     this.setState({
       add: !this.state.add,
@@ -481,6 +530,9 @@ export default class ToolsCategory extends Component {
       category_hijos_3: [],
     });
   };
+
+
+
   catchInputs = (e) => {
     const { name, value } = e.target;
     this.setState({

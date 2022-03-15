@@ -6,6 +6,7 @@ export default class NotifyAll extends Component {
     super(props);
     //Variables en localStorage
     let notify = JSON.parse(localStorage.getItem("OrusNotify"));
+    console.log("Notify", notify)
     this.state = {
       notifications: notify.notifications.length ? notify.notifications : [],
       rol: notify ? notify.rol : -1,
@@ -90,7 +91,7 @@ export default class NotifyAll extends Component {
     console.log("[Orus System] Enviando datos de leidos");
 
     
-    //TODO:Revisar funcion fetch
+    //TODO:FETCH CON BODY PENDIENTE
     fetch("http://" + host + "/api/user/readAllNotifications", {
       method: "POST",
       body: JSON.stringify({

@@ -16,7 +16,8 @@ class IndexStoreComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      panel: "inbox",
+      //panel: "inbox",
+      panel:'inventory'
     };
   }
   componentDidMount() {

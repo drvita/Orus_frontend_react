@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
-
 import {api, getUrl} from '../../redux/sagas/api';
 
 export default class messenger extends Component {
@@ -17,7 +16,9 @@ export default class messenger extends Component {
       token: ls.token,
       user: ls.idUser,
     };
+
   }
+
   componentDidMount() {
     this.getMessengers();
   }
@@ -62,10 +63,13 @@ export default class messenger extends Component {
                     /** TODO: chage to role */
                   }
                   if (message.created_user.rol === 1)
+                    console.log("PRUEBA ROL", message.created_user.rol);
                     avatar = "/img/avatars/avatar2.png";
                   if (!message.created_user.rol)
+                    console.log("PRUEBA ROL", message.created_user.rol);
                     avatar = "/img/avatars/avatar3.png";
                   if (message.created_user.id === 2)
+                    console.log("PRUEBA ROL", message.created_user.rol);
                     avatar = "/img/avatars/avatar4.png";
                   return (
                     <div
@@ -160,29 +164,10 @@ export default class messenger extends Component {
 
   sendMessenger = async () => {
 
-    const { message, load, host, token } = this.state;
+    const { table, idRow } = this.props;
 
-    //const { table, idRow } = this.props;
+    const { message, load } = this.state;
 
-    //const url = "http://" + host + "/api/messengers";
-
-  /*   const  body = {
-        table,
-        idRow,
-        user: "",
-        message,
-      }; */
-
-   /*  const sendMessengerFilters = {
-
-    }
-
-    const filters = {
-      table:table,
-      idRow:idRow,
-      page:1
-    }
- */
     //Mandamos señal de procesamiento
     if (!load) {
       this.setState({
@@ -191,66 +176,28 @@ export default class messenger extends Component {
     }
 
 
-    //TODO: FETCH CON BODY PENDIENTE
-    const sendMessengerUrl = getUrl("messengers", null)
-    console.log("url send message", sendMessengerUrl);
+    const sendMessengerUrl = getUrl("messengers", null);
 
+    const bodyRequest = {
+      table:table,
+      idRow:idRow,
+      message:message,  
+    };
 
-    const data = await api(sendMessengerUrl, 'POST', message)
+    const data = await api(sendMessengerUrl, 'POST', bodyRequest, null)
 
     if(data){
       console.log(data);
+      this.getMessengers();
     }
     else{
       console.log("ERROR al enviar");
+      window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
       this.setState({
         load: false,
       });
     }
-
-
-
-
-
-    // console.log("[DEBUG] Enviando mensajes a la API");
-    //Realiza la peticion de los contactos
-    /* fetch(url, {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.data) {
-          this.getMessengers();
-        } else {
-          console.error(data.message);
-          this.setState({
-            load: false,
-          });
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-        this.setState({
-          load: false,
-        });
-      }); */
   };
-
-
-
-
 
 
   getMessengers = async () => {
@@ -276,12 +223,12 @@ export default class messenger extends Component {
       const {data, message} = await api(getMessengerUrl);
 
       if(data){
+        console.log("DATA send messenger",data);
         this.setState({
           messages: data,
           message: "",
           load: false,
         });
-        //console.log("MESSENGER DATA", data);
       }
       else if(message){
         window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
@@ -290,51 +237,5 @@ export default class messenger extends Component {
         });
         console.log(message);
       }
-
-    //Mandamos señal de procesamiento
-    /* if (!load) {
-      this.setState({
-        load: true,
-      });
-    } */
-    // console.log("[DEBUG] Solicitando mensajes de la API");
-    //Realiza la peticion de los contactos
-
-    /* fetch(url + page + type, {
-
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.data) {
-          this.setState({
-            messages: data.data,
-            message: "",
-            load: false,
-          });
-        } else {
-          console.error(data.message);
-          this.setState({
-            load: false,
-          });
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-        this.setState({
-          load: false,
-        });
-      }); */
   };
 }

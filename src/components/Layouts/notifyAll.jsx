@@ -5,10 +5,12 @@ export default class NotifyAll extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
+
+    //TODO: NO EXISTE EL ITEM EN LOCAL STORAGE
     let notify = JSON.parse(localStorage.getItem("OrusNotify"));
     console.log("Notify", notify)
     this.state = {
-      notifications: notify.notifications.length ? notify.notifications : [],
+      notifications: notify?.notifications.length ? notify.notifications : [],
       rol: notify ? notify.rol : -1,
       count: notify ? notify.count : 0,
       load: false,

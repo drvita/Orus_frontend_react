@@ -7,6 +7,7 @@ export default function* handleGetContact({ payload: id }) {
     const result = yield call(api, `contacts/${id}`, "GET");
 
     if (result.data) {
+      console.log("DATA REDUX CONTACT", result.data)
       yield put(contactActions.setContact(result.data));
     } else {
       console.error("[Orus System] Error in handle GET Contact", result);

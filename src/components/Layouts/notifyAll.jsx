@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import moment from "moment";
+import { api, getUrl } from "../../redux/sagas/api";
 
 export default class NotifyAll extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
-
-    //TODO: NO EXISTE EL ITEM EN LOCAL STORAGE
     let notify = JSON.parse(localStorage.getItem("OrusNotify"));
     console.log("Notify", notify)
     this.state = {
@@ -17,8 +16,10 @@ export default class NotifyAll extends Component {
     };
   }
 
+
   render() {
     const { notifications, load } = this.state;
+    console.log("NOTIFICATIONS",notifications)
     return (
       <div className="card">
         <div className="card-header">
@@ -33,6 +34,7 @@ export default class NotifyAll extends Component {
               {notifications.length ? (
                 <div className="list-group">
                   {notifications.map((notify) => {
+                    console.log("NOTIFY",notify);
                     const type = notify.type.split("\\");
                     let url = "";
                     if (type.length === 3 && type[2] === "ExamNotification") {
@@ -82,6 +84,7 @@ export default class NotifyAll extends Component {
   }
 
   handleClickViewNotify = (e, url, id) => {
+    console.log("check view notify----------")
     const { page } = this.props,
       seccion = url.split("/");
     e.preventDefault();
@@ -93,7 +96,7 @@ export default class NotifyAll extends Component {
     console.log("[Orus System] Enviando datos de leidos");
 
     
-    //TODO:FETCH CON BODY PENDIENTE
+    //TODO:FETCH CON BODY PENDIENTE(simunlar notificaciones para ver como funciona)
     fetch("http://" + host + "/api/user/readAllNotifications", {
       method: "POST",
       body: JSON.stringify({
@@ -136,7 +139,11 @@ export default class NotifyAll extends Component {
         );
       });
   };
-  checkNotify = () => {
+
+
+
+ /*  checkNotify = () => {
+    console.log("check notify----------")
     //Constantes de logueo
     const ls = JSON.parse(localStorage.getItem("OrusSystem")),
       { host, token } = ls;
@@ -183,5 +190,9 @@ export default class NotifyAll extends Component {
           );
         });
     }
-  };
+  }; */
+
+
+
+
 }

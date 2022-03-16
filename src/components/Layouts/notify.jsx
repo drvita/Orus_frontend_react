@@ -7,9 +7,7 @@ import { userActions } from "../../redux/user/";
 class NotifyComponent extends Component {
   constructor(props) {
     super(props);
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
     this.state = {
-      rol: ls.rol,
       mainRole: props.dataLoggin.roles[0],
     };
     this.timerNotify = null;

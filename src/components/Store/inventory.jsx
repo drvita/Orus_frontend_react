@@ -237,7 +237,7 @@ export default class Inventory extends Component {
       }
 
       //Categories main
-      // TODO:  FETCH CON BODY PENDIENTE
+      // TODO:  FETCH CON BODY PENDIENTE(espera solución del error)
       fetch(url, {
         method: "POST",
         headers: {

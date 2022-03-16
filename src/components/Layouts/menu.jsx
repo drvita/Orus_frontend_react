@@ -61,8 +61,7 @@ const MenuComponent = (props) => {
               <small className="text-lowercase">({user.username})</small>
               <br />
               <span className="badge badge-light">
-                {/** TODO: chage to role */}
-                {user.rol > 0
+                {mainRole !== 'admin'
                   ? mainRole === "ventas"
                     ? "Ventas"
                     : "Optometrista"

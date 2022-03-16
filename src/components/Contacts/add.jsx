@@ -60,6 +60,8 @@ class AddContactComponent extends Component {
         this.props,
       { load } = this.state;
 
+      console.log("Contact",contact)
+
     if (props.msg_exams.length !== msg_exams.length && msg_exams.length) {
       msg_exams.forEach((msg) => {
         const { type, text } = msg;

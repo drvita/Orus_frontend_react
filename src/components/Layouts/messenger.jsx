@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
 import {api, getUrl} from '../../redux/sagas/api';
+import { connect } from "react-redux";
 
-export default class messenger extends Component {
+class messenger extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
@@ -57,11 +58,9 @@ export default class messenger extends Component {
             <div className="card-body">
               <div className="direct-chat-messages" id="boxchat">
                 {messages.map((message) => {
+                  console.log("Message--",message);
                   let avatar = "/img/avatars/avatar5.png";
                   // eslint-disable-next-line
-                  {
-                    /** TODO: chage to role */
-                  }
                   if (message.created_user.rol === 1)
                     console.log("PRUEBA ROL", message.created_user.rol);
                     avatar = "/img/avatars/avatar2.png";
@@ -239,3 +238,22 @@ export default class messenger extends Component {
       }
   };
 }
+
+
+const mapStateToProps = ({ users }) => {
+  return {
+    mainRole: users.dataLoggin.roles[0]
+  };
+},
+mapActionsToProps = {
+  /* _getOrder: orderActions.getOrder,
+  _setOptions: orderActions.setOptions,
+  _setList: orderActions.setListOrder,
+  _setContact: contactActions.setContact,
+  _setSales: saleActions.setListSales,
+  _setPageName: defaultActions.changeNamePage,
+  _setOrder: orderActions.setOrder, */
+};
+
+
+export default connect(mapStateToProps, mapActionsToProps)(messenger) ;

@@ -23,11 +23,14 @@ class Filters extends Component {
     };
     
     this.controller = new AbortController();
+    console.log(this.controller);
     //this.signal = this.controller.signal;
   }
-  componentWillUnmount() {
+
+  componentWillUnmount() {  
     this.controller.abort();
   }
+
   componentDidMount() {
     this.getUsers();
     this.getBranches();
@@ -177,7 +180,7 @@ class Filters extends Component {
       }
 
       const newUsersUrl = getUrl("users", null, usersFilters);
-      const {data, message} = await api(newUsersUrl);
+      const {data, message} = await api(newUsersUrl, "GET", null, this.controller);
 
       if(data){
         if(!message){
@@ -208,6 +211,7 @@ const mapStateToProps = ({ config }) => {
       branches: config.branches,
     };
   },
+  
   mapActionsToProps = {
     _getBranches: actions.getBranches
   };

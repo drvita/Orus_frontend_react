@@ -161,7 +161,6 @@ export default class messenger extends Component {
     console.log(value);
   };
 
-
   sendMessenger = async () => {
 
     const { table, idRow } = this.props;
@@ -201,26 +200,27 @@ export default class messenger extends Component {
 
 
   getMessengers = async () => {
+    const { load } = this.state;
 
-    const { load} = this.state;
+    const { table, idRow } = this.props;
 
-     const { table, idRow } = this.props;
+    const filters = {
+      table: table,
+      idRow: idRow,
+      page: 1,
+    };
 
-      const filters = {
-        table:table,
-        idRow:idRow,
-        page:1
-      }
+    const getMessengerUrl = getUrl("messengers", null, filters);
 
-      const getMessengerUrl = getUrl("messengers",null, filters);
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
 
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
+    const { data, message } = await api(getMessengerUrl);
 
-      const {data, message} = await api(getMessengerUrl);
+      
 
       if(data){
         console.log("DATA send messenger",data);

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { api, getUrl } from "../../../redux/sagas/api";
+import { dollarUS } from "../../../utils/current";
 
 export default class ReportPaymentsDetails extends Component {
   constructor(props) {
@@ -14,7 +15,7 @@ export default class ReportPaymentsDetails extends Component {
 
     this.controller = new AbortController();
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.controller.abort();
   }
   componentDidMount() {
@@ -39,7 +40,7 @@ export default class ReportPaymentsDetails extends Component {
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
-          <h3 className="card-title text-success">Pagos del dia [Detallado]</h3>
+          <h3 className="card-title text-success">Detallado</h3>
         </div>
         <div className="card-body">
           <table className="table table-sm">
@@ -68,7 +69,6 @@ export default class ReportPaymentsDetails extends Component {
                 </tr>
               ) : payments.length ? (
                 payments.map((pay) => {
-                  
                   return (
                     <tr
                       key={pay.id}
@@ -89,7 +89,9 @@ export default class ReportPaymentsDetails extends Component {
                           {pay.sale && pay.sale.pedido ? pay.sale.pedido : "--"}
                         </span>
                       </td>
-                      <td className="text-right">$ {pay.total?.toFixed(2)}</td>
+                      <td className="text-right">
+                        {dollarUS.format(pay.total)}
+                      </td>
                     </tr>
                   );
                 })
@@ -151,22 +153,19 @@ export default class ReportPaymentsDetails extends Component {
 
   getSaleDay = async () => {
     const { page } = this.state,
-
       { filters } = this.props;
 
-      const newFiltersDetails = {
-        ...filters,
-      };
+    const newFiltersDetails = {
+      ...filters,
+    };
 
-      newFiltersDetails.itemsPage = 12;
-      newFiltersDetails.page = page;
+    newFiltersDetails.itemsPage = 12;
+    newFiltersDetails.page = page;
 
     const url = getUrl("payments", null, newFiltersDetails);
     const { data, meta, message } = await api(url);
 
     //console.log("Report payments details DATA", data);
-
-
 
     if (data) {
       this.setState({

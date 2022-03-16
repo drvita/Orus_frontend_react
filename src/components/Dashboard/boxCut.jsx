@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { dollarUS } from "../../utils/current";
 
 export default class BoxCut extends Component {
   render() {
@@ -11,9 +12,7 @@ export default class BoxCut extends Component {
           <br />
           <div className="row">
             <div className="col">
-              <h5 className="text-success">
-                $ {ventas.toLocaleString("es-MX") + ".00"}
-              </h5>
+              <h5 className="text-success">{dollarUS.format(ventas)}</h5>
             </div>
           </div>
         </div>

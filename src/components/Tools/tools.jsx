@@ -38,7 +38,6 @@ class ToolsComponent extends Component {
   }
 
   render() {
-    const { data } = this.props;
     return (
       <div className="row">
         <div className="col-6">
@@ -87,8 +86,6 @@ class ToolsComponent extends Component {
               </button>
             </div>
           </div>
-
-          
         </div>
         <div className="col-6">
           <div className="card card-primary card-outline">

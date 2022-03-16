@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
 
-import {api, getUrl} from '../../redux/sagas/api';
+import { api, getUrl } from "../../redux/sagas/api";
 
 export default class messenger extends Component {
   constructor(props) {
@@ -157,23 +157,21 @@ export default class messenger extends Component {
     console.log(value);
   };
 
-
   sendMessenger = async () => {
-
-    const { message, load, host, token } = this.state;
+    const { message, load } = this.state;
 
     //const { table, idRow } = this.props;
 
     //const url = "http://" + host + "/api/messengers";
 
-  /*   const  body = {
+    /*   const  body = {
         table,
         idRow,
         user: "",
         message,
       }; */
 
-   /*  const sendMessengerFilters = {
+    /*  const sendMessengerFilters = {
 
     }
 
@@ -190,27 +188,20 @@ export default class messenger extends Component {
       });
     }
 
-
     //TODO: FETCH CON BODY PENDIENTE
-    const sendMessengerUrl = getUrl("messengers", null)
+    const sendMessengerUrl = getUrl("messengers", null);
     console.log("url send message", sendMessengerUrl);
 
+    const data = await api(sendMessengerUrl, "POST", message);
 
-    const data = await api(sendMessengerUrl, 'POST', message)
-
-    if(data){
+    if (data) {
       console.log(data);
-    }
-    else{
+    } else {
       console.log("ERROR al enviar");
       this.setState({
         load: false,
       });
     }
-
-
-
-
 
     // console.log("[DEBUG] Enviando mensajes a la API");
     //Realiza la peticion de los contactos
@@ -248,48 +239,41 @@ export default class messenger extends Component {
       }); */
   };
 
-
-
-
-
-
   getMessengers = async () => {
+    const { load } = this.state;
 
-    const { load} = this.state;
+    const { table, idRow } = this.props;
 
-     const { table, idRow } = this.props;
+    const filters = {
+      table: table,
+      idRow: idRow,
+      page: 1,
+    };
 
-      const filters = {
-        table:table,
-        idRow:idRow,
-        page:1
-      }
+    const getMessengerUrl = getUrl("messengers", null, filters);
 
-      const getMessengerUrl = getUrl("messengers",null, filters);
+    if (!load) {
+      this.setState({
+        load: true,
+      });
+    }
 
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
+    const { data, message } = await api(getMessengerUrl);
 
-      const {data, message} = await api(getMessengerUrl);
-
-      if(data){
-        this.setState({
-          messages: data,
-          message: "",
-          load: false,
-        });
-        //console.log("MESSENGER DATA", data);
-      }
-      else if(message){
-        window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
-        this.setState({
-          load: false,
-        });
-        console.log(message);
-      }
+    if (data) {
+      this.setState({
+        messages: data,
+        message: "",
+        load: false,
+      });
+      //console.log("MESSENGER DATA", data);
+    } else if (message) {
+      window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
+      this.setState({
+        load: false,
+      });
+      console.log(message);
+    }
 
     //Mandamos señal de procesamiento
     /* if (!load) {

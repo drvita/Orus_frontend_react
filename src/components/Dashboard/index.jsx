@@ -21,7 +21,7 @@ class DashboardComponent extends Component {
       token: ls.token,
       user: "",
       //date_start:moment().subtract(7, "day").endOf("day").format("YYYY-MM-DD"),
-      date_start: moment().startOf('week').format("YYYY-MM-DD"),
+      date_start: moment().startOf("week").format("YYYY-MM-DD"),
       date_end: moment().format("YYYY-MM-DD"),
       branch_id: "",
       ventas: 0,
@@ -115,7 +115,6 @@ class DashboardComponent extends Component {
   };
   changeAllState = (obj) => {
     this.setState({ ...obj });
-    console.log(obj);
   };
 }
 

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { api, getUrl } from "../../../redux/sagas/api";
+import { dollarUS } from "../../../utils/current";
 
 export default class ReportBank extends Component {
-
   constructor(props) {
     super(props);
     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
@@ -14,10 +14,9 @@ export default class ReportBank extends Component {
 
       page: 1,
       data: [],
-      meta:{},
+      meta: {},
       load: false,
     };
-
 
     this.char = null;
     this.controller = new AbortController();
@@ -25,7 +24,7 @@ export default class ReportBank extends Component {
   componentWillUnmount() {
     this.controller.abort(); // Cancelando cualquier carga de fetch
   }
-  
+
   componentDidMount() {
     this.getSaleDay();
   }
@@ -72,8 +71,8 @@ export default class ReportBank extends Component {
                       key={i}
                     >
                       <label className="text-uppercase">{bank.name}</label>
-                      <span className="badge badge-primary badge-pill">
-                        $ {bank.total.toFixed(2)}
+                      <span className="badge badge-primary">
+                        {dollarUS.format(bank.total)}
                       </span>
                     </li>
                   );
@@ -101,43 +100,37 @@ export default class ReportBank extends Component {
     });
   };
 
-
   getSaleDay = async () => {
     const { filters } = this.props;
 
     const newFiltersBank = {
       ...filters,
-    }
+    };
 
     newFiltersBank.itemsPage = 12;
     newFiltersBank.page = this.state.page;
-    newFiltersBank.type = 'banks';
-
+    newFiltersBank.type = "banks";
 
     const url = getUrl("payments", null, newFiltersBank);
 
-    const {data, meta, message} = await api(url);
+    const { data, meta, message } = await api(url);
 
     //console.log("URl STRING",url);
 
     //console.log("Report bank DATA", data);
 
-    if(data){
+    if (data) {
       this.setState({
-        data:data,
-        meta:meta,
-        load:false
-      })
-    }else if(message){
-
+        data: data,
+        meta: meta,
+        load: false,
+      });
+    } else if (message) {
       this.setState({
-        load:false
-      })
+        load: false,
+      });
       console.error("[Orus system] Error in report payments details:", message);
       window.Swal.fire("Fallo de conexion", message, "error");
     }
   };
-
-  
-  
 }

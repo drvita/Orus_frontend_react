@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import action from "../helpers";
 import { categoryActions } from "../../../redux/category";
 
-import {getUrl, api} from '../../../redux/sagas/api';
+import { getUrl, api } from "../../../redux/sagas/api";
 
 class RecomendationGlassComponent extends Component {
   constructor(props) {
@@ -245,28 +245,24 @@ class RecomendationGlassComponent extends Component {
   }
 
   getCategory = async (id) => {
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
-
     if (id) {
       const url = getUrl("categories", id);
       console.log("url", url);
 
-      const {data, message} = await api(url)
+      const { data, message } = await api(url);
 
-      if(data){
-        console.log("NEW DATA",data)
+      if (data) {
+        console.log("NEW DATA", data);
         this.setState({
           category: data,
         });
-      }else{
+      } else {
         console.log("NEW ERROR", message);
       }
     }
 
     return {};
   };
-
-
 
   handleClickCategory = (e) => {
     e.preventDefault();
@@ -285,7 +281,6 @@ class RecomendationGlassComponent extends Component {
     });
   };
 
-  
   handleCategoryChange = (e) => {
     const { name, value } = e.target,
       { onChangeInput: _onChangeInput, nameCategory } = this.props,

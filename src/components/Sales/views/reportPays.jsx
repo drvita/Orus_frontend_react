@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { api, getUrl } from "../../../redux/sagas/api";
+import { dollarUS } from "../../../utils/current";
 
 export default class ReportPay extends Component {
   constructor(props) {
@@ -16,10 +17,9 @@ export default class ReportPay extends Component {
     this.char = null;
 
     this.controller = new AbortController();
-    //this.signal = this.controller.signal;
   }
   componentWillUnmount() {
-    this.controller.abort(); // Cancelando cualquier carga de fetch
+    this.controller.abort();
   }
   componentDidMount() {
     this.getSaleDay();
@@ -40,7 +40,6 @@ export default class ReportPay extends Component {
     const { total, efectivo, rol } = this.state;
     const { data } = this.props;
 
-    //console.log("rooooooooooooooooooool", rol);
     return (
       <div className="card card-success card-outline">
         <div className="card-header">
@@ -55,11 +54,11 @@ export default class ReportPay extends Component {
           <p>
             {!rol ? (
               <React.Fragment>
-                Venta: <strong>$ {total.toFixed(2)}</strong>
+                Venta: <strong>{dollarUS.format(total)}</strong>
                 <br />
               </React.Fragment>
             ) : null}
-            Efectivo: <strong>$ {efectivo.toFixed(2)}</strong>
+            Efectivo: <strong>{dollarUS.format(efectivo)}</strong>
           </p>
         </div>
       </div>
@@ -106,7 +105,6 @@ export default class ReportPay extends Component {
       if (this.char) this.char.destroy();
 
       if (!data.message) {
-        console.log("[ReportPay] Almacenando datos de la venta del dia", data);
         if (data && data.length) {
           await data.map((mp) => {
             labels.push(mp.method);

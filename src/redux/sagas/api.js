@@ -6,10 +6,6 @@ export async function api(url, method = "GET", body, controller = null) {
       token: TOKEN = "",
     } = JSON.parse(LS ? LS : "{}");
 
-  //TODO: Integrate
-  // controller = new AbortController();
-  // signal = controller.signal;
-  //signal: controller.signal
 
   const param = {
     method,

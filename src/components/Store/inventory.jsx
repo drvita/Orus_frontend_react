@@ -162,7 +162,7 @@ export default class Inventory extends Component {
                         </div>
                         <div className="col-6">
                           <div className="row">
-                            <label className="col-4 text-right">Precio</label>
+                            {/* <label className="col-4 text-right">Precio</label>
                             <div className="col">
                               <input
                                 type="number"
@@ -179,7 +179,7 @@ export default class Inventory extends Component {
                               >
                                 Cambiar
                               </button>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>

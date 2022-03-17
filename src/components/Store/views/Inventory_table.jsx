@@ -30,12 +30,10 @@ export default function InventoryTableView({ header, body, items }) {
                     .toFixed(2)
                     .replace(/[-.]/g, "");
 
-                  //console.log("G", grad);
                   return (
                     <td key={grad + i} className="text-center">
                       {items.length ? (
                         items.map((item, index) => {
-                          //console.log("comp: ");
                           return grad === item.graduacion ? (
                             <>
                               {item.cant_total ? (

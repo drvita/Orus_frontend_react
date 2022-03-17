@@ -105,7 +105,7 @@ class NotifyComponent extends Component {
               </a>
             </React.Fragment>
           ) : null}
-          <Link
+          {/* <Link
             to="/notificaciones"
             className="dropdown-item dropdown-footer"
             onClick={(e) => {
@@ -113,7 +113,7 @@ class NotifyComponent extends Component {
             }}
           >
             Ver todas
-          </Link>
+          </Link> */}
         </div>
       </li>
     );

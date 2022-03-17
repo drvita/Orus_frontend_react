@@ -20,8 +20,10 @@ export async function api(url, method = "GET", body, controller = null) {
       Authorization: "Bearer " + TOKEN,
     }
   };
+  
   if(method.toUpperCase() === "POST" && body) param.body = JSON.stringify(body);
   if(controller) param.signal = controller.signal;
+
   return await fetch(`${PORT}://${HOST}/api/${url}`, param)
     .then(async (res) => {
       console.log(res.status);

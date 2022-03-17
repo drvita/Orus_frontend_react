@@ -4,7 +4,6 @@ import { configActions } from "../index";
 
 export default function* handleGetListConfig({ payload: options }) {
   try {
-    //console.log("PYLOAD DEL CONFIG", options)
     const url = getUrl("config", null, options),
       result = yield call(api, url);
 

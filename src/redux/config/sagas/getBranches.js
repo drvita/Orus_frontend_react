@@ -13,7 +13,6 @@ export default function* handleGetBranches({payload}){
             const url = getUrl("config", null, options);
             const result = yield call(api, url);
             if(result.data){
-                //console.log("BRANCHES DATA", result.data);
                 yield put(configActions.setBranches(result.data));
             }
             else if(result.message){

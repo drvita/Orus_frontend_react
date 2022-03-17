@@ -115,9 +115,6 @@ export default class ReportBank extends Component {
 
     const { data, meta, message } = await api(url);
 
-    //console.log("URl STRING",url);
-
-    //console.log("Report bank DATA", data);
 
     if (data) {
       this.setState({

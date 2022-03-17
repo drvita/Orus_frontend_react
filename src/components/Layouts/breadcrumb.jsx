@@ -171,8 +171,6 @@ class BreadcrumbComponent extends Component {
 
   handleChangeSelectBranchs = (branch) => {
     const { value } = branch.target;
-    console.log("[Sucursal Seleccionada en el select]", value);
-
     this.setState({
       selectBranch: parseInt(value),
     });

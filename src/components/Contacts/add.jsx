@@ -27,7 +27,7 @@ class AddContactComponent extends Component {
       rfc: "",
       email: "",
       type: 0,
-      gender: "",
+      gender: "female",
       birthday: "",
       domicilios: {
         calle: "",
@@ -59,9 +59,7 @@ class AddContactComponent extends Component {
     const { msg_exams, msg_contact, contact, _setMsgExam, _getContact } =
         this.props,
       { load } = this.state;
-
-      console.log("Contact",contact)
-
+      
     if (props.msg_exams.length !== msg_exams.length && msg_exams.length) {
       msg_exams.forEach((msg) => {
         const { type, text } = msg;
@@ -149,9 +147,7 @@ class AddContactComponent extends Component {
       } = contact,
       hasTel = Object.values(telnumbers).filter((tel) => tel.length === 10);
 
-    //console.log("HASTEL------",hasTel);
 
-    //console.log("[DEBUG] Render");
 
     return (
       <>
@@ -392,14 +388,9 @@ class AddContactComponent extends Component {
     //window.location.href = `/consultorio/${id}`;
   };
   handleChangeData = (key, value) => {
-    //PRUEBAA//
-    console.log("Input Seleccionado:" + key + "--- Valor:" + value);
 
     const { verification } = this.state,
       dataObject = helper.handleGetDataObject(key, value, verification);
-
-    //PRUEBAAA//
-    console.log("DATAOBJECT------", dataObject);
 
     this.setState(dataObject);
   };
@@ -442,9 +433,6 @@ class AddContactComponent extends Component {
       business: business ? 1 : 0,
     };
 
-    //PRUBEA//
-    console.log("DATA TO SAVE", data);
-
     //Save
     helper.saveContact("contacto", data, _saveContact, id);
   };
@@ -459,8 +447,9 @@ class AddContactComponent extends Component {
         rfc: contact.rfc ?? "",
         email: contact.email ?? "",
         type: contact.tipo,
+        gender: contact.metadata.gender,
         business: contact.empresa,
-        birthday: contact.f_nacimiento ?? "",
+        birthday: contact.metadata.birthday ?? "",
         domicilios: domicilio
           ? domicilio
           : {

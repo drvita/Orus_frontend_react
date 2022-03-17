@@ -10,7 +10,6 @@ export default function* handleSaveContact({ payload }) {
       result = yield call(api, url, method, data);
 
     if (result.message && result.errors) {
-      //console.log(result.errors, OPT);
 
       if (result.errors.name) {
         yield put(

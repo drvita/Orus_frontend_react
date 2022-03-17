@@ -23,8 +23,6 @@ class Filters extends Component {
     };
     
     this.controller = new AbortController();
-    console.log(this.controller);
-    //this.signal = this.controller.signal;
   }
 
   componentWillUnmount() {  

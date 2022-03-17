@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import moment from "moment";
-import { api, getUrl } from "../../redux/sagas/api";
 
 export default class NotifyAll extends Component {
   constructor(props) {
     super(props);
     //Variables en localStorage
     let notify = JSON.parse(localStorage.getItem("OrusNotify"));
-    console.log("Notify", notify)
     this.state = {
       notifications: notify?.notifications.length ? notify.notifications : [],
       rol: notify ? notify.rol : -1,
@@ -19,7 +17,6 @@ export default class NotifyAll extends Component {
 
   render() {
     const { notifications, load } = this.state;
-    console.log("NOTIFICATIONS",notifications)
     return (
       <div className="card">
         <div className="card-header">
@@ -34,7 +31,6 @@ export default class NotifyAll extends Component {
               {notifications.length ? (
                 <div className="list-group">
                   {notifications.map((notify) => {
-                    console.log("NOTIFY",notify);
                     const type = notify.type.split("\\");
                     let url = "";
                     if (type.length === 3 && type[2] === "ExamNotification") {
@@ -84,7 +80,6 @@ export default class NotifyAll extends Component {
   }
 
   handleClickViewNotify = (e, url, id) => {
-    console.log("check view notify----------")
     const { page } = this.props,
       seccion = url.split("/");
     e.preventDefault();

@@ -58,17 +58,13 @@ class messenger extends Component {
             <div className="card-body">
               <div className="direct-chat-messages" id="boxchat">
                 {messages.map((message) => {
-                  console.log("Message--",message);
                   let avatar = "/img/avatars/avatar5.png";
                   // eslint-disable-next-line
                   if (message.created_user.rol === 1)
-                    console.log("PRUEBA ROL", message.created_user.rol);
                     avatar = "/img/avatars/avatar2.png";
                   if (!message.created_user.rol)
-                    console.log("PRUEBA ROL", message.created_user.rol);
                     avatar = "/img/avatars/avatar3.png";
                   if (message.created_user.id === 2)
-                    console.log("PRUEBA ROL", message.created_user.rol);
                     avatar = "/img/avatars/avatar4.png";
                   return (
                     <div
@@ -157,7 +153,6 @@ class messenger extends Component {
     this.setState({
       [name]: value.toLowerCase(),
     });
-    console.log(value);
   };
 
   sendMessenger = async () => {
@@ -185,11 +180,9 @@ class messenger extends Component {
     const data = await api(sendMessengerUrl, 'POST', bodyRequest, null)
 
     if(data){
-      console.log(data);
       this.getMessengers();
     }
     else{
-      console.log("ERROR al enviar");
       window.alert("Ups!\n Algo salio mal, intentelo mas tarde.");
       this.setState({
         load: false,
@@ -222,7 +215,6 @@ class messenger extends Component {
       
 
       if(data){
-        console.log("DATA send messenger",data);
         this.setState({
           messages: data,
           message: "",
@@ -234,7 +226,6 @@ class messenger extends Component {
         this.setState({
           load: false,
         });
-        console.log(message);
       }
   };
 }

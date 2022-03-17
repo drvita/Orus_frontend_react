@@ -87,10 +87,7 @@ export default class ReportPay extends Component {
 
     const url = getUrl("payments", null, newFiltersPays);
     const { data, message } = await api(url);
-
-    //console.log("[DATAAA CURRENT]",data);
-    //console.log("[URLLL CURRENT]",data);
-
+    
     if (data) {
       var donutChartCanvas = window.$("#donutChart").get(0).getContext("2d"),
         donutOptions = {

@@ -1,5 +1,4 @@
 export async function api(url, method = "GET", body, controller = null) {  
-  console.log("PARAMENTERS RECEIVED", url, method, body, controller);
   const LS = localStorage.getItem("OrusSystem"),
     {
       port: PORT = window.location.protocol.toString().replace(":", ""),
@@ -26,7 +25,6 @@ export async function api(url, method = "GET", body, controller = null) {
 
   return await fetch(`${PORT}://${HOST}/api/${url}`, param)
     .then(async (res) => {
-      console.log(res.status);
       if (res.status >= 200 && res.status < 300) {
         for (var pair of res.headers.entries()) {
           if (pair[0] === "content-type") {

@@ -32,7 +32,6 @@ function InboxComponent(props) {
       }
     },
     deleteItem = () => {
-      //console.log("[DEBUG] Delete user", userSelected);
       helper.handleDelete(userSelected, options, _deleteUser);
       setUserSelected({ id: 0 });
     },
@@ -55,7 +54,6 @@ function InboxComponent(props) {
     //eslint-disable-next-line
   }, [options]);
 
-  //console.log("[DEBUG] Render", meta);
   return (
     <ListInbox
       title="Lista de productos"

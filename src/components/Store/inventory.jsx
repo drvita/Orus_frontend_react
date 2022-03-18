@@ -39,7 +39,6 @@ export default class Inventory extends Component {
         load,
         items,
         meta,
-        price,
       } = this.state,
       header = [],
       body = [];
@@ -161,25 +160,7 @@ export default class Inventory extends Component {
                           Total de productos: <label>{items.length}</label>
                         </div>
                         <div className="col-6">
-                          <div className="row">
-                            {/* <label className="col-4 text-right">Precio</label>
-                            <div className="col">
-                              <input
-                                type="number"
-                                className="form-control"
-                                value={price}
-                                onChange={this.handelChangePrice}
-                              />
-                            </div>
-                            <div className="col">
-                              <button
-                                className="btn btn-primary btn-block"
-                                type="button"
-                                onClick={this.handleToPrice}
-                              >
-                                Cambiar
-                              </button>
-                            </div> */}
+                          <div className="row">          
                           </div>
                         </div>
                       </div>

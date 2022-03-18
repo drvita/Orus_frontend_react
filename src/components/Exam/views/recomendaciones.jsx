@@ -247,12 +247,10 @@ class RecomendationGlassComponent extends Component {
   getCategory = async (id) => {
     if (id) {
       const url = getUrl("categories", id);
-      console.log("url", url);
 
       const { data, message } = await api(url);
 
       if (data) {
-        console.log("NEW DATA", data);
         this.setState({
           category: data,
         });

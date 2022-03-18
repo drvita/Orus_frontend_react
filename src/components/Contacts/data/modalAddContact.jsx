@@ -28,8 +28,7 @@ const FormAddContactComponent = (props) => {
     const verify = helper.handleVerificationData(data, showMsg);
     return verify.result;
   };
-
-
+  
   const handleSave = () => {
     const valid = handleValidForm(true),
       body = {
@@ -38,8 +37,6 @@ const FormAddContactComponent = (props) => {
       };
     if (!valid) return false;
 
-    console.log("DATA",data);
-
     helper.saveContact(title, body, _save);
 
     
@@ -47,12 +44,10 @@ const FormAddContactComponent = (props) => {
 
 
   useEffect(() => {
-    //console.log("DATA:", data);
     setData({
       ...data,
       name: name_props,
     });
-    //eslint-disable-next-line
   }, [name_props]);
 
   return (

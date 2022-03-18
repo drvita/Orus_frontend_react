@@ -33,7 +33,6 @@ export default class Routers extends Component {
     const { data, logOut } = this.props,
       { page } = this.state;
     const userRol = data.dataLoggin.roles[0];
-    //console.log(userRol);
 
     return (
       <Router>

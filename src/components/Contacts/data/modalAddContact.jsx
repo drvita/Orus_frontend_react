@@ -13,7 +13,7 @@ const FormAddContactComponent = (props) => {
       _save,
     } = props,
     [data, setData] = useState(helper.dataPrimary),
-    { name, telnumbers, birthday, email } = data;
+    { name, telnumbers, birthday, email, gender } = data;
   //States
   //const [validForm, setValidForm] = useState(false);
   //Acctions
@@ -22,10 +22,14 @@ const FormAddContactComponent = (props) => {
 
     //setValidForm(handleValidForm);
   };
+
+
   const handleValidForm = (showMsg = false) => {
     const verify = helper.handleVerificationData(data, showMsg);
     return verify.result;
   };
+
+
   const handleSave = () => {
     const valid = handleValidForm(true),
       body = {
@@ -34,9 +38,16 @@ const FormAddContactComponent = (props) => {
       };
     if (!valid) return false;
 
+    console.log("DATA",data);
+
     helper.saveContact(title, body, _save);
+
+    
   };
+
+
   useEffect(() => {
+    //console.log("DATA:", data);
     setData({
       ...data,
       name: name_props,
@@ -92,7 +103,7 @@ const FormAddContactComponent = (props) => {
                 required="required"
                 pattern="^[a-zA-Z.]{2,20}[\s]{1}[a-zA-Z.]{2,20}.*"
                 minLength="8"
-                value={name}
+                defaultValue={name ?? ""}
                 onChange={changeValue}
               />
             </div>
@@ -102,7 +113,7 @@ const FormAddContactComponent = (props) => {
                 type="email"
                 className="form-control"
                 name="email"
-                value={email}
+                defaultValue={email ?? ""}
                 onChange={changeValue}
               />
             </div>
@@ -115,7 +126,7 @@ const FormAddContactComponent = (props) => {
                 name="telnumbers"
                 pattern="^[\d]{10}$"
                 maxLength="10"
-                value={telnumbers.t_movil}
+                defaultValue={telnumbers?.t_movil ?? ""}
                 onChange={changeValue}
               />
             </div>
@@ -125,9 +136,24 @@ const FormAddContactComponent = (props) => {
                 type="date"
                 className="form-control"
                 name="birthday"
-                value={birthday}
+                defaultValue={birthday ?? ""}
                 onChange={changeValue}
               />
+            </div>
+            <div className="form-group">
+              <label>Género</label>
+              <select
+                className="custom-select"
+                name="gender"
+                onChange={changeValue}
+                defaultValue={gender ?? ""}
+              >
+                <option value="male">Hombre</option>
+                <option value="female">Mujer</option>
+              </select>
+             {/*  <input
+                value={birthday}
+              /> */}
             </div>
           </div>
           <div className="modal-footer">

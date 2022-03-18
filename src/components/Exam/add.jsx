@@ -142,7 +142,7 @@ class ExamAddComponent extends Component {
                             ? "form-control text-right mr-2"
                             : "form-control text-right mr-2 bg-info"
                         }
-                        value={exam.edad}
+                        defaultValue={exam.edad}
                         placeholder="Escriba la edad actual"
                         onChange={(e) => {
                           const { value } = e.target,

@@ -24,7 +24,7 @@ const KeraRetExamComponent = (props) => {
             name="keratometriaod"
             maxLength="12"
             className="form-control input-xs"
-            value={props.keratometriaod}
+            defaultValue={props.keratometriaod ?? ""}
             onChange={catchInputs}
           />
         </div>
@@ -35,7 +35,7 @@ const KeraRetExamComponent = (props) => {
             name="keratometriaoi"
             maxLength="12"
             className="form-control input-xs"
-            value={props.keratometriaoi}
+            defaultValue={props.keratometriaoi ?? ""}
             onChange={catchInputs}
           />
         </div>
@@ -46,7 +46,7 @@ const KeraRetExamComponent = (props) => {
             name="rsod"
             maxLength="16"
             className="form-control"
-            value={props.rsod}
+            defaultValue={props.rsod ?? ""}
             onChange={catchInputs}
           />
         </div>
@@ -57,7 +57,7 @@ const KeraRetExamComponent = (props) => {
             name="rsoi"
             maxLength="16"
             className="form-control"
-            value={props.rsoi}
+            defaultValue={props.rsoi ?? ""}
             onChange={catchInputs}
           />
         </div>

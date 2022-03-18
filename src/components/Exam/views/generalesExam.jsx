@@ -1,8 +1,3 @@
-
-
-
-import React from "react";
-
 const GeneralesExamComponent = (props) => {
   const catchInputs = (e) => {
     const { name, type, checked, value } = e.target,
@@ -32,7 +27,7 @@ const GeneralesExamComponent = (props) => {
             type="text"
             name="pc_time"
             className="form-control input-xs"
-            value={props.pc_time}
+            defaultValue={props.pc_time ?? ""}
             onChange={catchInputs}
             readOnly={props.pc ? "" : "readonly"}
           />
@@ -56,7 +51,7 @@ const GeneralesExamComponent = (props) => {
             type="text"
             name="tablet_time"
             className="form-control input-xs"
-            value={props.tablet_time}
+            defaultValue={props.tablet_time ?? ""}
             onChange={catchInputs}
             readOnly={props.tablet ? "" : "readonly"}
           />
@@ -80,7 +75,7 @@ const GeneralesExamComponent = (props) => {
             type="text"
             name="movil_time"
             className="form-control input-xs"
-            value={props.movil_time}
+            defaultValue={props.movil_time ?? ""}
             onChange={catchInputs}
             readOnly={props.movil ? "" : "readonly"}
           />
@@ -104,7 +99,7 @@ const GeneralesExamComponent = (props) => {
             type="text"
             name="lap_time"
             className="form-control input-xs"
-            value={props.lap_time}
+            defaultValue={props.lap_time ?? ""}
             onChange={catchInputs}
             readOnly={props.lap ? "" : "readonly"}
           />
@@ -221,7 +216,7 @@ const GeneralesExamComponent = (props) => {
                   name="c_frecuencia"
                   maxLength="60"
                   className="form-control input-xs"
-                  value={props.c_frecuencia}
+                  defaultValue={props.c_frecuencia ?? ""}
                   onChange={catchInputs}
                 />
               </span>
@@ -237,7 +232,7 @@ const GeneralesExamComponent = (props) => {
                     id="c_intensidad"
                     min="0"
                     max="4"
-                    value={props.c_intensidad}
+                    defaultValue={props.c_intensidad ?? ""}
                     onChange={catchInputs}
                   />
                 </div>

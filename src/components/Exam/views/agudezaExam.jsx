@@ -15,7 +15,7 @@ export default class AgudezaExam extends Component {
               name="cvod"
               maxLength="12"
               className="form-control"
-              value={this.props.cvod}
+              defaultValue={this.props.cvod ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -26,7 +26,7 @@ export default class AgudezaExam extends Component {
               name="cvoi"
               maxLength="12"
               className="form-control"
-              value={this.props.cvoi}
+              defaultValue={this.props.cvoi ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -45,7 +45,7 @@ export default class AgudezaExam extends Component {
               name="avslod"
               maxLength="12"
               className="form-control"
-              value={this.props.avslod}
+              defaultValue={this.props.avslod ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -56,7 +56,7 @@ export default class AgudezaExam extends Component {
               name="avsloi"
               maxLength="12"
               className="form-control"
-              value={this.props.avsloi}
+              defaultValue={this.props.avsloi ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -67,7 +67,7 @@ export default class AgudezaExam extends Component {
               name="avcgaod"
               maxLength="12"
               className="form-control input-xs"
-              value={this.props.avcgaod}
+              defaultValue={this.props.avcgaod ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -78,7 +78,7 @@ export default class AgudezaExam extends Component {
               name="avcgaoi"
               maxLength="12"
               className="form-control input-xs"
-              value={this.props.avcgaoi}
+              defaultValue={this.props.avcgaoi ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -95,7 +95,7 @@ export default class AgudezaExam extends Component {
               name="avfod"
               maxLength="12"
               className="form-control"
-              value={this.props.avfod}
+              defaultValue={this.props.avfod ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -107,7 +107,7 @@ export default class AgudezaExam extends Component {
               name="avfoi"
               maxLength="12"
               className="form-control"
-              value={this.props.avfoi}
+              defaultValue={this.props.avfoi ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -120,7 +120,7 @@ export default class AgudezaExam extends Component {
               name="avf2o"
               maxLength="25"
               className="form-control"
-              value={this.props.avf2o}
+              defaultValue={this.props.avf2o ?? ""}
               onChange={this.catchInputs}
             />
           </div>

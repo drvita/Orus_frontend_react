@@ -53,7 +53,7 @@ export default class DiabetesExam extends Component {
               type="date"
               name="d_time"
               className="form-control"
-              value={this.props.d_time}
+              defaultValue={this.props.d_time ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -62,7 +62,7 @@ export default class DiabetesExam extends Component {
               type="text"
               name="d_media"
               className="form-control"
-              value={this.props.d_media}
+              defaultValue={this.props.d_media ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -71,7 +71,7 @@ export default class DiabetesExam extends Component {
               type="date"
               name="d_test"
               className="form-control"
-              value={this.props.d_test}
+              defaultValue={this.props.d_test ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -80,7 +80,7 @@ export default class DiabetesExam extends Component {
               type="text"
               name="d_fclod_time"
               className="form-control"
-              value={this.props.d_fclod_time}
+              defaultValue={this.props.d_fclod_time ?? ""}
               onChange={this.catchInputs}
               readOnly={this.props.d_fclod ? "" : "readonly"}
             />
@@ -90,7 +90,7 @@ export default class DiabetesExam extends Component {
               type="text"
               name="d_fcloi_time"
               className="form-control"
-              value={this.props.d_fcloi_time}
+              defaultValue={this.props.d_fcloi_time ?? ""}
               onChange={this.catchInputs}
               readOnly={this.props.d_fcloi ? "" : "readonly"}
             />
@@ -102,7 +102,7 @@ export default class DiabetesExam extends Component {
             <textarea
               name="oftalmoscopia"
               className="form-control"
-              value={this.props.oftalmoscopia}
+              defaultValue={this.props.oftalmoscopia ?? ""}
               onChange={this.catchInputs}
             ></textarea>
           </div>

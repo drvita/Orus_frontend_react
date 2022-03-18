@@ -9,7 +9,7 @@ export default class ObservacionesExam extends Component {
           name="observaciones"
           id="observaciones"
           className="form-control"
-          value={this.props.observaciones}
+          defaultValue={this.props.observaciones ?? ""}
           onChange={this.catchInputs}
         ></textarea>
       </>

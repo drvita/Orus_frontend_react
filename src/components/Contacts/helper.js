@@ -124,6 +124,7 @@ const dataPrimary = {
   birthday: "",
   type: 0,
   business: 0,
+  gender: "female"
 };
 const handleGetDataObject = (key, value, verification) => {
   switch (key) {

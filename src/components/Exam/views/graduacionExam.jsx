@@ -58,7 +58,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={esferaod ?? ""}
+                  defaultValue={esferaod ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{esferaod ?? ""}</h5>
@@ -76,7 +76,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={cilindrod ?? ""}
+                  defaultValue={cilindrod ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{cilindrod ?? ""}</h5>
@@ -95,7 +95,7 @@ export default class GraduacionExamComponent extends Component {
                   }
                   disabled={readOnly ? true : false}
                   placeholder="°"
-                  value={ejeod ? parseInt(ejeod) : ""}
+                  defaultValue={ejeod ? parseInt(ejeod) : ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{ejeod ?? ""}</h5>
@@ -113,7 +113,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={adiciond ?? ""}
+                  defaultValue={adiciond ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{adiciond ?? ""}</h5>
@@ -131,7 +131,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={adicion_media_od ?? ""}
+                  defaultValue={adicion_media_od ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">
@@ -151,7 +151,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={dpod ?? ""}
+                  defaultValue={dpod ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{dpod ?? ""}</h5>
@@ -169,7 +169,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={alturaod ?? ""}
+                  defaultValue={alturaod ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{alturaod ?? ""}</h5>
@@ -193,7 +193,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={esferaoi ?? ""}
+                  defaultValue={esferaoi ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{esferaoi ?? ""}</h5>
@@ -211,7 +211,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={cilindroi ?? ""}
+                  defaultValue={cilindroi ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{cilindroi ?? ""}</h5>
@@ -230,7 +230,7 @@ export default class GraduacionExamComponent extends Component {
                   }
                   disabled={readOnly ? true : false}
                   placeholder="°"
-                  value={ejeoi ? parseInt(ejeoi) : ""}
+                  defaultValue={ejeoi ? parseInt(ejeoi) : ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{ejeoi ?? ""}</h5>
@@ -248,7 +248,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={adicioni ?? ""}
+                  defaultValue={adicioni ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{adicioni ?? ""}</h5>
@@ -266,7 +266,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={adicion_media_oi ?? ""}
+                  defaultValue={adicion_media_oi ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">
@@ -286,7 +286,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={dpoi ?? ""}
+                  defaultValue={dpoi ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{dpoi ?? ""}</h5>
@@ -304,7 +304,7 @@ export default class GraduacionExamComponent extends Component {
                       : "form-control d-print-none"
                   }
                   disabled={readOnly ? true : false}
-                  value={alturaoi ?? ""}
+                  defaultValue={alturaoi ?? ""}
                   onChange={this.catchInputs}
                 />
                 <h5 className="d-none d-print-block">{alturaoi ?? ""}</h5>
@@ -326,7 +326,7 @@ export default class GraduacionExamComponent extends Component {
                       readOnly ? "form-control disabled" : "form-control"
                     }
                     disabled={readOnly ? true : false}
-                    value={lcmarca}
+                    defaultValue={lcmarca ?? ""}
                     onChange={this.catchInputs}
                   />
                 </div>
@@ -342,7 +342,7 @@ export default class GraduacionExamComponent extends Component {
                       readOnly ? "form-control disabled" : "form-control"
                     }
                     disabled={readOnly ? true : false}
-                    value={lcgod ? lcgod : ""}
+                    defaultValue={lcgod ? lcgod : ""}
                     onChange={this.catchInputs}
                   />
                 </div>
@@ -356,7 +356,7 @@ export default class GraduacionExamComponent extends Component {
                       readOnly ? "form-control disabled" : "form-control"
                     }
                     disabled={readOnly ? true : false}
-                    value={lcgoi ? lcgoi : ""}
+                    defaultValue={lcgoi ? lcgoi : ""}
                     onChange={this.catchInputs}
                   />
                 </div>

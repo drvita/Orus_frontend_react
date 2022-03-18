@@ -14,7 +14,7 @@ export default class DiagnosticoExam extends Component {
             <select
               name="diagnostico"
               className="form-control"
-              value={this.props.diagnostico}
+              defaultValue={this.props.diagnostico ?? ""}
               onChange={this.catchInputs}
             >
               <option value="Emetrope">Em&eacute;trope</option>
@@ -62,7 +62,7 @@ export default class DiagnosticoExam extends Component {
               max="40"
               step="1"
               className="form-control"
-              value={this.props.piod}
+              defaultValue={this.props.piod ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -75,7 +75,7 @@ export default class DiagnosticoExam extends Component {
               max="40"
               step="1"
               className="form-control"
-              value={this.props.pioi}
+              defaultValue={this.props.pioi ?? ""}
               onChange={this.catchInputs}
             />
           </div>
@@ -86,7 +86,7 @@ export default class DiagnosticoExam extends Component {
             <textarea
               name="txoftalmico"
               className="form-control"
-              value={this.props.txoftalmico}
+              defaultValue={this.props.txoftalmico ?? ""}
               onChange={this.catchInputs}
             ></textarea>
           </div>

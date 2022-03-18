@@ -104,7 +104,7 @@ class IndexExamComponent extends Component {
                   className="form-control "
                   name="orderby"
                   id="orderby"
-                  value={options.orderby}
+                  defaultValue={options.orderby}
                   onChange={this.handleSetSelectOptions}
                 >
                   <option value="created_at">Fecha de registro</option>

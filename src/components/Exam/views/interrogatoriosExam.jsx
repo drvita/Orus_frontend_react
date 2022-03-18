@@ -10,7 +10,7 @@ export default class InterrogatorioExam extends Component {
             <textarea
               name="interrogatorio"
               className="form-control"
-              value={this.props.interrogatorio}
+              defaultValue={this.props.interrogatorio ?? ""}
               onChange={this.catchInputs}
             ></textarea>
           </div>
@@ -21,7 +21,7 @@ export default class InterrogatorioExam extends Component {
             <textarea
               name="coa"
               className="form-control"
-              value={this.props.coa}
+              defaultValue={this.props.coa ?? ""}
               onChange={this.catchInputs}
             ></textarea>
           </div>
@@ -33,7 +33,7 @@ export default class InterrogatorioExam extends Component {
               name="aopp"
               className="form-control"
               rows="2"
-              value={this.props.aopp}
+              defaultValue={this.props.aopp ?? ""}
               onChange={this.catchInputs}
             ></textarea>
           </div>
@@ -45,7 +45,7 @@ export default class InterrogatorioExam extends Component {
               name="aopf"
               className="form-control"
               rows="2"
-              value={this.props.aopf}
+              defaultValue={this.props.aopf ?? ""}
               onChange={this.catchInputs}
             ></textarea>
           </div>

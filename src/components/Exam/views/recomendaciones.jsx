@@ -112,10 +112,10 @@ class RecomendationGlassComponent extends Component {
                   <select
                     name="category_id_1"
                     className="custom-select"
-                    value={category_id_1 ?? ""}
+                    defaultValue={category_id_1 ?? ""}
                     onChange={this.handleCategoryChange}
                   >
-                    <option value="0">-- Seleccione el tipo --</option>
+                    <option defaultValue="0">-- Seleccione el tipo --</option>
                     {category_list.map((cat) => {
                       if (
                         cat.meta &&
@@ -127,7 +127,7 @@ class RecomendationGlassComponent extends Component {
                         cat.meta.cil <= cilindroi
                       ) {
                         return (
-                          <option value={cat.id} key={cat.id}>
+                          <option defaultValue={cat.id ?? ""} key={cat.id}>
                             {cat.name}
                           </option>
                         );
@@ -145,10 +145,10 @@ class RecomendationGlassComponent extends Component {
                   <select
                     name="category_id_2"
                     className="custom-select"
-                    value={category_id_2}
+                    defaultValue={category_id_2 ?? ""}
                     onChange={this.handleCategoryChange}
                   >
-                    <option value="0">-- Seleccione el material --</option>
+                    <option defaultValue="0">-- Seleccione el material --</option>
                     {category_list_2.map((cat) => {
                       if (
                         cat.meta &&
@@ -158,7 +158,7 @@ class RecomendationGlassComponent extends Component {
                         esferaoi <= cat.meta.rangoSup
                       ) {
                         return (
-                          <option value={cat.id} key={cat.id}>
+                          <option defaultValue={cat.id ?? ""} key={cat.id}>
                             {cat.name}
                           </option>
                         );
@@ -176,13 +176,13 @@ class RecomendationGlassComponent extends Component {
                   <select
                     name="category_id_3"
                     className="custom-select"
-                    value={category_id_3}
+                    defaultValue={category_id_3 ?? ""}
                     onChange={this.handleCategoryChange}
                   >
-                    <option value="0">-- Seleccione el tratamiento --</option>
+                    <option defaultValue="0">-- Seleccione el tratamiento --</option>
                     {category_list_3.map((cat) => {
                       return (
-                        <option value={cat.id} key={cat.id}>
+                        <option defaultValue={cat.id ?? ""} key={cat.id}>
                           {cat.name}
                         </option>
                       );

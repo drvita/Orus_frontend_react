@@ -630,8 +630,9 @@ class ExamAddComponent extends Component {
   };
   handleSave = (e) => {
     e.preventDefault();
-    const { cilindrod, cilindroi, ejeod, ejeoi, exam } = this.state,
-      id = exam.id,
+    const {
+        exam: { id, cilindrod, cilindroi, ejeod, ejeoi },
+      } = this.state,
       {
         contact: paciente,
         options,
@@ -641,7 +642,11 @@ class ExamAddComponent extends Component {
 
     //Verificar si los datos son validos.
     if ((cilindrod < 0 && !ejeod) || (cilindroi < 0 && !ejeoi)) {
-      window.Swal.fire("Verificación", "El campo CILINDRO esta vacio", "error");
+      window.Swal.fire(
+        "Verificación",
+        "El campo CILINDRO esta vacio",
+        "warning"
+      );
       return false;
     }
 

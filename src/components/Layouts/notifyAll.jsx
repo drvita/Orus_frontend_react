@@ -79,7 +79,7 @@ export default class NotifyAll extends Component {
     );
   }
 
-  handleClickViewNotify = (e, url, id) => {
+ /*  handleClickViewNotify = (e, url, id) => {
     const { page } = this.props,
       seccion = url.split("/");
     e.preventDefault();
@@ -132,7 +132,7 @@ export default class NotifyAll extends Component {
           "error"
         );
       });
-  };
+  }; */
 
 
 

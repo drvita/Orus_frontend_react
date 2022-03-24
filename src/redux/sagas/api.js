@@ -5,6 +5,7 @@ export async function api(url, method = "GET", body, controller = null) {
       host: HOST = window.location.hostname.toString(),
       token: TOKEN = "",
     } = JSON.parse(LS ? LS : "{}");
+    
 
 
   const param = {
@@ -19,6 +20,7 @@ export async function api(url, method = "GET", body, controller = null) {
   if(method.toUpperCase() === "POST" && body) param.body = JSON.stringify(body);
   if(controller) param.signal = controller.signal;
 
+
   return await fetch(`${PORT}://${HOST}/api/${url}`, param)
     .then(async (res) => {
       if (res.status >= 200 && res.status < 300) {
@@ -26,7 +28,7 @@ export async function api(url, method = "GET", body, controller = null) {
           if (pair[0] === "content-type") {
             switch (pair[1]) {
               case "application/json":
-                return await res.json();
+                return await res.json();          
               case "text/csv; charset=UTF-8":
                 return await res.blob();
               default:
@@ -35,8 +37,7 @@ export async function api(url, method = "GET", body, controller = null) {
           }
         }
       }
-
-      return null;
+      return res.json();
     })
     .catch((err) => {
       console.error("[Orus System] Query API failer:", url);

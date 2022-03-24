@@ -115,7 +115,7 @@ class RecomendationGlassComponent extends Component {
                     defaultValue={category_id_1 ?? ""}
                     onChange={this.handleCategoryChange}
                   >
-                    <option defaultValue="0">-- Seleccione el tipo --</option>
+                    <option value="0">-- Seleccione el tipo --</option>
                     {category_list.map((cat) => {
                       if (
                         cat.meta &&
@@ -127,7 +127,7 @@ class RecomendationGlassComponent extends Component {
                         cat.meta.cil <= cilindroi
                       ) {
                         return (
-                          <option defaultValue={cat.id ?? ""} key={cat.id}>
+                          <option value={cat.id} key={cat.id}>
                             {cat.name}
                           </option>
                         );
@@ -148,7 +148,7 @@ class RecomendationGlassComponent extends Component {
                     defaultValue={category_id_2 ?? ""}
                     onChange={this.handleCategoryChange}
                   >
-                    <option defaultValue="0">-- Seleccione el material --</option>
+                    <option value="0">-- Seleccione el material --</option>
                     {category_list_2.map((cat) => {
                       if (
                         cat.meta &&
@@ -158,7 +158,7 @@ class RecomendationGlassComponent extends Component {
                         esferaoi <= cat.meta.rangoSup
                       ) {
                         return (
-                          <option defaultValue={cat.id ?? ""} key={cat.id}>
+                          <option value={cat.id ?? ""} key={cat.id}>
                             {cat.name}
                           </option>
                         );
@@ -179,10 +179,10 @@ class RecomendationGlassComponent extends Component {
                     defaultValue={category_id_3 ?? ""}
                     onChange={this.handleCategoryChange}
                   >
-                    <option defaultValue="0">-- Seleccione el tratamiento --</option>
+                    <option value="0">-- Seleccione el tratamiento --</option>
                     {category_list_3.map((cat) => {
                       return (
-                        <option defaultValue={cat.id ?? ""} key={cat.id}>
+                        <option value={cat.id ?? ""} key={cat.id}>
                           {cat.name}
                         </option>
                       );

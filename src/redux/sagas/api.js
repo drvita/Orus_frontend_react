@@ -1,4 +1,4 @@
-export async function api(url, method = "GET", body, controller = null) {  
+export async function api(url, method = "GET", body, controller = null) {
   const LS = localStorage.getItem("OrusSystem"),
     {
       port: PORT = window.location.protocol.toString().replace(":", ""),
@@ -7,18 +7,19 @@ export async function api(url, method = "GET", body, controller = null) {
     } = JSON.parse(LS ? LS : "{}");
     
 
-
   const param = {
     method,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
       Authorization: "Bearer " + TOKEN,
-    }
+    },
   };
-  
-  if(method.toUpperCase() === "POST" && body) param.body = JSON.stringify(body);
-  if(controller) param.signal = controller.signal;
+
+  if (["POST", "PUT"].includes(method.toUpperCase()) && body) {
+    param.body = JSON.stringify(body);
+  }
+  if (controller) param.signal = controller.signal;
 
 
   return await fetch(`${PORT}://${HOST}/api/${url}`, param)

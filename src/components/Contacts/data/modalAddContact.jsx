@@ -23,12 +23,11 @@ const FormAddContactComponent = (props) => {
     //setValidForm(handleValidForm);
   };
 
-
   const handleValidForm = (showMsg = false) => {
     const verify = helper.handleVerificationData(data, showMsg);
     return verify.result;
   };
-  
+
   const handleSave = () => {
     const valid = handleValidForm(true),
       body = {
@@ -38,16 +37,14 @@ const FormAddContactComponent = (props) => {
     if (!valid) return false;
 
     helper.saveContact(title, body, _save);
-
-    
   };
-
 
   useEffect(() => {
     setData({
       ...data,
       name: name_props,
     });
+    // eslint-disable-next-line
   }, [name_props]);
 
   return (
@@ -146,7 +143,7 @@ const FormAddContactComponent = (props) => {
                 <option value="male">Hombre</option>
                 <option value="female">Mujer</option>
               </select>
-             {/*  <input
+              {/*  <input
                 value={birthday}
               /> */}
             </div>

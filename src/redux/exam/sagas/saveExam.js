@@ -38,7 +38,7 @@ export default function* handledSave({ payload }) {
       );
     }
   } catch (e) {
-    console.error("[Orus System] Error in handle deleteOrder", e);
+    console.error("[Orus System] Error in handle save exam", e);
     yield put(
       examActions.setMessagesExam([
         {

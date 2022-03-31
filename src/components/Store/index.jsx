@@ -35,6 +35,8 @@ class IndexStoreComponent extends Component {
     }
 
     _setPageName("almacen");
+
+    //console.log("Productos del almacen----INDEX------");
   }
   componentDidUpdate(props) {
     const { messages: MSGS, item, history, _setMessage, _setList } = this.props;

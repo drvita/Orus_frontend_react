@@ -149,7 +149,7 @@ export default function PrintSaleComponent({
               <tbody>
                 {items.map((item, index) => {
                   const total = parseFloat(item.cant * item.price);
-                  totalItems += total;
+                  totalItems += total;  
                   return (
                     <tr key={index} className="text-capitalize">
                       <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>

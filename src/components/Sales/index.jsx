@@ -20,6 +20,7 @@ export default function IndexSalesComponent() {
   //Store Redux
   const { sales } = useSelector((state) => state),
     { sale, loading } = sales,
+
     dispatch = useDispatch();
   //Store Local
   const [data, setData] = useState({
@@ -27,12 +28,14 @@ export default function IndexSalesComponent() {
   });
   //Functions
   const handleDeleteSale = () => setData({ pagado: 0 }),
+
     handleSetSale = (res) => {
       setData({
         ...data,
         ...res,
       });
     },
+
     handlePrint = () => {
       const path = window.location.pathname;
 
@@ -87,6 +90,7 @@ export default function IndexSalesComponent() {
     window.addEventListener("afterprint", handlePrint);
     //eslint-disable-next-line
   }, [sale]);
+
   useEffect(() => {
     dispatch(defaultActions.changeNamePage("punto de venta"));
 
@@ -103,7 +107,11 @@ export default function IndexSalesComponent() {
     //eslint-disable-next-line
   }, []);
 
+
   const paid = sale.total <= data.pagado ? true : false;
+
+  const btnDisabled =  (sale.total - data.pagado) > 0 && sale.descuento === 0 && data.pagado === 0 ? false : true;
+
 
   return (
     <>
@@ -127,10 +135,12 @@ export default function IndexSalesComponent() {
                 </>
               ) : null}
             </div>
+
+          
             <div className="col-3">
               <div className="card-tools text-right">
                 <ListSalesBtn setSale={handleSetSale} />
-                <DiscountBtnComponent sale={sale} paid={paid} />
+                <DiscountBtnComponent sale={sale} paid={paid} btnDisabled={btnDisabled} />
                 <EraseBtn
                   sale={sale}
                   defaultState={DEFAULT_STATE_SALES}
@@ -150,6 +160,7 @@ export default function IndexSalesComponent() {
         </div>
         <div className="card-footer">
           <div className="row">
+
             <div className="col d-print-none">
               {sale.total ? (
                 <>
@@ -158,6 +169,7 @@ export default function IndexSalesComponent() {
                 </>
               ) : null}
             </div>
+
             <div className="col d-print-none">
               {!paid && (
                 <>
@@ -168,6 +180,8 @@ export default function IndexSalesComponent() {
                 </>
               )}
             </div>
+
+            
             <div className="col-6 text-right">
               <InputSearchItem sale={sale} />
               <PaymentBtnComponent

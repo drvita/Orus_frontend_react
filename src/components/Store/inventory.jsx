@@ -27,7 +27,7 @@ export default class Inventory extends Component {
       this.getItems(this.state.catid_3);
     }
   }
-
+  
   render() {
     const {
         catid_1,

@@ -1,7 +1,11 @@
+//TODO: Componente de discount Button
+
 import { useDispatch } from "react-redux";
 import { saleActions } from "../../../redux/sales";
 
-export default function DiscountBtnComponent({ sale, paid }) {
+export default function DiscountBtnComponent({ sale, paid, btnDisabled }) {
+
+  //console.log("---------",sale, paid)
   const dispatch = useDispatch();
   //Functions
   const handleAddDiscount = () => {
@@ -44,15 +48,20 @@ export default function DiscountBtnComponent({ sale, paid }) {
       );
     }
   };
+
+
+  
   // const
   const total = sale.total - sale.pagado;
+  
 
   return (
     <button
       className="btn btn-primary mx-1"
       title="Agregar descuento"
       onClick={handleAddDiscount}
-      disabled={!total || paid}
+     /*  disabled={!total || paid} */
+      disabled={btnDisabled}
     >
       <i className="fas fa-percent"></i>
     </button>

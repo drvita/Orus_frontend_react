@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { saleActions } from "../../../redux/sales";
 
 export default function DiscountBtnComponent({ sale, paid, btnDisabled }) {
-
   //console.log("---------",sale, paid)
   const dispatch = useDispatch();
   //Functions
@@ -49,18 +48,11 @@ export default function DiscountBtnComponent({ sale, paid, btnDisabled }) {
     }
   };
 
-
-  
-  // const
-  const total = sale.total - sale.pagado;
-  
-
   return (
     <button
       className="btn btn-primary mx-1"
       title="Agregar descuento"
       onClick={handleAddDiscount}
-     /*  disabled={!total || paid} */
       disabled={btnDisabled}
     >
       <i className="fas fa-percent"></i>

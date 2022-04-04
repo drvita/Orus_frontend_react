@@ -21,6 +21,7 @@ export default class Inventory extends Component {
   }
   componentDidMount() {
     this.getCategories();
+    console.log("Prueba-------------")
   }
   componentDidUpdate(props, state) {
     if (state.catid_3 !== this.state.catid_3) {

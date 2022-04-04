@@ -13,6 +13,8 @@ import helper from "./helpers";
 import CategoriesProcess from "./data/CategoriesProcess";
 
 class StoreAddComponent extends Component {
+
+
   constructor(props) {
     super(props);
 
@@ -36,6 +38,7 @@ class StoreAddComponent extends Component {
       branch_default: 0,
       inBranches: [],
     };
+
     this.category0 = createRef(); //Primera categoria
     this.category1 = createRef(); //Segunda categoria
     this.category2 = createRef(); //Tercera categoria
@@ -45,6 +48,9 @@ class StoreAddComponent extends Component {
     this.codeRef = createRef(); //Referencia del codigo
     this.nameRef = createRef(); //REferencia del nombre del producto
   }
+
+
+
   componentDidMount() {
     const { _getListCategories, _setListStore } = this.props;
 
@@ -59,6 +65,9 @@ class StoreAddComponent extends Component {
       },
     });
   }
+
+
+
   componentDidUpdate(props, state) {
     const {
       category_list1,
@@ -111,6 +120,9 @@ class StoreAddComponent extends Component {
       }
     }
   }
+
+
+
   componentWillUnmount() {
     const { _setListStore } = this.props;
 
@@ -658,6 +670,9 @@ class StoreAddComponent extends Component {
     });
   };
 }
+
+
+
 
 const mapStateToProps = ({ storeItem, category, contact }) => {
     return {

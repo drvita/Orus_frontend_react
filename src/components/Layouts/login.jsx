@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
+// import { connect } from "react-redux";
 //Actions
-import { defaultActions } from "../../redux/default/";
-import { userActions } from "../../redux/user/";
+// import { defaultActions } from "../../redux/default/";
+// import { userActions } from "../../redux/user/";
+import { useContext } from "react";
 import helper from "../Users/helpers";
 
-class LogginComponent extends Component {
+export default class LogginComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -254,20 +255,3 @@ class LogginComponent extends Component {
     }
   };
 }
-
-const mapStateToProps = ({ default: system, users }) => {
-    return {
-      company: system.company,
-      host: system.host,
-      messages: users.messages,
-      loading: users.loading,
-      changeHostStatus: system.success,
-    };
-  },
-  mapDispatchToProps = {
-    loggin: userActions.loggin,
-    setMessage: userActions.setMessages,
-    changeHost: defaultActions.changeHost,
-  };
-
-export default connect(mapStateToProps, mapDispatchToProps)(LogginComponent);

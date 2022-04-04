@@ -1,50 +1,17 @@
-import React, { Component } from "react";
-import Routers from "./Routers";
-import Login from "./components/Layouts/login";
-import { connect } from "react-redux";
-import { userActions } from "./redux/user/";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./redux/store";
+import AuthProvider from "./context/AuthContext";
+import Router from "./Routers";
 
-class App extends Component {
-  componentDidUpdate(props) {
-    const { messages: M_OLD = {} } = props,
-      { messages: M_NEW = {}, setMessage: _setMessage } = this.props;
-
-    if (M_OLD.length !== M_NEW.length && M_NEW.length) {
-      M_NEW.forEach((msg) => {
-        const { text, type } = msg;
-        if (window.sendPushMessage) {
-          window.sendPushMessage("Orus system", text);
-        } else {
-          window.Swal.fire({
-            icon: type,
-            title: text,
-            showConfirmButton: type !== "error" ? false : true,
-            timer: type !== "error" ? 1500 : 9000,
-            position: "top",
-          });
-        }
-      });
-      _setMessage([]);
-    }
-  }
-
-  render() {
-    const { dataLoggin } = this.props;
-    return (
-      <main>
-        {dataLoggin.isLogged ? <Routers data={this.props} /> : <Login />}
-      </main>
-    );
-  }
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Provider store={store}>
+          <Router />
+        </Provider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
-const mapStateToProps = ({ users }) => {
-    return {
-      dataLoggin: users.dataLoggin,
-      messages: users.messages,
-    };
-  },
-  mapDispatchToProps = {
-    setMessage: userActions.setMessages,
-  };
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);

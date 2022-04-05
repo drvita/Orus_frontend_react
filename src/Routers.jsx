@@ -1,5 +1,5 @@
 // import React, { Component } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import { useContext } from "react";
 import Users from "./components/Users/index";
 import UserAdd from "./components/Users/add";
@@ -15,24 +15,22 @@ import NotFound from "./components/404NotFound";
 import Login from "./pages/Login";
 import { AuthContext } from "./context/AuthContext";
 import ConfigProvider from "./context/ConfigContext";
-
 import Main from "./layouts/Main";
 
 export default function Routers() {
   const { auth } = useContext(AuthContext);
-  const currentRole = auth.roles;
+  console.log("[DEBUG] Auth:", auth);
 
-  if (auth?.isLogged) {
-    console.log("[DEBUG] Lggied:", auth);
-    return (
-      <ConfigProvider>
-        <Main>
-          <Switch>
+  return (
+    <ConfigProvider>
+      <Switch>
+        {auth?.isLogged ? (
+          <Main>
             <Route
               exact
               path="/"
               render={(props) => {
-                switch (currentRole) {
+                switch (auth.roles) {
                   case "doctor":
                     return <Exam {...props} />;
 
@@ -47,22 +45,22 @@ export default function Routers() {
 
             <Route
               path="/usuarios/registro/:id?"
-              render={(props) => <UserAdd {...props} page={this.handlePage} />}
+              render={(props) => <UserAdd {...props} page={() => {}} />}
             />
 
             <Route
               path="/usuarios"
-              render={(props) => <Users {...props} page={this.handlePage} />}
+              render={(props) => <Users {...props} page={() => {}} />}
             />
 
             <Route
               path="/almacen/:id?"
-              render={(props) => <Store {...props} page={this.handlePage} />}
+              render={(props) => <Store {...props} page={() => {}} />}
             />
 
             <Route
               path="/contactos/:id?"
-              render={(props) => <Contacts {...props} page={this.handlePage} />}
+              render={(props) => <Contacts {...props} page={() => {}} />}
             />
 
             <Route
@@ -72,7 +70,7 @@ export default function Routers() {
 
             <Route
               path="/configuraciones"
-              render={(props) => <Tools {...props} page={this.handlePage} />}
+              render={(props) => <Tools {...props} page={() => {}} />}
             />
 
             <Route
@@ -82,24 +80,23 @@ export default function Routers() {
 
             <Route
               path="/notas/:id?"
-              render={(props) => <Sales {...props} page={this.handlePage} />}
+              render={(props) => <Sales {...props} page={() => {}} />}
             />
 
             {/* <Route
-      path="/notificaciones"
-      render={(props) => (
-        <NotifyAllShow {...props} data={data} page={this.handlePage} />
-      )}
-    /> */}
+              path="/notificaciones"
+              render={(props) => (
+                <NotifyAllShow {...props} data={data} page={this.handlePage} />
+              )}
+            /> */}
+          </Main>
+        ) : (
+          <Redirect to="/login" />
+        )}
 
-            <Route path="/login" render={(props) => <Login />} />
-
-            <Route path="*" render={(props) => <NotFound />} />
-          </Switch>
-        </Main>
-      </ConfigProvider>
-    );
-  } else {
-    return <Login />;
-  }
+        <Route path="/login" render={(props) => <Login />} />
+        <Route component={NotFound} />
+      </Switch>
+    </ConfigProvider>
+  );
 }

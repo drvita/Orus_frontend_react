@@ -1,20 +1,19 @@
-import Navtop from '../components/Layouts/navtop';
-import Breadcrumb from '../components/Layouts/breadcrumb';
-import Menu from '../components/Layouts/menu';
+import Navtop from "../components/Layouts/navtop";
+import Breadcrumb from "../components/Layouts/breadcrumb";
+import Menu from "../components/Layouts/menu";
 
 export default function Main({ children }) {
-    const data = {
+  const data = {};
 
-    }
   return (
     <div className="wrapper">
-      <Navtop logOut={()=>{}} data={data} page={()=>{}} />
+      <Navtop logOut={() => {}} data={data} page={() => {}} />
       <Menu
-        companyName={'company'}
+        companyName={"company"}
         user={data}
-        page={()=>{}}
-        logOut={()=>{}}
-        active={'active'}
+        page={() => {}}
+        logOut={() => {}}
+        active={"active"}
       />
       <div className="content-wrapper">
         <Breadcrumb />

@@ -37,10 +37,11 @@ export default function useUser({ children }) {
         rol: 2,
         email: data.email,
         token: data.token ?? user.token,
-        branch: data.branch.id,
+        branch: data.branch.data,
         roles: data.roles[0],
         permissions: data.permissions,
       };
+
       setUser(toSave);
       sessionStorage.setItem("OrusSystem", JSON.stringify(toSave));
     },
@@ -71,22 +72,49 @@ export default function useUser({ children }) {
           return { status: true, message: data.message };
         })
         .catch((err) => {
-          return { status: false, message: "Error en el servidor" };
+          return {
+            status: false,
+            message: "Error en el servidor: " + err.message,
+          };
         });
+    },
+    outSession = () => {
+      setUserData(initialSession);
+      sessionStorage.setItem("OrusSystem", "{}");
+    },
+    getCurrentUser = () => {
+      return new Promise(async (done, reject) => {
+        return await api("user").then((data) => {
+          if (data.message === "Unauthenticated.") {
+            reject(null);
+            return history.push("/login");
+          }
+
+          return done(data.data);
+        });
+      });
+    },
+    getNotifications = async () => {
+      const user = await getCurrentUser().catch(() => {
+        outSession();
+        return null;
+      });
+
+      if (!user) return [];
+
+      return user.unreadNotifications;
     };
 
   useEffect(() => {
-    api("user").then((data) => {
-      if (data.message === "Unauthenticated.") {
-        return history.push("/login");
-      }
-
-      setUserData({ ...data.data, isLogged: true });
+    getCurrentUser().then((data) => {
+      setUserData({ ...data, isLogged: true });
     });
   }, []);
 
   return (
-    <AuthContext.Provider value={{ auth: user, setSession: session }}>
+    <AuthContext.Provider
+      value={{ auth: user, setSession: session, outSession, getNotifications }}
+    >
       {children}
     </AuthContext.Provider>
   );

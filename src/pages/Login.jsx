@@ -40,14 +40,10 @@ export default function Login(props) {
           load: false,
         });
 
-        localStorage.setItem(
-          "OrusSystem",
-          JSON.stringify({
-            ...storage,
-            token: data.token,
-          })
-        );
-
+        if (!data.status) {
+          // TODO: create alerts
+          return;
+        }
         history.push("/");
       });
   };
@@ -93,7 +89,6 @@ export default function Login(props) {
   };
 
   useEffect(() => {
-    console.log("[DEBUG] change home:", auth.auth.isLogged);
     if (auth.auth?.isLogged) {
       history.push("/");
     }

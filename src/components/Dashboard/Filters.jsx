@@ -1,25 +1,34 @@
-import { useContext } from "react";
-import { connect } from "react-redux";
-import { getUrl, api } from '../../redux/sagas/api';
-import actions from '../../redux/config/actions';
+import { useContext, useState } from "react";
 import { ConfigContext } from "../../context/ConfigContext";
 
-
-export default function Filters({filters}){
-  const {currentUser, branch_id, date_end, date_start} = filters;
+export default function Filters({ filters, changeState }) {
+  const { currentUser, branch_id, date_end, date_start } = filters;
+  const [state, setState] = useState({
+    branch_id,
+    user: currentUser.id,
+    date_start,
+    date_end,
+  });
   const config = useContext(ConfigContext);
   const branches = config.data.filter((c) => c.name === "branches");
   const users = [];
 
-  
-  console.log("branches INDEX.JS", date_start, date_end);
+  // Functions
+  const sendDataFilter = () => {
+    const { currentUser, branch_id, date_end, date_start } = state;
+
+    changeState({
+      branch_id,
+      user: currentUser,
+      date_start,
+      date_end,
+    });
+  };
 
   return (
     <div className="border-bottom pb-3 mb-4">
-
       <div className="card-body p-0 bg-light">
         <div className="form-group row col-lg-12 m-0">
-
           <div className="col-lg-1 mt-sm-3 ml-sm-3">
             <p className="mt-2 font-weight-bold text-secondary h5">Filtros</p>
           </div>
@@ -27,9 +36,11 @@ export default function Filters({filters}){
           <div className="col-lg-2 mt-sm-3">
             <div className="col-lg-12">
               <select
-                name="branch_id"
                 className="form-control text-capitalize"
-                value={branch_id}
+                defaultValue={branch_id}
+                onChange={({ target }) =>
+                  setState({ ...state, branch_id: target.value })
+                }
               >
                 <option value="">
                   {branch_id === "" ? "Sucursal" : "Todas"}
@@ -48,22 +59,28 @@ export default function Filters({filters}){
           <div className="col-lg-2 mt-sm-3">
             <div className="col-lg-12">
               <select
-                name="currentUser"
                 className="form-control text-capitalize"
-                value={currentUser}
+                defaultValue={currentUser}
+                onChange={({ target }) =>
+                  setState({ ...state, currentUser: target.value })
+                }
               >
                 <option value="">
                   {currentUser === "" ? "Usuarios" : "Todos"}
                 </option>
-                {users.map((user)=>{
-                  if(!branch_id){
-                    return(
-                      <option key={user.id} value={user.id}>{user.name}</option>
-                    )
+                {users.map((user) => {
+                  if (!branch_id) {
+                    return (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    );
                   } else {
-                    return(
-                      user.branch.id.toString() === branch_id ? <option key={user.id} value={user.id}>{user.name}</option> : null
-                    )
+                    return user.branch.id.toString() === branch_id ? (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    ) : null;
                   }
                 })}
               </select>
@@ -77,10 +94,11 @@ export default function Filters({filters}){
             <div className="col-lg-10">
               <input
                 type="date"
-                name="date_start"
                 className="form-control"
-                value={date_start}
-                placeholder="Periodo"
+                defaultValue={date_start}
+                onChange={({ target }) =>
+                  setState({ ...state, date_start: target.value })
+                }
               />
             </div>
           </div>
@@ -92,135 +110,26 @@ export default function Filters({filters}){
             <div className="col-lg-10">
               <input
                 type="date"
-                name="date_end"
                 className="form-control"
-                value={date_end}
+                defaultValue={date_end}
+                onChange={({ target }) =>
+                  setState({ ...state, date_end: target.value })
+                }
               />
             </div>
           </div>
 
           <div className="col-lg-2 row mt-sm-3 d-flex justify-content-center m-0 h-50">
             <button
+              type="button"
               className="btn w-50 btn-success font-weight-bold"
+              onClick={sendDataFilter}
             >
               Filtrar
             </button>
           </div>
-  
         </div>
       </div>
     </div>
   );
 }
-
-// class Filters extends Component {
-//   constructor(props) {
-//     super(props);
-//     const ls = JSON.parse(localStorage.getItem("OrusSystem"));
-//     const { user, date_start, date_end, branch_id } = props.filters;
-
-//     this.state = {
-//       host: ls.host,
-//       token: ls.token,
-
-//       branch_id: branch_id,
-//       date_start: date_start,
-//       date_end: date_end,
-//       currentUser: user,
-
-//       branches: [], 
-//       users: [],
-//     };
-    
-//     this.controller = new AbortController();
-//   }
-
-//   componentWillUnmount() {  
-//     this.controller.abort();
-//   }
-
-//   componentDidMount() {
-//     this.getUsers();
-//     this.getBranches();
-//   }
-
-
-//   componentDidUpdate(props) {
-//     if (!props.branches.length && this.props.branches.length) {
-//       this.setState({
-//         branches: this.props.branches,
-//       });
-//     }
-//   }
-
-//   sendDatFilter = () => {
-//     const { branch_id, currentUser, date_start, date_end } = this.state;
-
-//     this.props.changeState({
-//       branch_id,
-//       user: currentUser,
-//       date_start,
-//       date_end,
-//     });
-//   };
-
-//   render() {
-//     const { users, branch_id, currentUser, date_start, date_end } = this.state;
-
-    
-//   }
-
-//   changeState = (e) => {
-//     let { value, name } = e.target;
-//     this.setState({
-//       [name]: value,
-//     });
-//   };
-
-//   getUsers = async () => {
-
-//       const usersFilters = {
-//         orderby: "username",
-//         order: "asc",
-//         rol: 10,
-//         page: 1
-//       }
-
-//       const newUsersUrl = getUrl("users", null, usersFilters);
-//       const {data, message} = await api(newUsersUrl, "GET", null, this.controller);
-
-//       if(data){
-//         if(!message){
-//           this.setState({
-//           users: data,
-//         });
-//         }else{
-//           console.error("Error en la descarga de usuarios", message);          
-//         }
-//       }else {
-//         window.Swal.fire({
-//           title: "Error!",
-//           text: "Ups!\n Hubo un error al descargar usuarios de sistema",
-//           icon: "error",
-//           confirmButtonText: "Ok",
-//         });
-//       }
-//   };
-
-//   getBranches = ()=>{
-//     this.props._getBranches()
-//   }
-
-// }
-
-// const mapStateToProps = ({ config }) => {
-//     return {
-//       branches: config.branches,
-//     };
-//   },
-  
-//   mapActionsToProps = {
-//     _getBranches: actions.getBranches
-//   };
-
-// export default connect(mapStateToProps, mapActionsToProps)(Filters);

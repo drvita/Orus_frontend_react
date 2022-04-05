@@ -7,7 +7,10 @@ const MenuComponent = (props) => {
   const history = useHistory();
   const handleLogOut = (e) => {
     e.preventDefault();
-    const { loggin: _LOGOUT } = props;
+    const _LOGOUT = (x) => {
+      console.log("[DEBUG] Log out", x);
+    };
+
     window.Swal.fire({
       title: "Session",
       text: "¿Esta seguro de cerrar la sesion?",
@@ -24,9 +27,11 @@ const MenuComponent = (props) => {
     });
   };
 
-  const { companyName, user } = props,
+  // TODO: import auth context
+  const companyName = "Company Name",
+    user = { idUser: 2 },
     active = useLocation().pathname.replace("/", ""),
-    mainRole = user.roles[0];
+    mainRole = user.roles;
 
   let avatar = "/img/avatars/avatar5.png";
   if (mainRole === "ventas") avatar = "/img/avatars/avatar2.png";
@@ -61,7 +66,7 @@ const MenuComponent = (props) => {
               <small className="text-lowercase">({user.username})</small>
               <br />
               <span className="badge badge-light">
-                {mainRole !== 'admin'
+                {mainRole !== "admin"
                   ? mainRole === "ventas"
                     ? "Ventas"
                     : "Optometrista"

@@ -29,6 +29,8 @@ export default function useUser({ children }) {
   });
   // Functions
   const setUserData = (data) => {
+      if(!data) return;
+
       const toSave = {
         isLogged: data.isLogged ?? user.isLogged,
         idUser: data.id,
@@ -82,17 +84,15 @@ export default function useUser({ children }) {
       setUserData(initialSession);
       sessionStorage.setItem("OrusSystem", "{}");
     },
-    getCurrentUser = () => {
-      return new Promise(async (done, reject) => {
-        return await api("user").then((data) => {
-          if (data.message === "Unauthenticated.") {
-            reject(null);
-            return history.push("/login");
-          }
+    getCurrentUser = async () => {
+      return await api("user").then((data) => {
+        
+        if (data.message === "Unauthenticated.") {
+          return history.push("/login");
+        }
 
-          return done(data.data);
-        });
-      });
+        return data.data;
+      });;
     },
     getNotifications = async () => {
       const user = await getCurrentUser().catch(() => {
@@ -107,6 +107,9 @@ export default function useUser({ children }) {
 
   useEffect(() => {
     getCurrentUser().then((data) => {
+      console.log(data);
+
+      if(!data) return;
       setUserData({ ...data, isLogged: true });
     });
   }, []);

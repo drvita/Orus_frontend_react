@@ -1,11 +1,11 @@
 import { useState, useContext } from "react";
 
 import moment from "moment";
-// import PaymentsDetails from "../Sales/views/reportPaymentsDetails";
-// import ReportPays from "../Sales/views/reportPays";
-// import ReportBank from "../Sales/views/reportBank";
+import PaymentsDetails from "../Sales/views/reportPaymentsDetails";
+import ReportPays from "../Sales/views/reportPays";
+import ReportBank from "../Sales/views/reportBank";
 import Filters from "./Filters";
-// import BoxCut from "./boxCut";
+import BoxCut from "./boxCut";
 
 import { AuthContext } from "../../context/AuthContext";
 
@@ -62,33 +62,31 @@ const Dashboard = () => {
         <div className="col-lg-4 col-md-12">
           <div className="row">
             <div className="col-lg-12 col-md-12">
-              {/* <BoxCut ventas={ventas} /> */}
+              <BoxCut ventas={state.ventas} />
             </div>
           </div>
           <div className="row">
             <div className="col-lg-12 col-md-12">
-              {/* <ReportPays
-                  data={data}
+              <ReportPays
                   filters={filtersState}
-                  changeState={this.changeState}
-                /> */}
+                  changeState={changeAllState}
+                />
             </div>
           </div>
         </div>
         <div className="col-lg-8 col-md-12">
           <div className="row">
             <div className="col-lg-4 col-md-12">
-              {/* <ReportBank
-                  data={data}
+              <ReportBank
                   filters={filtersState}
-                  changeState={this.changeState}
-                /> */}
+                  changeState={changeAllState}
+                />
             </div>
             <div className="col-lg-8 col-md-12">
-              {/* <PaymentsDetails
+              <PaymentsDetails
                   filters={filtersState}
-                  changeState={this.changeState}
-                /> */}
+                  changeState={changeAllState}
+                />
             </div>
           </div>
         </div>

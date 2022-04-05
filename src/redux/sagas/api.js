@@ -21,6 +21,7 @@ export async function api(url, method = "GET", body, controller = null) {
   }
   if (controller) param.signal = controller.signal;
 
+  //console.log("PRUEBAAAAA",`${PORT}://${HOST}/api/${url}`)
 
   return await fetch(`${PORT}://${HOST}/api/${url}`, param)
     .then(async (res) => {

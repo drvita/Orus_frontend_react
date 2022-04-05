@@ -19,17 +19,16 @@ import Main from "./layouts/Main";
 
 export default function Routers() {
   const { auth } = useContext(AuthContext);
-  console.log("[DEBUG] Auth:", auth);
 
   return (
-    <ConfigProvider>
-      <Switch>
-        {auth?.isLogged ? (
-          <Main>
-            <Route
-              exact
-              path="/"
-              render={(props) => {
+    <Switch>
+        {auth.isLogged ? (
+           <ConfigProvider>
+              <Main>
+                <Route
+                  exact
+                  path="/"
+                  render={(props) => {
                 switch (auth.roles) {
                   case "doctor":
                     return <Exam {...props} />;
@@ -89,14 +88,22 @@ export default function Routers() {
                 <NotifyAllShow {...props} data={data} page={this.handlePage} />
               )}
             /> */}
+            
           </Main>
+            </ConfigProvider>
         ) : (
-          <Redirect to="/login" />
+          console.log("[DEBUG] Auth:", auth)
         )}
 
         <Route path="/login" render={(props) => <Login />} />
         <Route component={NotFound} />
-      </Switch>
-    </ConfigProvider>
+    </Switch>
   );
 }
+
+
+/**
+ * 
+ * return ();
+ * 
+ */

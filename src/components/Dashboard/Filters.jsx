@@ -3,12 +3,14 @@ import { ConfigContext } from "../../context/ConfigContext";
 
 export default function Filters({ filters, changeState }) {
   const { currentUser, branch_id, date_end, date_start } = filters;
+
   const [state, setState] = useState({
     branch_id,
     user: currentUser.id,
     date_start,
     date_end,
   });
+  
   const config = useContext(ConfigContext);
   const branches = config.data.filter((c) => c.name === "branches");
   const users = [];

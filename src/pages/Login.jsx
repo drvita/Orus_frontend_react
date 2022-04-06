@@ -34,16 +34,29 @@ export default function Login(props) {
     });
     auth
       .setSession({ email: state.email, password: state.password })
-      .then((data) => {
+      .then((res) => {
         setState({
           ...state,
           load: false,
         });
 
-        if (!data.status) {
-          // TODO: create alerts
+        if (!res.status) {
+          let message = res.data.message;
+
+          if (res.data?.errors) {
+            message = res.data?.errors[Object.keys(res.data.errors)[0]][0];
+          }
+
+          window.Swal.fire({
+            icon: "error",
+            text: message,
+            showConfirmButton: false,
+            timer: 3500,
+            position: "top",
+          });
           return;
         }
+
         history.push("/");
       });
   };

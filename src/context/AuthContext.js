@@ -29,7 +29,7 @@ export default function useUser({ children }) {
   });
   // Functions
   const setUserData = (data) => {
-      if(!data) return;
+      if (!data) return;
 
       const toSave = {
         isLogged: data.isLogged ?? user.isLogged,
@@ -39,7 +39,7 @@ export default function useUser({ children }) {
         rol: 2,
         email: data.email,
         token: data.token ?? user.token,
-        branch: data.branch.data,
+        branch: { ...data.branch.data, id: data.branch.id },
         roles: data.roles[0],
         permissions: data.permissions,
       };
@@ -80,19 +80,24 @@ export default function useUser({ children }) {
           };
         });
     },
-    outSession = () => {
-      setUserData(initialSession);
-      sessionStorage.setItem("OrusSystem", "{}");
+    outSession = async () => {
+      return await api("user/logout", "POST")
+        .then((data) => {
+          setUser(initialSession);
+          sessionStorage.setItem("OrusSystem", "{}");
+
+          return true;
+        })
+        .catch((err) => console.error("[Server] When close session:", err));
     },
     getCurrentUser = async () => {
       return await api("user").then((data) => {
-        
         if (data.message === "Unauthenticated.") {
           return history.push("/login");
         }
 
         return data.data;
-      });;
+      });
     },
     getNotifications = async () => {
       const user = await getCurrentUser().catch(() => {
@@ -103,20 +108,47 @@ export default function useUser({ children }) {
       if (!user) return [];
 
       return user.unreadNotifications;
+    },
+    setNotifications = async (payload) => {
+      if (typeof payload !== "object") {
+        return {
+          status: false,
+          message: "Payload should be object",
+        };
+      }
+
+      return await api("user/readAllNotifications", "POST", payload).then(
+        (result) => {
+          const count = parseInt(payload.id) < 0 ? "Todas" : 1;
+
+          if (result.success) {
+            console.log("[Orus System] Notificaciones marcadas leidas:", count);
+            return true;
+          }
+
+          return false;
+        }
+      );
     };
 
   useEffect(() => {
     getCurrentUser().then((data) => {
       console.log(data);
 
-      if(!data) return;
+      if (!data) return;
       setUserData({ ...data, isLogged: true });
     });
-  }, []);
+  }, [user.isLogged]);
 
   return (
     <AuthContext.Provider
-      value={{ auth: user, setSession: session, outSession, getNotifications }}
+      value={{
+        auth: user,
+        setSession: session,
+        outSession,
+        getNotifications,
+        setNotifications,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,25 +1,23 @@
-import { useContext, useState } from "react";
-// import { connect } from "react-redux";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useLocation } from "react-router-dom";
+import { useContext, useState, useEffect } from "react";
 import moment from "moment";
-// import { configActions } from "../../redux/config";
-// import { userActions } from "../../redux/user";
 import Modal from "../../layouts/modal";
 import { AuthContext } from "../../context/AuthContext";
 import { ConfigContext } from "../../context/ConfigContext";
 
 export default function BreadcrumbComponent() {
-  const { auth: currentUser } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const config = useContext(ConfigContext);
-  const HOST = config.host;
-  const namePage = "Name page";
+  const active = useLocation().pathname.replace("/", "");
+  const namePage = active ? active : "dashboard";
+  const currentBranch = auth.branch;
   const [state, setState] = useState({
     showChangeBranchs: false,
     date: moment().format("LLLL"),
-    selectBranch: "",
+    branchSelect: currentBranch.id,
   });
-  const { name: USER_NAME, permissions } = currentUser;
   const branches = config.data.filter((c) => c.name === "branches");
-  const branch = currentUser.branch;
 
   // functions
   const handleChangeBranch = (e) => {
@@ -30,14 +28,11 @@ export default function BreadcrumbComponent() {
       showChangeBranchs: true,
     });
   };
-  const handleChangeSelectBranchs = ({ target }) => {
-    console.log("[DEBUG] Target:", target);
-  };
   const handleCancelModal = () => {
     setState({ ...state, showChangeBranchs: false });
   };
   const handleClickChangeBranch = () => {
-    const { selectBranch: branch_id } = state;
+    const { branchSelect: branch_id } = state;
 
     handleCancelModal();
 
@@ -47,42 +42,39 @@ export default function BreadcrumbComponent() {
       return;
     }
 
-    // window.Swal.fire({
-    //   text: "El cambio de sucursal, necesita volver a cargar la pagina",
-    //   icon: "question",
-    //   showCancelButton: true,
-    //   confirmButtonColor: "#d33",
-    //   confirmButtonText: "Confirmar",
-    //   cancelButtonText: "Cancelar",
-    //   showLoaderOnConfirm: true,
-    // }).then(({ dismiss }) => {
-    //   if (!dismiss) {
-    //     _saveUser({
-    //       data: {
-    //         branch_id,
-    //       },
-    //       id: idUser,
-    //       currentUser: idUser,
-    //     });
-    //     setTimeout(() => document.location.reload(), 1500);
-    //     return true;
-    //   }
-    // });
+    window.Swal.fire({
+      text: "¿Realmente desea cambiarse de sucursal?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Confirmar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        console.log("[DEBUG] Branch select:", branch_id);
+        // TODO: create change branch in context config
+        window.location.reload();
+        return true;
+      }
+    });
   };
-  const getHtmlBody = (branches, currentBranch) => {
-    const { selectBranch: branchState } = state;
+  const getHtmlBody = () => {
+    const { branchSelect } = state;
 
     return (
       <div className="form-group">
         <label>Seleccione la sucursal</label>
         <select
           className="form-control text-capitalize"
-          onChange={handleChangeSelectBranchs}
-          value={branchState ? branchState : currentBranch}
+          onChange={({ target }) =>
+            setState({ ...state, branchSelect: parseInt(target.value) })
+          }
+          defaultValue={currentBranch?.id}
         >
           {branches.map((branch) => (
             <option key={branch.id} value={branch.id}>
-              {branch.name}
+              {branch.data.name}
             </option>
           ))}
         </select>
@@ -91,6 +83,7 @@ export default function BreadcrumbComponent() {
             className="btn btn-default"
             type="button"
             onClick={handleClickChangeBranch}
+            disabled={branchSelect === currentBranch?.id ? true : false}
           >
             Cambiar
           </button>
@@ -98,6 +91,10 @@ export default function BreadcrumbComponent() {
       </div>
     );
   };
+
+  useEffect(() => {
+    console.log("[DEBUG] useEffect:", currentBranch);
+  }, [active]);
 
   return (
     <div className="content-header">
@@ -115,7 +112,10 @@ export default function BreadcrumbComponent() {
               title="conectado a"
             >
               <i className="mr-1 fas fa-wifi text-success"></i>
-              {HOST}
+              {config.server.host}
+              {config.server.port && config.server.port !== "80"
+                ? `:${config.server.port}`
+                : null}
             </small>
             <small
               className="p-2 mt-1 ml-1 badge badge-secondary text-capitalize"
@@ -123,16 +123,16 @@ export default function BreadcrumbComponent() {
               title="Almacenando en"
             >
               <i className="mr-1 fas fa-server text-success"></i>
-              {permissions.includes("auth.changeBranch") ? (
+              {auth.permissions.includes("auth.changeBranch") ? (
                 <a
                   href="#link"
                   className="text-white"
                   onClick={handleChangeBranch}
                 >
-                  {branch.name}
+                  {currentBranch.name}
                 </a>
               ) : (
-                branch.name
+                currentBranch.name
               )}
             </small>
             <small
@@ -140,12 +140,12 @@ export default function BreadcrumbComponent() {
               alt="Usuario conectado"
               title="Usuario conectado"
             >
-              <i className="mr-1 fas fa-user text-info"></i> {USER_NAME}
+              <i className="mr-1 fas fa-user text-info"></i> {auth.username}
             </small>
             {state.showChangeBranchs ? (
               <Modal
                 title="Cambiar de sucursal"
-                body={getHtmlBody(branches, branch.id)}
+                body={getHtmlBody()}
                 handleCancel={handleCancelModal}
               />
             ) : null}

@@ -74,7 +74,7 @@ module.exports = {
         return null;
       });
 
-      if (Object.keys(param).length) {
+      if (paramKeys.length) {
         paramString = new URLSearchParams(param);
         url += `?${paramString}`;
       }

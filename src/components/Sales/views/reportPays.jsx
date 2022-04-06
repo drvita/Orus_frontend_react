@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
+
+
 import { dollarUS } from "../../../utils/current";
 import { api } from "../../../utils/url";
 
+
 export default function ReportPays({filters, changeState}){
 
-  const { currentUser, branch_id, date_end, date_start } = filters;
+  const { currentUser, /* branch_id */ date_end, date_start } = filters;
+
 
   const [state, setState] = useState({
       rol: currentUser.roles,
@@ -14,14 +18,13 @@ export default function ReportPays({filters, changeState}){
       char:null,
   }) 
   
+ 
    const getSaleDay = async ()=>{
-    console.log("Getting sale day");
 
-    //TODO: cambiar date_start fija por variable de filters
     const {data, message} = await api(`payments?date_start=${date_start}&date_end=${date_end}&itemsPage=12&page=1&type=methods`)
 
     if(data){
-      //console.log(data)
+
       var donutChartCanvas = window.$("#donutChart").get(0).getContext("2d"),
           donutOptions = {
           maintainAspectRatio: true,
@@ -85,7 +88,6 @@ export default function ReportPays({filters, changeState}){
       });
       
     }else{
-      console.log("No data");
       window.Swal.fire({
         title: "Error!",
         text: "Ups!\n Hubo un error al descargar las ventas",
@@ -97,9 +99,10 @@ export default function ReportPays({filters, changeState}){
     }
 }
 
+
 useEffect(()=>{
   getSaleDay();
-},[])
+},[filters])
 
 
   return(

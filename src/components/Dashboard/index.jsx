@@ -13,20 +13,25 @@ const Dashboard = () => {
   const { auth } = useContext(AuthContext);
 
   const [state, setState] = useState({
-    currentUser: auth,
+    currentUser: 0,
     date_start: moment().startOf("week").format("YYYY-MM-DD"),
     date_end: moment().format("YYYY-MM-DD"),
-    branch_id: "",
+    branch_id: auth.branch.id,
     ventas: 0,
     filterData: {},
   });
+
+
   const filtersState = {
     currentUser: state.currentUser,
     date_start: state.date_start,
     date_end: state.date_end,
     branch_id: state.branch_id,
   };
-  const changeAllState = (obj) => {
+
+
+  const changeAllState = (obj) => { 
+    console.log("Filters Seted up",obj);
     if (typeof obj !== "object") {
       console.error("[Orus system] The filters data not is a object:", obj);
       return;

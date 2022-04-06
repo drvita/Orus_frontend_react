@@ -1,12 +1,11 @@
-import React, { Component, useState, useEffect } from "react";
-//import { api, getUrl } from "../../../redux/sagas/api";
+import React, {useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
 import {api} from '../../../utils/url';
 
 
-export default function ReportPaymentsDetails({filters, changeState}){
+export default function ReportPaymentsDetails({filters}){
 
-  const { currentUser, branch_id, date_end, date_start } = filters;
+  const { /* currentUser */ /* branch_id */ date_end, date_start } = filters;
 
 
   const [state, setState] = useState({
@@ -18,11 +17,9 @@ export default function ReportPaymentsDetails({filters, changeState}){
 
 
   const getSaleDay = async () => {
-    //TODO: cambiar la fecha por la variable del filtro
     const {data, message, meta} = await api(`payments?date_start=${date_start}&date_end=${date_end}&itmesPage=25&page=${state.page}`);
 
       if (data) {
-        //console.log(data);
       setState({
         ...state,
         payments: data,
@@ -41,14 +38,16 @@ export default function ReportPaymentsDetails({filters, changeState}){
 
   };
 
-
+  useEffect(()=>{
+    getSaleDay();
+  },[filters]);
 
   useEffect(()=>{
     getSaleDay();
   },[state.page]);
 
+
   
-  console.log("[DEBUG] meta:", state.meta);
 
   return(
     <div className="card card-success card-outline">

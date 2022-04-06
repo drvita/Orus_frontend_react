@@ -1,31 +1,35 @@
 import { useContext, useState } from "react";
 import { ConfigContext } from "../../context/ConfigContext";
+import useUsers from "../../hooks/useUsers";
 
 export default function Filters({ filters, changeState }) {
   const { currentUser, branch_id, date_end, date_start } = filters;
 
   const [state, setState] = useState({
-    branch_id,
-    user: currentUser.id,
+    branch_id: branch_id,
+    currentUser: currentUser,
     date_start,
     date_end,
   });
   
   const config = useContext(ConfigContext);
-  const branches = config.data.filter((c) => c.name === "branches");
-  const users = [];
+  
 
   // Functions
   const sendDataFilter = () => {
     const { currentUser, branch_id, date_end, date_start } = state;
-
     changeState({
       branch_id,
-      user: currentUser,
+      currentUser,
       date_start,
       date_end,
     });
   };
+
+  const usersHook = useUsers();
+
+  const branches = config.data.filter((c) => c.name === "branches");
+
 
   return (
     <div className="border-bottom pb-3 mb-4">
@@ -70,15 +74,13 @@ export default function Filters({ filters, changeState }) {
                 <option value="">
                   {currentUser === "" ? "Usuarios" : "Todos"}
                 </option>
-                {users.map((user) => {
+                {usersHook.listUsers.map((user) => {
                   if (!branch_id) {
-                    return (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    );
+                    return(
+                      <option key={user.id} value={user.id}>{user.name}</option>
+                    )
                   } else {
-                    return user.branch.id.toString() === branch_id ? (
+                    return user.branch.id === branch_id && user.roles[0] !== 'doctor' ? (
                       <option key={user.id} value={user.id}>
                         {user.name}
                       </option>

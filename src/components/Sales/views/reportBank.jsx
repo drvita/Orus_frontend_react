@@ -1,11 +1,11 @@
-import React, { Component, useState, useEffect } from "react";
-//import { api, getUrl } from "../../../redux/sagas/api";
+import React, {useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
 import {api} from "../../../utils/url";
 
 export default function ReportBank ({filters}){
 
-  const { currentUser, branch_id, date_end, date_start } = filters;
+  const { /* currentUser */ /* branch_id */ date_end, date_start } = filters;
+
 
   const [state, setState] = useState({
       listBank: [],
@@ -16,11 +16,8 @@ export default function ReportBank ({filters}){
 
   const getSaleDay = async () => {
 
-    //TODO: pasarle el parámetro de date_start a la petición
-    const {data, message, meta} = await api(`payments?date_start=${date_start}&date_end=${date_end}&itmesPage=12&page=1&type=banks`);
-
+    const {data, message, /* meta */} = await api(`payments?date_start=${date_start}&date_end=${date_end}&itmesPage=12&page=1&type=banks`);
     if (data) {
-      console.log(data);
       setState({
         data: data,
         load: false,
@@ -37,7 +34,7 @@ export default function ReportBank ({filters}){
 
   useEffect(()=>{
     getSaleDay();
-  },[])
+  },[filters])
 
   return(
 
@@ -88,4 +85,3 @@ export default function ReportBank ({filters}){
 
   );
 }
-

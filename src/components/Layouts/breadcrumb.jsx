@@ -12,11 +12,14 @@ export default function BreadcrumbComponent() {
   const active = useLocation().pathname.replace("/", "");
   const namePage = active ? active : "dashboard";
   const currentBranch = auth.branch;
+
+  
   const [state, setState] = useState({
     showChangeBranchs: false,
     date: moment().format("LLLL"),
     branchSelect: currentBranch.id,
   });
+
   const branches = config.data.filter((c) => c.name === "branches");
 
   // functions

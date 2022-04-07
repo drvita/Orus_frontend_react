@@ -6,7 +6,6 @@ export default function* handleGetListConfig({ payload: options }) {
   try {
     const url = getUrl("config", null, options),
       result = yield call(api, url);
-
     if (result.data) {
       yield put(configActions.setListConfig(result));
     } else if (result.message) {

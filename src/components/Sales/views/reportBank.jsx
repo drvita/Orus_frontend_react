@@ -1,10 +1,10 @@
-import React, {useState, useEffect } from "react";
+import {useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
-import {api} from "../../../utils/url";
+import {api, setUrl} from "../../../utils/url";
 
 export default function ReportBank ({filters}){
 
-  const { /* currentUser */ /* branch_id */ date_end, date_start } = filters;
+  const { user ,branch_id, date_end, date_start } = filters;
 
 
   const [state, setState] = useState({
@@ -14,16 +14,32 @@ export default function ReportBank ({filters}){
       load: false,
   })
 
+
   const getSaleDay = async () => {
 
-    const {data, message, /* meta */} = await api(`payments?date_start=${date_start}&date_end=${date_end}&itmesPage=12&page=1&type=banks`);
+    const bankFilters = {
+      ... filters,
+    }
+
+    bankFilters.itemsPage = 12;
+    bankFilters.page = state.page;
+    bankFilters.type = "banks";
+
+    const bankUrls = setUrl('payments', null, bankFilters);
+
+    console.log("REPORT BANK URL", bankUrls);
+    
+    const {data, message, meta} = await api(bankUrls);
+
     if (data) {
       setState({
+        ... state,
         data: data,
         load: false,
       });
     } else if (message) {
       setState({
+        ...state,
         load: false,
       });
       console.error("[Orus system] Error in report payments details:", message);

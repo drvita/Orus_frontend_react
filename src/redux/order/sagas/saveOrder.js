@@ -3,6 +3,8 @@ import { api, getUrl } from "../../sagas/api";
 import { orderActions } from "../.";
 
 export default function* handleSaveOrder({ payload }) {
+  console.log("DEBUG SAVE ORDER payload", payload);
+
   try {
     const { data: DATA = {}, id: ID = null, options: OPT = {} } = payload,
       url = getUrl("orders", ID),

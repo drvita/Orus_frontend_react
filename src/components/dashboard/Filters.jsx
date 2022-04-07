@@ -3,11 +3,11 @@ import { ConfigContext } from "../../context/ConfigContext";
 import useUsers from "../../hooks/useUsers";
 
 export default function Filters({ filters, changeState }) {
-  const { currentUser, branch_id, date_end, date_start } = filters;
+  const { user, branch_id, date_end, date_start } = filters;
 
   const [state, setState] = useState({
     branch_id: branch_id,
-    currentUser: currentUser,
+    user: user,
     date_start,
     date_end,
   });
@@ -17,10 +17,10 @@ export default function Filters({ filters, changeState }) {
 
   // Functions
   const sendDataFilter = () => {
-    const { currentUser, branch_id, date_end, date_start } = state;
+    const { user, branch_id, date_end, date_start } = state;
     changeState({
       branch_id,
-      currentUser,
+      user,
       date_start,
       date_end,
     });
@@ -66,13 +66,13 @@ export default function Filters({ filters, changeState }) {
             <div className="col-lg-12">
               <select
                 className="form-control text-capitalize"
-                defaultValue={currentUser}
+                defaultValue={user}
                 onChange={({ target }) =>
-                  setState({ ...state, currentUser: target.value })
+                  setState({ ...state, user: target.value })
                 }
               >
                 <option value="">
-                  {currentUser === "" ? "Usuarios" : "Todos"}
+                  {user === "" ? "Usuarios" : "Todos"}
                 </option>
                 {usersHook.listUsers.map((user) => {
                   if (!branch_id) {
@@ -80,7 +80,7 @@ export default function Filters({ filters, changeState }) {
                       <option key={user.id} value={user.id}>{user.name}</option>
                     )
                   } else {
-                    return user.branch.id === branch_id && user.roles[0] !== 'doctor' ? (
+                    return /* user.branch.id === branch_id && */ user.roles[0] !== 'doctor' ? (
                       <option key={user.id} value={user.id}>
                         {user.name}
                       </option>

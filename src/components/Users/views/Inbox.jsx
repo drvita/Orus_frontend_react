@@ -20,6 +20,8 @@ function InboxComponent(props) {
     _setUser,
     _getUser,
   } = props;
+
+  
   //States
   const [userSelected, setUserSelected] = useState({ id: 0 });
   //Functions
@@ -119,11 +121,13 @@ function InboxComponent(props) {
                       <span>{user.email}</span>
                     </td>
                     <td className="mailbox-name text-dark text-bold text-truncate">
+                     {/*  {console.log(user.roles)} */}
                       {helper.getNameRoles(user.roles)}
                     </td>
                     <td className="text-truncate">
                       <span className="text-capitalize">
-                        {user.branch.values.name}
+                        {/* {user.branch.values.name} */}
+                        {user.branch.data.name}
                       </span>
                     </td>
                     {options.orderby === "created_at" ? (

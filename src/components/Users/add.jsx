@@ -212,8 +212,9 @@ class UserAddComponent extends Component {
                           onChange={({ target }) => this.catchInputs(target)}
                         >
                           {branchs.map((branch) => (
-                            <option value={branch.id} key={branch.id}>
-                              {branch.values.name}
+                            <option value={branch.id} key={branch.id}>          
+                              {/* {branch.values.name} */}
+                              {branch.data.name}
                             </option>
                           ))}
                         </select>

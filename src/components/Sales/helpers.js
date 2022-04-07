@@ -32,6 +32,8 @@ const getMethodName = (status) => {
       return "otro";
   }
 };
+
+//TODO:GET SESSION(ERROR VARIABLE)//
 const getSession = () => {
   return (
     Math.random().toString(36).substring(2, 16) +

@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-
-
 import { dollarUS } from "../../../utils/current";
-import { api } from "../../../utils/url";
+import { api, setUrl } from "../../../utils/url";
 
 
 export default function ReportPays({filters, changeState}){
 
-  const { currentUser, /* branch_id */ date_end, date_start } = filters;
+  const { user, branch_id, date_end, date_start } = filters;
 
 
   const [state, setState] = useState({
-      rol: currentUser.roles,
+      rol: user.roles,
       total: 0,
       efectivo: 0,
       page: 1,
@@ -20,6 +18,18 @@ export default function ReportPays({filters, changeState}){
   
  
    const getSaleDay = async ()=>{
+
+    const newFiltersPays = {
+      ...filters,
+    };
+
+    newFiltersPays.itemsPage = 12;
+    newFiltersPays.page = state.page;
+    newFiltersPays.type = "methods";
+
+    const reportPaysUrl = setUrl('payments', null, newFiltersPays);
+
+    console.log("REPORT PAYS URL", reportPaysUrl);
 
     const {data, message} = await api(`payments?date_start=${date_start}&date_end=${date_end}&itemsPage=12&page=1&type=methods`)
 
@@ -56,6 +66,7 @@ export default function ReportPays({filters, changeState}){
         }
 
         setState({
+          ...state,
           total,
           efectivo,
         });

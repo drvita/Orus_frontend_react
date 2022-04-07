@@ -13,7 +13,7 @@ const Dashboard = () => {
   const { auth } = useContext(AuthContext);
 
   const [state, setState] = useState({
-    currentUser: 0,
+    user: 0,
     date_start: moment().startOf("week").format("YYYY-MM-DD"),
     date_end: moment().format("YYYY-MM-DD"),
     branch_id: auth.branch.id,
@@ -23,7 +23,7 @@ const Dashboard = () => {
 
 
   const filtersState = {
-    currentUser: state.currentUser,
+    user: state.user,
     date_start: state.date_start,
     date_end: state.date_end,
     branch_id: state.branch_id,

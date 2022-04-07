@@ -7,6 +7,7 @@ import { examActions } from "../../redux/exam/";
 import { contactActions } from "../../redux/contact";
 import AddOrNew from "./add";
 import { defaultActions } from "../../redux/default/";
+import { configActions } from "../../redux/config";
 
 class IndexExamComponent extends Component {
   constructor(props) {
@@ -29,7 +30,8 @@ class IndexExamComponent extends Component {
     };
   }
   componentDidMount() {
-    const { match, _getExam, _setPageName } = this.props,
+    const { match, _getExam, _setPageName,  } = this.props,
+
       { id } = match.params;
 
     if (id) {
@@ -40,6 +42,9 @@ class IndexExamComponent extends Component {
       });
     }
     _setPageName("consultorio");
+
+    this.getBranchs()
+    
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
@@ -81,8 +86,10 @@ class IndexExamComponent extends Component {
   }
 
   render() {
-    const { meta, loading, exams, branches } = this.props,
-      { newOrEdit, options, examSelected, exam } = this.state;
+    const { meta, loading, exams, branches} = this.props
+
+    const branchesFiltered = branches.filter(element => element.name === 'branches'),
+    { newOrEdit, options, examSelected, exam } = this.state;
 
     return (
       <div className="row">
@@ -196,9 +203,9 @@ class IndexExamComponent extends Component {
                   onChange={this.handleSetSelectOptions}
                 >
                   <option value="all">-- Todas --</option>
-                  {branches.map((branch) => (
+                  {branchesFiltered.map((branch) => (
                     <option value={branch.id} key={branch.id}>
-                      {branch.values.name}
+                      {branch.data.name}
                     </option>
                   ))}
                 </select>
@@ -547,13 +554,26 @@ class IndexExamComponent extends Component {
       });
     });
   };
+
   getExams() {
     const { _getListExams } = this.props,
       { options } = this.state;
 
     _getListExams(options);
   }
+
+  getBranchs() {
+    const options = {
+        page: 1,
+        name: "branches",
+        itemsPage: 10,
+      },
+      { _getListBranches } = this.props;
+    _getListBranches(options);
+  };
+
 }
+
 
 const mapStateToProps = ({ exam, config }) => {
     return {
@@ -574,6 +594,7 @@ const mapStateToProps = ({ exam, config }) => {
     _setContact: contactActions.setContact,
     _setMessages: examActions.setMessagesExam,
     _setPageName: defaultActions.changeNamePage,
+    _getListBranches: configActions.getListConfig,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(IndexExamComponent);

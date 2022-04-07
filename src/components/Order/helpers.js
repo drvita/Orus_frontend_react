@@ -62,6 +62,8 @@ const handleDeleteOrder = (order, options, _delete) => {
     return false;
   }
 };
+
+//TODO:HANDLE SAVE ORDER//
 const handleSaveOrder = (id, data, options, _save, _erase) => {
   window.Swal.fire({
     title: "Almacenamiento",
@@ -75,6 +77,7 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
     cancelButtonText: "Cancelar",
     showLoaderOnConfirm: true,
   }).then(({ dismiss }) => {
+    console.log("[DEBUG HELPER data]",data);
     if (!dismiss && _save) {
       _save({
         data,

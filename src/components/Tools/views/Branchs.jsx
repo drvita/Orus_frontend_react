@@ -20,14 +20,18 @@ export default function BranchsListComponent() {
   };
 
   //Actions
-  const handleUpdateConfig = ({ id, values }) => {
+  const handleUpdateConfig = ({ id, values, data }) => {
       setData({
         ...data,
         showForm: true,
         id,
-        name: values.name.toString().toLowerCase(),
-        address: values.address.toString().toLowerCase(),
-        phone: values.phone.toString().toLowerCase(),
+        //TODO: Destructuramoos data, Cambiamos values por data, validamos si existen [name, address, phone] evitar toString //
+        name: data.name?.toString().toLowerCase(),
+        address: data.address?.toString().toLowerCase(),
+        phone: data.phone?.toString().toLowerCase(),
+        /* name: values.name.toString().toLowerCase(), */
+        /* address: values.address.toString().toLowerCase(), */
+        /* phone: values.phone.toString().toLowerCase(), */
       });
     },
     handleCancelForm = () =>
@@ -134,9 +138,11 @@ export default function BranchsListComponent() {
               <tbody>
                 {list.map((branch) => (
                   <tr key={branch.id}>
-                    <td className="text-capitalize">{branch.values.name}</td>
+                    {/* {console.log(branch.values.name)} */}
+                    <td className="text-capitalize">{branch.data.name}</td>
                     <td className="text-truncate text-capitalize">
-                      {branch.values.address ?? "--"}
+                      {/* {console.log(branch)} */}
+                      {branch.data.address ?? "--"}
                     </td>
                     <td className="text-right">
                       {/* <button

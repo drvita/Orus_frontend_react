@@ -1,11 +1,11 @@
 import React, {useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
-import {api} from '../../../utils/url';
+import {api, setUrl} from '../../../utils/url';
 
 
 export default function ReportPaymentsDetails({filters}){
 
-  const { /* currentUser */ /* branch_id */ date_end, date_start } = filters;
+  const { user, branch_id, date_end, date_start } = filters;
 
 
   const [state, setState] = useState({
@@ -15,10 +15,22 @@ export default function ReportPaymentsDetails({filters}){
     load: false,
   })
 
-
   const getSaleDay = async () => {
-    const {data, message, meta} = await api(`payments?date_start=${date_start}&date_end=${date_end}&itmesPage=25&page=${state.page}`);
 
+    const paymentsFilters = {
+      ... filters,
+    }
+
+    paymentsFilters.itemsPage = 12;
+    paymentsFilters.page = state.page;
+
+    const paymentsUrl = setUrl('payments', null, paymentsFilters);
+
+    console.log("REPORT PAYMENTS DETAILS URL", paymentsUrl);
+
+    const {data, message, meta} = await api(paymentsUrl);
+
+    
       if (data) {
       setState({
         ...state,
@@ -29,6 +41,7 @@ export default function ReportPaymentsDetails({filters}){
     } else if (message) {
       console.log(message);
       setState({
+        ...state,
         load: false,
       });
 

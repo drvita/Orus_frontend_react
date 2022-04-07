@@ -438,6 +438,10 @@ class AsistentComponent extends Component {
       items: JSON.stringify(items),
       status: 0,
     };
+
+    //TODO:ORDER DATA//
+    console.log("[DEBUG ORDER data]",data);
+
     if (exam_id) data.exam_id = parseInt(exam_id);
     //Save
     helper.handleSaveOrder(null, data, options, _saveOrder, () =>

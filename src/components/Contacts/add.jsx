@@ -7,7 +7,7 @@ import Personal from "./views/add_personal";
 import Domicilio from "./views/add_domicilio";
 import Telefono from "./views/add_telefonos";
 import ListSales from "../Sales/views/listOfSales_delete";
-import Dashboard from "../Dashboard/dashboard_customer";
+import Dashboard from "../dashboard/dashboard_customer";
 import ListBrands from "../Store/views/listOfBrands";
 import ListOrders from "../Order/views/listOfOrders";
 import CardExams from "../Exam/views/card_list_add";
@@ -59,7 +59,7 @@ class AddContactComponent extends Component {
     const { msg_exams, msg_contact, contact, _setMsgExam, _getContact } =
         this.props,
       { load } = this.state;
-      
+
     if (props.msg_exams.length !== msg_exams.length && msg_exams.length) {
       msg_exams.forEach((msg) => {
         const { type, text } = msg;
@@ -146,8 +146,6 @@ class AddContactComponent extends Component {
         updated,
       } = contact,
       hasTel = Object.values(telnumbers).filter((tel) => tel.length === 10);
-
-
 
     return (
       <>
@@ -388,7 +386,6 @@ class AddContactComponent extends Component {
     //window.location.href = `/consultorio/${id}`;
   };
   handleChangeData = (key, value) => {
-
     const { verification } = this.state,
       dataObject = helper.handleGetDataObject(key, value, verification);
 

@@ -1,11 +1,12 @@
 export async function api(url, method = "GET", body, controller = null) {
+  const SS = sessionStorage.getItem("OrusSystem"),
+    { token: TOKEN = "" } = JSON.parse(SS ? SS : "{}");
   const LS = localStorage.getItem("OrusSystem"),
     {
-      port: PORT = window.location.protocol.toString().replace(":", ""),
+      protocol: PROTOCOL = "http",
       host: HOST = window.location.hostname.toString(),
-      token: TOKEN = "",
+      port: PORT = "80",
     } = JSON.parse(LS ? LS : "{}");
-    
 
   const param = {
     method,
@@ -21,16 +22,16 @@ export async function api(url, method = "GET", body, controller = null) {
   }
   if (controller) param.signal = controller.signal;
 
-  //console.log("PRUEBAAAAA",`${PORT}://${HOST}/api/${url}`)
+  console.log("[DEBUG] API url:", `${PROTOCOL}://${HOST}:${PORT}/api/${url}`);
 
-  return await fetch(`${PORT}://${HOST}/api/${url}`, param)
+  return await fetch(`${PROTOCOL}://${HOST}:${PORT}/api/${url}`, param)
     .then(async (res) => {
       if (res.status >= 200 && res.status < 300) {
         for (var pair of res.headers.entries()) {
           if (pair[0] === "content-type") {
             switch (pair[1]) {
               case "application/json":
-                return await res.json();          
+                return await res.json();
               case "text/csv; charset=UTF-8":
                 return await res.blob();
               default:

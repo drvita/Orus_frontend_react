@@ -6,7 +6,7 @@ import LabOrder from "./views/labOrder";
 import Bicelacion from "./views/bicelacionOrder";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
-import Dashboard from "../Dashboard/dashboard_customer";
+import Dashboard from "../dashboard/dashboard_customer";
 import ShowPaymentsComponent from "../Sales/views/ShowPayments";
 //Actions
 import helper from "./helpers";
@@ -44,7 +44,7 @@ class EditOrderComponent extends Component {
 
     if (props.order.id !== order.id && order.id) {
       this.getOrderData();
-    } 
+    }
   }
   componentWillUnmount() {
     const { _setOrder, _setSale } = this.props;
@@ -100,11 +100,11 @@ class EditOrderComponent extends Component {
                   <h5>
                     <i className="mr-1 fas fa-user"></i>
                     <span className="text-capitalize">{paciente.nombre}</span>
-                    {this.props.role === 'admin' ? (
+                    {this.props.role === "admin" ? (
                       <span className="float-right mailbox-read-time">
                         Fecha de nacimiento:{" "}
                         {fNacimiento ? (
-                          <>  
+                          <>
                             {fNacimiento.format("LL")}
                             <label className="ml-1">
                               ({moment().diff(fNacimiento, "years")} años)
@@ -392,7 +392,7 @@ class EditOrderComponent extends Component {
       status,
       observaciones,
       items: JSON.stringify(itemsToJson),
-      branch_id:currentUser.branch.id,
+      branch_id: currentUser.branch.id,
     };
     if (lab_id) data.lab_id = lab_id;
     //Validity

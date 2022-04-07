@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { api } from "../utils/url";
+import { api, setUrl } from "../utils/url";
 
 export const AuthContext = createContext(null);
 
@@ -82,7 +82,7 @@ export default function useUser({ children }) {
     },
     outSession = async () => {
       return await api("user/logout", "POST")
-        .then((data) => {
+        .then(() => {
           setUser(initialSession);
           sessionStorage.setItem("OrusSystem", "{}");
 
@@ -101,7 +101,7 @@ export default function useUser({ children }) {
     },
     getNotifications = async () => {
       const user = await getCurrentUser().catch(() => {
-        outSession();
+        // outSession();
         return null;
       });
 
@@ -129,13 +129,26 @@ export default function useUser({ children }) {
           return false;
         }
       );
+    },
+    setBranch = async (branch) => {
+      const url = setUrl("users", user.idUser);
+      const update = {
+        branch_id: branch,
+        name: user.name,
+        username: user.username,
+      };
+
+      return await api(url, "PUT", update).then((result) => {
+        if (result.data && !result.message) return true;
+        else return false;
+      });
     };
 
   useEffect(() => {
     getCurrentUser().then((data) => {
-      console.log(data);
-
       if (!data) return;
+
+      console.log("[Orus system] Session was created");
       setUserData({ ...data, isLogged: true });
     });
   }, [user.isLogged]);
@@ -148,6 +161,7 @@ export default function useUser({ children }) {
         outSession,
         getNotifications,
         setNotifications,
+        setBranch,
       }}
     >
       {children}

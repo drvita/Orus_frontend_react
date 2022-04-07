@@ -1,10 +1,9 @@
 import { useContext } from "react";
-import { Link, useLocation, useHistory } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function MenuComponent() {
   const { auth, outSession } = useContext(AuthContext);
-  const history = useHistory();
   const handleLogOut = (e) => {
     e.preventDefault();
 
@@ -19,7 +18,10 @@ export default function MenuComponent() {
     }).then(({ dismiss }) => {
       if (!dismiss) {
         outSession();
-        return history.push("/login");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
     });
   };

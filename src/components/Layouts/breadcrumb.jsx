@@ -1,25 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation } from "react-router-dom";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import moment from "moment";
 import Modal from "../../layouts/modal";
 import { AuthContext } from "../../context/AuthContext";
 import { ConfigContext } from "../../context/ConfigContext";
 
 export default function BreadcrumbComponent() {
-  const { auth } = useContext(AuthContext);
+  const { auth, setBranch } = useContext(AuthContext);
   const config = useContext(ConfigContext);
   const active = useLocation().pathname.replace("/", "");
   const namePage = active ? active : "dashboard";
   const currentBranch = auth.branch;
-
-  
   const [state, setState] = useState({
     showChangeBranchs: false,
     date: moment().format("LLLL"),
     branchSelect: currentBranch.id,
   });
-
   const branches = config.data.filter((c) => c.name === "branches");
 
   // functions
@@ -41,7 +38,7 @@ export default function BreadcrumbComponent() {
 
     if (!branch_id) {
       console.error("[Orus System][ERROR] branch id is empty");
-      // window.location.reload();
+      window.location.reload();
       return;
     }
 
@@ -55,10 +52,19 @@ export default function BreadcrumbComponent() {
       showLoaderOnConfirm: true,
     }).then(({ dismiss }) => {
       if (!dismiss) {
-        console.log("[DEBUG] Branch select:", branch_id);
-        // TODO: create change branch in context config
-        window.location.reload();
-        return true;
+        setBranch(branch_id).then((res) => {
+          if (res) {
+            window.location.reload();
+          } else {
+            window.Swal.fire({
+              icon: "error",
+              text: "Lo sentimos, hay un problema de comunicacion con el servidor. Comfirme el IP.",
+              showConfirmButton: false,
+              timer: 3000,
+              position: "top center",
+            });
+          }
+        });
       }
     });
   };
@@ -94,10 +100,6 @@ export default function BreadcrumbComponent() {
       </div>
     );
   };
-
-  useEffect(() => {
-    console.log("[DEBUG] useEffect:", currentBranch);
-  }, [active]);
 
   return (
     <div className="content-header">

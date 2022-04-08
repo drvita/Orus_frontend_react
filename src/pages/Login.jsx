@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState, useRef } from "react";
 import { useHistory } from "react-router-dom";

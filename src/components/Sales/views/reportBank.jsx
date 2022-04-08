@@ -1,39 +1,34 @@
-import {useState, useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
-import {api, setUrl} from "../../../utils/url";
+import { api, setUrl } from "../../../utils/url";
 
-export default function ReportBank ({filters}){
-
-  const { user ,branch_id, date_end, date_start } = filters;
-
-
+export default function ReportBank({ filters }) {
   const [state, setState] = useState({
-      listBank: [],
-      page: 1,
-      data: [],
-      load: false,
-  })
-
+    listBank: [],
+    page: 1,
+    data: [],
+    load: false,
+  });
 
   const getSaleDay = async () => {
-
     const bankFilters = {
-      ... filters,
-    }
+      ...filters,
+    };
 
     bankFilters.itemsPage = 12;
     bankFilters.page = state.page;
     bankFilters.type = "banks";
 
-    const bankUrls = setUrl('payments', null, bankFilters);
+    const bankUrls = setUrl("payments", null, bankFilters);
 
     console.log("REPORT BANK URL", bankUrls);
-    
-    const {data, message, meta} = await api(bankUrls);
+
+    const { data, message } = await api(bankUrls);
 
     if (data) {
       setState({
-        ... state,
+        ...state,
         data: data,
         load: false,
       });
@@ -44,16 +39,14 @@ export default function ReportBank ({filters}){
       });
       console.error("[Orus system] Error in report payments details:", message);
       window.Swal.fire("Fallo de conexion", message, "error");
-    } 
+    }
   };
 
-
-  useEffect(()=>{
+  useEffect(() => {
     getSaleDay();
-  },[filters])
+  }, [filters]);
 
-  return(
-
+  return (
     <div className="card card-success card-outline">
       <div className="card-header">
         <h3 className="card-title text-success">
@@ -97,7 +90,6 @@ export default function ReportBank ({filters}){
           </ul>
         )}
       </div>
-  </div>
-
+    </div>
   );
 }

@@ -1,35 +1,38 @@
 import { useContext, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
+
 import { ConfigContext } from "../../context/ConfigContext";
 import useUsers from "../../hooks/useUsers";
 
 export default function Filters({ filters, changeState }) {
   const { user, branch_id, date_end, date_start } = filters;
-
   const [state, setState] = useState({
     branch_id: branch_id,
     user: user,
     date_start,
     date_end,
   });
-  
   const config = useContext(ConfigContext);
-  
-
+  const usersHook = useUsers();
+  const branches = config.data.filter((c) => c.name === "branches");
   // Functions
   const sendDataFilter = () => {
-    const { user, branch_id, date_end, date_start } = state;
-    changeState({
-      branch_id,
-      user,
-      date_start,
-      date_end,
-    });
-  };
-
-  const usersHook = useUsers();
-
-  const branches = config.data.filter((c) => c.name === "branches");
-
+      const { user, branch_id, date_end, date_start } = state;
+      changeState({
+        branch_id,
+        user,
+        date_start,
+        date_end,
+      });
+    },
+    handleChangeDate = (field, date) => {
+      setState({
+        ...state,
+        [field]: moment(date).format("YYYY-MM-DD"),
+      });
+    };
 
   return (
     <div className="border-bottom pb-3 mb-4">
@@ -71,16 +74,17 @@ export default function Filters({ filters, changeState }) {
                   setState({ ...state, user: target.value })
                 }
               >
-                <option value="">
-                  {user === "" ? "Usuarios" : "Todos"}
-                </option>
+                <option value="">{user === "" ? "Usuarios" : "Todos"}</option>
                 {usersHook.listUsers.map((user) => {
                   if (!branch_id) {
-                    return(
-                      <option key={user.id} value={user.id}>{user.name}</option>
-                    )
+                    return (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    );
                   } else {
-                    return /* user.branch.id === branch_id && */ user.roles[0] !== 'doctor' ? (
+                    return /* user.branch.id === branch_id && */ user
+                      .roles[0] !== "doctor" ? (
                       <option key={user.id} value={user.id}>
                         {user.name}
                       </option>
@@ -96,13 +100,13 @@ export default function Filters({ filters, changeState }) {
               De:
             </label>
             <div className="col-lg-10">
-              <input
-                type="date"
+              <DatePicker
                 className="form-control"
-                defaultValue={date_start}
-                onChange={({ target }) =>
-                  setState({ ...state, date_start: target.value })
+                selected={
+                  new Date(moment(state.date_start).format("DD-MM-YYYY"))
                 }
+                onSelect={(date) => handleChangeDate("date_start", date)}
+                onChange={(date) => handleChangeDate("date_start", date)}
               />
             </div>
           </div>
@@ -112,13 +116,11 @@ export default function Filters({ filters, changeState }) {
               a:
             </label>
             <div className="col-lg-10">
-              <input
-                type="date"
+              <DatePicker
                 className="form-control"
-                defaultValue={date_end}
-                onChange={({ target }) =>
-                  setState({ ...state, date_end: target.value })
-                }
+                selected={new Date(moment(state.date_end).format("DD-MM-YYYY"))}
+                onSelect={(date) => handleChangeDate("date_end", date)}
+                onChange={(date) => handleChangeDate("date_end", date)}
               />
             </div>
           </div>

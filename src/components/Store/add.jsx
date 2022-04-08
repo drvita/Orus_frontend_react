@@ -151,6 +151,8 @@ class StoreAddComponent extends Component {
       inBranches,
     } = this.state;
 
+    console.log("DEBUG BRANCH DEFAULT", branch_default)
+
     const { list, loadStore, loadCategory, loadContact } = this.props,
       LOADING = loadStore || loadCategory || loadContact,
       idsCategory = category.code
@@ -674,7 +676,7 @@ class StoreAddComponent extends Component {
 
 
 
-const mapStateToProps = ({ storeItem, category, contact }) => {
+const mapStateToProps = ({ storeItem, category, contact, config }) => {
     return {
       list: storeItem.list,
       item: storeItem.item,

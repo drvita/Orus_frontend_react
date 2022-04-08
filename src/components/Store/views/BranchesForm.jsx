@@ -4,7 +4,8 @@ import BranchesFormInputs from "./BranchesFormInputs";
 export default function BranchesForm({ store_item_id, branch_default }) {
   const { list } = useSelector((state) => state.config);
   const { item } = useSelector((state) => state.storeItem);
-  const branches = [];
+  //const branches = [];
+  const branches = useSelector(state => state.config.branches)
   const inBranches = item && item.inBranches ? item.inBranches : [];
 
   if (list && list.length) {
@@ -33,7 +34,7 @@ export default function BranchesForm({ store_item_id, branch_default }) {
           <div className="card" key={branch.id}>
             <div className="card-header">
               <h5 className="card-title text-primary text-capitalize">
-                <i className="fas fa-store-alt mr-1"></i> {branch.name}
+                <i className="fas fa-store-alt mr-1"></i> {branch.data.name}
               </h5>
             </div>
             <div className="card-body">

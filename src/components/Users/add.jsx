@@ -15,7 +15,8 @@ class UserAddComponent extends Component {
 
     this.state = {
       id: 0,
-      role: "",
+      //TODO 1: inicia role con el valor finpt//
+      role: "admin",
       roles: [],
       permissions: [],
       username: "",
@@ -32,6 +33,7 @@ class UserAddComponent extends Component {
     };
   }
   componentDidMount() {
+    console.log("Nuevo usuario component montado--------")
     const { user } = this.props;
     if (user && user.id) {
       this.setState({
@@ -54,6 +56,7 @@ class UserAddComponent extends Component {
   }
 
   render() {
+
     let {
         load,
         id,
@@ -70,6 +73,7 @@ class UserAddComponent extends Component {
         validUserName,
         validUserEmail,
       } = this.state,
+      //TODO 2: obtiene role del state//
       send =
         !load && validUserName && name.length && validUserEmail ? false : true,
       { branchs } = this.props;
@@ -186,7 +190,8 @@ class UserAddComponent extends Component {
                         <select
                           className="custom-select"
                           name="role"
-                          value={role}
+                          //TODO 3: asign role al defaultValue del input(anteriormente value)//
+                          defaultValue={role}
                           onChange={({ target }) => this.catchInputs(target)}
                         >
                           <option value="admin">Administrador</option>
@@ -426,6 +431,8 @@ class UserAddComponent extends Component {
       });
       return false;
     }
+
+    console.log("DEBUG NEW USER", data);
 
     helper.handleSave(id, data, options, _saveUser);
   };

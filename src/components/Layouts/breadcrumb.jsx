@@ -5,6 +5,9 @@ import moment from "moment";
 import Modal from "../../layouts/modal";
 import { AuthContext } from "../../context/AuthContext";
 import { ConfigContext } from "../../context/ConfigContext";
+import { useDispatch, useSelector } from "react-redux";
+import actions from '../../redux/config/actions';
+import loginActions from '../../redux/user/actions';
 
 export default function BreadcrumbComponent() {
   const { auth, setBranch } = useContext(AuthContext);
@@ -17,7 +20,19 @@ export default function BreadcrumbComponent() {
     date: moment().format("LLLL"),
     branchSelect: currentBranch.id,
   });
+
+  
   const branches = config.data.filter((c) => c.name === "branches");
+
+
+  const dispatch = useDispatch();
+
+  //Set Auth data and Branches to redux//
+  dispatch(loginActions.setLoggin(auth));
+  dispatch(actions.setBranches(branches));
+
+
+  console.log('[DEBUG AUTH]', auth);
 
   // functions
   const handleChangeBranch = (e) => {

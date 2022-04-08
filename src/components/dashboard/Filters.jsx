@@ -103,7 +103,7 @@ export default function Filters({ filters, changeState }) {
               <DatePicker
                 className="form-control"
                 selected={
-                  new Date(moment(state.date_start).format("DD-MM-YYYY"))
+                  new Date(moment(state.date_start).format("MM-DD-YYYY"))
                 }
                 onSelect={(date) => handleChangeDate("date_start", date)}
                 onChange={(date) => handleChangeDate("date_start", date)}
@@ -118,7 +118,7 @@ export default function Filters({ filters, changeState }) {
             <div className="col-lg-10">
               <DatePicker
                 className="form-control"
-                selected={new Date(moment(state.date_end).format("DD-MM-YYYY"))}
+                selected={new Date(moment(state.date_end).format("MM-DD-YYYY"))}
                 onSelect={(date) => handleChangeDate("date_end", date)}
                 onChange={(date) => handleChangeDate("date_end", date)}
               />

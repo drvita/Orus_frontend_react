@@ -105,30 +105,20 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
     }
 
     case TYPE.SET_LOGGIN: {
-      const LS = localStorage.getItem("OrusSystem"),
-        { data, token } = payload,
-        { ls = {} } = {
-          ls: JSON.parse(LS ? LS : "{}"),
-        };
-      let branch;
-      if (data.branch && data.branch.id) {
-        branch = {
-          id: data.branch.id,
-          ...data.branch.values,
-        };
-      }
+      const { data, token = "" } = payload;
+      console.log("XD",payload);
+      const ls = DEFAULT_STATE.dataLoggin;
 
       ls.isLogged = true;
-      ls.idUser = data.id;
-      ls.username = data.username;
-      ls.name = data.name;
-      ls.rol = data.rol;
-      ls.roles = data.roles;
-      ls.permissions = data.permissions;
-      ls.email = data.email;
-      ls.token = token ? token : ls.token;
-      ls.branch = branch;
-      localStorage.setItem("OrusSystem", JSON.stringify(ls));
+      ls.idUser = payload.idUser;
+      ls.username = payload.username;
+      ls.name = payload.name;
+      ls.roles = [payload.roles];
+      ls.permissions = payload.permissions;
+      ls.email = payload.email;
+      ls.token = payload.token;
+      ls.branch = payload.branch;
+      //localStorage.setItem("OrusSystem", JSON.stringify(ls));
 
       if (!state.dataLoggin.isLogged)
         console.log("[Orus System] Acceso a sistema exitoso", ls.username);

@@ -8,9 +8,14 @@ export default function BranchesSelect({
   //functions
   setBranchId,
 }) {
+
+
   const { list } = useSelector((state) => state.config);
   const [branch, setBranch] = useState(branch_default);
-  const branches = [];
+  //const branches = [];
+
+  //TODO:pasar branches comentado al map//
+  const branches = useSelector(state => state.config.branches)
   //Functions
   const handleChangeBranch = ({ value }) => setBranch(parseInt(value));
 
@@ -45,7 +50,7 @@ export default function BranchesSelect({
         <option value="0">-- Ninguna --</option>
         {branches.map((branch) => (
           <option value={branch.id} key={branch.id}>
-            {branch.name}
+            {branch.data.name}
           </option>
         ))}
       </select>

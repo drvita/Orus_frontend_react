@@ -258,7 +258,7 @@ export default function Login() {
                         className="form-control"
                         placeholder="Servidor"
                         autoComplete="off"
-                        onChange={({ target }) => handleChangeServer(target)}
+                        onChange={({ target }) => setState({...state, txtHost: target.value.toLowerCase()})}
                         defaultValue={state.txtHost}
                         onKeyPress={({ key }) =>
                           handleKeyEnter(key, handleChangeServer)

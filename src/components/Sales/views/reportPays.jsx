@@ -1,24 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
 import { api, setUrl } from "../../../utils/url";
 
-
-export default function ReportPays({filters, changeState}){
-
-  const { user, branch_id, date_end, date_start } = filters;
-
+export default function ReportPays({ filters, changeState }) {
+  const { user, date_end, date_start } = filters;
 
   const [state, setState] = useState({
-      rol: user.roles,
-      total: 0,
-      efectivo: 0,
-      page: 1,
-      char:null,
-  }) 
-  
- 
-   const getSaleDay = async ()=>{
+    rol: user.roles,
+    total: 0,
+    efectivo: 0,
+    page: 1,
+    char: null,
+  });
 
+  const getSaleDay = async () => {
     const newFiltersPays = {
       ...filters,
     };
@@ -27,16 +23,17 @@ export default function ReportPays({filters, changeState}){
     newFiltersPays.page = state.page;
     newFiltersPays.type = "methods";
 
-    const reportPaysUrl = setUrl('payments', null, newFiltersPays);
+    const reportPaysUrl = setUrl("payments", null, newFiltersPays);
 
     console.log("REPORT PAYS URL", reportPaysUrl);
 
-    const {data, message} = await api(`payments?date_start=${date_start}&date_end=${date_end}&itemsPage=12&page=1&type=methods`)
+    const { data, message } = await api(
+      `payments?date_start=${date_start}&date_end=${date_end}&itemsPage=12&page=1&type=methods`
+    );
 
-    if(data){
-
+    if (data) {
       var donutChartCanvas = window.$("#donutChart").get(0).getContext("2d"),
-          donutOptions = {
+        donutOptions = {
           maintainAspectRatio: true,
           responsive: true,
         },
@@ -97,8 +94,7 @@ export default function ReportPays({filters, changeState}){
         data: donutData,
         options: donutOptions,
       });
-      
-    }else{
+    } else {
       window.Swal.fire({
         title: "Error!",
         text: "Ups!\n Hubo un error al descargar las ventas",
@@ -108,35 +104,33 @@ export default function ReportPays({filters, changeState}){
 
       return message;
     }
-}
+  };
 
+  useEffect(() => {
+    getSaleDay();
+  }, [filters]);
 
-useEffect(()=>{
-  getSaleDay();
-},[filters])
-
-
-  return(
+  return (
     <div className="card card-success card-outline">
-        <div className="card-header">
-          <h3 className="card-title text-success">
-            {state.rol
-              ? "Mis ventas del dia por metodo de pago"
-              : "Ventas del dia por metodo de pago"}
-          </h3>
-        </div>
-        <div className="card-body">
-          <canvas id="donutChart"></canvas>
-          <p>
-            {!state.rol ? (
-              <React.Fragment>
-                Venta: <strong>{dollarUS.format(state.total)}</strong>
-                <br />
-              </React.Fragment>
-            ) : null}
-            Efectivo: <strong>{dollarUS.format(state.efectivo)}</strong>
-          </p>
-        </div>
+      <div className="card-header">
+        <h3 className="card-title text-success">
+          {state.rol
+            ? "Mis ventas del dia por metodo de pago"
+            : "Ventas del dia por metodo de pago"}
+        </h3>
       </div>
-  )
-} 
+      <div className="card-body">
+        <canvas id="donutChart"></canvas>
+        <p>
+          {!state.rol ? (
+            <React.Fragment>
+              Venta: <strong>{dollarUS.format(state.total)}</strong>
+              <br />
+            </React.Fragment>
+          ) : null}
+          Efectivo: <strong>{dollarUS.format(state.efectivo)}</strong>
+        </p>
+      </div>
+    </div>
+  );
+}

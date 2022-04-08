@@ -3,10 +3,7 @@ import { createContext, useState, useEffect } from "react";
 import { api } from "../utils/url";
 
 export const ConfigContext = createContext(null);
-const LS = localStorage.getItem("OrusSystem");
-const storage = LS ? JSON.parse(LS) : {};
-
-
+const storage = JSON.parse(localStorage.getItem("OrusSystem"));
 const initialState = {
   data: [],
   meta: {},
@@ -15,6 +12,24 @@ const initialState = {
 
 export default function useConfig({ children }) {
   const [state, setstate] = useState(initialState);
+  // Functions
+  const setStorage = (storage) => {
+    if (typeof storage !== "object") {
+      return false;
+    }
+
+    const newStorage = {
+      ...state.server,
+      ...storage,
+    };
+
+    setstate({
+      ...state,
+      server: newStorage,
+    });
+    localStorage.setItem("OrusSystem", JSON.stringify(newStorage));
+    return true;
+  };
 
   useEffect(() => {
     api("config?itemsPage=100", "GET").then((response) => {
@@ -22,6 +37,7 @@ export default function useConfig({ children }) {
         ...state,
         data: response.data,
         meta: response.meta,
+        setStorage,
       });
     });
   }, []);

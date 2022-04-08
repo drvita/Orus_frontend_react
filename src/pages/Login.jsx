@@ -8,15 +8,22 @@ export default function Login() {
   const history = useHistory();
   const auth = useContext(AuthContext);
   const LS = localStorage.getItem("OrusSystem");
-  const storage = LS ? JSON.parse(LS) : {};
+  const defaultStorage = {
+    protocol: window.location.protocol.replace(":", ""),
+    host: window.location.hostname,
+    port: window.location.port,
+  };
+  const storage = LS ? JSON.parse(LS) : defaultStorage;
+  const server = `${storage.protocol + "://" ?? ""}${storage.host ?? ""}${
+    ":" + storage.port ?? ""
+  }`;
   const [state, setState] = useState({
     load: false,
     email: "",
     password: "",
-    txtHost: `${storage.protocol}://${storage.host}:${storage.port}`,
-    hostShow: false,
+    txtHost: server,
+    hostShow: server ? false : true,
   });
-
   const COMPANY = "Optica Madero";
   const inputEmail = useRef();
   const inputPassword = useRef();
@@ -128,12 +135,23 @@ export default function Login() {
     }
   };
   const handleChangeServer = () => {
-    const { txtHost } = state,
-      server = txtHost.split(":");
+    const { txtHost } = state;
+
+    if (!txtHost) {
+      return window.Swal.fire({
+        icon: "error",
+        text: "El campo de servidor no puede estar vacio",
+        showConfirmButton: false,
+        timer: 2500,
+        position: "top center",
+      });
+    }
+
+    const server = txtHost.split(":");
     let host, port, protocol;
 
     if (server.length === 2) {
-      protocol = "http";
+      protocol = window.location.protocol.replace(":", "");
       host = server[0].replace("//", "");
       port = server[1];
     } else if (server.length === 3) {
@@ -141,9 +159,9 @@ export default function Login() {
       host = server[1].replace("//", "");
       port = server[2];
     } else {
-      protocol = "http";
+      protocol = window.location.protocol.replace(":", "");
       host = window.location.hostname;
-      port = "";
+      port = window.location.port;
     }
 
     localStorage.setItem(
@@ -193,6 +211,8 @@ export default function Login() {
           <div className="card-body login-card-body">
             <p className="login-box-msg text-uppercase">
               <span className="p-2 badge badge-secondary">{COMPANY}</span>
+              <br />
+              <small className="text-muted text-lowercase">{`<${state.txtHost}>`}</small>
             </p>
             <form autoComplete="off">
               <div className="mb-0 input-group">
@@ -245,9 +265,10 @@ export default function Login() {
                 <div className="my-3 col-12">
                   <a
                     href="#tools"
-                    onClick={() =>
-                      setState({ ...state, hostShow: !state.hostShow })
-                    }
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setState({ ...state, hostShow: !state.hostShow });
+                    }}
                     className="text-muted"
                   >
                     <i className="mx-1 fas fa-wifi"></i> Servidor
@@ -259,7 +280,12 @@ export default function Login() {
                         className="form-control"
                         placeholder="Servidor"
                         autoComplete="off"
-                        onChange={({ target }) => setState({...state, txtHost: target.value.toLowerCase()})}
+                        onChange={({ target }) =>
+                          setState({
+                            ...state,
+                            txtHost: target.value.toLowerCase(),
+                          })
+                        }
                         defaultValue={state.txtHost}
                         onKeyPress={({ key }) =>
                           handleKeyEnter(key, handleChangeServer)

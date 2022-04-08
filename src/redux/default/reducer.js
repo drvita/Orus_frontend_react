@@ -30,7 +30,7 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       console.log("[Orus System] cambiando datos de host:", PORT, HOST);
       ls.port = PORT;
       ls.host = HOST;
-      localStorage.setItem("OrusSystem", JSON.stringify(ls));
+      // localStorage.setItem("OrusSystem", JSON.stringify(ls));
       return {
         ...state,
         port: PORT,
@@ -52,7 +52,7 @@ const default_reducer = (state = DEFAULT_STATE, action) => {
       ls.port = state.port;
       ls.host = state.host;
       ls.company = state.company;
-      localStorage.setItem("OrusSystem", JSON.stringify(ls));
+      // localStorage.setItem("OrusSystem", JSON.stringify(ls));
       return {
         ...state,
         success: undefined,

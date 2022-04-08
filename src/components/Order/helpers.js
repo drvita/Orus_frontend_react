@@ -77,7 +77,7 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
     cancelButtonText: "Cancelar",
     showLoaderOnConfirm: true,
   }).then(({ dismiss }) => {
-    console.log("[DEBUG HELPER data]",data);
+    console.log("[DEBUG HELPER data]", data);
     if (!dismiss && _save) {
       _save({
         data,
@@ -106,15 +106,15 @@ const getDataTemporary = (field) => {
     };
 
     localToSave.orders.push(data);
-    localStorage.setItem("OrusSystem", JSON.stringify(localToSave));
+    // localStorage.setItem("OrusSystem", JSON.stringify(localToSave));
   },
   removeDataTemporary = (id, fn) => {
-    const local = getDataTemporary(),
-      data = {
-        ...local,
-        orders: local.orders.filter((item) => item.id !== id),
-      };
-    localStorage.setItem("OrusSystem", JSON.stringify(data));
+    // const local = getDataTemporary(),
+    //   data = {
+    //     ...local,
+    //     orders: local.orders.filter((item) => item.id !== id),
+    //   };
+    // localStorage.setItem("OrusSystem", JSON.stringify(data));
     if (fn) fn();
   },
   getDataOneItem = (id) => {

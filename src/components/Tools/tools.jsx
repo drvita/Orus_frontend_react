@@ -176,7 +176,7 @@ class ToolsComponent extends Component {
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
     varLocalStorage.company = this.state.company;
     varLocalStorage.host = this.state.server;
-    localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage));
+    // localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage));
   };
   clickSaveUser = () => {
     //Variables en localStorage
@@ -184,7 +184,7 @@ class ToolsComponent extends Component {
     varLocalStorage.email = this.state.email;
     varLocalStorage.name = this.state.name;
     varLocalStorage.username = this.state.username;
-    localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage));
+    // localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage));
   };
   catchInputs = (e) => {
     const { name, value } = e.target;

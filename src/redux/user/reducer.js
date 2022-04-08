@@ -105,8 +105,6 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
     }
 
     case TYPE.SET_LOGGIN: {
-      const { data, token = "" } = payload;
-      console.log("XD",payload);
       const ls = DEFAULT_STATE.dataLoggin;
 
       ls.isLogged = true;
@@ -147,7 +145,6 @@ const loggin_state = (state = DEFAULT_STATE, action) => {
       delete ls.roles;
       delete ls.permissions;
 
-      localStorage.setItem("OrusSystem", JSON.stringify(ls));
       console.log("[Orus System] Cierre de sistema exitoso");
       return {
         ...state,

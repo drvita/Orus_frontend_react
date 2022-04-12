@@ -42,7 +42,6 @@ export default function PrintSaleComponent({
 
   return (
     <>
-      {console.log("------------",branch)}
       <button
         className={`btn btn-${btn} ml-2 d-print-none`}
         disabled={!payments.length}

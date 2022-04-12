@@ -17,6 +17,7 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
     details: null,
     auth: null,
   });
+
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
       let val = value;
@@ -84,9 +85,15 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
         metodoname: helpers.getMethodName(data.metodopago),
         total: forPaid < data.total ? forPaid : data.total,
       });
+
       payments.forEach((pay) => (pagado += pay.total));
 
+
+      console.log("PAGADO====", pagado);
+      console.log("POR PAGAR===", forPaid);
+
       _close();
+
       dispatch(
         saleActions.saveSale({
           id: sale.id,
@@ -98,6 +105,48 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
           },
         })
       );
+
+      /* if(pagado === forPaid)
+      {
+        //Guardamos la venta//
+        console.log("Venta guardada");
+        dispatch(
+          saleActions.saveSale({
+            id: sale.id,
+            data: {
+              ...sale,
+              pagado,
+              items: JSON.stringify(sale.items),
+              payments: JSON.stringify(payments),
+            },
+          })
+        );
+
+      }else{
+
+        //Accedemos al locaStorage(payments) y guardamos el payment realizado//
+        console.log("Abono realizado, informacion del abono");
+
+
+        let currentSale = JSON.parse(localStorage.getItem('OrusSales'));
+        let currentSalePayments = currentSale.payments;
+
+        console.log("CURRENT SALE", currentSale);
+
+        currentSale.total = forPaid
+        currentSale.subtotal = forPaid
+        currentSale.abonado = currentSale.abonado + pagado
+
+        currentSalePayments.push(payments);
+
+        localStorage.setItem('OrusSales', JSON.stringify(currentSale));
+
+        if(currentSale.abonado === currentSale.total){
+          //Guardar la venta//
+        }
+      } */
+
+    
     },
     handleSubmitForm = (e) => {
       e.preventDefault();

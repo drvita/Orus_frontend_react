@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+
+
 //Components
 import InputSearchItem from "./views/InputSearchItem";
 import DiscountBtnComponent from "./views/DiscountBtn";
@@ -10,6 +12,8 @@ import PaymentBtnComponent from "./views/PaymentBtn";
 import EraseBtn from "./views/EraseSaleBtn";
 import CustomerBtnComponent from "./views/CustomerBtn";
 import SalesDetailsTableComponent from "./views/SalesDetailsTable";
+
+
 //Actions
 import { saleActions } from "../../redux/sales";
 import helpers from "./helpers";
@@ -17,64 +21,45 @@ import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
 export default function IndexSalesComponent() {
+
   //Store Redux
-  const { sales } = useSelector((state) => state),
-    { sale, loading } = sales,
-    dispatch = useDispatch();
+  const { sales } = useSelector((state) => state);
+  const { sale, loading } = sales;
+  const dispatch = useDispatch();
+
+  //Cargar alguna venta del hook(pendiente)
+
+
   //Store Local
   const [data, setData] = useState({
     pagado: 0,
   });
-  //Functions
-  const handleDeleteSale = () => setData({ pagado: 0 }),
-    handleSetSale = (res) => {
-      setData({
-        ...data,
-        ...res,
-      });
-    },
-    handlePrint = () => {
-      const path = window.location.pathname;
 
-      if (path !== "/notas") {
-        return false;
-      }
+  const [currentSale, setCurrentSale] = useState({
+    customer: sale.customer,
+    items: sale.items,
+    session: sale.session,
+    descuento: sale.descuento,
+    subtotal: sale.subtotal,
+    total: sale.total,
+    payments: sale.payments,
+  });
 
-      helpers.confirm("Cerrar la venta actual", () => {
-        dispatch(
-          saleActions.setSale({
-            ...DEFAULT_STATE_SALES.sale,
-            session: helpers.getSession(),
-            created_at: new Date(),
-          })
-        );
-        handleDeleteSale();
-      });
-    };
 
   useEffect(() => {
-    const toSave = {
-      customer: sale.customer,
-      items: sale.items,
-      session: sale.session,
-      descuento: sale.descuento,
-      subtotal: sale.subtotal,
-      total: sale.total,
-      payments: sale.payments,
-    };
+
     let sum = 0,
       pagado = 0;
 
-    sale.items.forEach((item) => (sum += item.subtotal));
-    sale.payments.forEach((pay) => (pagado += pay.total));
+    currentSale.items.forEach((item) => (sum += item.subtotal));
+    currentSale.payments.forEach((pay) => (pagado += pay.total));
 
-    if (sum !== sale.subtotal || data.pagado !== pagado) {
-      sale.subtotal = sum;
-      sale.total = sum - sale.descuento;
-      sale.pagado = pagado;
-      // console.log("[DEBUG] sale start:", sale);
-      if (sale.id) {
-        dispatch(saleActions.setSale(sale));
+    if (sum !== currentSale.subtotal || data.pagado !== pagado) {
+      currentSale.subtotal = sum;
+      currentSale.total = sum - currentSale.descuento;
+      currentSale.pagado = pagado;
+      if (currentSale.id) {
+        dispatch(saleActions.setSale(currentSale));
       }
 
       setData({
@@ -82,12 +67,11 @@ export default function IndexSalesComponent() {
       });
     }
 
-    localStorage.setItem("OrusSales", JSON.stringify(sale.id ? {} : toSave));
     window.addEventListener("afterprint", handlePrint);
-    //eslint-disable-next-line
-  }, [sale]);
+  }, [currentSale]);
 
   useEffect(() => {
+    console.log("SALES COMPONENT RENDERIZADO");
     dispatch(defaultActions.changeNamePage("punto de venta"));
 
     return () => {
@@ -103,12 +87,46 @@ export default function IndexSalesComponent() {
     //eslint-disable-next-line
   }, []);
 
-  const paid = sale.total <= data.pagado ? true : false;
+
+  console.log("REDUX SALE", currentSale);
+
+
+  //Functions
+
+  const handleDeleteSale = () => setData({ pagado: 0 }),
+
+
+    handleSetSale = (res) => {
+      setData({
+        ...data,
+        ...res,
+      });
+    },
+
+
+    handlePrint = () => {
+      const path = window.location.pathname;
+
+      if (path !== "/notas") {
+        return false;
+      }
+
+      helpers.confirm("Cerrar la venta actual", () => {
+        dispatch(
+          saleActions.setSale({
+            ...DEFAULT_STATE_SALES.currentSale,
+            session: helpers.getSession(),
+            created_at: new Date(),
+          })
+        );
+        handleDeleteSale();
+      });
+    };
+
+  const paid = currentSale.total <= data.pagado ? true : false;
 
   const btnDisabled =
-    sale.total - data.pagado > 0 && sale.descuento === 0 && data.pagado === 0
-      ? false
-      : true;
+  currentSale.total - data.pagado > 0 && currentSale.descuento === 0 && data.pagado === 0 ? false : true;
 
   return (
     <>
@@ -116,19 +134,19 @@ export default function IndexSalesComponent() {
         <div className="card-body pb-2 d-print-none">
           <nav className="row mb-2">
             <div className="col">
-              <CustomerBtnComponent sale={sale} setSale={handleSetSale} />
+              <CustomerBtnComponent sale={currentSale} setSale={handleSetSale} />
             </div>
             <div className="col">
               <label className="mx-1">Folio:</label>
-              <span className="mx-1">{sale.id ? sale.id : "Nuevo"}</span>
+              <span className="mx-1">{currentSale.id ? currentSale.id : "Nuevo"}</span>
               <label className="mx-1">Fecha:</label>
               <span className="mx-1">
-                {moment(sale.created_at).format("L")}
+                {moment(currentSale.created_at).format("L")}
               </span>
-              {sale.pedido ? (
+              {currentSale.pedido ? (
                 <>
                   <label className="mx-1">Pedido:</label>
-                  <span className="mx-1">{sale.pedido}</span>
+                  <span className="mx-1">{currentSale.pedido}</span>
                 </>
               ) : null}
             </div>
@@ -136,13 +154,14 @@ export default function IndexSalesComponent() {
             <div className="col-3">
               <div className="card-tools text-right">
                 <ListSalesBtn setSale={handleSetSale} />
+                  {/* TODO: verificar validacion */}
                 <DiscountBtnComponent
-                  sale={sale}
+                  sale={currentSale}
                   paid={paid}
                   btnDisabled={btnDisabled}
                 />
                 <EraseBtn
-                  sale={sale}
+                  sale={currentSale}
                   defaultState={DEFAULT_STATE_SALES}
                   erase={handleDeleteSale}
                 />
@@ -153,7 +172,7 @@ export default function IndexSalesComponent() {
             className="overflow-auto text-right p-0 border border-gray"
             style={{ height: "27rem" }}
           >
-            {sale.customer && sale.customer.id && (
+            {currentSale.customer && currentSale.customer.id && (
               <SalesDetailsTableComponent paid={paid} />
             )}
           </div>
@@ -161,10 +180,10 @@ export default function IndexSalesComponent() {
         <div className="card-footer">
           <div className="row">
             <div className="col d-print-none">
-              {sale.total ? (
+              {currentSale.total ? (
                 <>
                   <span className="text-lg">Total:</span>
-                  <label className="text-lg ml-1">${sale.total}</label>
+                  <label className="text-lg ml-1">${currentSale.total}</label>
                 </>
               ) : null}
             </div>
@@ -174,22 +193,23 @@ export default function IndexSalesComponent() {
                 <>
                   <span className="text-lg">Por pagar:</span>
                   <label className="text-lg ml-1">
-                    ${sale.total - data.pagado}
+                    ${currentSale.total - data.pagado}
                   </label>
                 </>
               )}
             </div>
 
             <div className="col-6 text-right">
-              <InputSearchItem sale={sale} />
+              <InputSearchItem sale={currentSale} />
               <PaymentBtnComponent
+              //TODO: verificar validacion//
                 sale={sale}
                 paid={paid}
-                forPaid={sale.total - data.pagado}
+                forPaid={currentSale.total - data.pagado}
               />
               <PrintSaleComponent
-                sale={sale}
-                order={sale.pedido}
+                sale={currentSale}
+                order={currentSale.pedido}
                 payed={data.pagado}
               />
             </div>

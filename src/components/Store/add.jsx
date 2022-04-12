@@ -151,8 +151,6 @@ class StoreAddComponent extends Component {
       inBranches,
     } = this.state;
 
-    console.log("DEBUG BRANCH DEFAULT", branch_default)
-
     const { list, loadStore, loadCategory, loadContact } = this.props,
       LOADING = loadStore || loadCategory || loadContact,
       idsCategory = category.code
@@ -163,7 +161,7 @@ class StoreAddComponent extends Component {
       readyToSave = category_id && code && name;
     } else {
       readyToSave = category_id && code && name && supplier && brand_id;
-    }
+    } 
 
     return (
       <div className="row">

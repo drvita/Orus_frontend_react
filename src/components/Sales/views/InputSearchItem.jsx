@@ -25,16 +25,24 @@ function InputSearchItem({
   const { session } = sale;
   //Functions
   const handleChangeTextSearch = ({ value }) => {
+    console.log("VALUES-->", value);
       setTextSearch(value);
     },
+
+
     handlePressEnter = (key) => {
       if (key === "Enter") {
         searchItem();
       }
     },
+
+
     searchItem = () => {
+      console.log("Producto de venta-->", textSearch);
       if (textSearch.length > 2) {
+        console.log("lenght mayor a 2");
         const codes = textSearch.split("*");
+        console.log("CODES", codes)
         let search = textSearch;
 
         if (codes.length === 2) {
@@ -45,12 +53,17 @@ function InputSearchItem({
         _getList({
           search,
         });
+        
         setTextSearch("");
       }
     },
+
+
     handleCloseModal = () => {
       setShowList(false);
     },
+
+
     makeItem = (data) => {
       return {
         id: 0,
@@ -68,6 +81,8 @@ function InputSearchItem({
         category: data.item.categoria ? data.item.categoria.id : 0,
       };
     },
+
+
     handleSelectItem = (data) => {
       const item = makeItem(data);
       _setList({

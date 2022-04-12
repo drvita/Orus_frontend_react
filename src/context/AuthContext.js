@@ -20,6 +20,7 @@ export default function useUser({ children }) {
     roles: "",
     permissions: [],
   };
+  
   const [user, setUser] = useState(() => {
     if (LS && LS !== "undefined") {
       initialSession = JSON.parse(LS);
@@ -27,6 +28,8 @@ export default function useUser({ children }) {
 
     return initialSession;
   });
+
+
   // Functions
   const setUserData = (data) => {
       if (!data) return;
@@ -47,6 +50,8 @@ export default function useUser({ children }) {
       setUser(toSave);
       sessionStorage.setItem("OrusSystem", JSON.stringify(toSave));
     },
+
+
     session = async (credentials) => {
       const { email, password } = credentials;
 
@@ -80,6 +85,8 @@ export default function useUser({ children }) {
           };
         });
     },
+
+
     outSession = async () => {
       return await api("user/logout", "POST")
         .then(() => {
@@ -90,6 +97,8 @@ export default function useUser({ children }) {
         })
         .catch((err) => console.error("[Server] When close session:", err));
     },
+
+
     getCurrentUser = async () => {
       return await api("user").then((data) => {
         if (data.message === "Unauthenticated.") {
@@ -99,6 +108,8 @@ export default function useUser({ children }) {
         return data.data;
       });
     },
+
+
     getNotifications = async () => {
       const user = await getCurrentUser().catch(() => {
         // outSession();
@@ -109,6 +120,8 @@ export default function useUser({ children }) {
 
       return user.unreadNotifications;
     },
+
+
     setNotifications = async (payload) => {
       if (typeof payload !== "object") {
         return {
@@ -130,6 +143,8 @@ export default function useUser({ children }) {
         }
       );
     },
+
+
     setBranch = async (branch) => {
       const url = setUrl("users", user.idUser);
       const update = {

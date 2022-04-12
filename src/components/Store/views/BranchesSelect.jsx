@@ -50,6 +50,7 @@ export default function BranchesSelect({
         <option value="0">-- Ninguna --</option>
         {branches.map((branch) => (
           <option value={branch.id} key={branch.id}>
+            {console.log("BRANCH-----",branch)}
             {branch.data.name}
           </option>
         ))}

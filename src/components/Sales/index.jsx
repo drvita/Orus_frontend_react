@@ -20,6 +20,9 @@ import helpers from "./helpers";
 import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
+
+
+
 export default function IndexSalesComponent() {
 
   //Store Redux
@@ -35,6 +38,7 @@ export default function IndexSalesComponent() {
     pagado: 0,
   });
 
+  
   const [currentSale, setCurrentSale] = useState({
     customer: sale.customer,
     items: sale.items,
@@ -47,6 +51,7 @@ export default function IndexSalesComponent() {
 
 
   useEffect(() => {
+
 
     let sum = 0,
       pagado = 0;
@@ -88,7 +93,7 @@ export default function IndexSalesComponent() {
   }, []);
 
 
-  console.log("REDUX SALE", currentSale);
+  //console.log("REDUX SALE", currentSale);
 
 
   //Functions

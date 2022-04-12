@@ -3,6 +3,9 @@ import { connect } from "react-redux";
 //Actions
 import { contactActions } from "../../../redux/contact/";
 
+//Custom Hook//
+import useContact from "../../../hooks/useContact";
+
 function SearchCustomerModal({
   customers,
   loading,
@@ -12,9 +15,17 @@ function SearchCustomerModal({
   handleClose: _close,
   handleSelect: _Select,
 }) {
+
   const [data, setData] = useState({
     textSearch: "",
   });
+
+
+  //TODO: revisar lo que regresa//
+  const customersData = useContact(data.textSearch);
+  console.log(customersData);
+  
+
   //Functions
   const handleClose = () => {
       if (_close) _close();
@@ -26,9 +37,14 @@ function SearchCustomerModal({
       });
     },
     handleKeyPressSearch = (key) => {
-      if (key === "Enter" && data.textSearch.length) searchCustomer();
+      if (key === "Enter" && data.textSearch.length) SearchCustomer();
     },
-    searchCustomer = () => {
+    SearchCustomer = () => {
+
+      //TODO:revisar el error al ejecutar el hook//
+      //const customersData = useContact(data.textSearch);
+      //console.log(customersData);
+
       if (data.textSearch.length > 2) {
         _getListContacts({
           search: data.textSearch,
@@ -84,7 +100,7 @@ function SearchCustomerModal({
                 <button
                   type="button"
                   className="btn btn-primary btn-sm"
-                  onClick={searchCustomer}
+                  onClick={SearchCustomer}
                 >
                   <i className="fas fa-search"></i>
                 </button>

@@ -6,7 +6,9 @@ import { api, setUrl } from "../utils/url";
 export const AuthContext = createContext(null);
 
 export default function useUser({ children }) {
+  
   const history = useHistory();
+
   const LS = sessionStorage.getItem("OrusSystem");
   let initialSession = {
     isLogged: false,

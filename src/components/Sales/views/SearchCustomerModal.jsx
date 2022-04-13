@@ -1,79 +1,61 @@
-import { useEffect, useState } from "react";
-import { connect } from "react-redux";
-//Actions
-import { contactActions } from "../../../redux/contact/";
+import { useEffect, useState, useContext } from "react";
 
 //Custom Hook//
 import useContact from "../../../hooks/useContact";
 
+import  {SaleContext}  from "../../../context/SaleContext";
+
 function SearchCustomerModal({
-  customers,
   loading,
   //Functions
-  _getListContacts,
-  _setListContacts,
   handleClose: _close,
   handleSelect: _Select,
 }) {
+
+  const salesContext = useContext(SaleContext);
+  console.log("SALE CONTEXT", salesContext);
 
   const [data, setData] = useState({
     textSearch: "",
   });
 
-
-  //TODO: revisar lo que regresa//
-  const customersData = useContact(data.textSearch);
-  console.log(customersData);
+  const filters = {
+    search: data.textSearch,
+    itemsPage: '25',
+    orderBy: 'id',
+    order:'desc'
+  }
+  
+  const {getListContact, listContact: customers} = useContact();  
   
 
   //Functions
   const handleClose = () => {
       if (_close) _close();
     },
+
     handleChangeText = ({ value }) => {
       setData({
         ...data,
         textSearch: value,
       });
     },
+
     handleKeyPressSearch = (key) => {
       if (key === "Enter" && data.textSearch.length) SearchCustomer();
     },
+
     SearchCustomer = () => {
 
-      //TODO:revisar el error al ejecutar el hook//
-      //const customersData = useContact(data.textSearch);
-      //console.log(customersData);
-
-      if (data.textSearch.length > 2) {
-        _getListContacts({
-          search: data.textSearch,
-          itemsPage: 25,
-          orderBy: "id",
-          order: "desc",
-        });
-        setData({
-          ...data,
-          textSearch: "",
-        });
-      }
+      getListContact(filters);
     },
+
     handleClickCustomer = (e, customer) => {
       e.preventDefault();
       _Select(customer);
     };
 
-  useEffect(() => {
-    return () => {
-      _setListContacts({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      });
-    };
-    // eslint-disable-next-line
-  }, []);
+
 
   return (
     <div className="modal d-block" tabIndex="-1">
@@ -175,16 +157,4 @@ function SearchCustomerModal({
   );
 }
 
-const mapStateToProps = ({ contact }) => {
-    return {
-      loading: contact.loading,
-      customers: contact.list,
-      meta: contact.metaList,
-    };
-  },
-  mapActionsToProps = {
-    _getListContacts: contactActions.getListContacts,
-    _setListContacts: contactActions.setListContact,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(SearchCustomerModal);
+export default SearchCustomerModal;

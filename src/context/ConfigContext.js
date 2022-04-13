@@ -3,7 +3,9 @@ import { createContext, useState, useEffect } from "react";
 import { api } from "../utils/url";
 
 export const ConfigContext = createContext(null);
+
 const storage = JSON.parse(localStorage.getItem("OrusSystem"));
+
 const initialState = {
   data: [],
   meta: {},

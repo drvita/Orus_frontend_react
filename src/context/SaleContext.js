@@ -1,8 +1,32 @@
-import { useState } from'react';
+import { createContext, useState } from "react";
 import{ api, setUrl } from '../utils/url';
+import saleHelper from '../components/Sales/helpers';
 
-export default function useSales(){
 
+export const SaleContext = createContext(null);
+
+const initialSale =   {
+    id: 0,
+    customer: {
+      id: 2,
+      nombre: "venta de mostrador",
+      email: "",
+      telefonos: {},
+      f_nacimiento: null,
+      edad: 0,
+    },
+    contact_id: 2,
+    items: [],
+    session: saleHelper.getSession(),
+    descuento: 0,
+    subtotal: 0,
+    total: 0,
+    payments: [],
+    created_at: new Date(),
+  }
+
+
+export default function useSales({children}){
     //Functions
     const getSaleList = ()=> {
         const salesFilters = {
@@ -46,20 +70,22 @@ export default function useSales(){
     }
 
     //Funcion para guardar una venta//
-    
-
-
 
     //State
     const [state, setState] = useState({
         saleList:[],
-        sale: {},
+        sale: initialSale, 
         getSaleList,
         getSaleById,
+        setCustomer,
     });
 
 
-    return state;
+    return (
+        <SaleContext.Provider value={state}>
+            {children}
+        </SaleContext.Provider>
+    );
 
 }
 

@@ -5,26 +5,40 @@ import { saleActions } from "../../../redux/sales";
 import ListSalesModal from "./ListSalesModal";
 
 export default function ListSalesBtn({ setSale: _setSale }) {
+
   const [data, setData] = useState(false),
-    dispatch = useDispatch();
+
+  dispatch = useDispatch();
+
   //Functions
   const handleShowListSales = () => {
       setData(true);
     },
+
+    
     handleCloseListSales = () => {
       setData(false);
     },
+
+
     handleSelectSale = (sale) => {
+
+      console.log("SALE", sale);
+
       let pagado = 0;
 
       sale.payments.forEach((pay) => (pagado = pay.total));
 
       setData(false);
+
       _setSale({
         pagado,
         order_id: sale.pedido,
       });
+
+
       //Add to redux
+      //Guarda le venta individual seleccionada en REDUX//
       dispatch(
         saleActions.setSale({
           id: sale.id,

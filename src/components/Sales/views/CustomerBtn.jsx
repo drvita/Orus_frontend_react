@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useDispatch } from "react-redux";
+
+
 //Actions
 import { saleActions } from "../../../redux/sales";
 import helpers from "../helpers";
+
+
 //Components
 import SearchCustomerModal from "./SearchCustomerModal";
+
+//Context
+import { SaleContext } from "../../../context/SaleContext";
 
 export default function CustomerBtnComponent({ sale, setSale: _setSale }) {
   const [data, setData] = useState(false),

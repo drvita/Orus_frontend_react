@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
@@ -20,17 +20,25 @@ import helpers from "./helpers";
 import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
+//Context
+import  SalesProvider  from "../../context/SaleContext";
+
+
 
 
 
 export default function IndexSalesComponent() {
 
   //Store Redux
+  //Va a redux y obtiene la venta individual actual//
   const { sales } = useSelector((state) => state);
   const { sale, loading } = sales;
+
   const dispatch = useDispatch();
 
-  //Cargar alguna venta del hook(pendiente)
+
+  //Cargar o crear venta usando SaleContext(pendiente)
+  // const salesContext = useContext(SaleContex);
 
 
   //Store Local
@@ -38,7 +46,6 @@ export default function IndexSalesComponent() {
     pagado: 0,
   });
 
-  
   const [currentSale, setCurrentSale] = useState({
     customer: sale.customer,
     items: sale.items,
@@ -50,11 +57,9 @@ export default function IndexSalesComponent() {
   });
 
 
+
   useEffect(() => {
-
-
-    let sum = 0,
-      pagado = 0;
+    let sum = 0, pagado = 0;
 
     currentSale.items.forEach((item) => (sum += item.subtotal));
     currentSale.payments.forEach((pay) => (pagado += pay.total));
@@ -89,11 +94,9 @@ export default function IndexSalesComponent() {
       );
       localStorage.setItem("OrusSales", "{}");
     };
-    //eslint-disable-next-line
   }, []);
 
 
-  //console.log("REDUX SALE", currentSale);
 
 
   //Functions
@@ -102,10 +105,11 @@ export default function IndexSalesComponent() {
 
 
     handleSetSale = (res) => {
-      setData({
+      console.log("RES", res);
+      /* setData({
         ...data,
         ...res,
-      });
+      }); */
     },
 
 
@@ -134,7 +138,7 @@ export default function IndexSalesComponent() {
   currentSale.total - data.pagado > 0 && currentSale.descuento === 0 && data.pagado === 0 ? false : true;
 
   return (
-    <>
+    <SalesProvider>
       <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
         <div className="card-body pb-2 d-print-none">
           <nav className="row mb-2">
@@ -158,13 +162,19 @@ export default function IndexSalesComponent() {
 
             <div className="col-3">
               <div className="card-tools text-right">
+
+                {/* Hacer una prop que ejecute una funcion que setie una venta en el state local */}
                 <ListSalesBtn setSale={handleSetSale} />
-                  {/* TODO: verificar validacion */}
+
+
+                {/* TODO: verificar validacion */}
                 <DiscountBtnComponent
                   sale={currentSale}
                   paid={paid}
                   btnDisabled={btnDisabled}
                 />
+
+
                 <EraseBtn
                   sale={currentSale}
                   defaultState={DEFAULT_STATE_SALES}
@@ -226,6 +236,6 @@ export default function IndexSalesComponent() {
           </div>
         ) : null}
       </div>
-    </>
+    </SalesProvider>
   );
 }

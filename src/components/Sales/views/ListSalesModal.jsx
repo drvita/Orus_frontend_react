@@ -1,54 +1,46 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { saleActions } from "../../../redux/sales/";
+import useSales from "../../../hooks/useSale";
 
 function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
-  const { list: items, loading } = useSelector((state) => state.sales),
-    dispatch = useDispatch();
+  
   const [search, setSearch] = useState("");
+
+  const { getSaleList, getSaleById, saleList,  sale } = useSales();
+
+  const items = saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [] 
 
   const handleSelectSale = (e, sale) => {
       if (e) e.preventDefault();
       _select(sale);
     },
+
     handleChangeSearch = ({ value }) => {
       setSearch(value);
     },
+    
     handleSearchEnter = (key) => {
       if (key === "Enter") {
         searchInDB(search);
       }
     },
+
     searchInDB = (search = "") => {
-      dispatch(
-        saleActions.getListSale({
-          orderBy: "created_at",
-          order: "desc",
-          itemsPage: 25,
-          search,
-        })
-      );
+      if(search.length === 0){
+        getSaleById(search);
+
+      }else{
+        getSaleById(search);
+      }
     };
 
   useEffect(() => {
-    searchInDB();
-
-    return () => {
-      dispatch(
-        saleActions.setListSales({
-          result: {
-            list: [],
-            metaList: {},
-          },
-        })
-      );
-    };
-    //eslint-disable-next-line
-  }, []);
+    getSaleList();
+  }, [search]);
 
   return (
     <div className="modal d-block" tabIndex="-1">
+      {console.log("ITEMS STATE",)}
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -135,11 +127,6 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
               Cancelar
             </button>
           </div>
-          {loading ? (
-            <div className="overlay dark">
-              <i className="fas fa-2x fa-sync-alt fa-spin"></i>
-            </div>
-          ) : null}
         </div>
       </div>
     </div>

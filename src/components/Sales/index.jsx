@@ -1,6 +1,8 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+
+
 
 
 //Components
@@ -21,30 +23,26 @@ import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
 //Context
-import  SalesProvider  from "../../context/SaleContext";
-
-
-
-
+import  SalesProvider from "../../context/SaleContext";
 
 export default function IndexSalesComponent() {
 
   //Store Redux
+ 
   //Va a redux y obtiene la venta individual actual//
+  //venta del context en lugar de redux//
   const { sales } = useSelector((state) => state);
   const { sale, loading } = sales;
 
+  console.log("REDUX SALE", sale);
+
   const dispatch = useDispatch();
-
-
-  //Cargar o crear venta usando SaleContext(pendiente)
-  // const salesContext = useContext(SaleContex);
-
 
   //Store Local
   const [data, setData] = useState({
     pagado: 0,
   });
+
 
   const [currentSale, setCurrentSale] = useState({
     customer: sale.customer,
@@ -55,7 +53,6 @@ export default function IndexSalesComponent() {
     total: sale.total,
     payments: sale.payments,
   });
-
 
 
   useEffect(() => {
@@ -71,18 +68,18 @@ export default function IndexSalesComponent() {
       if (currentSale.id) {
         dispatch(saleActions.setSale(currentSale));
       }
-
+    
       setData({
         pagado,
       });
     }
-
-    window.addEventListener("afterprint", handlePrint);
-  }, [currentSale]);
+    
+  }, []);
 
   useEffect(() => {
-    console.log("SALES COMPONENT RENDERIZADO");
+
     dispatch(defaultActions.changeNamePage("punto de venta"));
+    window.addEventListener("afterprint", handlePrint);
 
     return () => {
       console.log("[Orus Systme] Cerrando venta");
@@ -98,14 +95,12 @@ export default function IndexSalesComponent() {
 
 
 
-
   //Functions
 
   const handleDeleteSale = () => setData({ pagado: 0 }),
 
 
     handleSetSale = (res) => {
-      console.log("RES", res);
       /* setData({
         ...data,
         ...res,
@@ -162,18 +157,13 @@ export default function IndexSalesComponent() {
 
             <div className="col-3">
               <div className="card-tools text-right">
-
-                {/* Hacer una prop que ejecute una funcion que setie una venta en el state local */}
                 <ListSalesBtn setSale={handleSetSale} />
 
-
-                {/* TODO: verificar validacion */}
                 <DiscountBtnComponent
                   sale={currentSale}
                   paid={paid}
                   btnDisabled={btnDisabled}
                 />
-
 
                 <EraseBtn
                   sale={currentSale}
@@ -216,12 +206,13 @@ export default function IndexSalesComponent() {
 
             <div className="col-6 text-right">
               <InputSearchItem sale={currentSale} />
+
               <PaymentBtnComponent
-              //TODO: verificar validacion//
                 sale={sale}
                 paid={paid}
                 forPaid={currentSale.total - data.pagado}
               />
+
               <PrintSaleComponent
                 sale={currentSale}
                 order={currentSale.pedido}

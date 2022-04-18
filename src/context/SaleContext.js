@@ -8,7 +8,7 @@ export const SaleContext = createContext(null);
 const initialSale =   {
     id: 0,
     customer: {
-      id: 2,
+      id: 0,
       nombre: "venta de mostrador",
       email: "",
       telefonos: {},
@@ -28,7 +28,7 @@ const initialSale =   {
 
 export default function useSales({children}){
     //Functions
-    const getSaleList = ()=> {
+    const getSaleList = () => {
         const salesFilters = {
             orderBy:'created_at',
             order:'desc',
@@ -48,7 +48,7 @@ export default function useSales({children}){
         })
     }
 
-    const getSaleById = (name)=> {
+    const getSaleById = (name) => {
         const saleFilter = {
             orderBy:'created_at',
             order:'desc',
@@ -69,6 +69,34 @@ export default function useSales({children}){
         })
     }
 
+    const setCustomer = (customerSet) => {
+        setState({
+            ...state,
+            sale: {
+                ...state.sale,
+                customer:{
+                    id: customerSet.id,
+                    nombre: customerSet.nombre ? customerSet.nombre : "Venta de mostrador",
+                    email: customerSet.email,
+                    telefonos: customerSet.telefonos,
+                    f_nacimiento: customerSet.f_nacimiento,
+                    edad: customerSet.edad,
+                },
+                contact_id: customerSet.id,
+            }
+        })
+    }
+
+    const setSale = (sale)=> {
+        setState({
+            ...state
+        })
+    }
+
+    const resetSale = () => {
+
+    }
+    
     //Funcion para guardar una venta//
 
     //State
@@ -88,4 +116,3 @@ export default function useSales({children}){
     );
 
 }
-

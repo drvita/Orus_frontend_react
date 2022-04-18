@@ -1,28 +1,44 @@
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
+
+
 //Actions
 import { saleActions } from "../../../redux/sales";
 import { storeActions } from "../../../redux/store/index";
+
+
 //Components
 import ListModal from "./ListItemsModal";
 
+//Hooks
+import useProducts from '../../../hooks/useProducts';
+
 function InputSearchItem({
+  //Ahora sale debe ser la venta del context(sale context)//
   sale,
-  list,
+
+  //list,
   messages,
   loading,
+
   //Functions
-  _getList,
+  //_getList,
   _setList,
   _setSale,
   _setMessage,
 }) {
+
+
   //State
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(1);
+  //const [list, setList] = useState([]);
   // const [startSearch, setStartSearch] = useState(false);
   const { session } = sale;
+
+  const { getProducts, productList: list } = useProducts();
+
   //Functions
   const handleChangeTextSearch = ({ value }) => {
     console.log("VALUES-->", value);
@@ -50,10 +66,16 @@ function InputSearchItem({
           setCantDefault(parseInt(codes[0]));
         }
 
-        _getList({
+
+        //Ejecutamos el hook que obtenga la lista de productos//
+
+        getProducts(search);
+
+
+       /*  _getList({
           search,
         });
-        
+         */
         setTextSearch("");
       }
     },
@@ -83,21 +105,32 @@ function InputSearchItem({
     },
 
 
+
     handleSelectItem = (data) => {
+      console.log("DATA ITEM", data);
       const item = makeItem(data);
+      console.log("MAKED ITEM", item);
+
+      //Verificar su funcion(se cambia redux)/
       _setList({
         result: {
           list: [],
           metaList: {},
         },
       });
+
       handleAddItem(item);
       setCantDefault(1);
     },
+
+
     handleAddItem = (result) => {
+      console.log("RESULT ADD ITEM", result)
+
       const found = sale.items.filter(
         (item) => item.store_items_id === result.store_items_id
       );
+
       let newItems = sale.items.filter(
         (item) => item.store_items_id !== result.store_items_id
       );
@@ -122,6 +155,8 @@ function InputSearchItem({
       });
     };
 
+
+
   useEffect(() => {
     if (list.length) {
       if (list.length === 1) {
@@ -129,6 +164,7 @@ function InputSearchItem({
           item: list[0],
           cant: cantDefault ? cantDefault : 1,
         });
+        console.log("ITEM", item);
         handleAddItem(item);
         setCantDefault(1);
       } else {
@@ -187,13 +223,13 @@ function InputSearchItem({
 const mapStateToProps = ({ storeItem }) => {
     return {
       loading: storeItem.loading,
-      list: storeItem.list,
+      //list: storeItem.list,
       messages: storeItem.messages,
       meta: storeItem.metaList,
     };
   },
   mapActionsToProps = {
-    _getList: storeActions.getListStore,
+    //_getList: storeActions.getListStore,
     _setList: storeActions.setListStore,
     _setSale: saleActions.setSale,
     _setMessage: storeActions.setMessagesStore,

@@ -6,15 +6,21 @@ function ListItemsModal({
   handleClose: _close,
   handleSelect: _Select,
 }) {
+
+
   const [data, setData] = useState({
     item: null,
     cant: cantDefault,
     precio: 0,
   });
+
+
   //Functions
   const handleClose = () => {
       if (_close) _close();
     },
+
+
     handleClickItem = (e, item) => {
       e.preventDefault();
       setData({
@@ -23,6 +29,8 @@ function ListItemsModal({
         item,
       });
     },
+
+
     handleSelectItem = () => {
       const toSend = {
         ...data,
@@ -32,12 +40,15 @@ function ListItemsModal({
         },
       };
 
+      console.log("TO SEND", toSend)
+
       _Select(toSend);
       setData({
         item: null,
         cant: 1,
         precio: 0,
       });
+
       handleClose();
     },
     handleChangeCant = ({ name, value }) => {

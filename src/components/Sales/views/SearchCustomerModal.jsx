@@ -3,21 +3,22 @@ import { useEffect, useState, useContext } from "react";
 //Custom Hook//
 import useContact from "../../../hooks/useContact";
 
-import  {SaleContext}  from "../../../context/SaleContext";
+import  { SaleContext }  from "../../../context/SaleContext";
 
 function SearchCustomerModal({
-  loading,
   //Functions
   handleClose: _close,
   handleSelect: _Select,
 }) {
+  
 
   const salesContext = useContext(SaleContext);
-  console.log("SALE CONTEXT", salesContext);
+
 
   const [data, setData] = useState({
     textSearch: "",
   });
+
 
   const filters = {
     search: data.textSearch,
@@ -26,7 +27,7 @@ function SearchCustomerModal({
     order:'desc'
   }
   
-  const {getListContact, listContact: customers} = useContact();  
+  const { getListContact, listContact: customers } = useContact();  
   
 
   //Functions
@@ -46,14 +47,14 @@ function SearchCustomerModal({
     },
 
     SearchCustomer = () => {
-
       getListContact(filters);
     },
 
     handleClickCustomer = (e, customer) => {
-      e.preventDefault();
-      _Select(customer);
+      salesContext.setCustomer(customer);
+      _Select();
     };
+
 
 
 
@@ -87,11 +88,6 @@ function SearchCustomerModal({
                   <i className="fas fa-search"></i>
                 </button>
               </div>
-              {loading && (
-                <div className="form-group pl-2">
-                  <i className="fas fa-2x fa-spinner fa-spin"></i>
-                </div>
-              )}
             </div>
             <div
               className="table-responsive overflow-auto"

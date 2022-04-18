@@ -1,11 +1,4 @@
 import { useState, useContext } from "react";
-import { useDispatch } from "react-redux";
-
-
-//Actions
-import { saleActions } from "../../../redux/sales";
-import helpers from "../helpers";
-
 
 //Components
 import SearchCustomerModal from "./SearchCustomerModal";
@@ -13,42 +6,20 @@ import SearchCustomerModal from "./SearchCustomerModal";
 //Context
 import { SaleContext } from "../../../context/SaleContext";
 
-export default function CustomerBtnComponent({ sale, setSale: _setSale }) {
-  const [data, setData] = useState(false),
-    dispatch = useDispatch(),
-    storeDefault = {
-      id: 0,
-      customer: {},
-      contact_id: 2,
-      items: [],
-      session: helpers.getSession(),
-      descuento: 0,
-      subtotal: 0,
-      total: 0,
-      pagado: 0,
-      payments: [],
-      payment: {},
-      created_at: new Date(),
-    };
+export default function CustomerBtnComponent() {
+
+  const { sale } = useContext(SaleContext);
+
+  
+  const [data, setData] = useState(false);
+
   //Functions
   const handleSetCustomer = () => {
       setData(true);
-    },
-    handleCloseShowSearchCustomer = () => {
+    };
+
+  const closeModal = ()=>{
       setData(false);
-    },
-    handleSelectCustomer = (customer) => {
-      _setSale({
-        pagado: 0,
-      });
-      setData(false);
-      dispatch(
-        saleActions.setSale({
-          ...storeDefault,
-          customer,
-          contact_id: customer.id,
-        })
-      );
     };
 
   return (
@@ -68,8 +39,8 @@ export default function CustomerBtnComponent({ sale, setSale: _setSale }) {
       </button>
       {data && (
         <SearchCustomerModal
-          handleClose={handleCloseShowSearchCustomer}
-          handleSelect={handleSelectCustomer}
+          handleClose={closeModal}
+          handleSelect={closeModal}
         />
       )}
     </>

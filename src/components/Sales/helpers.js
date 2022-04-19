@@ -14,6 +14,8 @@ const confirm = (text, _make) => {
     }
   });
 };
+
+
 const getMethodName = (status) => {
   switch (status) {
     case 1:
@@ -46,10 +48,36 @@ const getSession = () => {
   );
 };
 
+
+const getForPay = (items, payments)=>{
+
+  let pay = 0, total = 0;
+
+  payments.forEach((payment)=>{
+    pay += payment.total;
+  })
+
+  items.forEach((item)=>{
+    total += item.subtotal;
+  })
+
+  return total - pay;
+}
+
+const getTotal = (items)=> {
+  let total = 0;
+  items.forEach((item)=>{
+    total += item.subtotal;
+  })
+  return total;
+}
+
 const toExport = {
   confirm,
   getMethodName,
   getSession,
+  getForPay,
+  getTotal,
 };
 
 export default toExport;

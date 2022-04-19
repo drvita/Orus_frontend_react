@@ -1,16 +1,28 @@
 import moment from "moment";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 //Components
 import PaymentDetails from "./PaymentDetails";
 import UpdateItemModal from "./UpdateItemModal";
+
 //Actions
 import { saleActions } from "../../../redux/sales";
 import helpers from "../helpers";
 
+
+// Sale Context
+import { SaleContext } from '../../../context/SaleContext';
+
 export default function SalesDetailsTableComponent({ paid }) {
-  const { sales, users } = useSelector((state) => state),
-    { sale } = sales,
+
+
+  const { sales, users } = useSelector((state) => state), { sale } = sales,
+
+  //Obtener venta desde SaleContext//
+  //const {sale} = useContext(SaleContext);
+
+
     { dataLoggin: userMain } = users,
     dispatch = useDispatch(),
     [data, setData] = useState({
@@ -19,6 +31,8 @@ export default function SalesDetailsTableComponent({ paid }) {
       item: {},
       payment: {},
     });
+
+    console.log("SALE FROM TABLE", sale);
 
   //Functions
   const handleDeleteItem = (item) => {

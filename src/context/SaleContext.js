@@ -87,14 +87,43 @@ export default function useSales({children}){
         })
     }
 
-    const setSale = (sale)=> {
+    const addItems = (newItems)=> {
         setState({
-            ...state
+            ...state,
+            sale: {
+                ...state.sale,
+                items: newItems,
+                total: saleHelper.getTotal(newItems),
+                subtotal:saleHelper.getTotal(newItems),
+            }
         })
     }
 
-    const resetSale = () => {
+    const setTotal = (total)=> {
+        console.log("TOTAL DE LA VENTA",total);
+        setState({
+            ...state,
+            sale:{
+                ...state.sale,
+                total:total,
+                subtotal:total,
+            }
+        })
+    }
 
+    const addDiscount = ()=>{
+
+    }
+
+    const resetSale = () => {
+        setState({
+            ...state,
+            saleList:[],
+            sale:{
+                ...state.sale,
+                session: saleHelper.getSession(),
+            }
+        })
     }
     
     //Funcion para guardar una venta//
@@ -106,6 +135,9 @@ export default function useSales({children}){
         getSaleList,
         getSaleById,
         setCustomer,
+        resetSale,
+        addItems,
+        setTotal,
     });
 
 

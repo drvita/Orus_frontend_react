@@ -1,24 +1,34 @@
+import {useContext} from 'react';
 import { useDispatch } from "react-redux";
-import { saleActions } from "../../../redux/sales/index.js";
+//import { saleActions } from "../../../redux/sales/index.js";
+import { SaleContext } from "../../../context/SaleContext.js";
 import helpers from "../helpers.js";
 
-export default function EraseSaleBtnComponent({
-  sale,
-  defaultState,
-  erase: _erase,
-}) {
+export default function EraseSaleBtnComponent({ /* sale *//*  defaultState, */ /* erase: _erase, */ }) {
+
   const dispatch = useDispatch();
+
+
+  const { sale, resetSale } = useContext(SaleContext);
+
   //Functions
   const eraseSale = () => {
-      dispatch(
+
+      /* dispatch(
         saleActions.setSale({
           ...defaultState.sale,
           session: helpers.getSession(),
           created_at: new Date(),
         })
-      );
-      _erase();
+      ); */
+
+      /* _erase(); */
+
+      resetSale()
+      
     },
+
+
     handleEraseSale = () => {
       helpers.confirm(
         "¿Desea terminar esta venta y crear una nueva?",

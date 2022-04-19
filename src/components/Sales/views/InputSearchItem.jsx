@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { connect } from "react-redux";
-
+import { SaleContext } from "../../../context/SaleContext";
 
 //Actions
 import { saleActions } from "../../../redux/sales";
 import { storeActions } from "../../../redux/store/index";
-
 
 //Components
 import ListModal from "./ListItemsModal";
@@ -13,9 +12,12 @@ import ListModal from "./ListItemsModal";
 //Hooks
 import useProducts from '../../../hooks/useProducts';
 
+//helpers
+import helpers from '../helpers';
+
 function InputSearchItem({
   //Ahora sale debe ser la venta del context(sale context)//
-  sale,
+  //sale,
 
   //list,
   messages,
@@ -33,8 +35,8 @@ function InputSearchItem({
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(1);
-  //const [list, setList] = useState([]);
-  // const [startSearch, setStartSearch] = useState(false);
+
+  const { sale, addItems, setTotal } = useContext(SaleContext);
   const { session } = sale;
 
   const { getProducts, productList: list } = useProducts();
@@ -54,32 +56,18 @@ function InputSearchItem({
 
 
     searchItem = () => {
-      console.log("Producto de venta-->", textSearch);
       if (textSearch.length > 2) {
-        console.log("lenght mayor a 2");
         const codes = textSearch.split("*");
-        console.log("CODES", codes)
         let search = textSearch;
 
         if (codes.length === 2) {
           search = codes[1];
           setCantDefault(parseInt(codes[0]));
         }
-
-
-        //Ejecutamos el hook que obtenga la lista de productos//
-
         getProducts(search);
-
-
-       /*  _getList({
-          search,
-        });
-         */
         setTextSearch("");
       }
     },
-
 
     handleCloseModal = () => {
       setShowList(false);
@@ -107,29 +95,26 @@ function InputSearchItem({
 
 
     handleSelectItem = (data) => {
-      console.log("DATA ITEM", data);
-      const item = makeItem(data);
-      console.log("MAKED ITEM", item);
 
-      //Verificar su funcion(se cambia redux)/
-      _setList({
+      const item = makeItem(data);
+
+      //Limpia metalist en redux(dentro de store item)//
+      /* _setList({
         result: {
           list: [],
           metaList: {},
         },
       });
-
+ */
       handleAddItem(item);
       setCantDefault(1);
     },
 
-
     handleAddItem = (result) => {
-      console.log("RESULT ADD ITEM", result)
-
       const found = sale.items.filter(
         (item) => item.store_items_id === result.store_items_id
       );
+
 
       let newItems = sale.items.filter(
         (item) => item.store_items_id !== result.store_items_id
@@ -149,13 +134,18 @@ function InputSearchItem({
         newItems.push(result);
       }
 
-      _setSale({
+      console.log("NUEVOS ITEMS",newItems);
+
+      //Guardar items de la venta en sale del context//
+      addItems(newItems);
+
+      
+      //Quitar funcion de redux//
+      /* _setSale({
         ...sale,
         items: newItems,
-      });
+      }); */
     };
-
-
 
   useEffect(() => {
     if (list.length) {
@@ -230,7 +220,7 @@ const mapStateToProps = ({ storeItem }) => {
   },
   mapActionsToProps = {
     //_getList: storeActions.getListStore,
-    _setList: storeActions.setListStore,
+    //_setList: storeActions.setListStore,
     _setSale: saleActions.setSale,
     _setMessage: storeActions.setMessagesStore,
   };

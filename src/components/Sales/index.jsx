@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
 
-
-
 //Components
 import InputSearchItem from "./views/InputSearchItem";
 import DiscountBtnComponent from "./views/DiscountBtn";
@@ -14,6 +12,9 @@ import PaymentBtnComponent from "./views/PaymentBtn";
 import EraseBtn from "./views/EraseSaleBtn";
 import CustomerBtnComponent from "./views/CustomerBtn";
 import SalesDetailsTableComponent from "./views/SalesDetailsTable";
+import SaleDate from './views/SaleDate';
+import ShowToPay from "./views/ShowToPay";
+import ShowTotal from "./views/ShowTotal";
 
 
 //Actions
@@ -39,6 +40,7 @@ export default function IndexSalesComponent() {
   const dispatch = useDispatch();
 
   //Store Local
+  //pagado es la suma de los  payments
   const [data, setData] = useState({
     pagado: 0,
   });
@@ -68,7 +70,7 @@ export default function IndexSalesComponent() {
       if (currentSale.id) {
         dispatch(saleActions.setSale(currentSale));
       }
-    
+
       setData({
         pagado,
       });
@@ -96,7 +98,6 @@ export default function IndexSalesComponent() {
 
 
   //Functions
-
   const handleDeleteSale = () => setData({ pagado: 0 }),
 
 
@@ -129,96 +130,81 @@ export default function IndexSalesComponent() {
 
   const paid = currentSale.total <= data.pagado ? true : false;
 
-  const btnDisabled =
-  currentSale.total - data.pagado > 0 && currentSale.descuento === 0 && data.pagado === 0 ? false : true;
-
+  
   return (
     <SalesProvider>
       <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
         <div className="card-body pb-2 d-print-none">
           <nav className="row mb-2">
+
             <div className="col">
-              <CustomerBtnComponent sale={currentSale} setSale={handleSetSale} />
+              <CustomerBtnComponent />
             </div>
+
             <div className="col">
-              <label className="mx-1">Folio:</label>
-              <span className="mx-1">{currentSale.id ? currentSale.id : "Nuevo"}</span>
-              <label className="mx-1">Fecha:</label>
-              <span className="mx-1">
-                {moment(currentSale.created_at).format("L")}
-              </span>
-              {currentSale.pedido ? (
-                <>
-                  <label className="mx-1">Pedido:</label>
-                  <span className="mx-1">{currentSale.pedido}</span>
-                </>
-              ) : null}
+              <SaleDate></SaleDate>
             </div>
 
             <div className="col-3">
               <div className="card-tools text-right">
+
+
+                {/* Pendiente */}
                 <ListSalesBtn setSale={handleSetSale} />
 
+
+
                 <DiscountBtnComponent
-                  sale={currentSale}
+                  /* sale={currentSale}
                   paid={paid}
-                  btnDisabled={btnDisabled}
+                  btnDisabled={btnDisabled} */
                 />
 
                 <EraseBtn
-                  sale={currentSale}
+                  /* sale={currentSale}
                   defaultState={DEFAULT_STATE_SALES}
-                  erase={handleDeleteSale}
+                  erase={handleDeleteSale} */
                 />
               </div>
             </div>
           </nav>
-          <div
-            className="overflow-auto text-right p-0 border border-gray"
-            style={{ height: "27rem" }}
-          >
+          <div className="overflow-auto text-right p-0 border border-gray" style={{ height: "27rem" }} >
             {currentSale.customer && currentSale.customer.id && (
               <SalesDetailsTableComponent paid={paid} />
             )}
           </div>
         </div>
+
+
+
         <div className="card-footer">
           <div className="row">
+
             <div className="col d-print-none">
-              {currentSale.total ? (
-                <>
-                  <span className="text-lg">Total:</span>
-                  <label className="text-lg ml-1">${currentSale.total}</label>
-                </>
-              ) : null}
+              <ShowTotal></ShowTotal>
             </div>
 
             <div className="col d-print-none">
-              {!paid && (
-                <>
-                  <span className="text-lg">Por pagar:</span>
-                  <label className="text-lg ml-1">
-                    ${currentSale.total - data.pagado}
-                  </label>
-                </>
-              )}
+              <ShowToPay></ShowToPay>
             </div>
 
             <div className="col-6 text-right">
-              <InputSearchItem sale={currentSale} />
+              <InputSearchItem /* sale={currentSale} */ />
 
               <PaymentBtnComponent
                 sale={sale}
                 paid={paid}
                 forPaid={currentSale.total - data.pagado}
               />
-
+              
               <PrintSaleComponent
                 sale={currentSale}
                 order={currentSale.pedido}
                 payed={data.pagado}
               />
+
             </div>
+
           </div>
         </div>
         {loading ? (
@@ -230,3 +216,4 @@ export default function IndexSalesComponent() {
     </SalesProvider>
   );
 }
+

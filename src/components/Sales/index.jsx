@@ -1,7 +1,5 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
-
 
 //Components
 import InputSearchItem from "./views/InputSearchItem";
@@ -12,10 +10,9 @@ import PaymentBtnComponent from "./views/PaymentBtn";
 import EraseBtn from "./views/EraseSaleBtn";
 import CustomerBtnComponent from "./views/CustomerBtn";
 import SalesDetailsTableComponent from "./views/SalesDetailsTable";
-import SaleDate from './views/SaleDate';
+import SaleDate from "./views/SaleDate";
 import ShowToPay from "./views/ShowToPay";
 import ShowTotal from "./views/ShowTotal";
-
 
 //Actions
 import { saleActions } from "../../redux/sales";
@@ -24,19 +21,15 @@ import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
 //Context
-import  SalesProvider from "../../context/SaleContext";
-import { ConfigContext } from "../../context/ConfigContext";
+import SalesProvider from "../../context/SaleContext";
 
 export default function IndexSalesComponent() {
-
   //Store Redux
- 
+
   //Va a redux y obtiene la venta individual actual//
   //venta del context en lugar de redux//
   const { sales } = useSelector((state) => state);
   const { sale, loading } = sales;
-
-  console.log("REDUX SALE", sale);
 
   const dispatch = useDispatch();
 
@@ -45,7 +38,6 @@ export default function IndexSalesComponent() {
   const [data, setData] = useState({
     pagado: 0,
   });
-
 
   const [currentSale, setCurrentSale] = useState({
     customer: sale.customer,
@@ -57,9 +49,9 @@ export default function IndexSalesComponent() {
     payments: sale.payments,
   });
 
-
   useEffect(() => {
-    let sum = 0, pagado = 0;
+    let sum = 0,
+      pagado = 0;
 
     currentSale.items.forEach((item) => (sum += item.subtotal));
     currentSale.payments.forEach((pay) => (pagado += pay.total));
@@ -76,11 +68,11 @@ export default function IndexSalesComponent() {
         pagado,
       });
     }
-    
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-
     dispatch(defaultActions.changeNamePage("punto de venta"));
     window.addEventListener("afterprint", handlePrint);
 
@@ -94,22 +86,17 @@ export default function IndexSalesComponent() {
       );
       localStorage.setItem("OrusSales", "{}");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-
 
   //Functions
   const handleDeleteSale = () => setData({ pagado: 0 }),
-
-
     handleSetSale = (res) => {
       /* setData({
         ...data,
         ...res,
       }); */
     },
-
-
     handlePrint = () => {
       const path = window.location.pathname;
 
@@ -131,13 +118,11 @@ export default function IndexSalesComponent() {
 
   const paid = currentSale.total <= data.pagado ? true : false;
 
-  
   return (
     <SalesProvider>
       <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
         <div className="card-body pb-2 d-print-none">
           <nav className="row mb-2">
-
             <div className="col">
               <CustomerBtnComponent />
             </div>
@@ -148,39 +133,35 @@ export default function IndexSalesComponent() {
 
             <div className="col-3">
               <div className="card-tools text-right">
-
-
                 {/* Pendiente */}
                 <ListSalesBtn setSale={handleSetSale} />
 
-
-
                 <DiscountBtnComponent
-                  /* sale={currentSale}
+                /* sale={currentSale}
                   paid={paid}
                   btnDisabled={btnDisabled} */
                 />
 
                 <EraseBtn
-                  /* sale={currentSale}
+                /* sale={currentSale}
                   defaultState={DEFAULT_STATE_SALES}
                   erase={handleDeleteSale} */
                 />
               </div>
             </div>
           </nav>
-          <div className="overflow-auto text-right p-0 border border-gray" style={{ height: "27rem" }} >
+          <div
+            className="overflow-auto text-right p-0 border border-gray"
+            style={{ height: "27rem" }}
+          >
             {currentSale.customer && currentSale.customer.id && (
               <SalesDetailsTableComponent paid={paid} />
             )}
           </div>
         </div>
 
-
-
         <div className="card-footer">
           <div className="row">
-
             <div className="col d-print-none">
               <ShowTotal></ShowTotal>
             </div>
@@ -197,15 +178,13 @@ export default function IndexSalesComponent() {
                 paid={paid}
                 forPaid={currentSale.total - data.pagado}
               />
-              
+
               <PrintSaleComponent
                 sale={currentSale}
                 order={currentSale.pedido}
                 payed={data.pagado}
               />
-
             </div>
-
           </div>
         </div>
         {loading ? (
@@ -217,4 +196,3 @@ export default function IndexSalesComponent() {
     </SalesProvider>
   );
 }
-

@@ -134,10 +134,11 @@ function InputSearchItem({
         newItems.push(result);
       }
 
+      console.log("Venta",sale);
       console.log("NUEVOS ITEMS",newItems);
 
       //Guardar items de la venta en sale del context//
-      addItems(newItems);
+      addItems(sale, newItems);
 
       
       //Quitar funcion de redux//

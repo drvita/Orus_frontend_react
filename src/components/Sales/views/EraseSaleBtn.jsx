@@ -41,7 +41,7 @@ export default function EraseSaleBtnComponent({ /* sale *//*  defaultState, */ /
       className="btn btn-warning ml-1"
       title="Nueva venta"
       onClick={handleEraseSale}
-      disabled={!sale.customer.id || !sale.items.length}
+     /*  disabled={!sale.customer.id || !sale.items.length} */
     >
       <i className="fas fa-window-close"></i>
     </button>

@@ -14,13 +14,19 @@ import helpers from "../helpers";
 // Sale Context
 import { SaleContext } from '../../../context/SaleContext';
 
-export default function SalesDetailsTableComponent({ paid }) {
+export default function SalesDetailsTableComponent() {
 
 
   const { sales, users } = useSelector((state) => state);
 
   //Obtener venta desde SaleContext//
   const {sale} = useContext(SaleContext);
+
+  console.log("SAALE PAYMENTS",sale.payments)
+
+  const pagado = helpers.getPagado(sale.payments);
+
+  const paid = sale.total <= pagado ? true : false;
 
 
     const { dataLoggin: userMain } = users,

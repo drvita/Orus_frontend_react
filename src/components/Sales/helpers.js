@@ -73,11 +73,16 @@ const getTotal = (items)=> {
 }
 
 
-const getPagado = (payments) => {
+const getPagado = (payments = []) => {
   let pagado = 0;
+
+  console.log("PAYMENTS---", payments)
+
   payments.forEach((payment)=>{
     pagado += payment.total;
   })
+
+  return pagado;
 }
 
 const toExport = {

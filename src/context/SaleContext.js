@@ -87,11 +87,13 @@ export default function useSales({children}){
         })
     }
 
-    const addItems = (newItems)=> {
+    const addItems = (sale, newItems)=> {
+        console.log("SATE RECEIVED", sale);
+        console.log("ITEMS", newItems);
         setState({
             ...state,
             sale: {
-                ...state.sale,
+                ...sale,
                 items: newItems,
                 total: saleHelper.getTotal(newItems),
                 subtotal:saleHelper.getTotal(newItems),

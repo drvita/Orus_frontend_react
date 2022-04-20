@@ -99,6 +99,16 @@ export default function useSales({children}){
         })
     }
 
+    const addPayment = ((payment)=>{
+        setState({
+            ...state,
+            sale:{
+                ...state.sale,
+                payments:payment,
+            }
+        })
+    })
+
     const setTotal = (total)=> {
         console.log("TOTAL DE LA VENTA",total);
         setState({
@@ -138,6 +148,7 @@ export default function useSales({children}){
         resetSale,
         addItems,
         setTotal,
+        addPayment,
     });
 
 

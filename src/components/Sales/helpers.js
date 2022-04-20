@@ -72,12 +72,21 @@ const getTotal = (items)=> {
   return total;
 }
 
+
+const getPagado = (payments) => {
+  let pagado = 0;
+  payments.forEach((payment)=>{
+    pagado += payment.total;
+  })
+}
+
 const toExport = {
   confirm,
   getMethodName,
   getSession,
   getForPay,
   getTotal,
+  getPagado,
 };
 
 export default toExport;

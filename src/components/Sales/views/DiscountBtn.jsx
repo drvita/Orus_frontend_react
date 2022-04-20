@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { useDispatch } from "react-redux";
 import { saleActions } from "../../../redux/sales";
 import { SaleContext } from "../../../context/SaleContext";
+import helper from '../helpers';
 
 export default function DiscountBtnComponent() {
 
@@ -9,8 +10,12 @@ export default function DiscountBtnComponent() {
 
   const { sale, addDiscount } = useContext(SaleContext);
 
-  //const btnDisabled = currentSale.total - data.pagado > 0 && currentSale.descuento === 0 && data.pagado === 0 ? false : true;
-  //const paid = currentSale.total <= data.pagado ? true : false;
+  const pagado = helper.getPagado(sale.payments);
+
+  //const btnDisabled = sale.total - pagado > 0 && sale.descuento === 0 && pagado === 0 ? false : true;
+  const paid = sale.total <= pagado ? true : false;
+
+
 
   //Functions
   const handleAddDiscount = () => {
@@ -90,7 +95,7 @@ export default function DiscountBtnComponent() {
       className="btn btn-primary mx-1"
       title="Agregar descuento"
       onClick={handleAddDiscount}
-      //disabled={btnDisabled}
+      disabled={paid}
     >
       <i className="fas fa-percent"></i>
     </button>

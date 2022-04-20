@@ -1,12 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { ConfigContext } from "../../../context/ConfigContext";
+import { SaleContext } from "../../../context/SaleContext";
 //Actions
 import { saleActions } from "../../../redux/sales/";
 import helpers from "../helpers";
 
-function PaymentModal({ sale, forPaid, handleClose: _close }) {
-  const { listBanks } = useSelector((state) => state.sales),
-    dispatch = useDispatch();
+function PaymentModal({forPaid, handleClose: _close }) {
+
+
+    //const { listBanks } = useSelector((state) => state.sales),
+    const dispatch = useDispatch();
+
+    const config = useContext(ConfigContext);
+    const listBanks = config.data;
+
+    const { sale, addPayment } = useContext(SaleContext);
+
+
   //States
   const [data, setData] = useState({
     id: 0,
@@ -94,7 +105,11 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
 
       _close();
 
-      dispatch(
+
+      ////--
+      addPayment(payments);
+
+     /*  dispatch(
         saleActions.saveSale({
           id: sale.id,
           data: {
@@ -104,7 +119,7 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
             payments: JSON.stringify(payments),
           },
         })
-      );
+      ); */
 
       /* if(pagado === forPaid)
       {
@@ -154,7 +169,7 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
     };
 
   useEffect(() => {
-    dispatch(saleActions.getListBanks());
+    //dispatch(saleActions.getListBanks());
     //eslint-disable-next-line
   }, []);
 
@@ -221,11 +236,11 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
                         >
                           <option value="">--Seleccione un banco--</option>
                           {listBanks.map((bank) => {
-                            return (
+                            return bank.name === 'bank' ? (
                               <option key={bank.id} value={bank.id}>
-                                {bank.name}
+                                {bank.data}
                               </option>
-                            );
+                            ): null;
                           })}
                         </select>
                       </>

@@ -17,13 +17,13 @@ import { SaleContext } from '../../../context/SaleContext';
 export default function SalesDetailsTableComponent({ paid }) {
 
 
-  const { sales, users } = useSelector((state) => state), { sale } = sales,
+  const { sales, users } = useSelector((state) => state);
 
   //Obtener venta desde SaleContext//
-  //const {sale} = useContext(SaleContext);
+  const {sale} = useContext(SaleContext);
 
 
-    { dataLoggin: userMain } = users,
+    const { dataLoggin: userMain } = users,
     dispatch = useDispatch(),
     [data, setData] = useState({
       showUpdateItem: false,

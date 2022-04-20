@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
@@ -25,6 +25,7 @@ import { defaultActions } from "../../redux/default/";
 
 //Context
 import  SalesProvider from "../../context/SaleContext";
+import { ConfigContext } from "../../context/ConfigContext";
 
 export default function IndexSalesComponent() {
 

@@ -11,13 +11,17 @@ export default function useProducts(){
 
         api(url)
         .then((data)=>{
-            if(data){
-                console.log(data.data);
+            if(data.data.length !== 0){
                 setState({
                     ...state,
                     productList:data.data,
                 })
             }else{
+                window.Swal.fire(
+                    "Producto no encontrado",
+                    "Verifica el nombre del producto",
+                    "warning"
+                  );
                 console.error('Error al obtener los productos');
             }
         })

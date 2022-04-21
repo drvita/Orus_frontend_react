@@ -86,7 +86,7 @@ export default function IndexSalesComponent() {
       );
       localStorage.setItem("OrusSales", "{}");
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
 
   //Functions
@@ -105,6 +105,9 @@ export default function IndexSalesComponent() {
       }
 
       helpers.confirm("Cerrar la venta actual", () => {
+
+        //TODOD: Reiniciamos la venta
+
         dispatch(
           saleActions.setSale({
             ...DEFAULT_STATE_SALES.currentSale,
@@ -155,7 +158,7 @@ export default function IndexSalesComponent() {
             style={{ height: "27rem" }}
           >
             {currentSale.customer && currentSale.customer.id && (
-              <SalesDetailsTableComponent paid={paid} />
+              <SalesDetailsTableComponent/>
             )}
           </div>
         </div>
@@ -174,15 +177,15 @@ export default function IndexSalesComponent() {
               <InputSearchItem /* sale={currentSale} */ />
 
               <PaymentBtnComponent
-                sale={sale}
+                /* sale={sale}
                 paid={paid}
-                forPaid={currentSale.total - data.pagado}
+                forPaid={currentSale.total - data.pagado} */
               />
 
               <PrintSaleComponent
-                sale={currentSale}
-                order={currentSale.pedido}
-                payed={data.pagado}
+                //sale={currentSale}
+               // order={currentSale.pedido}
+                //payed={data.pagado}
               />
             </div>
           </div>

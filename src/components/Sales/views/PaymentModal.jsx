@@ -1,21 +1,15 @@
 import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ConfigContext } from "../../../context/ConfigContext";
-import { SaleContext } from "../../../context/SaleContext";
-//Actions
-import { saleActions } from "../../../redux/sales/";
+import { Sale } from '../../../context/SaleContext';
 import helpers from "../helpers";
 
 function PaymentModal({forPaid, handleClose: _close }) {
 
-
-    //const { listBanks } = useSelector((state) => state.sales),
-    const dispatch = useDispatch();
-
     const config = useContext(ConfigContext);
     const listBanks = config.data;
-
-    const { sale, addPayment } = useContext(SaleContext);
+    
+    const { sale, addPayment } = Sale();
 
 
   //States
@@ -40,6 +34,10 @@ function PaymentModal({forPaid, handleClose: _close }) {
         [name]: val,
       });
     },
+
+    
+
+
     handleSetPayment = () => {
       const payments = [...sale.payments];
       let pagado = 0;
@@ -100,14 +98,14 @@ function PaymentModal({forPaid, handleClose: _close }) {
       payments.forEach((pay) => (pagado += pay.total));
 
 
-      console.log("PAGADO====", pagado);
-      console.log("POR PAGAR===", forPaid);
+      //console.log("PAGADO====", pagado);
+      //console.log("POR PAGAR===", forPaid);
 
       _close();
 
 
       ////--
-      addPayment(payments);
+      addPayment(sale, payments);
 
      /*  dispatch(
         saleActions.saveSale({
@@ -121,47 +119,6 @@ function PaymentModal({forPaid, handleClose: _close }) {
         })
       ); */
 
-      /* if(pagado === forPaid)
-      {
-        //Guardamos la venta//
-        console.log("Venta guardada");
-        dispatch(
-          saleActions.saveSale({
-            id: sale.id,
-            data: {
-              ...sale,
-              pagado,
-              items: JSON.stringify(sale.items),
-              payments: JSON.stringify(payments),
-            },
-          })
-        );
-
-      }else{
-
-        //Accedemos al locaStorage(payments) y guardamos el payment realizado//
-        console.log("Abono realizado, informacion del abono");
-
-
-        let currentSale = JSON.parse(localStorage.getItem('OrusSales'));
-        let currentSalePayments = currentSale.payments;
-
-        console.log("CURRENT SALE", currentSale);
-
-        currentSale.total = forPaid
-        currentSale.subtotal = forPaid
-        currentSale.abonado = currentSale.abonado + pagado
-
-        currentSalePayments.push(payments);
-
-        localStorage.setItem('OrusSales', JSON.stringify(currentSale));
-
-        if(currentSale.abonado === currentSale.total){
-          //Guardar la venta//
-        }
-      } */
-
-    
     },
     handleSubmitForm = (e) => {
       e.preventDefault();

@@ -66,6 +66,14 @@ export default function useSales({ children }) {
     });
   };
 
+
+  const setSale = (sale)=> {
+      setState({
+          ...state,
+          sale: sale,
+      })
+  };
+
   const setCustomer = (customer) => {
     setState({
       ...state,
@@ -86,9 +94,6 @@ export default function useSales({ children }) {
   };
 
   const addItems = (sale, newItems) => {
-    console.log("State", state);
-    console.log("Sale", sale);
-    console.log("ITEMS", newItems);
     setState({
       ...state,
       sale: {
@@ -100,15 +105,30 @@ export default function useSales({ children }) {
     });
   };
 
-  const addPayment = (payment) => {
+  const addPayment = (sale, payment) => {
     setState({
       ...state,
       sale: {
-        ...state.sale,
+        ...sale,
         payments: payment,
       },
     });
   };
+
+  const deletePayment = ()=> {
+
+  }
+
+
+  const addDiscount = (sale, discount)=>{
+    setState({
+        ...state,
+        sale:{
+            ...sale,
+            descuento: discount,
+        }
+    })
+  }
 
   const setTotal = (total) => {
     console.log("TOTAL DE LA VENTA", total);
@@ -117,6 +137,8 @@ export default function useSales({ children }) {
       sale: {
         ...state.sale,
         total: total,
+
+        //TODO: revisar cual debe ser el valor de subtotal
         subtotal: total,
       },
     });
@@ -125,13 +147,16 @@ export default function useSales({ children }) {
   const resetSale = () => {
     setState({
       ...state,
-      saleList: [],
       sale: {
         ...state.sale,
         session: saleHelper.getSession(),
       },
     });
   };
+
+
+
+
   // State
   const [state, setState] = useState({
     saleList: [],
@@ -139,15 +164,17 @@ export default function useSales({ children }) {
     getSaleList,
     getSaleById,
     setCustomer,
+    setSale,
     resetSale,
     addItems,
     setTotal,
     addPayment,
+    deletePayment,
+    addDiscount
   });
 
-  useEffect(() => {
-    console.log("[DEBUG] Render context sale:", state.sale);
-  }, [state.sale]);
+  /* useEffect(() => {
+  }, [state.sale]); */
 
   return <SaleContext.Provider value={state}>{children}</SaleContext.Provider>;
 }

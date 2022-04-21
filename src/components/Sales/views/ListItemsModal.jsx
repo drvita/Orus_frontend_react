@@ -39,9 +39,7 @@ function ListItemsModal({
           precio: data.precio,
         },
       };
-
-      console.log("TO SEND", toSend)
-
+      
       _Select(toSend);
       setData({
         item: null,

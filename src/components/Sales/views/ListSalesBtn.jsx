@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { saleActions } from "../../../redux/sales";
+import { Sale } from '../../../context/SaleContext';
+
 //Components
 import ListSalesModal from "./ListSalesModal";
 
 export default function ListSalesBtn({ setSale: _setSale }) {
+
+  const { setSale } = Sale();
 
   const [data, setData] = useState(false),
 
@@ -23,23 +27,25 @@ export default function ListSalesBtn({ setSale: _setSale }) {
 
     handleSelectSale = (sale) => {
 
-      console.log("SALE", sale);
-
       let pagado = 0;
 
       sale.payments.forEach((pay) => (pagado = pay.total));
 
       setData(false);
+      
+      //SetSale on Sale Context
+      setSale(sale);
 
-      _setSale({
+
+     /*  _setSale({
         pagado,
         order_id: sale.pedido,
-      });
+      }); */
 
 
       //Add to redux
       //Guarda le venta individual seleccionada en REDUX//
-      dispatch(
+      /* dispatch(
         saleActions.setSale({
           id: sale.id,
           customer: sale.customer,
@@ -53,7 +59,7 @@ export default function ListSalesBtn({ setSale: _setSale }) {
           pedido: sale.pedido,
           created_at: sale.created_at,
         })
-      );
+      ); */
     };
 
   return (

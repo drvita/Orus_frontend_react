@@ -26,7 +26,7 @@ function InputSearchItem({
   //Functions
   //_getList,
   _setList,
-  _setSale,
+  //_setSale,
   _setMessage,
 }) {
 
@@ -43,7 +43,6 @@ function InputSearchItem({
 
   //Functions
   const handleChangeTextSearch = ({ value }) => {
-    console.log("VALUES-->", value);
       setTextSearch(value);
     },
 
@@ -134,9 +133,6 @@ function InputSearchItem({
         newItems.push(result);
       }
 
-      console.log("Venta",sale);
-      console.log("NUEVOS ITEMS",newItems);
-
       //Guardar items de la venta en sale del context//
       addItems(sale, newItems);
 
@@ -155,7 +151,6 @@ function InputSearchItem({
           item: list[0],
           cant: cantDefault ? cantDefault : 1,
         });
-        console.log("ITEM", item);
         handleAddItem(item);
         setCantDefault(1);
       } else {
@@ -222,7 +217,7 @@ const mapStateToProps = ({ storeItem }) => {
   mapActionsToProps = {
     //_getList: storeActions.getListStore,
     //_setList: storeActions.setListStore,
-    _setSale: saleActions.setSale,
+    //_setSale: saleActions.setSale,
     _setMessage: storeActions.setMessagesStore,
   };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 //Custom Hook//
 import useContact from "../../../hooks/useContact";
@@ -50,7 +50,7 @@ function SearchCustomerModal({ handleClose: _close }) {
         if (![0, 2].includes(sale.customer.id)) {
           window.Swal.fire({
             title: "Ventas",
-            text: "Esta accion crear una nueva venta ¿Esta seguro que desea crear una nueva venta?",
+            text: "Esta accion creara una nueva venta ¿Esta seguro que desea crear una nueva venta?",
             icon: "question",
             showCancelButton: true,
             confirmButtonText: "Crear",

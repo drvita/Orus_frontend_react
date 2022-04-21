@@ -1,14 +1,12 @@
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import { saleActions } from "../../../redux/sales";
+import { Sale } from '../../../context/SaleContext';
 
-export default function PrintSaleComponent({
-  sale = {},
-  payed: abonado = 0,
-  order,
-  text,
-  btn = "primary",
-}) {
+export default function PrintSaleComponent({ /* sale = {}, */ payed: abonado = 0, order, text, btn = "primary" }) {
+
+  const { sale } = Sale();
+
   const {
       items,
       descuento,
@@ -18,13 +16,22 @@ export default function PrintSaleComponent({
       customer: client,
       payments
     } = sale,
+
     saldo = total - abonado,
+
     { branch } = useSelector((state) => state.users.dataLoggin),
     dispatch = useDispatch();
-  let totalItems = 0;
+    let totalItems = 0;
+
+
   //Functions
   const handlePrintShow = () => {
-    dispatch(
+
+    console.log("Boton de imprimir venta");
+
+    //TODO: Ejecutamos funcion de guardar venta
+
+   /*  dispatch(
       saleActions.saveSale({
         id: sale.id,
         data: {
@@ -33,12 +40,12 @@ export default function PrintSaleComponent({
           payments: null,
         },
       })
-    );
+    ); */
+    
     window.print();
   };
 
-  // console.log("[DEBUG] branch:", branch);
-  
+
 
   return (
     <>

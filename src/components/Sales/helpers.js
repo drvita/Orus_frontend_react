@@ -49,7 +49,7 @@ const getSession = () => {
 };
 
 
-const getForPay = (items, payments)=>{
+const getForPay = (items, payments, discount)=>{
 
   let pay = 0, total = 0;
 
@@ -61,7 +61,7 @@ const getForPay = (items, payments)=>{
     total += item.subtotal;
   })
 
-  return total - pay;
+  return total - pay - discount ;
 }
 
 const getTotal = (items)=> {
@@ -75,9 +75,6 @@ const getTotal = (items)=> {
 
 const getPagado = (payments = []) => {
   let pagado = 0;
-
-  console.log("PAYMENTS---", payments)
-
   payments.forEach((payment)=>{
     pagado += payment.total;
   })

@@ -1,15 +1,21 @@
 import {useContext} from 'react';
 import { useDispatch } from "react-redux";
 //import { saleActions } from "../../../redux/sales/index.js";
-import { SaleContext } from "../../../context/SaleContext.js";
+import { Sale } from '../../../context/SaleContext';
+//import { SaleContext } from "../../../context/SaleContext.js";
 import helpers from "../helpers.js";
 
 export default function EraseSaleBtnComponent({ /* sale *//*  defaultState, */ /* erase: _erase, */ }) {
 
   const dispatch = useDispatch();
+  
+  const { sale, resetSale } = Sale();
+
+  const disabled = sale.customer.id || sale.items.length ? false : true;
+
+  //console.log("ITEMS VALIDATION", sale.customer.id || sale.items.length ? false : true);
 
 
-  const { sale, resetSale } = useContext(SaleContext);
 
   //Functions
   const eraseSale = () => {
@@ -41,7 +47,7 @@ export default function EraseSaleBtnComponent({ /* sale *//*  defaultState, */ /
       className="btn btn-warning ml-1"
       title="Nueva venta"
       onClick={handleEraseSale}
-     /*  disabled={!sale.customer.id || !sale.items.length} */
+      disabled={ disabled }
     >
       <i className="fas fa-window-close"></i>
     </button>

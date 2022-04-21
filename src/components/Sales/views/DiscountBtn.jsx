@@ -1,20 +1,11 @@
-import { useContext } from "react";
-import { useDispatch } from "react-redux";
-import { saleActions } from "../../../redux/sales";
-import { SaleContext } from "../../../context/SaleContext";
+import { Sale } from '../../../context/SaleContext';
 import helper from '../helpers';
 
 export default function DiscountBtnComponent() {
 
-  //const dispatch = useDispatch();
-
-  const { sale, addDiscount } = useContext(SaleContext);
-
+  const { sale, addDiscount } = Sale();
   const pagado = helper.getPagado(sale.payments);
-
-  //const btnDisabled = sale.total - pagado > 0 && sale.descuento === 0 && pagado === 0 ? false : true;
-  const paid = sale.total <= pagado ? true : false;
-
+  const btnDisabled = sale.total - pagado > 0 && sale.descuento === 0 && pagado === 0 ? false : true;
 
 
   //Functions
@@ -23,70 +14,26 @@ export default function DiscountBtnComponent() {
       isNumeric = /^[0-9]+$/gms,
       isPercen = /^[0-9]{2,3}%$/gms;
 
+
+    //TODO:Cambiar la linea 27 por el helper//
     let sum = 0;
     sale.items.forEach((item) => (sum += item.subtotal));
 
     if (discount.match(isNumeric)) {
       const value = parseInt(discount);
 
+      const total = sum - value;
 
-      //Save Sale en context
-      addDiscount({
-        id: sale.id,
-        data: {
-          ...sale,
-          descuento: value,
-          total: sum - value,
-          items: JSON.stringify(sale.items),
-          payments: null,
-        },
-      })
+      addDiscount(sale, value);
 
-      
-      //Add to redux
-      /* dispatch(
-        saleActions.saveSale({
-          id: sale.id,
-          data: {
-            ...sale,
-            descuento: value,
-            total: sum - value,
-            items: JSON.stringify(sale.items),
-            payments: null,
-          },
-        })
-      ); */
     } else if (discount.match(isPercen)) {
 
       const percent = parseInt(discount.replace("%", "")) / 100,
       value = parseInt(sum * percent);
+      const total = sum - value;
 
-      //Save Sale en context
-      addDiscount(
-        {
-          id: sale.id,
-          data: {
-            ...sale,
-            descuento: value,
-            total: sum - value,
-            items: JSON.stringify(sale.items),
-            payments: null,
-          },
-        }
-      )
-      
-      /* dispatch(
-        saleActions.saveSale({
-          id: sale.id,
-          data: {
-            ...sale,
-            descuento: value,
-            total: sum - value,
-            items: JSON.stringify(sale.items),
-            payments: null,
-          },
-        })
-      ); */
+      addDiscount(sale, value);
+
     }
   };
 
@@ -95,7 +42,7 @@ export default function DiscountBtnComponent() {
       className="btn btn-primary mx-1"
       title="Agregar descuento"
       onClick={handleAddDiscount}
-      disabled={paid}
+      disabled={btnDisabled}
     >
       <i className="fas fa-percent"></i>
     </button>

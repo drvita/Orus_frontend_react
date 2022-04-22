@@ -1,12 +1,13 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
-import useSales from "../../../hooks/useSale";
+//import useSales from "../../../hooks/useSale";
+import { Sale } from '../../../context/SaleContext';
 
 function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
   
   const [search, setSearch] = useState("");
-
-  const { getSaleList, getSaleById, saleList,  sale } = useSales();
+  
+  const { sale, getSaleList, getSaleById, saleList  } = Sale();
 
   const items = saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [] 
 

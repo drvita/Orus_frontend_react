@@ -22,7 +22,7 @@ export default function useSales(){
                 })
             }
         })
-    }
+    };
 
     const getSaleById = (name)=> {
         const saleFilter = {
@@ -46,9 +46,6 @@ export default function useSales(){
     }
 
     //Funcion para guardar una venta//
-    
-
-
 
     //State
     const [state, setState] = useState({

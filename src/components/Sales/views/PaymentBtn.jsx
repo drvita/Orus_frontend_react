@@ -6,11 +6,9 @@ import helpers from '../helpers';
 
 export default function PaymentBtnComponent() {
 
-
   const [data, setData] = useState({
     showPayment: false,
   });
-
 
   const { sale } = useContext(SaleContext);
 

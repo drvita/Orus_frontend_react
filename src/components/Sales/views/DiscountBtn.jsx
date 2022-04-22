@@ -22,7 +22,7 @@ export default function DiscountBtnComponent() {
     if (discount.match(isNumeric)) {
       const value = parseInt(discount);
 
-      const total = sum - value;
+      //const total = sum - value;
 
       addDiscount(sale, value);
 
@@ -30,7 +30,7 @@ export default function DiscountBtnComponent() {
 
       const percent = parseInt(discount.replace("%", "")) / 100,
       value = parseInt(sum * percent);
-      const total = sum - value;
+      //const total = sum - value;
 
       addDiscount(sale, value);
 

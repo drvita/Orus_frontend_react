@@ -2,41 +2,20 @@ import { useEffect, useState, useContext } from "react";
 import { connect } from "react-redux";
 import { SaleContext } from "../../../context/SaleContext";
 
-//Actions
-import { saleActions } from "../../../redux/sales";
-import { storeActions } from "../../../redux/store/index";
-
 //Components
 import ListModal from "./ListItemsModal";
 
 //Hooks
 import useProducts from '../../../hooks/useProducts';
 
-//helpers
-import helpers from '../helpers';
-
-function InputSearchItem({
-  //Ahora sale debe ser la venta del context(sale context)//
-  //sale,
-
-  //list,
-  messages,
-  loading,
-
-  //Functions
-  //_getList,
-  _setList,
-  //_setSale,
-  _setMessage,
-}) {
-
+function InputSearchItem({ messages, loading, _setMessage}) {
 
   //State
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(1);
 
-  const { sale, addItems, setTotal } = useContext(SaleContext);
+  const { sale, addItems } = useContext(SaleContext);
   const { session } = sale;
 
   const { getProducts, productList: list } = useProducts();
@@ -46,13 +25,11 @@ function InputSearchItem({
       setTextSearch(value);
     },
 
-
     handlePressEnter = (key) => {
       if (key === "Enter") {
         searchItem();
       }
     },
-
 
     searchItem = () => {
       if (textSearch.length > 2) {
@@ -72,7 +49,6 @@ function InputSearchItem({
       setShowList(false);
     },
 
-
     makeItem = (data) => {
       return {
         id: 0,
@@ -91,20 +67,9 @@ function InputSearchItem({
       };
     },
 
-
-
     handleSelectItem = (data) => {
 
       const item = makeItem(data);
-
-      //Limpia metalist en redux(dentro de store item)//
-      /* _setList({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      });
- */
       handleAddItem(item);
       setCantDefault(1);
     },
@@ -113,7 +78,6 @@ function InputSearchItem({
       const found = sale.items.filter(
         (item) => item.store_items_id === result.store_items_id
       );
-
 
       let newItems = sale.items.filter(
         (item) => item.store_items_id !== result.store_items_id
@@ -132,16 +96,7 @@ function InputSearchItem({
       } else {
         newItems.push(result);
       }
-
-      //Guardar items de la venta en sale del context//
       addItems(sale, newItems);
-
-      
-      //Quitar funcion de redux//
-      /* _setSale({
-        ...sale,
-        items: newItems,
-      }); */
     };
 
   useEffect(() => {
@@ -166,10 +121,9 @@ function InputSearchItem({
           timer: type !== "error" ? 1500 : 9000,
         });
       });
-      _setMessage();
+      //_setMessage();
     }
 
-    //eslint-disable-next-line
   }, [list]);
 
   return (
@@ -209,16 +163,12 @@ function InputSearchItem({
 const mapStateToProps = ({ storeItem }) => {
     return {
       loading: storeItem.loading,
-      //list: storeItem.list,
       messages: storeItem.messages,
       meta: storeItem.metaList,
     };
   },
   mapActionsToProps = {
-    //_getList: storeActions.getListStore,
-    //_setList: storeActions.setListStore,
-    //_setSale: saleActions.setSale,
-    _setMessage: storeActions.setMessagesStore,
+    //_setMessage: storeActions.setMessagesStore,
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(InputSearchItem);

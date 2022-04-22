@@ -16,7 +16,6 @@ import ShowTotal from "./views/ShowTotal";
 
 //Actions
 import { saleActions } from "../../redux/sales";
-import helpers from "./helpers";
 import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
@@ -24,22 +23,17 @@ import { defaultActions } from "../../redux/default/";
 import SalesProvider from "../../context/SaleContext";
 
 export default function IndexSalesComponent() {
-  //Store Redux
 
-  //Va a redux y obtiene la venta individual actual//
-  //venta del context en lugar de redux//
   const { sales } = useSelector((state) => state);
   const { sale, loading } = sales;
 
   const dispatch = useDispatch();
-
-  //Store Local
-  //pagado es la suma de los  payments
+  
   const [data, setData] = useState({
     pagado: 0,
   });
 
-  const [currentSale, setCurrentSale] = useState({
+  const [ currentSale ] = useState({
     customer: sale.customer,
     items: sale.items,
     session: sale.session,
@@ -69,16 +63,13 @@ export default function IndexSalesComponent() {
       });
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     dispatch(defaultActions.changeNamePage("punto de venta"));
-    window.addEventListener("afterprint", handlePrint);
 
     return () => {
       console.log("[Orus Systme] Cerrando venta");
-      window.removeEventListener("afterprint", handlePrint);
       dispatch(
         saleActions.setListSales({
           result: DEFAULT_STATE_SALES,
@@ -96,30 +87,7 @@ export default function IndexSalesComponent() {
         ...data,
         ...res,
       }); */
-    },
-    handlePrint = () => {
-      const path = window.location.pathname;
-
-      if (path !== "/notas") {
-        return false;
-      }
-
-      helpers.confirm("Cerrar la venta actual", () => {
-
-        //TODOD: Reiniciamos la venta
-
-        dispatch(
-          saleActions.setSale({
-            ...DEFAULT_STATE_SALES.currentSale,
-            session: helpers.getSession(),
-            created_at: new Date(),
-          })
-        );
-        handleDeleteSale();
-      });
-    };
-
-  const paid = currentSale.total <= data.pagado ? true : false;
+    }
 
   return (
     <SalesProvider>
@@ -135,21 +103,12 @@ export default function IndexSalesComponent() {
             </div>
 
             <div className="col-3">
-              <div className="card-tools text-right">
-                {/* Pendiente */}
+              <div className="card-tools text-right">      
                 <ListSalesBtn setSale={handleSetSale} />
 
-                <DiscountBtnComponent
-                /* sale={currentSale}
-                  paid={paid}
-                  btnDisabled={btnDisabled} */
-                />
+                <DiscountBtnComponent/>
 
-                <EraseBtn
-                /* sale={currentSale}
-                  defaultState={DEFAULT_STATE_SALES}
-                  erase={handleDeleteSale} */
-                />
+                <EraseBtn/>
               </div>
             </div>
           </nav>
@@ -174,19 +133,11 @@ export default function IndexSalesComponent() {
             </div>
 
             <div className="col-6 text-right">
-              <InputSearchItem /* sale={currentSale} */ />
+              <InputSearchItem/>
 
-              <PaymentBtnComponent
-                /* sale={sale}
-                paid={paid}
-                forPaid={currentSale.total - data.pagado} */
-              />
+              <PaymentBtnComponent/>
 
-              <PrintSaleComponent
-                //sale={currentSale}
-               // order={currentSale.pedido}
-                //payed={data.pagado}
-              />
+              <PrintSaleComponent/>
             </div>
           </div>
         </div>

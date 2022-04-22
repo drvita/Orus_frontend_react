@@ -4,11 +4,7 @@ import helpers from "../helpers.js";
 
 
 export default function ShowToPay(){
-
-    const { sale, setTotal } = useContext(SaleContext);
-
-    /* setTotal(helpers.getTotal(sale.items, sale.total)); */
-
+    const { sale } = useContext(SaleContext);
     return(
         <>
             <span className="text-lg">Por pagar:</span>

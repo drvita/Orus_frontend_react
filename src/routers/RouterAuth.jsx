@@ -2,7 +2,7 @@ import { Route } from "react-router-dom";
 import Users from "../components/Users/index";
 import UserAdd from "../components/Users/add";
 import Store from "../components/Store/index";
-import Contacts from "../components/Contacts/index";
+import Contacts from "../pages/Contacts";
 import Tools from "../components/Tools/tools";
 import Exam from "../components/Exam/index";
 import Order from "../components/Order/index";

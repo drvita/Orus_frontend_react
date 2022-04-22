@@ -1,7 +1,8 @@
 import React from "react";
 
 const DataDomiciliosComponent = (props) => {
-  const { domicilios, handleChangeData } = props,
+  console.log("[DEBUG] Domicilios:", props);
+  const { domicilios = {}, handleChangeData } = props,
     { calle, colonia, municipio, estado, cp } = domicilios;
   //const [inputs, setInputs] = useState("");
 

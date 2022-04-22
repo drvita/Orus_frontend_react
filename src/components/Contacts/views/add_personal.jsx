@@ -19,7 +19,7 @@ const DataPersonalComponent = (props) => {
     _getList,
     _setList,
   } = props;
-  
+
   const catchInputs = (e) => {
     const { name, value, checked } = e.target;
     let val = value;
@@ -37,23 +37,21 @@ const DataPersonalComponent = (props) => {
     handleChangeData(name, val);
   };
 
-
-
   const [time, setTime] = useState(null);
 
   useEffect(() => {
     if (!id) {
       let timeTemp = null;
-      if (name.length > 2) {
+      if (name?.length > 2) {
         if (time) clearTimeout(time);
         timeTemp = setTimeout(() => {
           _getList({
-            search: name,
+            search: name ?? "",
             //except: id,
           });
         }, 1000);
         setTime(timeTemp);
-      } else if (name.length === 1) {
+      } else if (name?.length === 1) {
         _setList({
           result: {
             list: [],
@@ -124,9 +122,6 @@ const DataPersonalComponent = (props) => {
             <option value="female">Mujer</option>
           </select>
         </div>
-
-        
-        
       </div>
       <div className="col">
         <div className="form-group position-relative">

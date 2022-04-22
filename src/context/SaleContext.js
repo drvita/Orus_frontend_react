@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { api, setUrl } from "../utils/url";
 import saleHelper from "../components/Sales/helpers";
 
@@ -66,12 +66,11 @@ export default function useSales({ children }) {
     });
   };
 
-
-  const setSale = (sale)=> {
-      setState({
-          ...state,
-          sale: sale,
-      })
+  const setSale = (sale) => {
+    setState({
+      ...state,
+      sale: sale,
+    });
   };
 
   const setCustomer = (customer) => {
@@ -115,20 +114,17 @@ export default function useSales({ children }) {
     });
   };
 
-  const deletePayment = ()=> {
+  const deletePayment = () => {};
 
-  }
-
-
-  const addDiscount = (sale, discount)=>{
+  const addDiscount = (sale, discount) => {
     setState({
-        ...state,
-        sale:{
-            ...sale,
-            descuento: discount,
-        }
-    })
-  }
+      ...state,
+      sale: {
+        ...sale,
+        descuento: discount,
+      },
+    });
+  };
 
   const setTotal = (total) => {
     console.log("TOTAL DE LA VENTA", total);
@@ -154,9 +150,6 @@ export default function useSales({ children }) {
     });
   };
 
-
-
-
   // State
   const [state, setState] = useState({
     saleList: [],
@@ -170,11 +163,8 @@ export default function useSales({ children }) {
     setTotal,
     addPayment,
     deletePayment,
-    addDiscount
+    addDiscount,
   });
-
-  /* useEffect(() => {
-  }, [state.sale]); */
 
   return <SaleContext.Provider value={state}>{children}</SaleContext.Provider>;
 }

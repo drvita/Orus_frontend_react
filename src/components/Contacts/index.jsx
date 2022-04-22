@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import moment from "moment";
 import Inbox from "../../layouts/list_inbox";
-import AddContact from "./add";
+import AddContact from "./Add";
 import CardMenu from "../../layouts/card_menu";
 //Actions
 import { contactActions } from "../../redux/contact/";

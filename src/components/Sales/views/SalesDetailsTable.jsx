@@ -1,36 +1,23 @@
 import moment from "moment";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
+import { useSelector } from "react-redux";
 //Components
 import PaymentDetails from "./PaymentDetails";
 import UpdateItemModal from "./UpdateItemModal";
-
 //Actions
-import { saleActions } from "../../../redux/sales";
 import helpers from "../helpers";
-
 
 // Sale Context
 import { Sale } from '../../../context/SaleContext';
 
 export default function SalesDetailsTableComponent() {
-
-
   const { users } = useSelector((state) => state);
-
-  const { sale, addItems, addDiscount } = Sale();
-
+  const { sale, addItems, addDiscount, addPayment } = Sale();
   const pagado  = sale.descuento === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.descuento; 
-
   const paid = sale.total <= pagado ? true : false;
-
-  /* console.log("SALE TOTAL", sale.total);
-  console.log("PAGADOO", pagado); */
 
 
     const { dataLoggin: userMain } = users,
-    dispatch = useDispatch(),
 
     [data, setData] = useState({
       showUpdateItem: false,
@@ -39,46 +26,16 @@ export default function SalesDetailsTableComponent() {
       payment: {},
     });
 
-
-    //console.log("DATA -------", data);
-
   //Functions
   const handleDeleteItem = (item) => {
 
       const newItems = sale.items.filter(
         (product) => product.store_items_id !== item.store_items_id
       );
-
-      console.log("NUEVOS ITEMS", newItems);
-
       addItems(sale, newItems);
-
-
-      /* if (sale.id) {
-        dispatch(
-          saleActions.saveSale({
-            id: sale.id,
-            data: {
-              ...sale,
-              items: JSON.stringify(newItems),
-              payments: null,
-            },
-          })
-        );
-      } else {
-        dispatch(
-          saleActions.setSale({
-            ...sale,
-            items: newItems,
-          })
-        );
-      } */
     },
 
-
     handleShowPaymentDetails = (e, payment) => {
-
-      console.log("PAYMENT----------", payment);
       if (e) e.preventDefault();
 
       setData({
@@ -91,42 +48,20 @@ export default function SalesDetailsTableComponent() {
 
     handleDeleteDiscount = () => {
       helpers.confirm("Realmente desea eliminar el descuento", () => {
-        
         addDiscount(sale, 0);
-
-
-        /* dispatch(
-          saleActions.saveSale({
-            id: sale.id,
-            data: {
-              ...sale,
-              total: sale.total + sale.descuento,
-              descuento: 0,
-              items: JSON.stringify(sale.items),
-              payments: null,
-            },
-          })
-        ); */
-
       });
     },
 
 
     handleDeletePayment = ({ id, total, metodoname }) => {
-      console.log("ID:", id, "TOTAL:", total, "METHOD NAME:", metodoname);
+      const newPayments = sale.payments.filter(
+        (payment) => payment.id !== id
+      )
 
       helpers.confirm(
         `Realmente desea eliminar el pago ${metodoname}, de ${total}`,
-        () => {
-          //Eliminamos payment del context
-
-
-          /* dispatch(
-            saleActions.deletePayment({
-              id,
-              sale_id: sale.id,
-            })
-          ); */
+        () => {        
+          addPayment(sale, newPayments);
         }
       );
     },
@@ -140,7 +75,6 @@ export default function SalesDetailsTableComponent() {
       });
     },
 
-
     handleClosePaymentDetails = () => {
       setData({
         ...data,
@@ -149,34 +83,12 @@ export default function SalesDetailsTableComponent() {
       });
     },
 
-
     handleUpdateItem = (item) => {
       const newItems = sale.items.filter(
         (i) => i.store_items_id !== item.store_items_id
       );
       newItems.push(item);
       addItems(sale, newItems);
-
-      /* if (sale.id) {
-        dispatch(
-          saleActions.saveSale({
-            id: sale.id,
-            data: {
-              ...sale,
-              items: JSON.stringify(newItems),
-              payments: null,
-            },
-          })
-        );
-      } else {
-        dispatch(
-          saleActions.setSale({
-            ...sale,
-            items: newItems,
-          })
-        );
-      } */
-
       handleCloseUpdateItem();
     },
 
@@ -294,7 +206,6 @@ export default function SalesDetailsTableComponent() {
             </>
           ) : null}
           {paid && sale.total ? (
-            //TODO: Ejecutar funcion para guardar la eventa
             <tr className="table-info">
               <td colSpan="2">
                 <span className=" w-full d-block text-uppercase text-center text-bold">
@@ -324,9 +235,6 @@ export default function SalesDetailsTableComponent() {
 }
 
 function handleDeleteBtn(toDo, data = null, disabled = false) {
-  //console.log("Funcion de eliminar item");
-  //console.log("TODO:", toDo, "DATA:", data, "DISABLED:", disabled);
-  //console.log(toDo, data, disabled);
   return (
     <td style={{ width: 32 }}>
       <button

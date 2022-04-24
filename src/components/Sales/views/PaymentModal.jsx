@@ -1,5 +1,4 @@
 import { useEffect, useState, useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { ConfigContext } from "../../../context/ConfigContext";
 import { Sale } from '../../../context/SaleContext';
 import helpers from "../helpers";
@@ -34,9 +33,6 @@ function PaymentModal({forPaid, handleClose: _close }) {
         [name]: val,
       });
     },
-
-    
-
 
     handleSetPayment = () => {
       const payments = [...sale.payments];
@@ -91,6 +87,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
 
       payments.push({
         ...data,
+        id:Date.now(),
         metodoname: helpers.getMethodName(data.metodopago),
         total: forPaid < data.total ? forPaid : data.total,
       });

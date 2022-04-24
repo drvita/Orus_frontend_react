@@ -1,11 +1,11 @@
 import moment from "moment";
-import { useSelector, useDispatch } from "react-redux";
-import { saleActions } from "../../../redux/sales";
+import { useSelector } from "react-redux";
 import { Sale } from '../../../context/SaleContext';
+import helpers from '../helpers';
 
-export default function PrintSaleComponent({ /* sale = {}, */ payed: abonado = 0, order, text, btn = "primary" }) {
+export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {
 
-  const { sale } = Sale();
+  const { sale, saveSale, resetSale } = Sale();
 
   const {
       items,
@@ -19,32 +19,47 @@ export default function PrintSaleComponent({ /* sale = {}, */ payed: abonado = 0
 
     saldo = total - abonado,
 
-    { branch } = useSelector((state) => state.users.dataLoggin),
-    dispatch = useDispatch();
+    { branch } = useSelector((state) => state.users.dataLoggin);
+
     let totalItems = 0;
 
 
   //Functions
+  
   const handlePrintShow = () => {
-
-    console.log("Boton de imprimir venta");
-
-    //TODO: Ejecutamos funcion de guardar venta
-
-   /*  dispatch(
-      saleActions.saveSale({
-        id: sale.id,
-        data: {
-          ...sale,
-          items: JSON.stringify(sale.items),
-          payments: null,
-        },
-      })
-    ); */
-    
+    saveSale(sale);
+    window.addEventListener("afterprint", handlePrint);
     window.print();
+
+
+    /* if(saleSavedCorrectly === true){
+      console.log("Entrando a la condicion", saleSavedCorrectly);
+      window.Swal.fire({
+        title: "Ventas",
+        text:"Venta almacenada con éxito",
+        icon: "info",
+        showCancelButton: false,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+      }).then(({ dismiss }) => {
+         //Mostrar ventana de imprimir
+      });
+    }else{
+      return null;
+    } */
   };
 
+  const handlePrint = () => {
+    const path = window.location.pathname;
+
+    if (path !== "/notas") {
+      return false;
+    }
+
+    helpers.confirm("Cerrar la venta actual", () => {
+      resetSale();
+    });
+  };
 
 
   return (

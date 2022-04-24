@@ -46,6 +46,7 @@ export default function useSales({ children }) {
     });
   };
 
+  
   const getSaleById = (name) => {
     const saleFilter = {
       orderBy: "created_at",
@@ -71,6 +72,36 @@ export default function useSales({ children }) {
       ...state,
       sale: sale,
     });
+  };
+
+  const saveSale = (sale) => {
+    sale.payments.forEach(payment => {
+      payment.id = 0
+    });
+
+    try {
+      const { id } = sale,
+        url = setUrl("sales", id),
+        method = id ? "PUT" : "POST"
+
+        api(url, method, sale)
+        .then((data)=>{
+          if(data.data){
+           /*  setState({
+              ...state,
+              sale: sale,
+              saleSavedCorrectly: true,
+            }) */
+            console.log("[Orus System] Venta almacenada con exito", data.data.id);
+          }else{
+            console.error("Error al guardar la venta");
+          }
+        })
+    } catch (e) {
+      console.error(
+        "[Orus System] Error in saga/sales handledSaveSale", e.message
+      );
+    }
   };
 
   const setCustomer = (customer) => {
@@ -152,12 +183,14 @@ export default function useSales({ children }) {
 
   // State
   const [state, setState] = useState({
+    //saleSavedCorrectly: false,
     saleList: [],
     sale: initialSale,
     getSaleList,
     getSaleById,
     setCustomer,
     setSale,
+    saveSale,
     resetSale,
     addItems,
     setTotal,

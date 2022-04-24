@@ -129,9 +129,9 @@ export default function BreadcrumbComponent() {
               title="conectado a"
             >
               <i className="mr-1 fas fa-wifi text-success"></i>
-              {config.server.host}
-              {config.server.port && config.server.port !== "80"
-                ? `:${config.server.port}`
+              {config.server?.host}
+              {config.server?.port && config.server?.port !== "80"
+                ? `:${config.server?.port}`
                 : null}
             </small>
             <small
@@ -140,7 +140,7 @@ export default function BreadcrumbComponent() {
               title="Almacenando en"
             >
               <i className="mr-1 fas fa-server text-success"></i>
-              {auth.permissions.includes("auth.changeBranch") ? (
+              {auth.permissions?.includes("auth.changeBranch") ? (
                 <a
                   href="#link"
                   className="text-white"

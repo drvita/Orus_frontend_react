@@ -6,7 +6,7 @@ export default function* handleLoggin({ payload: credenciales }) {
   try {
     console.log("[Orus System] Consultando credenciales en la API");
     if (credenciales.email && credenciales.password) {
-      const result = yield call(api, "users/login", "POST", credenciales);
+      const result = yield call(api, "user/login", "POST", credenciales);
 
       if (result.data) {
         console.log("[Orus System] Servidor:", result.message);

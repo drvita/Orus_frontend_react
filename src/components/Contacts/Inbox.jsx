@@ -1,42 +1,167 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import moment from "moment";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import Inbox from "../../layouts/list_inbox";
 import { Contacts } from "../../context/ContactContext";
+import useContact from "../../hooks/useContact";
 
-export default function InboxContact({
-  loading = false,
-  contactSelected = {},
-  handleNewOrEdit: _handleNewOrEdit,
-}) {
-  const _contacts = Contacts();
-  const contacts = _contacts.list.data ?? [];
-  const meta = _contacts.list.meta ?? {};
-  const options = _contacts.options;
+export default function InboxContact() {
+  const context = Contacts();
+  const _contacts = useContact();
   const history = useHistory();
+  const [state, setState] = useState({
+    contactSelected: "",
+    contacts: [],
+    meta: {},
+    loading: false,
+  });
+
+  // Functions
+  const hanleViewContact = (id) => {
+    history.push(`contactos/${id}`);
+  };
+  const handleLoadContacts = () => {
+    setState({
+      ...state,
+      loading: true,
+    });
+
+    _contacts
+      .getContacts({
+        ...context.options,
+      })
+      .then((res) => {
+        setState({
+          ...state,
+          loading: false,
+          contacts: res.data,
+          meta: res.meta,
+        });
+      });
+  };
 
   useEffect(() => {
-    // console.log("[DEBUG] Inbox:", contacts);
-  }, []);
+    // console.log("[DEBUG] Inbox:", context.options, state);
+    if (Object.keys(context.options).length) {
+      handleLoadContacts();
+    }
+  }, [context.options]);
 
   return (
     <Inbox
       title="Lista de contactos"
       icon="id-badge"
       color="indigo"
-      loading={loading}
-      meta={meta}
-      itemSelected={contactSelected}
-      //   handlePagination={handleChangePage}
-      //   handleSearch={handleSearch}
-      //   handleDeleteItem={handleDelete}
-      //   handleEditItem={handleEditItem}
+      loading={state.loading}
+      meta={state.meta}
+      itemSelected={state.contactSelected}
+      handlePagination={(page) => {
+        if (page) {
+          context.set({
+            ...context,
+            options: {
+              ...context.options,
+              page,
+            },
+          });
+        }
+      }}
+      handleSearch={(search) => {
+        if (search) {
+          context.set({
+            ...context,
+            options: {
+              ...context.options,
+              search,
+              page: 1,
+            },
+          });
+        } else if (context.options.search) {
+          context.set({
+            ...context,
+            options: {
+              ...context.options,
+              search: "",
+              page: 1,
+            },
+          });
+        }
+      }}
+      handleDeleteItem={(select) => {
+        if (state.contactSelected) {
+          window.Swal.fire({
+            title: "Contactos",
+            text: "¿Desea eliminar a este contacto?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar",
+            showLoaderOnConfirm: true,
+          }).then(({ dismiss }) => {
+            if (!dismiss) {
+              _contacts
+                .deleteContact(_contacts, state.contactSelected)
+                .then((status) => {
+                  if (status) {
+                    console.log(
+                      "[DEBUG] click delete:",
+                      select,
+                      state.contactSelected
+                    );
+                  }
+
+                  setState({
+                    ...state,
+                    contactSelected: "",
+                  });
+                  context.set({
+                    ...context,
+                    options: {
+                      ...context.options,
+                    },
+                  });
+                })
+                .catch((err) => {
+                  console.log(
+                    "[Orus System] Catch when delete contact:",
+                    err.message
+                  );
+                });
+            } else {
+              setState({
+                ...state,
+                contactSelected: "",
+              });
+            }
+          });
+        } else {
+          window.Swal.fire({
+            title: "Error",
+            text: "Lo sentimos no existe un contacto seleccionado",
+            icon: "error",
+          });
+        }
+      }}
+      handleEditItem={() => {
+        if (state.contactSelected) {
+          hanleViewContact(parseInt(state.contactSelected));
+        } else {
+          window.Swal.fire({
+            title: "Error",
+            text: "Lo sentimos no existe un contacto seleccionado",
+            icon: "error",
+          });
+        }
+      }}
       handleSync={() => {
-        _contacts.setOptions(_contacts, {
-          ...options,
-          page: 1,
+        context.set({
+          ...context,
+          options: {
+            ...context.options,
+            page: 1,
+          },
         });
       }}
     >
@@ -50,12 +175,16 @@ export default function InboxContact({
             <th>Telefono</th>
             <th>Creado por</th>
             <th>
-              {options.orderby === "created_at" ? "Registrado" : "Actualizado"}
+              {context.options.orderby === "created_at"
+                ? "Registrado"
+                : "Actualizado"}
             </th>
           </tr>
         </thead>
         <tbody>
-          {contacts.map((contact) => {
+          {state.contacts?.map((contact) => {
+            const phones = Object.values(contact.phones).filter((p) => p);
+
             return (
               <tr key={contact.id}>
                 <td className="icheck-primary pl-2">
@@ -65,11 +194,16 @@ export default function InboxContact({
                     value={contact.id}
                     id={"contact_" + contact.id}
                     //disabled={contact.enUso}
-                    checked={contactSelected === contact.id ? true : false}
+                    checked={
+                      state.contactSelected === contact.id ? true : false
+                    }
                     onChange={({ target }) => {
-                      console.log("[DEBUG] checkbox:", target.value);
-                      history.push(`contactos/${target.value}`);
-                      _handleNewOrEdit();
+                      const { value, checked } = target;
+
+                      setState({
+                        ...state,
+                        contactSelected: checked ? parseInt(value) : "",
+                      });
                     }}
                   />
                   <label
@@ -80,21 +214,21 @@ export default function InboxContact({
                 <td
                   className="mailbox-name text-capitalize text-truncate"
                   style={{ cursor: "pointer", maxWidth: 180 }}
-                  onClick={(e) => {}}
+                  onClick={() => hanleViewContact(contact.id)}
                 >
                   <label
                     style={{ cursor: "pointer" }}
                     className={contact.enUso ? "text-indigo" : ""}
                   >
-                    {contact.tipo ? (
+                    {contact.type ? (
                       <i className="fas fa-store text-sm mr-2"></i>
                     ) : (
                       <i className="fas fa-user text-sm mr-2"></i>
                     )}
-                    {contact.nombre}
+                    {contact.name.toLowerCase()}
                   </label>
                 </td>
-                <th>{contact.edad ? contact.edad : "--"}</th>
+                <th>{contact.age ? contact.age : "--"}</th>
                 <td
                   className="mailbox-attachment text-lowercase text-truncate"
                   style={{ maxWidth: 180 }}
@@ -102,26 +236,22 @@ export default function InboxContact({
                   <span>
                     <i className="fas fa-envelope text-sm mr-2"></i>
                     <a href={"mailto:" + contact.email} className="text-muted">
-                      {contact.email}
+                      {contact.email?.toLowerCase()}
                     </a>
                   </span>
                 </td>
                 <td className="mailbox-date text-muted text-truncate text-right">
                   <span>
                     <i className="fas fa-phone text-sm mr-2"></i>
-                    {contact.telefonos.t_movil
-                      ? contact.telefonos.t_movil
-                      : contact.telefonos.t_casa
-                      ? contact.telefonos.t_casa
-                      : contact.telefonos.t_oficina
-                      ? contact.telefonos.t_oficina
-                      : "--"}
+                    {phones.length ? phones[0] : "--"}
                   </span>
                 </td>
-                <td>{contact.created.name}</td>
+                <td className="text-capitalize">
+                  {contact.created.name.toLowerCase()}
+                </td>
                 <td>
                   {moment(
-                    options.orderby === "created_at"
+                    context.options.orderby === "created_at"
                       ? contact.created_at
                       : contact.updated_at
                   ).fromNow()}
@@ -130,10 +260,21 @@ export default function InboxContact({
             );
           })}
 
-          {!contacts.length && (
+          {!state.contacts?.length && (
             <tr>
               <th className="text-center text-muted" colSpan="7">
-                No hay contactos registrados
+                <i className="fa fa-info mx-2"></i>
+                {context.options.search ? (
+                  <span>
+                    La busqueda
+                    <strong className="text-dark mx-1">
+                      "{context.options.search}",
+                    </strong>
+                    no coincide con ning&uacute;n contacto.
+                  </span>
+                ) : (
+                  "No hay contactos registrados"
+                )}
               </th>
             </tr>
           )}

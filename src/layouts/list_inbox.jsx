@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Pagination from "../layouts/pagination";
 
 const ListInbox = (props) => {
@@ -7,6 +7,7 @@ const ListInbox = (props) => {
   //States
   const [search, setSearch] = useState(defaultSearch);
   const [timer, setTimer] = useState("");
+  const inputRef = useRef();
 
   useEffect(() => {
     let toTimer = null;
@@ -43,6 +44,7 @@ const ListInbox = (props) => {
                 className="form-control"
                 placeholder="Buscar"
                 defaultValue={search}
+                ref={inputRef}
                 onChange={({ target }) => {
                   const { value } = target;
                   setSearch(value);
@@ -65,7 +67,10 @@ const ListInbox = (props) => {
                 <div className="input-group-append">
                   <div
                     className="btn btn-secondary"
-                    onClick={(e) => setSearch("")}
+                    onClick={(e) => {
+                      inputRef.current.value = "";
+                      setSearch("");
+                    }}
                   >
                     <i className="fas fa-window-close"></i>
                   </div>
@@ -87,7 +92,7 @@ const ListInbox = (props) => {
               {props.handleDeleteItem ? (
                 <button
                   type="button"
-                  className="btn btn-default btn-sm"
+                  className="btn btn-default btn-sm text-danger"
                   title="Eliminar"
                   disabled={props.itemSelected ? false : true}
                   onClick={(e) => props.handleDeleteItem()}

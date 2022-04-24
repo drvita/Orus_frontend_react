@@ -1,94 +1,166 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import moment from "moment";
 import { Link, useHistory } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 //Components
-import Personal from "./views/add_personal";
-import Domicilio from "./views/add_domicilio";
-import Telefono from "./views/add_telefonos";
+import Personal from "./views/Personal";
+import Domicilio from "./views/Address";
+import Telefono from "./views/Phones";
 import ListSales from "../Sales/views/listOfSales_delete";
-import Dashboard from "../dashboard/dashboard_customer";
+import Dashboard from "./Dashboard";
 import ListBrands from "../Store/views/listOfBrands";
 import ListOrders from "../Order/views/listOfOrders";
-import CardExams from "../Exam/views/card_list_add";
+import CardExams from "../Exam/cards/List";
 import Confirm from "../../layouts/modal";
+import useContact from "../../hooks/useContact";
+import helper from "./helper";
 
-import { Contacts } from "../../context/ContactContext";
-// import helper from "./helper";
+const initialState = {
+  id: 0,
+  name: "",
+  rfc: "",
+  gender: "male",
+  email: "",
+  type: 0,
+  business: 0,
+  birthday: moment(),
+  phone_notices: "",
+  phone_cell: "",
+  phone_office: "",
+  age: "",
+  address_street: "",
+  address_neighborhood: "",
+  address_location: "Colima",
+  address_state: "Colima",
+  address_zip: "",
+  done: {
+    purchases: [],
+    brands: [],
+    supplier_of: [],
+    orders: [],
+  },
+  analytics: {
+    purchases: 0,
+    exams: 0,
+    brands: 0,
+    suppliers: 0,
+    orders: 0,
+  },
+  metadata: {
+    created_at: "",
+    updated_at: "",
+    deleted_at: "",
+    created: "",
+    updated: "--",
+  },
+  validates: {
+    name: false,
+    email: false,
+    birthday: false,
+    phones: false,
+  },
+  loading: false,
+};
 
+/**
+ * DEFAULT COMPONENT
+ */
 export default function AddContact(props) {
-  const {
-    handleNewOrEdit: _handleNewOrEdit,
-    verification = {},
-    load = false,
-    showModal = false,
-  } = props;
   const { id } = props.match.params;
-  const _contacts = Contacts();
-  const contact = _contacts.contact;
+  const { handleNewOrEdit: _handleNewOrEdit, showModal = false } = props;
+  const _contacts = useContact();
+  const [contact, setContact] = useState(initialState);
   const {
-    domicilio,
-    telefonos: telnumbers = {},
-    type = 0,
-    hasTel = [],
-    compras = [],
-    marcas = [],
-    proveedor_de = [],
-    orders = [],
+    done: { purchases, brands, supplier_of, orders },
+    analytics,
+    metadata,
   } = contact;
   const history = useHistory();
+  let btn_enabled =
+    Object.values(contact.validates).filter((val) => val).length === 4;
+  // Functions
+  const handleChangeData = (key, value) => {
+    if (!key) return;
 
-  const dataBodyConfirm = (id_exam) => {
-    return (
-      <div>
-        <p className="text-center">¿Realmente desea ver el examen?</p>
-        <div className="text-center">
-          <Link to={`/consultorio/${id_exam}`} className="btn btn-primary">
-            Confirmar
-          </Link>
-        </div>
-      </div>
-    );
+    if (contact[key] === value) {
+      return;
+    }
+
+    setContact({
+      ...contact,
+      [key]: value,
+    });
+  };
+  const handleSaveContact = () => {
+    const data = {
+      id: contact.id,
+      name: contact.name,
+      rfc: contact.rfc,
+      gender: contact.gender,
+      email: contact.email,
+      type: contact.type,
+      business: contact.business,
+      birthday: contact.birthday.format("YYYY/MM/DD"),
+      telnumbers: {
+        notices: contact.phone_notices,
+        cell: contact.phone_cell,
+        office: contact.phone_office,
+      },
+      domicilio: {
+        street: contact.address_street,
+        neighborhood: contact.address_neighborhood,
+        location: contact.address_location,
+        state: contact.address_state,
+        zip: contact.address_zip,
+      },
+    };
+
+    window.Swal.fire({
+      title: "Contactos",
+      text: data.id
+        ? "¿Desea actualizar a este contacto?"
+        : "¿Desea crear un nuevo contacto?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: data.id ? "Actualizar" : "Crear",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        _contacts.saveContact(data).then((res) => {
+          if (res?.id) {
+            console.log("[Orus System] Create contatc successfully", res.id);
+            _handleNewOrEdit();
+          }
+        });
+      }
+    });
   };
 
   useEffect(() => {
-    console.log("[DEBUG] Add contact:", id);
-
     if (id) {
-      _contacts.getContact(parseInt(id)).then((status) => {
-        console.log("[DEBUG] Finish get contact:", status);
+      _contacts.getContact(parseInt(id)).then((data) => {
+        processData(data, setContact);
       });
-    } else {
-      console.log("[DEBUG] Not id to add");
     }
   }, [id]);
 
   return (
     <>
-      {contact.id && (
-        <Dashboard
-          purchases={contact.purchases_count}
-          exams={contact.exams_count}
-          brands={contact.brands_count}
-          suppliers={contact.suppliers_count}
-          orders={contact.orders_count}
-          register={contact.created_at ?? ""}
-          created={contact.created ? contact.created.name : ""}
-          updated={contact.updated ? contact.updated.name : ""}
-          updated_at={contact.updated_at ?? ""}
-        />
-      )}
+      {contact.id ? (
+        <Dashboard analytics={analytics} metadata={metadata} />
+      ) : null}
 
       <div className="row">
         <div className="col-md-12">
-          {contact.deleted_at ? (
+          {metadata.deleted_at ? (
             <div className="alert alert-warning">
-              <h4 class="alert-heading">
+              <h4 className="alert-heading">
                 <i className="fas fa-info-circle mr-1"></i>
                 Precaucion!
               </h4>
               <p>
-                Este contacto fue eliminado por {contact.updated.name} el{" "}
+                Este contacto fue eliminado por {contact.updated?.name} el{" "}
                 {moment(contact.deleted_at).format("LLLL")}
               </p>
             </div>
@@ -113,41 +185,33 @@ export default function AddContact(props) {
                   Datos personales
                 </h6>
                 <Personal
-                  id={contact.id}
-                  name={contact.nombre}
-                  rfc={contact.rfc}
-                  email={contact.email}
-                  type={contact.tipo}
-                  gender={contact.metadata?.gender}
-                  birthday={contact.metadata?.birthday}
-                  business={contact.empresa}
-                  verification={verification}
-                  handleChangeData={() => {}}
+                  data={contact}
+                  handleChange={handleChangeData}
+                  fn={_contacts}
                 />
               </div>
               <div className="row mt-5 border-top pt-5">
                 <h6 className="card-subtitle text-muted d-block w-100 mb-4 text-center">
                   Medios de contacto <span className="text-orange">*</span>
-                  {(!telnumbers.t_casa &&
-                    !telnumbers.t_oficina &&
-                    !telnumbers.t_movil) | !verification.telefonos ? (
+                  {!contact.validates.phones && (
                     <small className="d-block w-100">
                       <span className="text-orange">
                         Ingrese por lo menos un telefono
                       </span>
                     </small>
-                  ) : null}
+                  )}
                 </h6>
-                <Telefono telefonos={telnumbers} handleChangeData={() => {}} />
+                <Telefono data={contact} handleChange={handleChangeData} />
               </div>
-              {!type ? (
+              {!contact.type ? (
                 <div className="row mt-5 border-top pt-5">
                   <h6 className="card-subtitle text-muted d-block w-100 mb-4 text-center">
                     Domicilios del contacto
                   </h6>
                   <Domicilio
+                    data={contact}
                     domicilios={
-                      domicilio ?? {
+                      contact.address ?? {
                         calle: "",
                         colonia: "",
                         municipio: "",
@@ -155,7 +219,7 @@ export default function AddContact(props) {
                         cp: "",
                       }
                     }
-                    handleChangeData={() => {}}
+                    handleChange={handleChangeData}
                   />
                 </div>
               ) : null}
@@ -169,10 +233,6 @@ export default function AddContact(props) {
                       type="button"
                       onClick={() => {
                         history.push("/contactos");
-                        _contacts.setOptions(_contacts, {
-                          ..._contacts.options,
-                          page: 1,
-                        });
                         _handleNewOrEdit();
                       }}
                     >
@@ -188,14 +248,8 @@ export default function AddContact(props) {
                     <button
                       type="button"
                       className="btn bg-indigo"
-                      onClick={() => {}}
-                      disabled={
-                        contact.deleted_at ||
-                        !contact.name?.length ||
-                        !contact.email?.length ||
-                        (!contact.birthday?.length && !type) ||
-                        !hasTel.length
-                      }
+                      onClick={() => handleSaveContact()}
+                      disabled={!btn_enabled}
                     >
                       <i className="fas fa-save mr-1"></i>
                       {contact.id ? "Actualizar" : "Guardar"}
@@ -204,26 +258,24 @@ export default function AddContact(props) {
                 </div>
               </div>
             </div>
-            {load ? (
+            {contact.loading && (
               <div className="overlay dark">
                 <i className="fas fa-2x fa-sync-alt fa-spin"></i>
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
       {contact.id ? (
         <div className="content" id="details">
           <div className="row">
-            {!type ? (
+            {!contact.type && (
               <div className="col">
-                <CardExams handeleChangePage={() => {}} />
+                <CardExams />
               </div>
-            ) : (
-              <div>Type: {type}</div>
             )}
 
-            {compras.length ? (
+            {purchases.length ? (
               <div className="col">
                 <div className="card">
                   <div className="card-body">
@@ -231,13 +283,13 @@ export default function AddContact(props) {
                       <i className="fas fa-money-bill mr-1"></i>
                       Compras
                     </h5>
-                    <ListSales sales={compras} />
+                    <ListSales sales={purchases} />
                   </div>
                 </div>
               </div>
             ) : null}
 
-            {marcas.length ? (
+            {brands.length ? (
               <div className="col">
                 <div className="card">
                   <div className="card-body">
@@ -245,13 +297,13 @@ export default function AddContact(props) {
                       <i className="fas fa-copyright mr-1"></i>
                       Marcas
                     </h5>
-                    <ListBrands brands={marcas} />
+                    <ListBrands brands={brands} />
                   </div>
                 </div>
               </div>
             ) : null}
 
-            {proveedor_de.length ? (
+            {supplier_of.length ? (
               <div className="col">
                 <div className="card">
                   <div className="card-body">
@@ -259,7 +311,7 @@ export default function AddContact(props) {
                       <i className="fas fa-building mr-1"></i>
                       Laboratorio
                     </h5>
-                    <ListOrders orders={proveedor_de ?? []} />
+                    <ListOrders orders={supplier_of ?? []} />
                   </div>
                 </div>
               </div>
@@ -288,252 +340,70 @@ export default function AddContact(props) {
   );
 }
 
-// class AddContactComponent extends Component {
-//   constructor(props) {
-//     super(props);
+function processData(data, setData) {
+  if (data) {
+    setData({
+      id: data.id,
+      name: data.name?.toLowerCase(),
+      rfc: data.rfc?.toUpperCase(),
+      gender: data.metadata?.gender,
+      email: data.email?.toLowerCase(),
+      type: data.type,
+      business: data.business,
+      birthday: data.age ? moment(data.metadata?.birthday) : moment(),
+      phone_notices: data.phones?.notices,
+      phone_cell: data.phones?.cell,
+      phone_office: data.phones?.office,
+      age: data.age,
+      address_street: data.address?.street.toLowerCase(),
+      address_neighborhood: data.address?.neighborhood.toLowerCase(),
+      address_location: data.address?.location.toLowerCase(),
+      address_state: data.address?.state.toLowerCase(),
+      address_zip: data.address?.zip.toLowerCase(),
+      done: {
+        purchases: data.purchases,
+        brands: data.brands,
+        supplier_of: data.supplier_of,
+        orders: data.orders,
+      },
+      analytics: {
+        purchases: data.purchases_count,
+        exams: data.exams_count,
+        brands: data.brands_count,
+        suppliers: data.suppliers_count,
+        orders: data.orders_count,
+      },
+      metadata: {
+        created_at: data.created_at ? moment(data.created_at) : moment(),
+        updated_at: data.updated_at ? moment(data.updated_at) : moment(),
+        deleted_at: data.deleted_at ?? "",
+        created: data.created?.username.toLowerCase() ?? "",
+        updated: data.updated?.username.toLowerCase() ?? "--",
+      },
+      validates: {
+        name: data.name?.length > 5,
+        email: helper.isEmail(data.email),
+        birthday: Boolean(moment().diff(data.metadata?.birthday, "days") > 0),
+        phones: Boolean(
+          Object.values(data.phones ?? {}).filter(
+            (phone) => phone.length === 10
+          ).length
+        ),
+      },
+      loading: false,
+    });
+  }
+}
 
-//     this.state = {
-//       id: 0,
-//       name: "",
-//       rfc: "",
-//       email: "",
-//       type: 0,
-//       gender: "female",
-//       birthday: "",
-//       domicilios: {
-//         calle: "",
-//         colonia: "",
-//         municipio: "",
-//         estado: "",
-//         cp: "",
-//       },
-//       telnumbers: { t_casa: "", t_oficina: "", t_movil: "" },
-//       business: false,
-//       verification: {
-//         name: true,
-//         email: true,
-//         birthday: true,
-//         telefonos: true,
-//       },
-//       load: false,
-//       showModal: false,
-//       idExamSelect: 0,
-//     };
-//     this.timeSave = null;
-//   }
-//   componentDidMount() {
-//     this.setState({
-//       load: true,
-//     });
-//   }
-//   componentDidUpdate(props) {
-//     const { msg_exams, msg_contact, contact, _setMsgExam, _getContact } =
-//         this.props,
-//       { load } = this.state;
-
-//     if (props.msg_exams.length !== msg_exams.length && msg_exams.length) {
-//       msg_exams.forEach((msg) => {
-//         const { type, text } = msg;
-//         window.Swal.fire({
-//           icon: type,
-//           title: text,
-//           showConfirmButton: type !== "error" ? false : true,
-//           timer: type !== "error" ? 1500 : 9000,
-//         });
-//       });
-//       _setMsgExam();
-//       _getContact(contact.id);
-//       this.setState({
-//         load: true,
-//       });
-//     }
-
-//     if (props.msg_contact.length !== msg_contact.length && msg_contact.length) {
-//       msg_exams.forEach((msg) => {
-//         const { type, text } = msg;
-//         window.Swal.fire({
-//           icon: type,
-//           title: text,
-//           showConfirmButton: type !== "error" ? false : true,
-//           timer: type !== "error" ? 1500 : 9000,
-//         });
-//       });
-//     }
-
-//     //Reload user
-//     if (props.contact.id !== contact.id && contact.id) {
-//       this.setState({
-//         load: true,
-//       });
-//     }
-
-//     if (props.load !== load && load) {
-//       this.getUser();
-//     }
-//   }
-//   componentWillUnmount() {
-//     const { _setList } = this.props;
-
-//     _setList({
-//       result: {
-//         list: [],
-//         metaList: {},
-//         contact: {},
-//       },
-//     });
-//   }
-
-//   render() {
-//     const {
-//         id,
-//         name,
-//         rfc,
-//         email,
-//         type,
-//         gender,
-//         birthday,
-//         domicilios,
-//         telnumbers,
-//         business,
-//         load,
-//         verification,
-//         showModal,
-//         idExamSelect,
-//       } = this.state,
-//       { handleClose: _handleClose, contact } = this.props,
-//       {
-//         compras = [],
-//         purchases_count,
-//         exams_count,
-//         marcas = [],
-//         brands_count,
-//         proveedor_de = [],
-//         suppliers_count,
-//         orders = [],
-//         orders_count,
-//         created_at,
-//         created,
-//         updated_at,
-//         updated,
-//       } = contact,
-//       hasTel = Object.values(telnumbers).filter((tel) => tel.length === 10);
-
-//   }
-
-//   handleCloseModal = () => {
-//     this.setState({
-//       showModal: false,
-//     });
-//   };
-//   handleSelectExam = ({ id }) => {
-//     this.setState({
-//       showModal: true,
-//       idExamSelect: id,
-//     });
-//     //window.location.href = `/consultorio/${id}`;
-//   };
-//   handleChangeData = (key, value) => {
-//     const { verification } = this.state,
-//       dataObject = helper.handleGetDataObject(key, value, verification);
-
-//     this.setState(dataObject);
-//   };
-//   handleSave = (e) => {
-//     e.preventDefault();
-//     const {
-//         id,
-//         name,
-//         rfc,
-//         email,
-//         type,
-//         gender,
-//         birthday,
-//         domicilios,
-//         telnumbers,
-//         business,
-//       } = this.state,
-//       { _saveContact } = this.props;
-
-//     //Data verification
-//     if (!helper.handleVerificationData(this.state)) return false;
-//     //make data location
-//     const dataDom = {
-//       calle: domicilios.calle.trim(),
-//       colonia: domicilios.colonia.trim(),
-//       municipio: domicilios.municipio.trim(),
-//       estado: domicilios.estado.trim(),
-//       cp: domicilios.cp.trim(),
-//     };
-//     //Make all data to save
-//     const data = {
-//       name: name.trim().toLocaleLowerCase(),
-//       rfc: rfc.trim().toLocaleLowerCase(),
-//       email: email.trim().toLocaleLowerCase(),
-//       type,
-//       gender,
-//       birthday: new Date(birthday),
-//       domicilio: JSON.stringify(dataDom),
-//       telnumbers: JSON.stringify(telnumbers),
-//       business: business ? 1 : 0,
-//     };
-
-//     //Save
-//     helper.saveContact("contacto", data, _saveContact, id);
-//   };
-//   getUser = () => {
-//     const { contact } = this.props,
-//       { id, domicilio, telefonos } = contact;
-
-//     if (id) {
-//       this.setState({
-//         id,
-//         name: contact.nombre,
-//         rfc: contact.rfc ?? "",
-//         email: contact.email ?? "",
-//         type: contact.tipo,
-//         gender: contact.metadata.gender,
-//         business: contact.empresa,
-//         birthday: contact.metadata.birthday ?? "",
-//         domicilios: domicilio
-//           ? domicilio
-//           : {
-//               calle: "",
-//               colonia: "",
-//               municipio: "",
-//               estado: "",
-//               cp: "",
-//             },
-//         telnumbers: telefonos
-//           ? telefonos
-//           : { t_casa: "", t_oficina: "", t_movil: "" },
-//         load: false,
-//       });
-//     } else {
-//       this.setState({
-//         load: false,
-//       });
-//     }
-//   };
-// }
-
-// const mapStateToProps = ({ contact, exam }) => {
-//     return {
-//       //Contacts
-//       loading: contact.loading,
-//       contact: contact.contact,
-//       msg_contact: contact.messages,
-//       //Exams
-//       msg_exams: exam.messages,
-//     };
-//   },
-//   mapActionsToProps = {
-//     //contact
-//     _getContact: contactActions.getContact,
-//     _saveContact: contactActions.saveContact,
-//     _setList: contactActions.setListContact,
-//     //Exams
-//     _saveExam: examActions.saveExam,
-//     _setMsgExam: examActions.setMessagesExam,
-//   };
-
-// export default connect(mapStateToProps, mapActionsToProps)(AddContactComponent);
+function dataBodyConfirm(id_exam) {
+  return (
+    <div>
+      <p className="text-center">¿Realmente desea ver el examen?</p>
+      <div className="text-center">
+        <Link to={`/consultorio/${id_exam}`} className="btn btn-primary">
+          Confirmar
+        </Link>
+      </div>
+    </div>
+  );
+}

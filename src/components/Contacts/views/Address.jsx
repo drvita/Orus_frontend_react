@@ -1,38 +1,8 @@
-import React from "react";
-
-const DataDomiciliosComponent = (props) => {
-  console.log("[DEBUG] Domicilios:", props);
-  const { domicilios = {}, handleChangeData } = props,
-    { calle, colonia, municipio, estado, cp } = domicilios;
-  //const [inputs, setInputs] = useState("");
-
-  const catchInputs = (e) => {
-    const { name, value } = e.target;
-    let val = domicilios;
-
-    if (name === "calle") {
-      val.calle = value;
-    }
-    if (name === "colonia") {
-      val.colonia = value;
-    }
-    if (name === "municipio") {
-      val.municipio = value;
-    }
-    if (name === "estado") {
-      val.estado = value;
-    }
-    if (name === "cp") {
-      val.cp = value;
-    }
-
-    handleChangeData("domicilios", val);
-  };
-
+export default function Address({ data, handleChange }) {
   return (
     <>
       <div className="col">
-        {calle ? (
+        {data.address_street ? (
           <small>
             <label>Calle y numero</label>
           </small>
@@ -49,12 +19,13 @@ const DataDomiciliosComponent = (props) => {
             type="text"
             className="form-control text-capitalize"
             placeholder="Calle y numero"
-            name="calle"
-            value={calle}
-            onChange={catchInputs}
+            defaultValue={data.address_street ?? ""}
+            onChange={({ target }) =>
+              handleChange("address_street", target.value.toLowerCase())
+            }
           />
         </div>
-        {colonia ? (
+        {data.address_neighborhood ? (
           <small>
             <label>Colonia</label>
           </small>
@@ -71,12 +42,13 @@ const DataDomiciliosComponent = (props) => {
             type="text"
             className="form-control text-capitalize"
             placeholder="Colonia"
-            name="colonia"
-            value={colonia}
-            onChange={catchInputs}
+            defaultValue={data.address_neighborhood ?? ""}
+            onChange={({ target }) =>
+              handleChange("address_neighborhood", target.value.toLowerCase())
+            }
           />
         </div>
-        {municipio ? (
+        {data.address_location ? (
           <small>
             <label>Municipio</label>
           </small>
@@ -93,14 +65,15 @@ const DataDomiciliosComponent = (props) => {
             type="text"
             className="form-control text-capitalize"
             placeholder="Municipio"
-            name="municipio"
-            value={municipio}
-            onChange={catchInputs}
+            defaultValue={data.address_location ?? ""}
+            onChange={({ target }) =>
+              handleChange("address_location", target.value.toLowerCase())
+            }
           />
         </div>
       </div>
       <div className="col">
-        {estado ? (
+        {data.address_state ? (
           <small>
             <label>Estado</label>
           </small>
@@ -117,12 +90,13 @@ const DataDomiciliosComponent = (props) => {
             type="text"
             className="form-control text-capitalize"
             placeholder="Estado"
-            name="estado"
-            value={estado}
-            onChange={catchInputs}
+            defaultValue={data.address_state ?? ""}
+            onChange={({ target }) =>
+              handleChange("address_state", target.value.toLowerCase())
+            }
           />
         </div>
-        {cp ? (
+        {data.address_zip ? (
           <small>
             <label>Codigo postal</label>
           </small>
@@ -139,14 +113,13 @@ const DataDomiciliosComponent = (props) => {
             type="text"
             className="form-control"
             placeholder="Codigo Postal"
-            name="cp"
-            value={cp}
-            onChange={catchInputs}
+            defaultValue={data.address_zip ?? ""}
+            onChange={({ target }) =>
+              handleChange("address_zip", target.value.toLowerCase())
+            }
           />
         </div>
       </div>
     </>
   );
-};
-
-export default DataDomiciliosComponent;
+}

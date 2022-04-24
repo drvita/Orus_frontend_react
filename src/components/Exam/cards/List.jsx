@@ -1,23 +1,11 @@
-import React from "react";
-import { connect } from "react-redux";
-//Components
-import ListExam from "../data/listExamsCustomer";
+import ListExam from "../views/List";
 import helper from "../helpers";
-//Actions
-import { examActions } from "../../../redux/exam/.";
+import { Contacts } from "../../../context/ContactContext";
 
-const CardListExamsComponent = (props) => {
-  const {
-      contact = {},
-      showBottons = true,
-      showNew = true,
-      handeleChangePage: _handeleChangePage,
-    } = props,
-    { examenes = [] } = contact;
-
-  const handleSelected = (exam) => {
-    _handeleChangePage(exam);
-  };
+export default function List(props) {
+  const _contacts = Contacts();
+  const { contact = {}, showBottons = true, showNew = true } = props,
+    { exams = [] } = _contacts.contact;
 
   return (
     <div className="card">
@@ -26,11 +14,13 @@ const CardListExamsComponent = (props) => {
           <i className="fas fa-notes-medical mr-1"></i>
           Examenes
         </h5>
-        {examenes.length ? (
+        {exams.length ? (
           <ListExam
             allSelect={true}
-            exams={examenes}
-            handleSelectedExam={handleSelected}
+            exams={exams}
+            handleSelectedExam={(examSelect) => {
+              console.log("[DEBUG] examSelect", examSelect);
+            }}
           />
         ) : (
           <div className="alert alert-info mt-5">
@@ -59,20 +49,4 @@ const CardListExamsComponent = (props) => {
       ) : null}
     </div>
   );
-};
-
-const mapStateToProps = ({ contact, exam }) => {
-    return {
-      msg_exams: exam.messages,
-      contact: contact.contact,
-    };
-  },
-  mapActionsToProps = {
-    _saveExam: examActions.saveExam,
-    _setMsgExam: examActions.setMessagesExam,
-  };
-
-export default connect(
-  mapStateToProps,
-  mapActionsToProps
-)(CardListExamsComponent);
+}

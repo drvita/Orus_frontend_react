@@ -1,9 +1,10 @@
+const patternEmail =
+  /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})$/i;
+
 const handleVerificationData = (data, showMsg = true) => {
   const { name, email, birthday, telnumbers, type } = data,
     patternName =
       /^[A-ZÁÉÍÓÚñáéíóúÑ]+\s[A-ZÁÉÍÓÚñáéíóúÑ]{2,}(\s?[A-ZÁÉÍÓÚñáéíóúÑ]+){1,}/gim,
-    patternEmail =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gim,
     patternPhone = /^\d{10}$/gim;
 
   if (!type && !patternName.test(name)) {
@@ -124,7 +125,7 @@ const dataPrimary = {
   birthday: "",
   type: 0,
   business: 0,
-  gender: "female"
+  gender: "female",
 };
 const handleGetDataObject = (key, value, verification) => {
   switch (key) {
@@ -168,12 +169,9 @@ const handleGetDataObject = (key, value, verification) => {
 };
 
 const toExportActions = {
-  dataPrimary,
-
-  handleVerificationData,
-  saveContact,
-  changeDataInput,
-  handleGetDataObject,
+  isEmail: function (email) {
+    return email ? patternEmail.test(email) : false;
+  },
 };
 
 export default toExportActions;

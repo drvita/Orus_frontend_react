@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
+// import { useEffect } from "react";
+
 import SideBar from "../../pages/partials/SideBar";
 import { Contacts } from "../../context/ContactContext";
 
@@ -8,14 +9,12 @@ export default function ToolBarContact({
   newOrEdit = false,
   handleNewOrEdit: _handleNewOrEdit,
 }) {
-  const _contacts = Contacts();
-  const contact = _contacts.contact ?? {};
-  const options = _contacts.options ?? {};
+  const context = Contacts();
   const history = useHistory();
 
-  useEffect(() => {
-    console.log("[DEBUG] Tool Bar options:", options);
-  }, [_contacts.options]);
+  // useEffect(() => {
+  //   console.log("[DEBUG] Toolbar:", context.options);
+  // }, [context.options]);
 
   return (
     <div className="col-sm-12 col-md-2">
@@ -37,13 +36,16 @@ export default function ToolBarContact({
                 className="form-control "
                 name="type"
                 id="type"
-                value={options.type}
+                value={context.options?.type}
                 onChange={({ target }) => {
                   const value = parseInt(target.value);
 
-                  _contacts.setOptions(_contacts, {
-                    ...options,
-                    type: !isNaN(value) ? value : "",
+                  context.set({
+                    ...context,
+                    options: {
+                      ...context.options,
+                      type: !isNaN(value) ? value : "",
+                    },
                   });
                 }}
               >
@@ -58,11 +60,14 @@ export default function ToolBarContact({
                 className="form-control "
                 name="orderby"
                 id="orderby"
-                value={options.orderby}
+                value={context.options?.orderby}
                 onChange={({ target }) => {
-                  _contacts.setOptions(_contacts, {
-                    ...options,
-                    orderby: target.value,
+                  context.set({
+                    ...context,
+                    options: {
+                      ...context.options,
+                      orderby: target.value,
+                    },
                   });
                 }}
               >
@@ -76,11 +81,14 @@ export default function ToolBarContact({
                 className="form-control "
                 name="order"
                 id="order"
-                value={options.order}
+                value={context.options?.order}
                 onChange={({ target }) => {
-                  _contacts.setOptions(_contacts, {
-                    ...options,
-                    order: target.value,
+                  context.set({
+                    ...context,
+                    options: {
+                      ...context.options,
+                      order: target.value,
+                    },
                   });
                 }}
               >
@@ -94,11 +102,14 @@ export default function ToolBarContact({
                 className="form-control "
                 name="itemsPage"
                 id="itemsPage"
-                value={options.itemsPage}
+                value={context.options?.itemsPage}
                 onChange={({ target }) => {
-                  _contacts.setOptions(_contacts, {
-                    ...options,
-                    itemsPage: parseInt(target.value),
+                  context.set({
+                    ...context,
+                    options: {
+                      ...context.options,
+                      itemsPage: parseInt(target.value),
+                    },
                   });
                 }}
               >
@@ -117,12 +128,8 @@ export default function ToolBarContact({
                 className="d-flex justify-content-between align-items-center"
                 onClick={(e) => {
                   e.preventDefault();
-                  _contacts.setOptions(_contacts, {
-                    ...options,
-                    page: 1,
-                  });
+                  console.log("[DEBUG] Tool bar:", context.options?.page);
                   history.push("/contactos");
-                  _handleNewOrEdit();
                 }}
               >
                 Ver listado
@@ -131,7 +138,7 @@ export default function ToolBarContact({
                 </span>
               </a>
             </li>
-            {contact.id ? (
+            {context.contact?.id ? (
               <li className="list-group-item">
                 <a
                   href="#details"

@@ -1,52 +1,24 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from "react";
 
-const DataTelefonosComponent = (props) => {
-  const { telefonos, handleChangeData } = props,
-    { t_casa = "", t_oficina = "", t_movil = "" } = telefonos;
+export default function Phones({ data, handleChange }) {
+  useEffect(() => {
+    const check = Boolean(
+      [data.phone_notices, data.phone_cell, data.phone_office].filter(
+        (phone) => phone.length === 10
+      ).length
+    );
 
-  const catchInputs = (e) => {
-    const { name, value } = e.target,
-      pattern = /^\d+$/gim;
-    let val = telefonos;
-
-    if (name === "t_casa") {
-      if (pattern.test(value)) {
-        val.t_casa = value;
-        if (val.t_movil.length < 10) val.t_movil = value;
-      }
+    if (check !== data.validates?.phones) {
+      handleChange("validates", {
+        ...data.validates,
+        phones: check,
+      });
     }
-    if (name === "t_oficina") {
-      if (pattern.test(value)) val.t_oficina = value;
-    }
-    if (name === "t_movil") {
-      if (pattern.test(value)) val.t_movil = value;
-    }
-    handleChangeData("telefonos", val);
-  };
+  }, [data.phone_notices, data.phone_cell, data.phone_office]);
 
   return (
     <>
-      <div className="col">
-        <div className="form-group">
-          <label>Telefono personal</label>
-          <div className="input-group">
-            <div className="input-group-prepend">
-              <span className="input-group-text">
-                <i className="fas fa-phone"></i>
-              </span>
-            </div>
-            <input
-              type="tel"
-              className="form-control"
-              placeholder="(999) 999 9999"
-              maxLength="10"
-              name="t_casa"
-              value={t_casa}
-              onChange={catchInputs}
-            />
-          </div>
-        </div>
-      </div>
       <div className="col">
         <div className="form-group">
           <label>Telefono para recados</label>
@@ -61,16 +33,24 @@ const DataTelefonosComponent = (props) => {
               className="form-control"
               placeholder="(999) 999 9999"
               maxLength="10"
-              name="t_oficina"
-              value={t_oficina}
-              onChange={catchInputs}
+              value={data.phone_notices}
+              onChange={({ target }) => {
+                if (!isNaN(target.value)) {
+                  handleChange("phone_notices", target.value);
+                }
+              }}
             />
           </div>
+          {data.phone_notices && data.phone_notices.length != 10 && (
+            <small>
+              <span className="text-orange">Telefono a 10 numeros</span>
+            </small>
+          )}
         </div>
       </div>
       <div className="col">
         <div className="form-group">
-          <label>Numero de whatsApp</label>
+          <label>Telefono personal / whatsApp</label>
           <div className="input-group">
             <div className="input-group-prepend">
               <span className="input-group-text">
@@ -82,15 +62,40 @@ const DataTelefonosComponent = (props) => {
               className="form-control"
               placeholder="(999) 999 9999"
               maxLength="10"
-              name="t_movil"
-              value={t_movil}
-              onChange={catchInputs}
+              value={data.phone_cell}
+              onChange={({ target }) => {
+                if (!isNaN(target.value)) {
+                  handleChange("phone_cell", target.value);
+                }
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="col">
+        <div className="form-group">
+          <label>Telefono del trabajo</label>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <span className="input-group-text">
+                <i className="fas fa-phone"></i>
+              </span>
+            </div>
+            <input
+              type="tel"
+              className="form-control"
+              placeholder="(999) 999 9999"
+              maxLength="10"
+              value={data.phone_office}
+              onChange={({ target }) => {
+                if (!isNaN(target.value)) {
+                  handleChange("phone_office", target.value);
+                }
+              }}
             />
           </div>
         </div>
       </div>
     </>
   );
-};
-
-export default DataTelefonosComponent;
+}

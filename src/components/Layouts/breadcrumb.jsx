@@ -12,8 +12,10 @@ import loginActions from "../../redux/user/actions";
 export default function BreadcrumbComponent() {
   const { auth, setBranch } = useContext(AuthContext);
   const config = useContext(ConfigContext);
-  const active = useLocation().pathname.replace("/", "");
-  const namePage = active ? active : "dashboard";
+  const pathName = useLocation().pathname.split("/");
+  const pathArray = pathName && pathName.length ? pathName : ["dashboard"];
+  const pathFilter = pathArray.filter((path) => ![""].includes(path));
+  const namePage = pathFilter[0];
   const currentBranch = auth.branch;
   const [state, setState] = useState({
     showChangeBranchs: false,
@@ -21,15 +23,13 @@ export default function BreadcrumbComponent() {
     branchSelect: currentBranch.id,
   });
 
-  const branches = config.data.filter((c) => c.name === "branches");
+  const branches = config.data?.filter((c) => c.name === "branches") ?? [];
 
   const dispatch = useDispatch();
 
   //Set Auth data and Branches to redux//
   dispatch(loginActions.setLoggin(auth));
   dispatch(actions.setBranches(branches));
-
-  console.log("[DEBUG AUTH]", auth);
 
   // functions
   const handleChangeBranch = (e) => {

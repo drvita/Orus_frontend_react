@@ -41,6 +41,8 @@ export function api(url, method = "GET", body, controller = null) {
                 default:
                   return reject();
               }
+            } else if (res.status === 204) {
+              return done();
             }
           }
         }

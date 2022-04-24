@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 //Components
 import SearchContact from "../Contacts/views/showContactInLine";
-import ListExam from "../Exam/data/listExamsCustomer";
+import ListExam from "../Exam/views/List";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
 //Actions
@@ -440,7 +440,7 @@ class AsistentComponent extends Component {
     };
 
     //TODO:ORDER DATA//
-    console.log("[DEBUG ORDER data]",data);
+    console.log("[DEBUG ORDER data]", data);
 
     if (exam_id) data.exam_id = parseInt(exam_id);
     //Save

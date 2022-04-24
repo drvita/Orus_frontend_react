@@ -6,7 +6,7 @@ import LabOrder from "./views/labOrder";
 import Bicelacion from "./views/bicelacionOrder";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
-import Dashboard from "../dashboard/dashboard_customer";
+import Dashboard from "../Contacts/Dashboard";
 import ShowPaymentsComponent from "../Sales/views/ShowPayments";
 //Actions
 import helper from "./helpers";

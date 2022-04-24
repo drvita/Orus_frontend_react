@@ -1,18 +1,9 @@
-import React from "react";
 import moment from "moment";
 
-const DashboardContactComponent = (props) => {
-  const {
-    purchases,
-    exams,
-    register,
-    created,
-    updated,
-    updated_at,
-    brands,
-    orders,
-    suppliers,
-  } = props;
+export default function Dashboard({ analytics, metadata }) {
+  const { purchases, exams, brands, orders, suppliers } = analytics;
+  const { created_at, created, updated, updated_at } = metadata;
+
   return (
     <div className="row">
       {brands ? (
@@ -105,11 +96,15 @@ const DashboardContactComponent = (props) => {
         </div>
       ) : null}
 
-      {register ? (
+      {created_at && (
         <div className="col">
           <div className="small-box bg-primary">
             <div className="inner">
-              <h5>{moment(register).format("L")}</h5>
+              <h5>
+                {moment().diff(created_at, "days") >= 0
+                  ? created_at.format("DD/MMMM/Y")
+                  : "--/--/--"}
+              </h5>
 
               <p>Registrado</p>
             </div>
@@ -117,16 +112,18 @@ const DashboardContactComponent = (props) => {
               <i className="fas fa-calendar"></i>
             </div>
             <a href="#details" className="small-box-footer text-xs">
-              Modificado: {updated_at ? moment(updated_at).format("L") : "--"}
+              {moment().diff(updated_at, "days") >= 0
+                ? `Modificado: ${updated_at.format("DD/MMMM/Y")}`
+                : "Modificado --/--/--"}
             </a>
           </div>
         </div>
-      ) : null}
+      )}
 
-      {created ? (
+      {created && (
         <div className="col">
           <div className="small-box bg-primary">
-            <div className="inner">
+            <div className="inner text-capitalize">
               <h5 className="text-truncate">{created}</h5>
 
               <p>Registrado por</p>
@@ -136,15 +133,13 @@ const DashboardContactComponent = (props) => {
             </div>
             <a
               href="#details"
-              className="small-box-footer text-xs text-truncate"
+              className="small-box-footer text-xs text-truncate text-capitalize"
             >
-              Modificado: {updated ? updated : "--"}
+              Modificado: {updated}
             </a>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
-};
-
-export default DashboardContactComponent;
+}

@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { api } from "../utils/url";
 
 export const ConfigContext = createContext(null);
+export const Config = () => useContext(ConfigContext);
 
 const storage = JSON.parse(localStorage.getItem("OrusSystem"));
 

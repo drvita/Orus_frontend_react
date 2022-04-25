@@ -1,12 +1,6 @@
 import ListExam from "../views/List";
-import helper from "../helpers";
-import { Contacts } from "../../../context/ContactContext";
 
-export default function List(props) {
-  const _contacts = Contacts();
-  const { contact = {}, showBottons = true, showNew = true } = props,
-    { exams = [] } = _contacts.contact;
-
+export default function List({ showBottons = false, exams = [] }) {
   return (
     <div className="card">
       <div className="card-body">
@@ -31,22 +25,13 @@ export default function List(props) {
           </div>
         )}
       </div>
-      {!contact.deleted_at && showBottons ? (
+      {showBottons && (
         <div className="card-footer text-right">
           <div className="btn-group">
-            {showNew ? (
-              <button
-                className="btn btn-secondary"
-                onClick={(e) =>
-                  helper.handleSaveExam(props.contact, 0, props._saveExam)
-                }
-              >
-                Nuevo
-              </button>
-            ) : null}
+            <button className="btn btn-secondary">Nuevo</button>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

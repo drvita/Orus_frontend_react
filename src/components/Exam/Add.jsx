@@ -15,10 +15,10 @@ import ShowContact from "../Contacts/views/showContactInLine";
 import PrintExam from "./views/print_exam";
 //logic
 import action from "./helpers";
-import { examActions } from "../../redux/exam/";
+import { examActions } from "../../redux/exam";
 import { contactActions } from "../../redux/contact";
 
-class ExamAddComponent extends Component {
+class Add extends Component {
   constructor(props) {
     super(props);
 
@@ -728,4 +728,4 @@ const mapStateToProps = ({ exam, contact }) => {
     _setContact: contactActions.setContact,
   };
 
-export default connect(mapStateToProps, mapActionsToProps)(ExamAddComponent);
+export default connect(mapStateToProps, mapActionsToProps)(Add);

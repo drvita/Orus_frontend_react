@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useHistory } from "react-router-dom";
-// import { useEffect } from "react";
 
 import SideBar from "../../pages/partials/SideBar";
 import { Contacts } from "../../context/ContactContext";
@@ -11,10 +10,6 @@ export default function ToolBarContact({
 }) {
   const context = Contacts();
   const history = useHistory();
-
-  // useEffect(() => {
-  //   console.log("[DEBUG] Toolbar:", context.options);
-  // }, [context.options]);
 
   return (
     <div className="col-sm-12 col-md-2">

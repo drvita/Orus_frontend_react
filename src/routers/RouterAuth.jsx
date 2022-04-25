@@ -4,7 +4,7 @@ import UserAdd from "../components/Users/add";
 import Store from "../components/Store/index";
 import Contacts from "../pages/Contacts";
 import Tools from "../components/Tools/tools";
-import Exam from "../components/Exam/index";
+import Exams from "../pages/Exams";
 import Order from "../components/Order/index";
 import Sales from "../components/Sales/index";
 import Dashboard from "../pages/AuthDashboard";
@@ -23,7 +23,7 @@ export default function Routers({ auth }) {
           render={(props) => {
             switch (auth.roles) {
               case "doctor":
-                return <Exam {...props} />;
+                return <Exams {...props} />;
 
               case "ventas":
                 return <Order {...props} />;
@@ -56,7 +56,7 @@ export default function Routers({ auth }) {
 
         <Route
           path="/consultorio/:id?"
-          render={(props) => <Exam {...props} />}
+          render={(props) => <Exams {...props} />}
         />
 
         <Route

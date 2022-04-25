@@ -38,6 +38,7 @@ const initialState = {
     brands: [],
     supplier_of: [],
     orders: [],
+    exams: [],
   },
   analytics: {
     purchases: 0,
@@ -71,7 +72,7 @@ export default function AddContact(props) {
   const _contacts = useContact();
   const [contact, setContact] = useState(initialState);
   const {
-    done: { purchases, brands, supplier_of, orders },
+    done: { purchases, brands, supplier_of, orders, exams },
     analytics,
     metadata,
   } = contact;
@@ -271,7 +272,7 @@ export default function AddContact(props) {
           <div className="row">
             {!contact.type && (
               <div className="col">
-                <CardExams />
+                <CardExams exams={exams} />
               </div>
             )}
 
@@ -354,7 +355,7 @@ function processData(data, setData) {
       phone_notices: data.phones?.notices,
       phone_cell: data.phones?.cell,
       phone_office: data.phones?.office,
-      age: data.age,
+      age: data.age ?? 0,
       address_street: data.address?.street.toLowerCase(),
       address_neighborhood: data.address?.neighborhood.toLowerCase(),
       address_location: data.address?.location.toLowerCase(),
@@ -365,6 +366,7 @@ function processData(data, setData) {
         brands: data.brands,
         supplier_of: data.supplier_of,
         orders: data.orders,
+        exams: data.exams,
       },
       analytics: {
         purchases: data.purchases_count,

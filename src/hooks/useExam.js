@@ -1,10 +1,10 @@
 import { api, setUrl } from "../utils/url";
 
-export default function useContact() {
-  const getContacts = async (options) => {
+export default function useExam() {
+  const getExams = async (options) => {
     if (!options) return null;
 
-    const url = setUrl("contacts", null, options);
+    const url = setUrl("exams", null, options);
 
     return await api(url, "GET")
       .then((response) => {
@@ -19,10 +19,10 @@ export default function useContact() {
         return null;
       });
   };
-  const getContact = async (id) => {
+  const getExam = async (id) => {
     if (!id) return false;
 
-    const url = setUrl("contacts", id);
+    const url = setUrl("exams", id);
 
     return await api(url, "GET")
       .then((response) => {
@@ -37,10 +37,10 @@ export default function useContact() {
         return {};
       });
   };
-  const deleteContact = async (id) => {
+  const deleteExam = async (id) => {
     if (!id) return false;
 
-    const url = setUrl("contacts", id);
+    const url = setUrl("exams", id);
 
     return await api(url, "DELETE")
       .then(() => {
@@ -55,16 +55,17 @@ export default function useContact() {
         return false;
       });
   };
-  const saveContact = async (data) => {
+  const saveExam = async (data) => {
     if (!data) return;
     const { id } = data;
     delete data.id;
 
     if (id) {
-      const url = setUrl("contacts", id);
+      const url = setUrl("exams", id);
 
       return await api(url, "PUT", data)
         .then((res) => {
+          // console.log("[DEBUG] exam hook:", res);
           return res.data;
         })
         .catch((err) => {
@@ -76,7 +77,7 @@ export default function useContact() {
           return null;
         });
     } else {
-      const url = setUrl("contacts");
+      const url = setUrl("exams");
 
       return await api(url, "POST", data)
         .then((res) => {
@@ -94,9 +95,9 @@ export default function useContact() {
   };
 
   return {
-    getContacts,
-    getContact,
-    deleteContact,
-    saveContact,
+    getExams,
+    getExam,
+    deleteExam,
+    saveExam,
   };
 }

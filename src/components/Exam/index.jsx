@@ -5,7 +5,7 @@ import Inbox from "../../layouts/list_inbox";
 import CardMenu from "../../layouts/card_menu";
 import { examActions } from "../../redux/exam/";
 import { contactActions } from "../../redux/contact";
-import AddOrNew from "./add";
+import AddOrNew from "./Add";
 import { defaultActions } from "../../redux/default/";
 import { configActions } from "../../redux/config";
 
@@ -30,8 +30,7 @@ class IndexExamComponent extends Component {
     };
   }
   componentDidMount() {
-    const { match, _getExam, _setPageName,  } = this.props,
-
+    const { match, _getExam, _setPageName } = this.props,
       { id } = match.params;
 
     if (id) {
@@ -43,8 +42,7 @@ class IndexExamComponent extends Component {
     }
     _setPageName("consultorio");
 
-    this.getBranchs()
-    
+    this.getBranchs();
   }
   componentDidUpdate(props, state) {
     const { load } = this.state,
@@ -86,10 +84,12 @@ class IndexExamComponent extends Component {
   }
 
   render() {
-    const { meta, loading, exams, branches} = this.props
+    const { meta, loading, exams, branches } = this.props;
 
-    const branchesFiltered = branches.filter(element => element.name === 'branches'),
-    { newOrEdit, options, examSelected, exam } = this.state;
+    const branchesFiltered = branches.filter(
+        (element) => element.name === "branches"
+      ),
+      { newOrEdit, options, examSelected, exam } = this.state;
 
     return (
       <div className="row">
@@ -570,10 +570,8 @@ class IndexExamComponent extends Component {
       },
       { _getListBranches } = this.props;
     _getListBranches(options);
-  };
-
+  }
 }
-
 
 const mapStateToProps = ({ exam, config }) => {
     return {

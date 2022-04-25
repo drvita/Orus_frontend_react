@@ -1,19 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 
-import { ContactContext } from "../context/ContactContext";
-import ToolsBar from "../components/Contacts/ToolsBar";
-import Inbox from "../components/Contacts/Inbox";
-import Add from "../components/Contacts/Add";
+import ToolBar from "../components/Exam/ToolBar";
+import Inbox from "../components/Exam/Inbox";
+import Add from "../components/Exam/Add";
+
+import { ExamContext } from "../context/ExamContext";
 
 const optionsDefault = {
   page: 1,
   orderby: "created_at",
   order: "desc",
+  search: "",
+  status: "",
   itemsPage: 25,
+  date: "",
+  branch: "all",
 };
 
-export default function ContactsComponent(props) {
+export default function Exams(props) {
   const [state, setState] = useState({
     options: optionsDefault,
     newOrEdit: null,
@@ -28,16 +33,16 @@ export default function ContactsComponent(props) {
   }, [id]);
 
   return (
-    <ContactContext.Provider value={{ ...state, set: setState }}>
+    <ExamContext.Provider value={{ ...state, set: setState }}>
       <div className="row">
-        <ToolsBar
+        <ToolBar
           newOrEdit={state.newOrEdit}
           handleNewOrEdit={() =>
-            setState({ ...state, newOrEdit: !state.newOrEdit })
+            setState({ ...state, newOrEdit: !state?.newOrEdit })
           }
         />
         {typeof state.newOrEdit === "boolean" ? (
-          <div className="col-sm-12 col-md-8 col-lg-10">
+          <div className="col-sm-12 col-md-10">
             {state.newOrEdit ? (
               <Add
                 {...props}
@@ -53,6 +58,6 @@ export default function ContactsComponent(props) {
           <p>Loading component</p>
         )}
       </div>
-    </ContactContext.Provider>
+    </ExamContext.Provider>
   );
 }

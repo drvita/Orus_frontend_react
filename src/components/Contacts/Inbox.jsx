@@ -19,9 +19,6 @@ export default function InboxContact() {
   });
 
   // Functions
-  const hanleViewContact = (id) => {
-    history.push(`contactos/${id}`);
-  };
   const handleLoadContacts = () => {
     setState({
       ...state,
@@ -38,6 +35,7 @@ export default function InboxContact() {
           loading: false,
           contacts: res.data,
           meta: res.meta,
+          contactSelected: "",
         });
       });
   };
@@ -102,26 +100,9 @@ export default function InboxContact() {
           }).then(({ dismiss }) => {
             if (!dismiss) {
               _contacts
-                .deleteContact(_contacts, state.contactSelected)
-                .then((status) => {
-                  if (status) {
-                    console.log(
-                      "[DEBUG] click delete:",
-                      select,
-                      state.contactSelected
-                    );
-                  }
-
-                  setState({
-                    ...state,
-                    contactSelected: "",
-                  });
-                  context.set({
-                    ...context,
-                    options: {
-                      ...context.options,
-                    },
-                  });
+                .deleteContact(state.contactSelected)
+                .then(() => {
+                  handleLoadContacts();
                 })
                 .catch((err) => {
                   console.log(
@@ -146,7 +127,7 @@ export default function InboxContact() {
       }}
       handleEditItem={() => {
         if (state.contactSelected) {
-          hanleViewContact(parseInt(state.contactSelected));
+          history.push(`contactos/${state.contactSelected}`);
         } else {
           window.Swal.fire({
             title: "Error",
@@ -214,7 +195,7 @@ export default function InboxContact() {
                 <td
                   className="mailbox-name text-capitalize text-truncate"
                   style={{ cursor: "pointer", maxWidth: 180 }}
-                  onClick={() => hanleViewContact(contact.id)}
+                  onClick={() => history.push(`contactos/${contact.id}`)}
                 >
                   <label
                     style={{ cursor: "pointer" }}

@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { SaleContext } from '../../../context/SaleContext';
+import { Sale } from '../../../context/SaleContext';
 
 export default function ShowTotal(){
-    const { sale } = useContext(SaleContext);
+    const sale = Sale();
     return(
         <>
             <span className="text-lg">Total:</span>

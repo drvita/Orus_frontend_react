@@ -12,10 +12,15 @@ import { Sale } from '../../../context/SaleContext';
 
 export default function SalesDetailsTableComponent() {
   const { users } = useSelector((state) => state);
-  const { sale, addItems, addDiscount, addPayment } = Sale();
+  const sale  = Sale();
+
+  console.log("Componente de tabla", sale);
+
+  console.log("Sale actual", sale);
+
+
   const pagado  = sale.descuento === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.descuento; 
   const paid = sale.total <= pagado ? true : false;
-
 
     const { dataLoggin: userMain } = users,
 
@@ -32,7 +37,11 @@ export default function SalesDetailsTableComponent() {
       const newItems = sale.items.filter(
         (product) => product.store_items_id !== item.store_items_id
       );
-      addItems(sale, newItems);
+      //addItems(sale, newItems);
+      sale.set({
+        ...sale,
+        items: newItems,
+      })
     },
 
     handleShowPaymentDetails = (e, payment) => {
@@ -48,7 +57,11 @@ export default function SalesDetailsTableComponent() {
 
     handleDeleteDiscount = () => {
       helpers.confirm("Realmente desea eliminar el descuento", () => {
-        addDiscount(sale, 0);
+        //addDiscount(sale, 0);
+        sale.set({
+          ...sale,
+          descuento: 0
+        })
       });
     },
 
@@ -61,7 +74,11 @@ export default function SalesDetailsTableComponent() {
       helpers.confirm(
         `Realmente desea eliminar el pago ${metodoname}, de ${total}`,
         () => {        
-          addPayment(sale, newPayments);
+          //addPayment(sale, newPayments);
+          sale.set({
+            ...sale,
+            payments:newPayments
+          })
         }
       );
     },
@@ -88,7 +105,11 @@ export default function SalesDetailsTableComponent() {
         (i) => i.store_items_id !== item.store_items_id
       );
       newItems.push(item);
-      addItems(sale, newItems);
+      //addItems(sale, newItems);
+      sale.set({
+        ...sale,
+        items:newItems,
+      })
       handleCloseUpdateItem();
     },
 

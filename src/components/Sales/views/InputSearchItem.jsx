@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { connect } from "react-redux";
-import { SaleContext } from "../../../context/SaleContext";
+import { Sale } from "../../../context/SaleContext";
 
 //Components
 import ListModal from "./ListItemsModal";
@@ -15,7 +15,7 @@ function InputSearchItem({ messages, loading, _setMessage}) {
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(1);
 
-  const { sale, addItems } = useContext(SaleContext);
+  const  sale = Sale();
   const { session } = sale;
 
   const { getProducts, productList: list } = useProducts();
@@ -96,7 +96,12 @@ function InputSearchItem({ messages, loading, _setMessage}) {
       } else {
         newItems.push(result);
       }
-      addItems(sale, newItems);
+
+      sale.set({
+        ...sale,
+        items: newItems,
+      })
+      //addItems(sale, newItems);
     };
 
   useEffect(() => {

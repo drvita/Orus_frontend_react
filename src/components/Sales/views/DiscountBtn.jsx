@@ -1,9 +1,13 @@
 import { Sale } from '../../../context/SaleContext';
 import helper from '../helpers';
+import useSales from '../../../hooks/useSale';
+
 
 export default function DiscountBtnComponent() {
 
-  const { sale, addDiscount } = Sale();
+  const sale = Sale();
+
+
   const pagado = helper.getPagado(sale.payments);
   const btnDisabled = sale.total - pagado > 0 && sale.descuento === 0 && pagado === 0 ? false : true;
 
@@ -24,16 +28,24 @@ export default function DiscountBtnComponent() {
 
       //const total = sum - value;
 
-      addDiscount(sale, value);
+      //addDiscount(sale, value);
+
+      sale.set({
+        ...sale,
+        descuento: value,
+      });
 
     } else if (discount.match(isPercen)) {
 
       const percent = parseInt(discount.replace("%", "")) / 100,
       value = parseInt(sum * percent);
       //const total = sum - value;
-
-      addDiscount(sale, value);
-
+      //addDiscount(sale, value);
+      sale.set({
+        ...sale,
+        descuento: value,
+      })
+      
     }
   };
 

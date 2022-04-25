@@ -1,9 +1,10 @@
 import { useContext } from "react";
-import { SaleContext } from "../../../context/SaleContext";
+import { Sale } from "../../../context/SaleContext";
 import moment from "moment";
 
 export default function CustomerBtnComponent() {
-    const { sale } = useContext(SaleContext);
+
+    const sale = Sale();
     return(
         <div>
             <label className="mx-1">Folio:</label>

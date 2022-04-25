@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 //Custom Hook//
 import useContact from "../../../hooks/useContact";
@@ -8,8 +8,12 @@ function SearchCustomerModal({ handleClose: _close }) {
   const [data, setData] = useState({
     textSearch: "",
   });
+
+  const [customers, setCustomers ] = useState([]);
+
   const ourContext = Sale();
-  const { getListContact, listContact: customers = [] } = useContact();
+
+  const  _contacts  = useContact();
 
   //Functions
   const handleClose = () => {
@@ -40,11 +44,19 @@ function SearchCustomerModal({ handleClose: _close }) {
         orderBy: "id",
         order: "desc",
       };
-      getListContact(filters);
+
+      _contacts.getContacts(filters).then((data)=>{
+        if(data){
+          setCustomers(data.data);
+        }else{
+          console.error("Error al obtener usuario");
+        }
+      })
     },
     handleClickCustomer = (e, customer) => {
+      console.log("Customer Seleccionado:", customer);
       e.preventDefault();
-      const { sale } = ourContext;
+      const sale = ourContext;
 
       if (sale.customer.id !== customer.id) {
         if (![0, 2].includes(sale.customer.id)) {
@@ -63,7 +75,17 @@ function SearchCustomerModal({ handleClose: _close }) {
             }
           });
         } else {
-          ourContext.setCustomer(customer);
+          ourContext.set({
+            ...sale,
+            customer:{
+              id: customer.id,
+              nombre: customer.name ? customer.name : "Venta de mostrador",
+              email: customer.email,
+              telefonos: customer.telefonos,
+              f_nacimiento: customer.f_nacimiento,
+              edad: customer.edad,
+            }
+          });
           _close();
         }
       } else {
@@ -121,14 +143,14 @@ function SearchCustomerModal({ handleClose: _close }) {
                           onClick={(e) => handleClickCustomer(e, customer)}
                           className="text-capitalize"
                         >
-                          {customer.nombre.toLowerCase()}
+                          {customer.name.toLowerCase()}
                         </a>
                       </td>
                     </tr>
                   ))}
                   {!customers.length && (
                     <>
-                      {[0, 2].includes(ourContext.sale.customer.id) ? (
+                      {[0, 2].includes(ourContext.customer.id) ? (
                         <tr>
                           <td>No existen pacientes con esta coincidencia</td>
                         </tr>

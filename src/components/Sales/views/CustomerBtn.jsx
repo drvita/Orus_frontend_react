@@ -3,7 +3,6 @@ import SearchCustomerModal from "./SearchCustomerModal";
 import { Sale } from "../../../context/SaleContext";
 
 export default function CustomerBtnComponent() {
-  const { sale } = Sale();
 
   // Modal
   const [modal, setModal] = useState(false);
@@ -11,6 +10,8 @@ export default function CustomerBtnComponent() {
     setModal(!modal);
   };
 
+  const sale = Sale();
+  
   return (
     <>
       <i className="fas fa-user mr-1 text-indigo"></i>

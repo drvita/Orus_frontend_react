@@ -1,10 +1,10 @@
 import { useContext } from 'react';
-import { SaleContext } from '../../../context/SaleContext';
+import { Sale } from '../../../context/SaleContext';
 import helpers from "../helpers.js";
 
 
 export default function ShowToPay(){
-    const { sale } = useContext(SaleContext);
+    const sale = Sale();
     return(
         <>
             <span className="text-lg">Por pagar:</span>

@@ -1,11 +1,14 @@
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { Sale } from '../../../context/SaleContext';
+import useSale from '../../../hooks/useSale';
 import helpers from '../helpers';
 
 export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {
 
-  const { sale, saveSale, resetSale } = Sale();
+  const sale = Sale();
+
+  const { saveSale } = useSale();
 
   const {
       items,
@@ -31,8 +34,8 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     window.addEventListener("afterprint", handlePrint);
     window.print();
 
-
-    /* if(saleSavedCorrectly === true){
+/* 
+    if(saleSavedCorrectly === true){
       console.log("Entrando a la condicion", saleSavedCorrectly);
       window.Swal.fire({
         title: "Ventas",
@@ -47,6 +50,7 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     }else{
       return null;
     } */
+
   };
 
   const handlePrint = () => {
@@ -57,10 +61,29 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     }
 
     helpers.confirm("Cerrar la venta actual", () => {
-      resetSale();
+      //resetSale();
+      sale.set({
+        id: 0,
+      customer: {
+        id: 0,
+        nombre: "venta de mostrador",
+        email: "",
+        telefonos: {},
+        f_nacimiento: null,
+        edad: 0,
+      },
+      contact_id: 2,
+      items: [],
+      session: helpers.getSession(),
+      descuento: 0,
+      subtotal: 0,
+      total: 0,
+      payments: [],
+      created_at: new Date(),
+      })
     });
   };
-
+  
 
   return (
     <>

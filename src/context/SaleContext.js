@@ -1,5 +1,11 @@
-import { createContext, useContext, useState } from "react";
-import { api, setUrl } from "../utils/url";
+import { createContext, useContext } from "react";
+
+export const SaleContext = createContext(null);
+export const Sale = () => useContext(SaleContext);
+
+
+
+/* import { api, setUrl } from "../utils/url";
 import saleHelper from "../components/Sales/helpers";
 
 export const SaleContext = createContext(null);
@@ -87,11 +93,11 @@ export default function useSales({ children }) {
         api(url, method, sale)
         .then((data)=>{
           if(data.data){
-           /*  setState({
+          setState({
               ...state,
               sale: sale,
               saleSavedCorrectly: true,
-            }) */
+            })
             console.log("[Orus System] Venta almacenada con exito", data.data.id);
           }else{
             console.error("Error al guardar la venta");
@@ -111,7 +117,7 @@ export default function useSales({ children }) {
         ...initialSale,
         customer: {
           id: customer.id,
-          nombre: customer.nombre ? customer.nombre : "Venta de mostrador",
+          nombre: customer.name ? customer.name : "Venta de mostrador",
           email: customer.email,
           telefonos: customer.telefonos,
           f_nacimiento: customer.f_nacimiento,
@@ -183,7 +189,7 @@ export default function useSales({ children }) {
 
   // State
   const [state, setState] = useState({
-    //saleSavedCorrectly: false,
+    saleSavedCorrectly: false,
     saleList: [],
     sale: initialSale,
     getSaleList,
@@ -201,3 +207,4 @@ export default function useSales({ children }) {
 
   return <SaleContext.Provider value={state}>{children}</SaleContext.Provider>;
 }
+ */

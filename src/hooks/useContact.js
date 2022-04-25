@@ -6,6 +6,8 @@ export default function useContact() {
 
     const url = setUrl("contacts", null, options);
 
+    console.log(url);
+
     return await api(url, "GET")
       .then((response) => {
         return response;

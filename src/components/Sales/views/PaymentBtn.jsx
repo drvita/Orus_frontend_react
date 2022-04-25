@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import PaymentModal from "./PaymentModal";
-import { SaleContext } from "../../../context/SaleContext";
+import { Sale } from "../../../context/SaleContext";
 import helpers from '../helpers';
 
 
@@ -10,7 +10,7 @@ export default function PaymentBtnComponent() {
     showPayment: false,
   });
 
-  const { sale } = useContext(SaleContext);
+  const sale = Sale();
 
   const forPaid = helpers.getForPay(sale.items, sale.payments, sale.descuento);
 

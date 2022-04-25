@@ -1,13 +1,18 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
-//import useSales from "../../../hooks/useSale";
 import { Sale } from '../../../context/SaleContext';
+import useSales from "../../../hooks/useSale";
 
 function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
+
+  const _sales = useSales();
   
   const [search, setSearch] = useState("");
+
+  const [saleList, setSaleList] = useState([]);
   
-  const { sale, getSaleList, getSaleById, saleList  } = Sale();
+  const sale = Sale();
+
 
   const items = saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [] 
 
@@ -28,20 +33,39 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
 
     searchInDB = (search = "") => {
       if(search.length === 0){
-        getSaleById(search);
+        //getSaleById(search);
+        _sales.getSaleById(search).then((data)=>{
+          if(data){
+            setSaleList(data.data)
+          }else{
+            console.error("Error al obtener la venta individual")
+          }
+        })
 
       }else{
-        getSaleById(search);
+        //getSaleById(search);
+        _sales.getSaleById(search).then((data)=>{
+          if(data){
+            setSaleList(data.data)
+          }else{
+            console.error("Error al obtener la venta individual")
+          }
+        })
       }
     };
 
   useEffect(() => {
-    getSaleList();
+    _sales.getSaleList().then((data)=>{
+      if(data){
+        setSaleList(data.data)
+      }else{
+        console.error("Error al obtener las ventas");
+      }
+    });
   }, [search]);
 
   return (
     <div className="modal d-block" tabIndex="-1">
-      {console.log("ITEMS STATE",)}
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">

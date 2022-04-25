@@ -20,20 +20,43 @@ import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
 //Context
-import SalesProvider from "../../context/SaleContext";
+import { SaleContext } from "../../context/SaleContext";
+import saleHelper from './helpers';
+
 
 export default function IndexSalesComponent() {
 
   const { sales } = useSelector((state) => state);
   const { sale, loading } = sales;
+  
 
   const dispatch = useDispatch();
+
+  const [state, setState] = useState({
+    id: 0,
+    customer: {
+      id: 0,
+      nombre: "venta de mostrador",
+      email: "",
+      telefonos: {},
+      f_nacimiento: null,
+      edad: 0,
+    },
+    contact_id: 2,
+    items: [],
+    session: saleHelper.getSession(),
+    descuento: 0,
+    subtotal: 0,
+    total: 0,
+    payments: [],
+    created_at: new Date(),
+  })
   
   const [data, setData] = useState({
     pagado: 0,
   });
 
-  const [ currentSale ] = useState({
+ /*  const [ currentSale ] = useState({
     customer: sale.customer,
     items: sale.items,
     session: sale.session,
@@ -42,20 +65,20 @@ export default function IndexSalesComponent() {
     total: sale.total,
     payments: sale.payments,
   });
-
+ */
   useEffect(() => {
     let sum = 0,
       pagado = 0;
 
-    currentSale.items.forEach((item) => (sum += item.subtotal));
-    currentSale.payments.forEach((pay) => (pagado += pay.total));
+      state.items.forEach((item) => (sum += item.subtotal));
+      state.payments.forEach((pay) => (pagado += pay.total));
 
-    if (sum !== currentSale.subtotal || data.pagado !== pagado) {
-      currentSale.subtotal = sum;
-      currentSale.total = sum - currentSale.descuento;
-      currentSale.pagado = pagado;
-      if (currentSale.id) {
-        dispatch(saleActions.setSale(currentSale));
+    if (sum !== state.subtotal || data.pagado !== pagado) {
+      state.subtotal = sum;
+      state.total = sum - state.descuento;
+      state.pagado = pagado;
+      if (state.id) {
+        dispatch(saleActions.setSale(state));
       }
 
       setData({
@@ -90,12 +113,12 @@ export default function IndexSalesComponent() {
     }
 
   return (
-    <SalesProvider>
+    <SaleContext.Provider value={{ ...state, set: setState }}>
       <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
         <div className="card-body pb-2 d-print-none">
           <nav className="row mb-2">
             <div className="col">
-              <CustomerBtnComponent />
+              <CustomerBtnComponent/>
             </div>
 
             <div className="col">
@@ -116,7 +139,7 @@ export default function IndexSalesComponent() {
             className="overflow-auto text-right p-0 border border-gray"
             style={{ height: "27rem" }}
           >
-            {currentSale.customer && currentSale.customer.id && (
+            {state.customer && state.customer.id && (
               <SalesDetailsTableComponent/>
             )}
           </div>
@@ -147,6 +170,6 @@ export default function IndexSalesComponent() {
           </div>
         ) : null}
       </div>
-    </SalesProvider>
+    </SaleContext.Provider>
   );
 }

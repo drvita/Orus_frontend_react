@@ -6,7 +6,7 @@ import ListSalesModal from "./ListSalesModal";
 
 export default function ListSalesBtn({ setSale: _setSale }) {
 
-  const { setSale } = Sale();
+  const sale = Sale();
 
   const [data, setData] = useState(false);
 
@@ -19,12 +19,15 @@ export default function ListSalesBtn({ setSale: _setSale }) {
       setData(false);
     },
 
-    handleSelectSale = (sale) => {
+    handleSelectSale = (saleSelected) => {
+      console.log("Venta seleccionada", saleSelected);
       let pagado = 0;
-      sale.payments.forEach((pay) => (pagado = pay.total));
+      saleSelected.payments.forEach((pay) => (pagado = pay.total));
       setData(false);      
-      setSale(sale);
+      //setSale(sale);
+      sale.set(saleSelected);
     };
+
 
   return (
     <>

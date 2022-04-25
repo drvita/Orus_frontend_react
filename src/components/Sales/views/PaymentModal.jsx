@@ -8,7 +8,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
     const config = useContext(ConfigContext);
     const listBanks = config.data;
     
-    const { sale, addPayment } = Sale();
+    const sale = Sale();
 
 
   //States
@@ -102,7 +102,12 @@ function PaymentModal({forPaid, handleClose: _close }) {
 
 
       ////--
-      addPayment(sale, payments);
+      //addPayment(sale, payments);
+
+      sale.set({
+        ...sale,
+        payments: payments,
+      })
 
      /*  dispatch(
         saleActions.saveSale({

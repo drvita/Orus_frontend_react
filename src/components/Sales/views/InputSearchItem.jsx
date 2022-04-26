@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { connect } from "react-redux";
 import { Sale } from "../../../context/SaleContext";
+import helper from '../helpers';
 
 //Components
 import ListModal from "./ListItemsModal";
@@ -100,6 +101,7 @@ function InputSearchItem({ messages, loading, _setMessage}) {
       sale.set({
         ...sale,
         items: newItems,
+        total: helper.getTotal(newItems),
       })
       //addItems(sale, newItems);
     };

@@ -24,11 +24,10 @@ export default function ListSalesBtn({ setSale: _setSale }) {
       let pagado = 0;
       saleSelected.payments.forEach((pay) => (pagado = pay.total));
       setData(false);      
-      //setSale(sale);
       sale.set(saleSelected);
     };
 
-
+    
   return (
     <>
       <button

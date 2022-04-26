@@ -5,7 +5,7 @@ export default function EraseSaleBtnComponent() {
 
   const sale = Sale();
   const disabled = sale.customer.id || sale.items.length ? false : true;
-
+  
   //Functions
   const eraseSale = () => {
       sale.set({
@@ -21,7 +21,7 @@ export default function EraseSaleBtnComponent() {
         contact_id: 2,
         items: [],
         session: helpers.getSession(),
-        descuento: 0,
+        discount: 0,
         subtotal: 0,
         total: 0,
         payments: [],

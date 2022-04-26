@@ -60,7 +60,7 @@ const getForPay = (items, payments, discount)=>{
   items.forEach((item)=>{
     total += item.subtotal;
   })
-
+  
   return total - pay - discount ;
 }
 
@@ -68,7 +68,8 @@ const getTotal = (items)=> {
   let total = 0;
   items.forEach((item)=>{
     total += item.subtotal;
-  })
+  }) 
+  console.log("Total de la venta:", total);
   return total;
 }
 

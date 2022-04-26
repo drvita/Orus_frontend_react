@@ -80,11 +80,8 @@ function SearchCustomerModal({ handleClose: _close }) {
             customer:{
               id: customer.id,
               nombre: customer.name ? customer.name : "Venta de mostrador",
-              email: customer.email,
-              telefonos: customer.telefonos,
-              f_nacimiento: customer.f_nacimiento,
-              edad: customer.edad,
-            }
+            },
+            contact_id: customer.id
           });
           _close();
         }

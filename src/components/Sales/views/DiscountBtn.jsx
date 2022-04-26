@@ -9,7 +9,7 @@ export default function DiscountBtnComponent() {
 
 
   const pagado = helper.getPagado(sale.payments);
-  const btnDisabled = sale.total - pagado > 0 && sale.descuento === 0 && pagado === 0 ? false : true;
+  const btnDisabled = sale.total - pagado > 0 && sale.discount === 0 && pagado === 0 ? false : true;
 
 
   //Functions
@@ -32,7 +32,7 @@ export default function DiscountBtnComponent() {
 
       sale.set({
         ...sale,
-        descuento: value,
+        discount: value,
       });
 
     } else if (discount.match(isPercen)) {
@@ -43,7 +43,7 @@ export default function DiscountBtnComponent() {
       //addDiscount(sale, value);
       sale.set({
         ...sale,
-        descuento: value,
+        discount: value,
       })
       
     }

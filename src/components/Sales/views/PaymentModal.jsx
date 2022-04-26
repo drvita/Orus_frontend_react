@@ -87,40 +87,20 @@ function PaymentModal({forPaid, handleClose: _close }) {
 
       payments.push({
         ...data,
-        id:Date.now(),
+        id:`new${Date.now().toString()}`,
         metodoname: helpers.getMethodName(data.metodopago),
         total: forPaid < data.total ? forPaid : data.total,
       });
 
       payments.forEach((pay) => (pagado += pay.total));
 
-
-      //console.log("PAGADO====", pagado);
-      //console.log("POR PAGAR===", forPaid);
-
       _close();
-
-
-      ////--
-      //addPayment(sale, payments);
 
       sale.set({
         ...sale,
         payments: payments,
       })
-
-     /*  dispatch(
-        saleActions.saveSale({
-          id: sale.id,
-          data: {
-            ...sale,
-            pagado,
-            items: JSON.stringify(sale.items),
-            payments: JSON.stringify(payments),
-          },
-        })
-      ); */
-
+      
     },
     handleSubmitForm = (e) => {
       e.preventDefault();

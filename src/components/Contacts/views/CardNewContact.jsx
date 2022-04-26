@@ -1,33 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
-//Actions
-import { contactActions } from "../../../redux/contact";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import moment from "moment";
+
 import helper from "../helper";
 
-const FormAddContactComponent = (props) => {
-  const {
-      title = "contacto",
-      name: name_props,
-      messages,
-      handleCancel: _handleCancel,
-      _save,
-    } = props,
-    [data, setData] = useState(helper.dataPrimary),
-    { name, telnumbers, birthday, email, gender } = data;
-  //States
-  //const [validForm, setValidForm] = useState(false);
-  //Acctions
-  const changeValue = (e) => {
-    helper.changeDataInput(e.target, data, setData);
+import es from "date-fns/locale/es";
+registerLocale("es", es);
 
-    //setValidForm(handleValidForm);
-  };
+export default function CardNewContact(props) {
+  const { title = "contacto", nameDefault, messages = [], _save } = props;
+  const [data, setData] = useState({
+    name: "",
+    phone: "",
+    birthday: moment(),
+    email: "",
+    gender: "male",
+  });
 
   const handleValidForm = (showMsg = false) => {
     const verify = helper.handleVerificationData(data, showMsg);
     return verify.result;
   };
-
   const handleSave = () => {
     const valid = handleValidForm(true),
       body = {
@@ -40,12 +34,14 @@ const FormAddContactComponent = (props) => {
   };
 
   useEffect(() => {
-    setData({
-      ...data,
-      name: name_props,
-    });
-    // eslint-disable-next-line
-  }, [name_props]);
+    console.log("[DEBUG] New contact effec:", nameDefault);
+    if (nameDefault) {
+      setData({
+        ...data,
+        name: nameDefault,
+      });
+    }
+  }, []);
 
   return (
     <div className="modal d-block" tabIndex="-1">
@@ -56,7 +52,11 @@ const FormAddContactComponent = (props) => {
               <i className="fas fa-plus mr-1"></i>
               Crear nuevo {title}
             </h5>
-            <button type="button" className="close" onClick={_handleCancel}>
+            <button
+              type="button"
+              className="close"
+              onClick={props.handleCancel}
+            >
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -89,14 +89,18 @@ const FormAddContactComponent = (props) => {
               <input
                 type="text"
                 className="form-control text-uppercase"
-                placeholder="Nombre del paciente"
-                name="name"
+                placeholder={`Nombre del ${title}`}
                 autoComplete="off"
                 required="required"
                 pattern="^[a-zA-Z.]{2,20}[\s]{1}[a-zA-Z.]{2,20}.*"
                 minLength="8"
-                defaultValue={name ?? ""}
-                onChange={changeValue}
+                defaultValue={data.name}
+                onChange={({ target }) => {
+                  setData({
+                    ...data,
+                    name: target.value.toLowerCase(),
+                  });
+                }}
               />
             </div>
             <div className="form-group">
@@ -104,9 +108,13 @@ const FormAddContactComponent = (props) => {
               <input
                 type="email"
                 className="form-control"
-                name="email"
-                defaultValue={email ?? ""}
-                onChange={changeValue}
+                defaultValue={data.email}
+                onChange={({ target }) => {
+                  setData({
+                    ...data,
+                    email: target.value.toLowerCase(),
+                  });
+                }}
               />
             </div>
             <div className="form-group">
@@ -115,56 +123,90 @@ const FormAddContactComponent = (props) => {
                 type="tel"
                 placeholder="Telefono celular"
                 className="form-control"
-                name="telnumbers"
-                pattern="^[\d]{10}$"
                 maxLength="10"
-                defaultValue={telnumbers?.t_movil ?? ""}
-                onChange={changeValue}
+                value={data.phone}
+                onChange={({ target }) => {
+                  if (!isNaN(target.value)) {
+                    setData({
+                      ...data,
+                      phone: target.value,
+                    });
+                  }
+                }}
               />
             </div>
             <div className="form-group">
               <label>Fecha de naciemiento</label>
-              <input
-                type="date"
-                className="form-control"
-                name="birthday"
-                defaultValue={birthday ?? ""}
-                onChange={changeValue}
+
+              <DatePicker
+                className={`form-control`}
+                locale="es"
+                selected={new Date(data.birthday.format("YYYY/MM/DD"))}
+                dateFormat="dd/MM/yyyy"
+                maxDate={new Date()}
+                placeholderText="Seleccione una fecha"
+                onSelect={(date) => {
+                  if (date) {
+                    date = date.toLocaleDateString("es-MX");
+                    date = moment(date, "DD/MM/YYYY");
+
+                    if (date.isValid()) {
+                      setData({
+                        ...data,
+                        birthday: date,
+                      });
+                    }
+                  }
+                }}
+                onChange={(date) => {
+                  if (date) {
+                    date = date.toLocaleDateString("es-MX");
+                    date = moment(date, "DD/MM/YYYY");
+
+                    if (date.isValid()) {
+                      setData({
+                        ...data,
+                        birthday: date,
+                      });
+                    }
+                  }
+                }}
               />
             </div>
             <div className="form-group">
               <label>Género</label>
               <select
                 className="custom-select"
-                name="gender"
-                onChange={changeValue}
-                defaultValue={gender ?? ""}
+                onChange={({ target }) => {
+                  setData({
+                    ...data,
+                    gender: target.value,
+                  });
+                }}
+                defaultValue={data.gender}
               >
                 <option value="male">Hombre</option>
                 <option value="female">Mujer</option>
               </select>
-              {/*  <input
-                value={birthday}
-              /> */}
             </div>
           </div>
           <div className="modal-footer">
             <div className="btn-group">
-              {_handleCancel ? (
+              {props.handleCancel && (
                 <button
                   type="button"
                   className="btn btn-default"
-                  onClick={_handleCancel}
+                  onClick={props.handleCancel}
                 >
                   <i className="fas fa-ban mr-1"></i>
                   cancelar
                 </button>
-              ) : null}
+              )}
               <button
                 type="button"
                 className="btn btn-primary"
                 onClick={handleSave}
-                disabled={!name || !telnumbers || !birthday || !email}
+                disabled={true}
               >
                 <i className="fas fa-save"></i>
                 Guardar
@@ -175,18 +217,4 @@ const FormAddContactComponent = (props) => {
       </div>
     </div>
   );
-};
-
-const mapStateToProps = ({ contact }) => {
-    return {
-      messages: contact.messages,
-    };
-  },
-  mapActionsToProps = {
-    _save: contactActions.saveContact,
-  };
-
-export default connect(
-  mapStateToProps,
-  mapActionsToProps
-)(FormAddContactComponent);
+}

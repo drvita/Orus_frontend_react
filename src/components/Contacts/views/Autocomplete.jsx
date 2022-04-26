@@ -1,42 +1,19 @@
-import React from "react";
-
-const ListContactComponent = (props) => {
-  const {
-    contacts = [],
-    title,
-    text,
-    left = "5.9rem",
-    showNew = false,
-    meta,
-    perPage = 10,
-    handleSelected: _handleSelected,
-    handleNew: _handleNew,
-  } = props;
-  //Actions
-  const handleSelect = (e, contact) => {
-    e.preventDefault();
-    _handleSelected(contact);
-  };
-  const handleNew = (e) => {
-    e.preventDefault();
-    _handleNew();
-  };
-
+export default function Autocomplete(props) {
   return (
     <div
       className="position-absolute overflow-auto"
       style={{
-        left: left,
-        height: !showNew ? "12rem" : "0rem",
+        left: props.left ?? "0rem",
+        height: !props.showNew ? "12rem" : "0rem",
         zIndex: "10",
         width: "100%",
-        maxWidth: "30rem",
+        maxWidth: props.maxWidth ?? "30rem",
       }}
     >
       <ul className="list-group">
-        {contacts.length ? (
+        {props.contacts.length ? (
           <>
-            {contacts.map((contact) => {
+            {props.contacts.map((contact) => {
               if (contact.id === 2) {
                 return (
                   <li
@@ -44,7 +21,7 @@ const ListContactComponent = (props) => {
                     className="list-group-item text-capitalize"
                   >
                     <i className="fas fa-user mr-1 text-secondary"></i>
-                    {contact.nombre}
+                    {contact.name.toLowerCase()}
                   </li>
                 );
               } else {
@@ -56,29 +33,38 @@ const ListContactComponent = (props) => {
                     <a
                       href="#selecte"
                       className="text-indigo"
-                      onClick={(e) => handleSelect(e, contact)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        props.handleSelected(contact);
+                      }}
                     >
                       <i className="fas fa-user mr-1"></i>
-                      {contact.nombre}
+                      {contact.name.toLowerCase()}
                     </a>
                   </li>
                 );
               }
             })}
-            {meta.total > perPage ? (
+            {props.meta?.total > props.meta?.per_page ? (
               <li className="list-group-item text-muted">
                 <i className="fas fa-info-circle mr-1"></i>
                 Existen mas registros, sea mas espesifico
               </li>
             ) : null}
           </>
-        ) : !showNew && _handleNew ? (
+        ) : props.meta?.total === 0 && props.handleNew ? (
           <li className="list-group-item">
-            <a href="·create" onClick={(e) => handleNew(e)}>
+            <a
+              href="·create"
+              onClick={(e) => {
+                e.preventDefault();
+                props.handleNew();
+              }}
+            >
               <i className="fas fa-info-circle mr-1 text-dark"></i>
-              <label>El {title}:</label>
+              <label>El {props.title}:</label>
               <span className="text-uppercase text-dark font-weight-bold ml-1">
-                {text}
+                {props.text}
               </span>
               , no existe.
               <span className="badge badge-dark ml-2">Registrar</span>
@@ -88,6 +74,4 @@ const ListContactComponent = (props) => {
       </ul>
     </div>
   );
-};
-
-export default ListContactComponent;
+}

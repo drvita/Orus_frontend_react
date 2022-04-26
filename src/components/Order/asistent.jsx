@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 //Components
-import SearchContact from "../Contacts/views/showContactInLine";
+import SearchContact from "../Contacts/views/ShowCard";
 import ListExam from "../Exam/views/List";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";

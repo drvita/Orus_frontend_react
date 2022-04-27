@@ -1,8 +1,9 @@
-import moment from "moment";
 import { useEffect, useState } from "react";
+//Context
 import { Sale } from '../../../context/SaleContext';
+//Hooks
 import useSales from "../../../hooks/useSale";
-
+import moment from "moment";
 function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
 
   const _sales = useSales();
@@ -13,12 +14,33 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
   
   const sale = Sale();
 
+  console.log(saleList);
+
 
   const items = saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [] 
 
-  const handleSelectSale = (e, sale) => {
+  const handleSelectSale = (e, saleSelected) => {
       if (e) e.preventDefault();
-      _select(sale);
+
+      if(sale.items.length){
+          window.Swal.fire({
+          title: "Ventas",
+          text: `Si cargas una venta, se cerrará la venta actual`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Cargar",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        }).then(({ dismiss }) => {
+          if (!dismiss) {
+            _select(saleSelected);
+          }else{
+            return null
+          }
+        });
+      }else{
+        _select(saleSelected);
+      }
     },
 
     handleChangeSearch = ({ value }) => {

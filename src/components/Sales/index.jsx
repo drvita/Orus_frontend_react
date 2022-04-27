@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 //Components
 import InputSearchItem from "./views/InputSearchItem";
 import DiscountBtnComponent from "./views/DiscountBtn";
@@ -16,8 +15,6 @@ import ShowTotal from "./views/ShowTotal";
 import {AuthContext} from '../../context/AuthContext';
 
 //Actions
-import { saleActions } from "../../redux/sales";
-import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
 //Context
@@ -28,7 +25,6 @@ import saleHelper from './helpers';
 export default function IndexSalesComponent() {
 
   const {auth} = useContext(AuthContext);
-  console.log(auth);
 
   const { sales } = useSelector((state) => state);
   const { loading } = sales;
@@ -61,36 +57,38 @@ export default function IndexSalesComponent() {
   useEffect(() => {
     let sum = 0,
       pagado = 0;
-
       state.items.forEach((item) => (sum += item.subtotal));
       state.payments.forEach((pay) => (pagado += pay.total));
-
     if (sum !== state.subtotal || data.pagado !== pagado) {
       state.subtotal = sum;
       state.total = sum - state.discount;
       state.pagado = pagado;
-      if (state.id) {
-        dispatch(saleActions.setSale(state));
-      }
 
       setData({
         pagado,
       });
+
+      /* if (state.id) {
+        dispatch(saleActions.setSale(state));
+      } */
+      
     }
 
   }, []);
 
   useEffect(() => {
+
     dispatch(defaultActions.changeNamePage("punto de venta"));
 
     return () => {
       console.log("[Orus Systme] Cerrando venta");
-      dispatch(
+      localStorage.setItem("OrusSales", "{}");
+      /* dispatch(
         saleActions.setListSales({
           result: DEFAULT_STATE_SALES,
         })
-      );
-      localStorage.setItem("OrusSales", "{}");
+      ); */
+      
     };
 
   }, []);

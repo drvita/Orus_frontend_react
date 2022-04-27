@@ -1,33 +1,35 @@
-import moment from "moment";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useContext,useState } from "react";
 //Components
 import PaymentDetails from "./PaymentDetails";
 import UpdateItemModal from "./UpdateItemModal";
-//Actions
+//Helper
 import helpers from "../helpers";
+//Hook
+import useSales from '../../../hooks/useSale';
 // Sale Context
 import { Sale } from '../../../context/SaleContext';
-import useSales from '../../../hooks/useSale';
+import { AuthContext } from "../../../context/AuthContext";
+import moment from "moment";
+
 
 export default function SalesDetailsTableComponent() {
-  const { users } = useSelector((state) => state);
   const sale  = Sale();
-
   const _saleHook = useSales();
-
   const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
   const paid = sale.total <= pagado ? true : false;
+  const { auth } = useContext(AuthContext);
+  const {rol: userMain, roles} = auth;
 
-    const { dataLoggin: userMain } = users,
 
-    [data, setData] = useState({
+
+   const [data, setData] = useState({
       showUpdateItem: false,
       showPaymentDetails: false,
       item: {},
       payment: {},
     });
 
+    const [disablePayments, setDisabledPayments] = useState(false);
 
   //Functions
   const handleDeleteItem = (item) => {
@@ -166,10 +168,11 @@ export default function SalesDetailsTableComponent() {
           {sale.items && sale.items.length ? (
             <>
               {sale.items.map((item, index) => {
-                const disabled =
-                  (sale.total && paid) ||
-                  sale.payments.length ||
-                  sale.discount;
+                // Si la venta se pagó, si hay un payment, o un descuento --> regresa TRUE
+                const disabled = (sale.total && paid) || sale.payments.length || sale.discount;
+                console.log((sale.total && paid), sale.payments.length, sale.discount)
+                console.log("Disabled 172", disabled);
+
                 if (!item.store_items_id) return null;
 
                 return (
@@ -180,6 +183,7 @@ export default function SalesDetailsTableComponent() {
                         href="#details"
                         className="text-muted w-full d-block text-uppercase"
                         onClick={(e) => handleShowUpdateItem(e, item)}
+                        disabled = 'disabled'
                       >
                         {item.producto}
                       </a>
@@ -224,15 +228,21 @@ export default function SalesDetailsTableComponent() {
           {sale.payments.length ? (
             <>
               {sale.payments.map((pay, index) => {
-                const diffPay = moment(Date.now()).diff(
-                    moment(pay.created_at),
-                    "days"
-                  ),
-                  disabled = paid && diffPay && userMain.rol;
+                const diffPay = moment(Date.now()).diff(moment(pay.created_at),"days");
+                  //que este pagada, que haya un dia de diferencia y que el rol sea admin
+                  //admin disabled = paid && roles === 'admin' ? false : true;  /* diffPay && */ 
+                  //ventas disabled = paid && diffPay /* && roles === 'ventas' ? false : true */
+                  //podemos usar un state como variable global del componente, con una condicion para cada tipo de usuario
+                  /* if(roles === 'admin'){
 
+                  }else{
+
+                  } */
+
+                  const disabled = roles === 'admin' ? false :  roles === 'ventas' ? paid && diffPay : false
                 return (
                   <tr key={index}>
-                    {handleDeleteBtn(handleDeletePayment, pay, disabled)}
+                    {handleDeleteBtn(handleDeletePayment, pay, disabled)} 
                     <td>
                       <a
                         href="#link"
@@ -293,6 +303,7 @@ export default function SalesDetailsTableComponent() {
 }
 
 function handleDeleteBtn(toDo, data = null, disabled = false) {
+  //console.log("Disabled 297 Function", disabled);
   return (
     <td style={{ width: 32 }}>
       <button

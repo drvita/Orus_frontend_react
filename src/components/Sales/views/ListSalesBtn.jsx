@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Sale } from '../../../context/SaleContext';
 
+//Context
+import { Sale } from '../../../context/SaleContext';
 //Components
 import ListSalesModal from "./ListSalesModal";
 

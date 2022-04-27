@@ -1,10 +1,10 @@
-import moment from "moment";
 import {useEffect, useContext} from 'react';
-import { useSelector } from "react-redux";
 import { Sale } from '../../../context/SaleContext';
 import useSale from '../../../hooks/useSale';
 import helpers from '../helpers';
 import { AuthContext } from "../../../context/AuthContext";
+
+import moment from "moment";
 
 export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {
 
@@ -13,6 +13,10 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
   const _saleHook = useSale();
 
   const {auth} = useContext(AuthContext);
+
+  console.log("AUTH", auth);
+
+
   const initialSale = {
     id: 0,
     customer: {
@@ -40,9 +44,9 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
       payments
     } = sale,
 
-    saldo = total - abonado,
+    saldo = total - abonado;
 
-    { branch } = useSelector((state) => state.users.dataLoggin);
+    const { branch } = auth;
 
     const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
     const paid = sale.total <= pagado ? true : false;
@@ -54,6 +58,8 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     const returnedSale = _saleHook.saveSale(sale);
     returnedSale.then((data)=>{
       if(data.data){
+        //Data devuelta
+        console.log("DATA DEVUELTA ------", data);
         sale.set({
           ...sale,
           id: data.data.id,
@@ -96,10 +102,14 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     });
   };
 
-
    useEffect(()=>{
-    if(paid && sale.total){
+    if(paid && sale.total){ 
       handlePrintShow();
+      /* if(sale.id){
+        return null
+      }else{
+        handlePrintShow();
+      } */
     }else{
       return null;
     } 

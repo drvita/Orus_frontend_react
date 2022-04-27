@@ -8,7 +8,7 @@ export default function useSales(ctx){
         const salesFilters = {
             orderBy:'created_at',
             order:'desc',
-            itemsPage: 25
+            itemsPage: 100
         }
         const url = setUrl('sales', null, salesFilters);
 
@@ -42,6 +42,7 @@ export default function useSales(ctx){
           const { id } = data,
             url = setUrl("sales", id),
             method = id ? "PUT" : "POST"
+            console.log("DATAAAAA A GUARDAR---", data);
             return await api(url, method, data)
         } catch (e) {
           console.error(

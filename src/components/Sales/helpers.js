@@ -60,16 +60,26 @@ const getForPay = (items, payments, discount)=>{
   items.forEach((item)=>{
     total += item.subtotal;
   })
-
-  return total - pay - discount ;
+  
+  return total - pay - discount;
 }
 
-const getTotal = (items)=> {
-  let total = 0;
+const getSubTotal = (items)=> {
+
+  //Suma de los items
+  let subTotal = 0;
   items.forEach((item)=>{
-    total += item.subtotal;
-  })
-  return total;
+    subTotal += item.subtotal;
+  }) 
+  console.log("SubTotal:", subTotal);
+  return subTotal;
+}
+
+
+const getTotal = (subtotal, discount)=> {
+
+  //subtotal menos descuento
+  return subtotal - discount;
 }
 
 
@@ -87,6 +97,7 @@ const toExport = {
   getMethodName,
   getSession,
   getForPay,
+  getSubTotal,
   getTotal,
   getPagado,
 };

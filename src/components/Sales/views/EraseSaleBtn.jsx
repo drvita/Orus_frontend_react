@@ -1,31 +1,32 @@
+import { useContext } from 'react';
 import { Sale } from '../../../context/SaleContext';
 import helpers from "../helpers.js";
+import { AuthContext } from '../../../context/AuthContext';
 
 export default function EraseSaleBtnComponent() {
 
   const sale = Sale();
   const disabled = sale.customer.id || sale.items.length ? false : true;
 
+  const {auth} = useContext(AuthContext);
+
   //Functions
   const eraseSale = () => {
+    console.log("Borrar venta con boton");
       sale.set({
         id: 0,
         customer: {
           id: 0,
           nombre: "venta de mostrador",
-          email: "",
-          telefonos: {},
-          f_nacimiento: null,
-          edad: 0,
         },
         contact_id: 2,
         items: [],
         session: helpers.getSession(),
-        descuento: 0,
+        discount: 0,
         subtotal: 0,
         total: 0,
         payments: [],
-        created_at: new Date(),
+        branch_id: auth.branch.id,
       })
     },
 

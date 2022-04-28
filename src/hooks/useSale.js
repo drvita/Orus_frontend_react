@@ -8,7 +8,7 @@ export default function useSales(ctx){
         const salesFilters = {
             orderBy:'created_at',
             order:'desc',
-            itemsPage: 25
+            itemsPage: 100
         }
         const url = setUrl('sales', null, salesFilters);
 
@@ -26,37 +26,29 @@ export default function useSales(ctx){
         return await api(url)
     }
 
-    const setSale = async (sale) => {
-       /*  setState({
-          ...state,
-          sale: sale,
-        }); */
-      };
-
 
     const saveSale = async (sale) => {
         sale.payments.forEach(payment => {
-          payment.id = 0
+          if(typeof payment.id === "string"){
+            payment.id = 0;
+          }
         });
 
+        const data = {
+          ...sale,
+        }
+
+        data.id === 0 ? delete data.id : data.id = data.id
+        
+        delete data.customer
+
         try {
-          const { id } = sale,
+          console.log("DATA A GUARDAR------", data);
+          const { id } = data,
             url = setUrl("sales", id),
-            method = id ? "PUT" : "POST"
-    
-            api(url, method, sale)
-            .then((data)=>{
-              if(data.data){
-            /*   setState({
-                  ...state,
-                  sale: sale,
-                  saleSavedCorrectly: true,
-                }) */
-                console.log("[Orus System] Venta almacenada con exito", data.data.id);
-              }else{
-                console.error("Error al guardar la venta");
-              }
-            })
+            method = id ? "PUT" : "POST";
+            console.log(url);
+            return await api(url, method, data)
         } catch (e) {
           console.error(
             "[Orus System] Error in saga/sales handledSaveSale", e.message
@@ -64,101 +56,10 @@ export default function useSales(ctx){
         }
       };
 
-
-      const setCustomer = async (customer) => {
-        /* setState({
-          ...state,
-          sale: {
-            ...initialSale,
-            customer: {
-              id: customer.id,
-              nombre: customer.name ? customer.name : "Venta de mostrador",
-              email: customer.email,
-              telefonos: customer.telefonos,
-              f_nacimiento: customer.f_nacimiento,
-              edad: customer.edad,
-            },
-            contact_id: customer.id,
-            session: saleHelper.getSession(),
-          },
-        }); */
-      };
-
-      
-  const addItems = (sale, newItems) => {
-   /*  setState({
-      ...state,
-      sale: {
-        ...sale,
-        items: newItems,
-        total: saleHelper.getTotal(newItems),
-        subtotal: saleHelper.getTotal(newItems),
-      },
-    }); */
-  };
-
-  const addPayment = async (sale, payment) => {
-    /* setState({
-      ...state,
-      sale: {
-        ...sale,
-        payments: payment,
-      },
-    }); */
-  };
-
-
- /*  const addDiscount = async (sale, discount) => {
-    setState({
-      ...state,
-      sale: {
-        ...sale,
-        descuento: discount,
-      },
-    });
-  }; */
-
-
-  const setTotal = async (total) => {
-    console.log("TOTAL DE LA VENTA", total);
-    /* setState({
-      ...state,
-      sale: {
-        ...state.sale,
-        total: total,
-
-        //TODO: revisar cual debe ser el valor de subtotal
-        subtotal: total,
-      },
-    }); */
-  };
-
-  
-  const resetSale = async () => {
-    /* setState({
-      ...state,
-      sale: {
-        ...state.sale,
-        session: saleHelper.getSession(),
-      },
-    }); */
-  };
-
-  
-
-
-
     return{
         getSaleList,
         getSaleById,
-        setSale,
         saveSale,
-        setCustomer,
-        addItems,
-        addPayment,
-        //addDiscount,
-        setTotal,
-        resetSale,
     };
 
 }

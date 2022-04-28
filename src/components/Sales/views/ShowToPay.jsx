@@ -9,7 +9,7 @@ export default function ShowToPay(){
         <>
             <span className="text-lg">Por pagar:</span>
             <label className="text-lg ml-1">
-                ${helpers.getForPay(sale.items, sale.payments, sale.descuento)}
+                ${helpers.getForPay(sale.items, sale.payments, sale.discount)}
             </label>
         </>
     )

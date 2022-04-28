@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import PaymentModal from "./PaymentModal";
 import { Sale } from "../../../context/SaleContext";
 import helpers from '../helpers';
@@ -12,9 +12,9 @@ export default function PaymentBtnComponent() {
 
   const sale = Sale();
 
-  const forPaid = helpers.getForPay(sale.items, sale.payments, sale.descuento);
+  const forPaid = helpers.getForPay(sale.items, sale.payments, sale.discount);
 
-  const pagado  = sale.descuento === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.descuento; 
+  const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
   const paid = sale.total <= pagado ? true : false;
 
   //Functions

@@ -1,18 +1,36 @@
-import moment from "moment";
-import { useSelector } from "react-redux";
+import {useEffect, useContext} from 'react';
 import { Sale } from '../../../context/SaleContext';
 import useSale from '../../../hooks/useSale';
 import helpers from '../helpers';
+import { AuthContext } from "../../../context/AuthContext";
+
+import moment from "moment";
 
 export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {
-
   const sale = Sale();
+  const _saleHook = useSale();
+  const {auth} = useContext(AuthContext);
 
-  const { saveSale } = useSale();
+  const initialSale = {
+    id: 0,
+    customer: {
+      id: 0,
+      nombre: "venta de mostrador",
+    },
+    contact_id: 2,
+    items: [],
+    session: helpers.getSession(),
+    discount: 0,
+    subtotal: 0,
+    total: 0,
+    payments: [],
+    branch_id: auth.branch.id,
+  }
+
 
   const {
       items,
-      descuento,
+      discount,
       total = 0,
       created_at: date,
       id,
@@ -20,69 +38,86 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
       payments
     } = sale,
 
-    saldo = total - abonado,
+    saldo = total - abonado;
 
-    { branch } = useSelector((state) => state.users.dataLoggin);
+    const { branch } = auth;
+
+    const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
+    const paid = sale.total <= pagado ? true : false;
 
     let totalItems = 0;
 
-
   //Functions
-  
   const handlePrintShow = () => {
-    saveSale(sale);
-    window.addEventListener("afterprint", handlePrint);
-    window.print();
-
-/* 
-    if(saleSavedCorrectly === true){
-      console.log("Entrando a la condicion", saleSavedCorrectly);
-      window.Swal.fire({
-        title: "Ventas",
-        text:"Venta almacenada con éxito",
-        icon: "info",
-        showCancelButton: false,
-        confirmButtonText: "Aceptar",
-        cancelButtonText: "Cancelar",
-      }).then(({ dismiss }) => {
-         //Mostrar ventana de imprimir
-      });
-    }else{
-      return null;
-    } */
-
+    const returnedSale = _saleHook.saveSale(sale);
+    returnedSale.then((data)=>{
+      if(data.data){
+        console.log("DATA DEVUELTA----", data.data);
+        //guardar venta con formato incial
+        sale.set({
+          ...sale,
+          id: data.data.id,
+        })
+        window.Swal.fire({
+          title: "Venta Guardada",
+          text: `¿Quieres imprimir el ticket de la venta?`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Imprimir",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        }).then(({ dismiss }) => {
+          if (!dismiss) {
+            setTimeout(showPrint, 1000);
+          }else{
+            //TODO: Revisar por que no entra al Else
+            helpers.confirm("Cerrar la venta actual", () => {
+              sale.set(initialSale);
+            });
+          }
+        });
+      }
+      else{
+        console.log(data);
+      }
+    })
   };
 
-  const handlePrint = () => {
+  const showPrint = ()=>{
     const path = window.location.pathname;
-
     if (path !== "/notas") {
       return false;
     }
+    window.print();
+    
+  }
 
-    helpers.confirm("Cerrar la venta actual", () => {
-      //resetSale();
-      sale.set({
-        id: 0,
-      customer: {
-        id: 0,
-        nombre: "venta de mostrador",
-        email: "",
-        telefonos: {},
-        f_nacimiento: null,
-        edad: 0,
-      },
-      contact_id: 2,
-      items: [],
-      session: helpers.getSession(),
-      descuento: 0,
-      subtotal: 0,
-      total: 0,
-      payments: [],
-      created_at: new Date(),
-      })
-    });
+  const handleClose = () => {
+    //Cerrar la venta
+    sale.set(initialSale);
   };
+
+   useEffect(()=>{
+    if(paid && sale.total){ 
+      //handlePrintShow();
+      //Validamos si la venta ya tiene un ID, no muestra el modal de imprimir
+      if(sale.id){
+        return null;
+      }else{
+        handlePrintShow();
+      }
+    }else{
+      return null;
+    } 
+
+  },[paid, sale.total]);
+
+  useEffect(()=>{
+    window.addEventListener("afterprint", ()=>{handleClose()});
+    return ()=>{
+      window.removeEventListener("afterprint", ()=>{handleClose()});
+    }
+  },[])
   
 
   return (
@@ -216,13 +251,13 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
               <tfoot>
                 <tr>
                   <td className="text-right" colSpan="3">
-                    {descuento ? (
+                    {discount ? (
                       <>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
                           Subtotal: <label>$ {totalItems}</label>
                         </h4>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Descuento: <label>$ {descuento}</label>
+                          Descuento: <label>$ {discount}</label>
                         </h4>
                       </>
                     ) : null}

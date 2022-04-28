@@ -1,46 +1,53 @@
-import moment from "moment";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useContext,useState } from "react";
+
 //Components
 import PaymentDetails from "./PaymentDetails";
 import UpdateItemModal from "./UpdateItemModal";
-//Actions
+
+//Helper
 import helpers from "../helpers";
+
+//Hook
+import useSales from '../../../hooks/useSale';
 
 // Sale Context
 import { Sale } from '../../../context/SaleContext';
+import { AuthContext } from "../../../context/AuthContext";
+import moment from "moment";
+
 
 export default function SalesDetailsTableComponent() {
-  const { users } = useSelector((state) => state);
   const sale  = Sale();
-
-  console.log("Componente de tabla", sale);
-
-  console.log("Sale actual", sale);
-
-
-  const pagado  = sale.descuento === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.descuento; 
+  const _saleHook = useSales();
+  const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
   const paid = sale.total <= pagado ? true : false;
+  const { auth } = useContext(AuthContext);
+  const {rol: userMain, roles} = auth;
 
-    const { dataLoggin: userMain } = users,
 
-    [data, setData] = useState({
+
+   const [data, setData] = useState({
       showUpdateItem: false,
       showPaymentDetails: false,
       item: {},
       payment: {},
     });
 
+    const [disablePayments, setDisabledPayments] = useState(null);
+
   //Functions
   const handleDeleteItem = (item) => {
-
       const newItems = sale.items.filter(
         (product) => product.store_items_id !== item.store_items_id
       );
-      //addItems(sale, newItems);
+
+      let subtotal = helpers.getSubTotal(newItems);
+
       sale.set({
         ...sale,
         items: newItems,
+        total: helpers.getTotal(subtotal, sale.discount),
+        subtotal:subtotal,
       })
     },
 
@@ -57,10 +64,9 @@ export default function SalesDetailsTableComponent() {
 
     handleDeleteDiscount = () => {
       helpers.confirm("Realmente desea eliminar el descuento", () => {
-        //addDiscount(sale, 0);
         sale.set({
           ...sale,
-          descuento: 0
+          discount: 0
         })
       });
     },
@@ -74,7 +80,6 @@ export default function SalesDetailsTableComponent() {
       helpers.confirm(
         `Realmente desea eliminar el pago ${metodoname}, de ${total}`,
         () => {        
-          //addPayment(sale, newPayments);
           sale.set({
             ...sale,
             payments:newPayments
@@ -84,6 +89,7 @@ export default function SalesDetailsTableComponent() {
     },
 
     handleShowUpdateItem = (e, item) => {
+      console.log("Funcion ejecutada");
       if (e) e.preventDefault();
       setData({
         ...data,
@@ -105,11 +111,16 @@ export default function SalesDetailsTableComponent() {
         (i) => i.store_items_id !== item.store_items_id
       );
       newItems.push(item);
-      //addItems(sale, newItems);
+
+      let subtotal = helpers.getSubTotal(newItems);
+
       sale.set({
         ...sale,
         items:newItems,
+        total: helpers.getTotal(subtotal, sale.discount),
+        subtotal: subtotal,
       })
+
       handleCloseUpdateItem();
     },
 
@@ -122,6 +133,40 @@ export default function SalesDetailsTableComponent() {
       });
     };
 
+     
+  const handlePrintShow = () => {
+    _saleHook.saveSale(sale);
+    window.addEventListener("afterprint", handlePrint);
+    window.print();
+  };
+
+
+  const handlePrint = () => {
+    const path = window.location.pathname;
+
+    if (path !== "/notas") {
+      return false;
+    }
+
+    helpers.confirm("Cerrar la venta actual", () => {
+      sale.set({
+        id: 0,
+      customer: {
+        id: 0,
+        nombre: "venta de mostrador",
+      },
+      contact_id: 2,
+      items: [],
+      session: helpers.getSession(),
+      discount: 0,
+      subtotal: 0,
+      total: 0,
+      payments: [],
+      })
+    });
+  };
+
+
   return (
     <>
       <table className="table table-striped">
@@ -129,20 +174,30 @@ export default function SalesDetailsTableComponent() {
           {sale.items && sale.items.length ? (
             <>
               {sale.items.map((item, index) => {
-                const disabled =
-                  (sale.total && paid) ||
-                  sale.payments.length ||
-                  sale.descuento;
+                const disabled = (sale.total && paid) || sale.payments.length || sale.discount;
+                const diffDay = moment(Date.now()).diff(moment(sale.created_at),"days");
+                console.log("DIFERENCIA DE DIAS DE LA VENTA:", diffDay);
                 if (!item.store_items_id) return null;
-
                 return (
                   <tr key={index}>
                     {handleDeleteBtn(handleDeleteItem, item, disabled)}
-                    <td onClick={(e) => handleShowUpdateItem(null, item)}>
+                    <td onClick={(e) => {
+                      if(roles === 'ventas' && diffDay !== 0 ){
+                        alert('No puedes editar esta venta!');
+                      }else{
+                        handleShowUpdateItem(null, item);
+                      }
+                    }}>
                       <a
                         href="#details"
                         className="text-muted w-full d-block text-uppercase"
-                        onClick={(e) => handleShowUpdateItem(e, item)}
+                        onClick={(e) => {
+                          if(roles === 'ventas'){
+                            return null;
+                          }else{
+                            handleShowUpdateItem(e, item);
+                          }
+                        }}
                       >
                         {item.producto}
                       </a>
@@ -171,7 +226,7 @@ export default function SalesDetailsTableComponent() {
               })}
             </>
           ) : null}
-          {sale.descuento ? (
+          {sale.discount ? (
             <tr>
               {handleDeleteBtn(handleDeleteDiscount, null, paid)}
               <td>
@@ -179,7 +234,7 @@ export default function SalesDetailsTableComponent() {
                   Descuento
                 </span>
                 <label className="w-full d-block">
-                  <span className="ml-1 text-danger">- ${sale.descuento}</span>
+                  <span className="ml-1 text-danger">- ${sale.discount}</span>
                 </label>
               </td>
             </tr>
@@ -187,15 +242,13 @@ export default function SalesDetailsTableComponent() {
           {sale.payments.length ? (
             <>
               {sale.payments.map((pay, index) => {
-                const diffPay = moment(Date.now()).diff(
-                    moment(pay.created_at),
-                    "days"
-                  ),
-                  disabled = paid && diffPay && userMain.rol;
-
+                const diffPay = moment(Date.now()).diff(moment(pay.created_at),"days");
+                console.log('Diferencia de dias', diffPay);
+                console.log(pay.created_at);
+                  const disabled = (roles === 'admin') ? false : (roles === 'ventas') ? diffPay === 0 ? false: true : false; 
                 return (
                   <tr key={index}>
-                    {handleDeleteBtn(handleDeletePayment, pay, disabled)}
+                    {handleDeleteBtn(handleDeletePayment, pay, disabled)} 
                     <td>
                       <a
                         href="#link"
@@ -217,7 +270,6 @@ export default function SalesDetailsTableComponent() {
                         <span className="ml-1 text-muted">
                           {moment(pay.created_at).format("LL")},
                         </span>
-
                         <span className="ml-1">${pay.total}</span>
                       </label>
                     </td>

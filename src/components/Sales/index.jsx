@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 //Components
 import InputSearchItem from "./views/InputSearchItem";
 import DiscountBtnComponent from "./views/DiscountBtn";
@@ -13,10 +12,9 @@ import SalesDetailsTableComponent from "./views/SalesDetailsTable";
 import SaleDate from "./views/SaleDate";
 import ShowToPay from "./views/ShowToPay";
 import ShowTotal from "./views/ShowTotal";
+import {AuthContext} from '../../context/AuthContext';
 
 //Actions
-import { saleActions } from "../../redux/sales";
-import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 import { defaultActions } from "../../redux/default/";
 
 //Context
@@ -26,9 +24,11 @@ import saleHelper from './helpers';
 
 export default function IndexSalesComponent() {
 
+  const {auth} = useContext(AuthContext);
+
   const { sales } = useSelector((state) => state);
-  const { sale, loading } = sales;
-  
+  const { loading } = sales;
+
 
   const dispatch = useDispatch();
 
@@ -37,68 +37,58 @@ export default function IndexSalesComponent() {
     customer: {
       id: 0,
       nombre: "venta de mostrador",
-      email: "",
-      telefonos: {},
-      f_nacimiento: null,
-      edad: 0,
     },
     contact_id: 2,
     items: [],
     session: saleHelper.getSession(),
-    descuento: 0,
+    discount: 0,
     subtotal: 0,
     total: 0,
     payments: [],
-    created_at: new Date(),
+    branch_id: auth.branch.id,
   })
   
   const [data, setData] = useState({
     pagado: 0,
   });
 
- /*  const [ currentSale ] = useState({
-    customer: sale.customer,
-    items: sale.items,
-    session: sale.session,
-    descuento: sale.descuento,
-    subtotal: sale.subtotal,
-    total: sale.total,
-    payments: sale.payments,
-  });
- */
+
+
   useEffect(() => {
     let sum = 0,
       pagado = 0;
-
       state.items.forEach((item) => (sum += item.subtotal));
       state.payments.forEach((pay) => (pagado += pay.total));
-
     if (sum !== state.subtotal || data.pagado !== pagado) {
       state.subtotal = sum;
-      state.total = sum - state.descuento;
+      state.total = sum - state.discount;
       state.pagado = pagado;
-      if (state.id) {
-        dispatch(saleActions.setSale(state));
-      }
 
       setData({
         pagado,
       });
+
+      /* if (state.id) {
+        dispatch(saleActions.setSale(state));
+      } */
+      
     }
 
   }, []);
 
   useEffect(() => {
+
     dispatch(defaultActions.changeNamePage("punto de venta"));
 
     return () => {
       console.log("[Orus Systme] Cerrando venta");
-      dispatch(
+      localStorage.setItem("OrusSales", "{}");
+      /* dispatch(
         saleActions.setListSales({
           result: DEFAULT_STATE_SALES,
         })
-      );
-      localStorage.setItem("OrusSales", "{}");
+      ); */
+      
     };
 
   }, []);
@@ -139,9 +129,10 @@ export default function IndexSalesComponent() {
             className="overflow-auto text-right p-0 border border-gray"
             style={{ height: "27rem" }}
           >
-            {state.customer && state.customer.id && (
+            <SalesDetailsTableComponent/>
+            {/* {state.customer && state.customer.id && (
               <SalesDetailsTableComponent/>
-            )}
+            )} */}
           </div>
         </div>
 

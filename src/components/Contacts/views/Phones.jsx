@@ -41,7 +41,7 @@ export default function Phones({ data, handleChange }) {
               }}
             />
           </div>
-          {data.phone_notices && data.phone_notices.length != 10 && (
+          {data.phone_notices && data.phone_notices.length !== 10 && (
             <small>
               <span className="text-orange">Telefono a 10 numeros</span>
             </small>

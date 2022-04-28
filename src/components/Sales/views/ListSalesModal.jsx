@@ -1,8 +1,11 @@
-import moment from "moment";
 import { useEffect, useState } from "react";
-import { Sale } from '../../../context/SaleContext';
-import useSales from "../../../hooks/useSale";
 
+//Context
+import { Sale } from '../../../context/SaleContext';
+
+//Hooks
+import useSales from "../../../hooks/useSale";
+import moment from "moment";
 function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
 
   const _sales = useSales();
@@ -16,9 +19,28 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
 
   const items = saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [] 
 
-  const handleSelectSale = (e, sale) => {
+  const handleSelectSale = (e, saleSelected) => {
       if (e) e.preventDefault();
-      _select(sale);
+
+      if(sale.items.length){
+          window.Swal.fire({
+          title: "Ventas",
+          text: `Si cargas una venta, se cerrará la venta actual`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Cargar",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        }).then(({ dismiss }) => {
+          if (!dismiss) {
+            _select(saleSelected);
+          }else{
+            return null
+          }
+        });
+      }else{
+        _select(saleSelected);
+      }
     },
 
     handleChangeSearch = ({ value }) => {
@@ -33,7 +55,6 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
 
     searchInDB = (search = "") => {
       if(search.length === 0){
-        //getSaleById(search);
         _sales.getSaleById(search).then((data)=>{
           if(data){
             setSaleList(data.data)
@@ -43,7 +64,6 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
         })
 
       }else{
-        //getSaleById(search);
         _sales.getSaleById(search).then((data)=>{
           if(data){
             setSaleList(data.data)

@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 import moment from "moment";
 //Componentes
 import Generales from "./views/generalesExam";
@@ -11,13 +12,14 @@ import Graduacion from "./views/graduacionExam";
 import Observaciones from "./views/observacionesExam";
 import Recomendaciones from "./views/recomendaciones";
 import ShowContact from "../Contacts/views/ShowCard";
-import PrintExam from "./views/print_exam";
+// import PrintExam from "./views/print_exam";
+import useExam from "../../hooks/useExam";
 
 export default function Add(props) {
   const [state, setState] = useState({
     ...getDataDefault(),
     loading: false,
-    pnale: 0,
+    panel: 0,
     used: {
       generales: true,
       interrogatorios: true,
@@ -30,6 +32,31 @@ export default function Add(props) {
       recomendaciones: true,
     },
   });
+  const { id } = props.match.params;
+  const _exams = useExam();
+
+  useEffect(() => {
+    if (id) {
+      _exams.getExam(id).then((res) => {
+        setState({
+          ...getDataDefault(res),
+          loading: false,
+          panel: 0,
+          used: {
+            generales: true,
+            interrogatorios: true,
+            keraRet: true,
+            diabetes: true,
+            agudeza: true,
+            diagnostico: true,
+            graduacion: true,
+            observaciones: true,
+            recomendaciones: true,
+          },
+        });
+      });
+    }
+  }, [id]);
 
   return (
     <>
@@ -491,7 +518,7 @@ export default function Add(props) {
           </div>
         </div>
       </div>
-      <PrintExam
+      {/* <PrintExam
         esferaod={state.esferaod ?? ""}
         esferaoi={state.esferaoi ?? ""}
         cilindrod={state.cilindrod ?? ""}
@@ -512,89 +539,89 @@ export default function Add(props) {
         diagnostico={state.diagnostico ?? ""}
         paciente={state.contact ?? ""}
         presbicie={state.presbicie ?? ""}
-      />
+      /> */}
     </>
   );
 }
 
-function getDataDefault() {
+function getDataDefault(data = {}) {
   return {
-    id: 0,
-    age: 0,
-    keratometriaoi: "",
-    keratometriaod: "",
-    pantalleooi: "",
-    pantalleood: "",
-    interrogatorio: "",
-    cefalea: 0,
-    c_frecuencia: "",
-    c_intensidad: 0,
-    frontal: 0,
-    temporal: 0,
-    occipital: 0,
-    generality: 0,
-    temporaoi: 0,
-    temporaod: 0,
-    coa: "",
-    aopp: "",
-    aopf: "",
-    avsloi: "",
-    avslod: "",
-    avcgaoi: "",
-    avcgaod: "",
-    cvoi: "",
-    cvod: "",
-    oftalmoscopia: "",
-    rsoi: "",
-    rsod: "",
-    diagnostico: "",
-    presbicie: 0,
-    txoftalmico: "",
-    esferaoi: 0,
-    esferaod: 0,
-    cilindroi: 0,
-    cilindrod: 0,
-    ejeoi: 0,
-    ejeod: 0,
-    adicioni: 0,
-    adiciond: 0,
-    adicion_media_oi: 0,
-    adicion_media_od: 0,
-    dpoi: 0,
-    dpod: 0,
-    avfod: "",
-    avfoi: "",
-    avf2o: "",
-    lcmarca: "",
-    lcgoi: "",
-    lcgod: "",
-    txoptico: "",
-    alturaod: 0,
-    alturaoi: 0,
-    pioi: 0,
-    piod: 0,
-    observaciones: "",
-    pc: 0,
-    tablet: 0,
-    movil: 0,
-    lap: 0,
-    lap_time: "",
-    pc_time: "",
-    tablet_time: "",
-    movil_time: "",
-    d_time: "",
-    d_media: "",
-    d_test: "",
-    d_fclod: 0,
-    d_fcloi: 0,
-    d_fclod_time: "",
-    d_fcloi_time: "",
-    contact: {},
-    status: false,
-    branch_id: 12,
-    contact_id: 0,
-    category_id: 0,
-    category_ii: 0,
+    id: data.id ?? 0,
+    age: data.customer?.age ?? 0,
+    keratometriaoi: data.keratometriaoi ?? "",
+    keratometriaod: data.keratometriaod ?? "",
+    pantalleooi: data.pantalleooi ?? "",
+    pantalleood: data.pantalleood ?? "",
+    interrogatorio: data.interrogatorio ?? "",
+    cefalea: data.cefalea ?? 0,
+    c_frecuencia: data.c_frecuencia ?? "",
+    c_intensidad: data.c_intensidad ?? 0,
+    frontal: data.frontal ?? 0,
+    temporal: data.temporal ?? 0,
+    occipital: data.occipital ?? 0,
+    generality: data.generality ?? 0,
+    temporaoi: data.temporaoi ?? 0,
+    temporaod: data.temporaod ?? 0,
+    coa: data.coa ?? "",
+    aopp: data.aopp ?? "",
+    aopf: data.aopf ?? "",
+    avsloi: data.avsloi ?? "",
+    avslod: data.avslod ?? "",
+    avcgaoi: data.avcgaoi ?? "",
+    avcgaod: data.avcgaod ?? "",
+    cvoi: data.cvoi ?? "",
+    cvod: data.cvod ?? "",
+    oftalmoscopia: data.oftalmoscopia ?? "",
+    rsoi: data.rsoi ?? "",
+    rsod: data.rsod ?? "",
+    diagnostico: data.diagnostico ?? "",
+    presbicie: data.presbicie ?? 0,
+    txoftalmico: data.txoftalmico ?? "",
+    esferaoi: data.esferaoi ?? 0,
+    esferaod: data.esferaod ?? 0,
+    cilindroi: data.cilindroi ?? 0,
+    cilindrod: data.cilindrod ?? 0,
+    ejeoi: data.ejeoi ?? 0,
+    ejeod: data.ejeod ?? 0,
+    adicioni: data.adicioni ?? 0,
+    adiciond: data.adiciond ?? 0,
+    adicion_media_oi: data.adicion_media_oi ?? 0,
+    adicion_media_od: data.adicion_media_od ?? 0,
+    dpoi: data.dpoi ?? 0,
+    dpod: data.dpod ?? 0,
+    avfod: data.avfod ?? "",
+    avfoi: data.avfoi ?? "",
+    avf2o: data.avf2o ?? "",
+    lcmarca: data.lcmarca ?? "",
+    lcgoi: data.lcgoi ?? "",
+    lcgod: data.lcgod ?? "",
+    txoptico: data.txoptico ?? "",
+    alturaod: data.alturaod ?? 0,
+    alturaoi: data.alturaoi ?? 0,
+    pioi: data.pioi ?? 0,
+    piod: data.piod ?? 0,
+    observaciones: data.observaciones ?? "",
+    pc: data.pc ?? 0,
+    tablet: data.tablet ?? 0,
+    movil: data.movil ?? 0,
+    lap: data.lap ?? 0,
+    lap_time: data.lap_time ?? "00:00",
+    pc_time: data.pc_time ?? "00:00",
+    tablet_time: data.tablet_time ?? "00:00",
+    movil_time: data.movil_time ?? "00:00",
+    d_time: data.d_time ?? "",
+    d_media: data.d_media ?? "",
+    d_test: data.d_test ?? "",
+    d_fclod: data.d_fclod ?? 0,
+    d_fcloi: data.d_fcloi ?? 0,
+    d_fclod_time: data.d_fclod_time ?? "00:00",
+    d_fcloi_time: data.d_fcloi_time ?? "00:00",
+    contact: data.customer ?? {},
+    status: data.status ?? false,
+    branch_id: data.branch?.id ?? 12,
+    contact_id: data.customer?.id,
+    category_id: data.category_id ?? 0,
+    category_ii: data.category_ii ?? 0,
   };
 }
 

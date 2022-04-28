@@ -195,7 +195,7 @@ export default function InboxExams() {
                         checked={
                           state.examSelected?.id === exam.id ? true : false
                         }
-                        disabled={exam.estado || exam.orders.length}
+                        disabled={exam.estado || exam.orders?.length}
                         onChange={({ target }) => {
                           setState({
                             ...state,
@@ -218,13 +218,13 @@ export default function InboxExams() {
                       >
                         <span
                           className={
-                            exam.estado || exam.orders.length
+                            exam.estado || exam.orders?.length
                               ? "text-muted"
                               : "text-dark text-bold"
                           }
                         >
                           <i className="fas fa-user text-sm mr-2"></i>
-                          {exam.paciente?.nombre.toLowerCase()}
+                          {exam.customer?.name.toLowerCase()}
                         </span>
                       </a>
                     </td>

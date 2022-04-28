@@ -24,6 +24,13 @@ function PaymentModal({forPaid, handleClose: _close }) {
 
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
+
+    if(name === 'auth'){
+      console.log(true);
+    }else{
+      console.log(false);
+    }
+
       let val = value;
 
       if (type === "number" || type === "select-one") val = parseFloat(value);

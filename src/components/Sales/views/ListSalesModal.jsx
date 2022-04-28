@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+
 //Context
 import { Sale } from '../../../context/SaleContext';
+
 //Hooks
 import useSales from "../../../hooks/useSale";
 import moment from "moment";
@@ -13,8 +15,6 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
   const [saleList, setSaleList] = useState([]);
   
   const sale = Sale();
-
-  console.log(saleList);
 
 
   const items = saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [] 
@@ -55,7 +55,6 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
 
     searchInDB = (search = "") => {
       if(search.length === 0){
-        //getSaleById(search);
         _sales.getSaleById(search).then((data)=>{
           if(data){
             setSaleList(data.data)
@@ -65,7 +64,6 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
         })
 
       }else{
-        //getSaleById(search);
         _sales.getSaleById(search).then((data)=>{
           if(data){
             setSaleList(data.data)

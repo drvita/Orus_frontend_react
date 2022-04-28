@@ -30,19 +30,24 @@ export default function useSales(ctx){
     const saveSale = async (sale) => {
         sale.payments.forEach(payment => {
           if(typeof payment.id === "string"){
-            payment.id = 0
+            payment.id = 0;
           }
         });
+
         const data = {
           ...sale,
         }
+
+        data.id === 0 ? delete data.id : data.id = data.id
+        
         delete data.customer
 
         try {
+          console.log("DATA A GUARDAR------", data);
           const { id } = data,
             url = setUrl("sales", id),
-            method = id ? "PUT" : "POST"
-            console.log("DATAAAAA A GUARDAR---", data);
+            method = id ? "PUT" : "POST";
+            console.log(url);
             return await api(url, method, data)
         } catch (e) {
           console.error(
@@ -50,9 +55,6 @@ export default function useSales(ctx){
           );
         }
       };
-  
-
-
 
     return{
         getSaleList,

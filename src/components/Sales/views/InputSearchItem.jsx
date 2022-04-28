@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Sale } from "../../../context/SaleContext";
 import helper from '../helpers';
@@ -9,7 +9,7 @@ import ListModal from "./ListItemsModal";
 //Hooks
 import useProducts from '../../../hooks/useProducts';
 
-function InputSearchItem({ messages, loading, _setMessage}) {
+function InputSearchItem({ messages, loading }) {
 
   //State
   const [textSearch, setTextSearch] = useState("");
@@ -98,13 +98,17 @@ function InputSearchItem({ messages, loading, _setMessage}) {
         newItems.push(result);
       }
 
+      let subtotal = helper.getSubTotal(newItems);
+
       sale.set({
         ...sale,
         items: newItems,
-        total: helper.getTotal(newItems),
+        total: helper.getTotal(subtotal, sale.discount),
+        subtotal: subtotal,
       })
-      //addItems(sale, newItems);
     };
+
+
 
   useEffect(() => {
     if (list.length) {
@@ -128,7 +132,6 @@ function InputSearchItem({ messages, loading, _setMessage}) {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
-      //_setMessage();
     }
 
   }, [list]);
@@ -171,11 +174,7 @@ const mapStateToProps = ({ storeItem }) => {
     return {
       loading: storeItem.loading,
       messages: storeItem.messages,
-      meta: storeItem.metaList,
+      //meta: storeItem.metaList,
     };
-  },
-  mapActionsToProps = {
-    //_setMessage: storeActions.setMessagesStore,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(InputSearchItem);
+  }
+export default connect(mapStateToProps)(InputSearchItem);

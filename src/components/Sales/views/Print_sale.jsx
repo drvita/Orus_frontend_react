@@ -7,15 +7,9 @@ import { AuthContext } from "../../../context/AuthContext";
 import moment from "moment";
 
 export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {
-
   const sale = Sale();
-
   const _saleHook = useSale();
-
   const {auth} = useContext(AuthContext);
-
-  console.log("AUTH", auth);
-
 
   const initialSale = {
     id: 0,
@@ -58,8 +52,8 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     const returnedSale = _saleHook.saveSale(sale);
     returnedSale.then((data)=>{
       if(data.data){
-        //Data devuelta
-        console.log("DATA DEVUELTA ------", data);
+        console.log("DATA DEVUELTA----", data.data);
+        //guardar venta con formato incial
         sale.set({
           ...sale,
           id: data.data.id,
@@ -73,16 +67,18 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
           cancelButtonText: "Cancelar",
           showLoaderOnConfirm: true,
         }).then(({ dismiss }) => {
-          console.log(dismiss);
           if (!dismiss) {
             setTimeout(showPrint, 1000);
           }else{
-            //TODO: Revisar por que no entra al else
+            //TODO: Revisar por que no entra al Else
             helpers.confirm("Cerrar la venta actual", () => {
               sale.set(initialSale);
             });
           }
         });
+      }
+      else{
+        console.log(data);
       }
     })
   };
@@ -93,28 +89,35 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
       return false;
     }
     window.print();
-    window.addEventListener("afterprint", ()=>{handleClose()});
+    
   }
 
   const handleClose = () => {
-    helpers.confirm("Cerrar la venta actual", () => {
-      sale.set(initialSale);
-    });
+    //Cerrar la venta
+    sale.set(initialSale);
   };
 
    useEffect(()=>{
     if(paid && sale.total){ 
-      handlePrintShow();
-      /* if(sale.id){
-        return null
+      //handlePrintShow();
+      //Validamos si la venta ya tiene un ID, no muestra el modal de imprimir
+      if(sale.id){
+        return null;
       }else{
         handlePrintShow();
-      } */
+      }
     }else{
       return null;
     } 
 
-  },[paid, sale.total]) 
+  },[paid, sale.total]);
+
+  useEffect(()=>{
+    window.addEventListener("afterprint", ()=>{handleClose()});
+    return ()=>{
+      window.removeEventListener("afterprint", ()=>{handleClose()});
+    }
+  },[])
   
 
   return (

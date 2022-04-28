@@ -1,11 +1,15 @@
 import { useContext,useState } from "react";
+
 //Components
 import PaymentDetails from "./PaymentDetails";
 import UpdateItemModal from "./UpdateItemModal";
+
 //Helper
 import helpers from "../helpers";
+
 //Hook
 import useSales from '../../../hooks/useSale';
+
 // Sale Context
 import { Sale } from '../../../context/SaleContext';
 import { AuthContext } from "../../../context/AuthContext";
@@ -29,19 +33,21 @@ export default function SalesDetailsTableComponent() {
       payment: {},
     });
 
-    const [disablePayments, setDisabledPayments] = useState(false);
+    const [disablePayments, setDisabledPayments] = useState(null);
 
   //Functions
   const handleDeleteItem = (item) => {
-
       const newItems = sale.items.filter(
         (product) => product.store_items_id !== item.store_items_id
       );
-      //addItems(sale, newItems);
+
+      let subtotal = helpers.getSubTotal(newItems);
+
       sale.set({
         ...sale,
         items: newItems,
-        total: helpers.getTotal(newItems),
+        total: helpers.getTotal(subtotal, sale.discount),
+        subtotal:subtotal,
       })
     },
 
@@ -58,7 +64,6 @@ export default function SalesDetailsTableComponent() {
 
     handleDeleteDiscount = () => {
       helpers.confirm("Realmente desea eliminar el descuento", () => {
-        //addDiscount(sale, 0);
         sale.set({
           ...sale,
           discount: 0
@@ -75,7 +80,6 @@ export default function SalesDetailsTableComponent() {
       helpers.confirm(
         `Realmente desea eliminar el pago ${metodoname}, de ${total}`,
         () => {        
-          //addPayment(sale, newPayments);
           sale.set({
             ...sale,
             payments:newPayments
@@ -85,6 +89,7 @@ export default function SalesDetailsTableComponent() {
     },
 
     handleShowUpdateItem = (e, item) => {
+      console.log("Funcion ejecutada");
       if (e) e.preventDefault();
       setData({
         ...data,
@@ -106,12 +111,14 @@ export default function SalesDetailsTableComponent() {
         (i) => i.store_items_id !== item.store_items_id
       );
       newItems.push(item);
-      //addItems(sale, newItems);
+
+      let subtotal = helpers.getSubTotal(newItems);
 
       sale.set({
         ...sale,
         items:newItems,
-        total: helpers.getTotal(newItems),
+        total: helpers.getTotal(subtotal, sale.discount),
+        subtotal: subtotal,
       })
 
       handleCloseUpdateItem();
@@ -128,7 +135,6 @@ export default function SalesDetailsTableComponent() {
 
      
   const handlePrintShow = () => {
-    //saveSale(sale);
     _saleHook.saveSale(sale);
     window.addEventListener("afterprint", handlePrint);
     window.print();
@@ -168,22 +174,30 @@ export default function SalesDetailsTableComponent() {
           {sale.items && sale.items.length ? (
             <>
               {sale.items.map((item, index) => {
-                // Si la venta se pagó, si hay un payment, o un descuento --> regresa TRUE
                 const disabled = (sale.total && paid) || sale.payments.length || sale.discount;
-                console.log((sale.total && paid), sale.payments.length, sale.discount)
-                console.log("Disabled 172", disabled);
-
+                const diffDay = moment(Date.now()).diff(moment(sale.created_at),"days");
+                console.log("DIFERENCIA DE DIAS DE LA VENTA:", diffDay);
                 if (!item.store_items_id) return null;
-
                 return (
                   <tr key={index}>
                     {handleDeleteBtn(handleDeleteItem, item, disabled)}
-                    <td onClick={(e) => handleShowUpdateItem(null, item)}>
+                    <td onClick={(e) => {
+                      if(roles === 'ventas' && diffDay !== 0 ){
+                        alert('No puedes editar esta venta!');
+                      }else{
+                        handleShowUpdateItem(null, item);
+                      }
+                    }}>
                       <a
                         href="#details"
                         className="text-muted w-full d-block text-uppercase"
-                        onClick={(e) => handleShowUpdateItem(e, item)}
-                        disabled = 'disabled'
+                        onClick={(e) => {
+                          if(roles === 'ventas'){
+                            return null;
+                          }else{
+                            handleShowUpdateItem(e, item);
+                          }
+                        }}
                       >
                         {item.producto}
                       </a>
@@ -229,17 +243,9 @@ export default function SalesDetailsTableComponent() {
             <>
               {sale.payments.map((pay, index) => {
                 const diffPay = moment(Date.now()).diff(moment(pay.created_at),"days");
-                  //que este pagada, que haya un dia de diferencia y que el rol sea admin
-                  //admin disabled = paid && roles === 'admin' ? false : true;  /* diffPay && */ 
-                  //ventas disabled = paid && diffPay /* && roles === 'ventas' ? false : true */
-                  //podemos usar un state como variable global del componente, con una condicion para cada tipo de usuario
-                  /* if(roles === 'admin'){
-
-                  }else{
-
-                  } */
-
-                  const disabled = roles === 'admin' ? false :  roles === 'ventas' ? paid && diffPay : false
+                console.log('Diferencia de dias', diffPay);
+                console.log(pay.created_at);
+                  const disabled = (roles === 'admin') ? false : (roles === 'ventas') ? diffPay === 0 ? false: true : false; 
                 return (
                   <tr key={index}>
                     {handleDeleteBtn(handleDeletePayment, pay, disabled)} 
@@ -264,7 +270,6 @@ export default function SalesDetailsTableComponent() {
                         <span className="ml-1 text-muted">
                           {moment(pay.created_at).format("LL")},
                         </span>
-
                         <span className="ml-1">${pay.total}</span>
                       </label>
                     </td>
@@ -303,7 +308,6 @@ export default function SalesDetailsTableComponent() {
 }
 
 function handleDeleteBtn(toDo, data = null, disabled = false) {
-  //console.log("Disabled 297 Function", disabled);
   return (
     <td style={{ width: 32 }}>
       <button

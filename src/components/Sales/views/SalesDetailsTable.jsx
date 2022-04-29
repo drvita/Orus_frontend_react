@@ -20,7 +20,7 @@ export default function SalesDetailsTableComponent() {
   const sale  = Sale();
   const _saleHook = useSales();
   const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
-  const paid = sale.total <= pagado ? true : false;
+  const paid = sale.subtotal <= pagado ? true : false;
   const { auth } = useContext(AuthContext);
   const {rol: userMain, roles} = auth;
 
@@ -73,12 +73,15 @@ export default function SalesDetailsTableComponent() {
 
 
     handleDeletePayment = ({ id, total, metodoname }) => {
+      //TODO: revisar metodoname, viene como undefined
+      console.log("DEBUG",id, total, metodoname);
       const newPayments = sale.payments.filter(
         (payment) => payment.id !== id
       )
 
       helpers.confirm(
-        `Realmente desea eliminar el pago ${metodoname}, de ${total}`,
+        //`Realmente desea eliminar el pago ${metodoname}, de ${total}`,
+        `Realmente desea eliminar el pago de  $${total}`,
         () => {        
           sale.set({
             ...sale,
@@ -153,7 +156,7 @@ export default function SalesDetailsTableComponent() {
         id: 0,
       customer: {
         id: 0,
-        nombre: "venta de mostrador",
+        name: "venta de mostrador",
       },
       contact_id: 2,
       items: [],
@@ -174,7 +177,7 @@ export default function SalesDetailsTableComponent() {
           {sale.items && sale.items.length ? (
             <>
               {sale.items.map((item, index) => {
-                const disabled = (sale.total && paid) || sale.payments.length || sale.discount;
+                const disabled = (sale.subtotal && paid) || sale.payments.length || sale.discount;
                 const diffDay = moment(Date.now()).diff(moment(sale.created_at),"days");
                 console.log("DIFERENCIA DE DIAS DE LA VENTA:", diffDay);
                 if (!item.store_items_id) return null;
@@ -249,6 +252,7 @@ export default function SalesDetailsTableComponent() {
                 return (
                   <tr key={index}>
                     {handleDeleteBtn(handleDeletePayment, pay, disabled)} 
+                    {console.log(pay)}
                     <td>
                       <a
                         href="#link"
@@ -278,7 +282,7 @@ export default function SalesDetailsTableComponent() {
               })}
             </>
           ) : null}
-          {paid && sale.total ? (
+          {paid && sale.subtotal ? (
             <tr className="table-info">
               <td colSpan="2">
                 <span className=" w-full d-block text-uppercase text-center text-bold">

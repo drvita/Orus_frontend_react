@@ -77,7 +77,9 @@ const getSubTotal = (items)=> {
 
 
 const getTotal = (subtotal, discount)=> {
-
+  console.log("Subtotal:", subtotal);
+  console.log("Descuento:", discount);
+  
   //subtotal menos descuento
   return subtotal - discount;
 }

@@ -6,7 +6,7 @@ export default function ShowTotal(){
     return(
         <>
             <span className="text-lg">Total:</span>
-            <label className="text-lg ml-1">${sale.total}</label>
+            <label className="text-lg ml-1">${sale.subtotal}</label>
         </>    
     )
 }

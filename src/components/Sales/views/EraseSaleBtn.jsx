@@ -17,7 +17,7 @@ export default function EraseSaleBtnComponent() {
         id: 0,
         customer: {
           id: 0,
-          nombre: "venta de mostrador",
+          name: "venta de mostrador",
         },
         contact_id: 2,
         items: [],

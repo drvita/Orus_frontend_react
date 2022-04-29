@@ -15,7 +15,7 @@ export default function PaymentBtnComponent() {
   const forPaid = helpers.getForPay(sale.items, sale.payments, sale.discount);
 
   const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
-  const paid = sale.total <= pagado ? true : false;
+  const paid = sale.subtotal <= pagado ? true : false;
 
   //Functions
   const handleShowPayment = () => {
@@ -36,7 +36,7 @@ export default function PaymentBtnComponent() {
       <button
         className="btn btn-success ml-2 d-print-none"
         onClick={handleShowPayment}
-        disabled={!sale.items.length || (sale.total && paid)}
+        disabled={!sale.items.length || (sale.subtotal && paid)}
       >
         <i className="fas fa-money-bill-alt"></i>
       </button>

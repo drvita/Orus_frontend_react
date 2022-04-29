@@ -213,7 +213,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
                         : "N. Autorización"}
                     </label>
                     <input
-                      type="text"
+                       type="number"
                       name="auth"
                       className="form-control"
                       onChange={({ target }) => handleChangeInput(target)}

@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 //Custom Hook//
 import useContact from "../../../hooks/useContact";
 import { Sale } from "../../../context/SaleContext";
+import { AuthContext } from "../../../context/AuthContext";
+import saleHelper from '../helpers';
 
 function SearchCustomerModal({ handleClose: _close }) {
   const [data, setData] = useState({
@@ -11,7 +13,9 @@ function SearchCustomerModal({ handleClose: _close }) {
 
   const [customers, setCustomers ] = useState([]);
 
-  const ourContext = Sale();
+  const sale = Sale();
+
+  const { auth } = useContext(AuthContext);
 
   const  _contacts  = useContact();
 
@@ -54,13 +58,15 @@ function SearchCustomerModal({ handleClose: _close }) {
       })
     },
     handleClickCustomer = (e, customer) => {
-      console.log("Customer Seleccionado:", customer);
+      //console.log("Customer Seleccionado:", customer);
       e.preventDefault();
-      const sale = ourContext;
+
+      console.log("ID customer venta:", sale.customer.id, "ID customer seleccionado:",customer.id);
 
       if (sale.customer.id !== customer.id) {
+        console.log(![0, 2].includes(sale.customer.id));
         if (![0, 2].includes(sale.customer.id)) {
-          window.Swal.fire({
+          window.Swal.fire({  
             title: "Ventas",
             text: "Esta accion creara una nueva venta ¿Esta seguro que desea crear una nueva venta?",
             icon: "question",
@@ -70,16 +76,33 @@ function SearchCustomerModal({ handleClose: _close }) {
             showLoaderOnConfirm: true,
           }).then(({ dismiss }) => {
             if (!dismiss) {
-              ourContext.setCustomer(customer);
+              console.log("Entrando al Dissmiss");
+              console.log(customer)
+              //sale.setCustomer(customer);
+              sale.set({
+                id: 0,
+                customer: {
+                  id:customer.id,
+                  name: customer.name,
+                },
+                contact_id: customer.id,
+                items: [],
+                session: saleHelper.getSession(),
+                discount: 0,
+                subtotal: 0,
+                total: 0,
+                payments: [],
+                branch_id: auth.branch.id,
+              })
               _close();
             }
           });
         } else {
-          ourContext.set({
+          sale.set({
             ...sale,
             customer:{
               id: customer.id,
-              nombre: customer.name ? customer.name : "Venta de mostrador",
+              name: customer.name ? customer.name : "Venta de mostrador",
             },
             contact_id: customer.id
           });
@@ -147,7 +170,7 @@ function SearchCustomerModal({ handleClose: _close }) {
                   ))}
                   {!customers.length && (
                     <>
-                      {[0, 2].includes(ourContext.customer.id) ? (
+                      {[0, 2].includes(sale.customer.id) ? (
                         <tr>
                           <td>No existen pacientes con esta coincidencia</td>
                         </tr>

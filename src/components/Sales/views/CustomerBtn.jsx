@@ -17,7 +17,7 @@ export default function CustomerBtnComponent() {
       <i className="fas fa-user mr-1 text-indigo"></i>
       Cliente:
       <label className="text-capitalize ml-1">
-        {sale.customer ? sale.customer.nombre : "XXX - vuelva a cargar"}
+        {sale.customer ? sale.customer.name : "XXX - vuelva a cargar"}
       </label>
       <button
         type="button"

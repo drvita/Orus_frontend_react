@@ -40,7 +40,7 @@ export default function useSales(ctx){
 
         data.id === 0 ? delete data.id : data.id = data.id
         
-        delete data.customer
+        //delete data.customer
 
         try {
           console.log("DATA A GUARDAR------", data);

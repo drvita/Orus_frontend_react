@@ -29,14 +29,16 @@ export default function ListSalesBtn({ setSale: _setSale }) {
       saleSelected.payments.forEach((pay) => (pagado = pay.total));
       setData(false);   
 
-      
+
       sale.set({
         id: saleSelected.id,
+        //Revisar
+        contact_id: saleSelected.customer.id,
         customer: saleSelected.customer,
         items: saleSelected.items,
         session: saleSelected.session,
         discount: saleSelected.discount,
-        subtotal: saleSelected.discount,
+        subtotal: saleSelected.subtotal,
         total: saleSelected.total,
         payments: saleSelected.payments,
         branch_id: saleSelected.branch.id,

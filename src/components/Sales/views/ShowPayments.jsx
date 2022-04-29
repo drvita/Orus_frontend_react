@@ -76,7 +76,7 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
               <label>Nota:</label> {sale.id}
             </div>
             <div className="col">
-              <label>Total:</label> ${sale.total}
+              <label>Total:</label> ${sale.subtotal}
             </div>
             <div className="col">
               <label>Abonado:</label> ${data.totalPayments}

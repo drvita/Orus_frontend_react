@@ -7,7 +7,8 @@ export default function DiscountBtnComponent() {
 
   const sale = Sale();
   const pagado = helper.getPagado(sale.payments);
-  const btnDisabled = sale.total - pagado > 0 && sale.discount === 0 && pagado === 0 ? false : true;
+  //const btnDisabled = sale.total - pagado > 0 && sale.discount === 0 && pagado === 0 ? false : true;
+  const btnDisabled = sale.subtotal - pagado > 0 && sale.discount === 0 && pagado === 0 ? false : true;
 
 
   //Functions
@@ -24,19 +25,27 @@ export default function DiscountBtnComponent() {
 
         if (discount.match(isNumeric)) {
           const value = parseInt(discount);
+          const subtotal = helper.getSubTotal(sale.items)
           sale.set({
             ...sale,
             discount: value,
+            ///Revisar, al agregar descuento guarda la venta
+            //total:helper.getTotal(subtotal, value),
           });
+          console.log("Aplicando descuento");
 
         } else if (discount.match(isPercen)) {
 
           const percent = parseInt(discount.replace("%", "")) / 100,
           value = parseInt(sum * percent);
+          const subtotal = helper.getSubTotal(sale.items)
           sale.set({
             ...sale,
             discount: value,
+            ///Revisar, al agregar descuento guarda la venta
+            //total:helper.getTotal(subtotal, value),
           })
+          console.log("Aplicando descuento");
           
         }
       }

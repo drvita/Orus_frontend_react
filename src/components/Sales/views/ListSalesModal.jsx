@@ -123,7 +123,7 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                     <>
                       {items.length ? (
                         <>
-                          {items.map((item) => (
+                          {items.map((item) => (                    
                             <tr key={item.id}>
                               <td className="text-right">
                                 <span className="badge badge-dark">
@@ -135,7 +135,7 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                                   href="#select"
                                   onClick={(e) => handleSelectSale(e, item)}
                                 >                      
-                                  {item.customer ? item.customer.nombre : "--"}
+                                  {item.customer ? item.customer.name : "--"}
                                 </a>
                               </td>
                               <td className="text-right">
@@ -154,7 +154,7 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                     <tr>
                       <td>
                         <i className="fas fa-info-circle mr-1"></i> Escriba el
-                        folio o nombre para cargar una venta
+                        folio o nombre para cargar una venta                
                       </td>
                     </tr>
                   )}

@@ -98,7 +98,7 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
   };
 
    useEffect(()=>{
-    if(paid && sale.total){ 
+    if(paid && sale.subtotal){ 
       //handlePrintShow();
       //Validamos si la venta ya tiene un ID, no muestra el modal de imprimir
       if(sale.id){

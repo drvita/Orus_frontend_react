@@ -38,13 +38,16 @@ export default function useSales(ctx){
           ...sale,
         }
 
-        data.id === 0 ? delete data.id : data.id = data.id
-        
-        //delete data.customer
+        //data.id === 0 ? delete data.id : data.id = data.id
+        delete data.id
+        delete data.created_at
+        delete data.customer
+
+
 
         try {
           console.log("DATA A GUARDAR------", data);
-          const { id } = data,
+          const { id } = sale,
             url = setUrl("sales", id),
             method = id ? "PUT" : "POST";
             console.log(url);

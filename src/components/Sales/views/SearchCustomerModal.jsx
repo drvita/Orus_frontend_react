@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 
 //Custom Hook//
 import useContact from "../../../hooks/useContact";

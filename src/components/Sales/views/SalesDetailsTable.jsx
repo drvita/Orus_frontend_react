@@ -24,16 +24,12 @@ export default function SalesDetailsTableComponent() {
   const { auth } = useContext(AuthContext);
   const {rol: userMain, roles} = auth;
 
-
-
    const [data, setData] = useState({
       showUpdateItem: false,
       showPaymentDetails: false,
       item: {},
       payment: {},
     });
-
-    const [disablePayments, setDisabledPayments] = useState(null);
 
   //Functions
   const handleDeleteItem = (item) => {

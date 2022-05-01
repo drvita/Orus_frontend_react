@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export function getLastParam() {
   const url = window.location.pathname.split("/");
 
@@ -16,6 +18,7 @@ export function api(url, method = "GET", body, controller = null) {
       { token: TOKEN = "" } = JSON.parse(SS ? SS : "{}");
     const param = {
       method,
+      url: `${PROTOCOL}://${HOST}:${PORT}/api/${url}`,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -24,34 +27,18 @@ export function api(url, method = "GET", body, controller = null) {
     };
 
     if (["POST", "PUT"].includes(method.toUpperCase()) && body) {
-      param.body = JSON.stringify(body);
+      param.data = JSON.stringify(body);
     }
     if (controller) param.signal = controller.signal;
 
-    fetch(`${PROTOCOL}://${HOST}:${PORT}/api/${url}`, param)
-      .then(async (res) => {
-        if (res.status >= 200 && res.status < 300) {
-          for (var pair of res.headers.entries()) {
-            if (pair[0] === "content-type") {
-              switch (pair[1]) {
-                case "application/json":
-                  return done(res.json());
-                case "text/csv; charset=UTF-8":
-                  return done(res.blob());
-                default:
-                  return reject();
-              }
-            } else if (res.status === 204) {
-              return done();
-            }
-          }
-        }
-        return done(res.json());
+    axios(param)
+      .then((res) => {
+        return done(res.data);
       })
       .catch((err) => {
         console.error("[Orus System] Query API failer:", url);
-        console.error("[Orus System] Query API message:", err.message);
-        return reject();
+        console.error("[Orus System] Query API message:", err?.message);
+        return reject(err.response?.data);
       });
   });
 }
@@ -85,3 +72,34 @@ export function setUrl(endpoint, id, param = {}) {
 
   return url;
 }
+
+// fetch(`${PROTOCOL}://${HOST}:${PORT}/api/${url}`, param)
+//   .then(async (res) => {
+//     console.log("[DEBUG] API:", res);
+//     if (res.status >= 200 && res.status < 300) {
+//       for (var pair of res.headers.entries()) {
+//         if (pair[0] === "content-type") {
+//           switch (pair[1]) {
+//             case "application/json":
+//               return done(res.json());
+//             case "text/csv; charset=UTF-8":
+//               return done(res.blob());
+//             default:
+//               return reject();
+//           }
+//         } else if (res.status === 204) {
+//           return done();
+//         }
+//       }
+//     } else if (res.status >= 300) {
+//       return reject();
+//     }
+
+//     return done(res.json());
+//   })
+//   .catch((err) => {
+// console.log("[DEBUG] API error:", err);
+// console.error("[Orus System] Query API failer:", url);
+// console.error("[Orus System] Query API message:", err.message);
+// return reject();
+//   });

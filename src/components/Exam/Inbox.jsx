@@ -26,7 +26,6 @@ export default function InboxExams() {
     });
 
     _exam.getExams(context.options).then((res) => {
-      // console.log("[DEBUG] Inbox res:", res);
       if (res.data) {
         setState({
           ...state,
@@ -39,25 +38,49 @@ export default function InboxExams() {
     });
   };
   const handleStatus = (exam) => {
-    // TODO: change status of exam
-
     if (exam?.id) {
       _exam
         .saveExam({
           id: exam.id,
           status: !exam.status,
+          contact_id: exam.customer?.id,
         })
         .then((res) => {
-          handleLoadExams();
+          if (res.id) handleLoadExams();
+          else if (res.hasOwnProperty("errors")) {
+            const messages = Object.values(res.errors);
+
+            console.log("[Orus System] Message of server:", res.errors);
+            window.Swal.fire({
+              title: "Consultorio",
+              text: messages[0],
+              icon: "error",
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
         });
     } else if (state.examSelected?.id) {
       _exam
         .saveExam({
           id: state.examSelected.id,
           status: !state.examSelected.status,
+          contact_id: state.examSelected.customer?.id,
         })
         .then((res) => {
-          handleLoadExams();
+          if (res.id) handleLoadExams();
+          else if (res.hasOwnProperty("errors")) {
+            const messages = Object.values(res.errors);
+
+            console.log("[Orus System] Message of server:", res.errors);
+            window.Swal.fire({
+              title: "Consultorio",
+              text: messages[0],
+              icon: "error",
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
         });
     } else {
       console.error(
@@ -66,9 +89,11 @@ export default function InboxExams() {
         state.examSelected
       );
       window.Swal.fire({
-        title: "Error",
+        title: "Consultorio",
         text: "Lo sentimos no existe un examen seleccionado",
-        icon: "error",
+        icon: "warning",
+        showConfirmButton: false,
+        timer: 3000,
       });
     }
   };
@@ -218,7 +243,7 @@ export default function InboxExams() {
                       >
                         <span
                           className={
-                            exam.estado || exam.orders?.length
+                            exam.status || exam.orders?.length
                               ? "text-muted"
                               : "text-dark text-bold"
                           }
@@ -233,7 +258,7 @@ export default function InboxExams() {
                       style={{ cursor: "pointer" }}
                       onClick={() => handleStatus(exam)}
                     >
-                      {exam.estado ? (
+                      {exam.status ? (
                         <i
                           className="fas fa-clipboard-check text-muted"
                           title="Terminado"

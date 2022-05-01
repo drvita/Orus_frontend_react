@@ -1,7 +1,9 @@
+import { useHistory } from "react-router-dom";
 import Search from "./ShowCardSearch";
 
 export default function ShowContactComponent(props) {
   const { data = {}, readOnly = false, title = "contacto", legend } = props;
+  const history = useHistory();
 
   return (
     <div className="w-100 d-block">
@@ -58,7 +60,7 @@ export default function ShowContactComponent(props) {
                   </button>
                   <button
                     className="btn bg-indigo btn-sm"
-                    onClick={() => {}}
+                    onClick={() => history.push(`/contactos/${data.id}`)}
                     title="Editar"
                   >
                     <i className="fas fa-edit"></i>

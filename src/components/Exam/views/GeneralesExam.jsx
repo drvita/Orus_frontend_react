@@ -1,7 +1,8 @@
-const GeneralesExamComponent = (props) => {
+export default function GeneralesExam(props) {
   const catchInputs = (e) => {
-    const { name, type, checked, value } = e.target,
-      val = type === "checkbox" ? checked : value.toLowerCase();
+    const { name, type, checked, value } = e.target;
+    const val = type === "checkbox" ? checked : value.toLowerCase();
+
     props.handleGetData(name, val);
   };
 
@@ -246,6 +247,4 @@ const GeneralesExamComponent = (props) => {
       </div>
     </>
   );
-};
-
-export default GeneralesExamComponent;
+}

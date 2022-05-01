@@ -1,10 +1,10 @@
 import { api, setUrl } from "../utils/url";
 
-export default function useExam() {
-  const getExams = async (options) => {
+export default function useCategory() {
+  const getCategories = async (options) => {
     if (!options) return null;
 
-    const url = setUrl("exams", null, options);
+    const url = setUrl("categories", null, options);
 
     return await api(url, "GET")
       .then((response) => {
@@ -12,17 +12,17 @@ export default function useExam() {
       })
       .catch((err) => {
         console.error(
-          "[Orus System] Catch when get contacts list in hook:",
+          "[Orus System] Catch when get categories list in hook:",
           err.message
         );
 
         return null;
       });
   };
-  const getExam = async (id) => {
+  const getCategory = async (id) => {
     if (!id) return false;
 
-    const url = setUrl("exams", id);
+    const url = setUrl("categories", id);
 
     return await api(url, "GET")
       .then((response) => {
@@ -30,17 +30,17 @@ export default function useExam() {
       })
       .catch((err) => {
         console.error(
-          "[Orus System] Catch when get contact in hook:",
+          "[Orus System] Catch when get category in hook:",
           err.message
         );
 
         return {};
       });
   };
-  const deleteExam = async (id) => {
+  const deleteCategory = async (id) => {
     if (!id) return false;
 
-    const url = setUrl("exams", id);
+    const url = setUrl("categories", id);
 
     return await api(url, "DELETE")
       .then(() => {
@@ -48,47 +48,55 @@ export default function useExam() {
       })
       .catch((err) => {
         console.error(
-          "[Orus System] Catch when delete contact in hook:",
+          "[Orus System] Catch when delete category in hook:",
           err.message
         );
 
         return false;
       });
   };
-  const saveExam = async (data) => {
+  const saveCategory = async (data) => {
     if (!data) return;
     const { id } = data;
     delete data.id;
 
     if (id) {
-      const url = setUrl("exams", id);
+      const url = setUrl("categories", id);
 
       return await api(url, "PUT", data)
         .then((res) => {
           return res.data;
         })
         .catch((err) => {
-          console.error("[Orus System] Catch when update exam in hook");
-          return err;
+          console.error(
+            "[Orus System] Catch when save category in hook:",
+            err.message
+          );
+
+          return null;
         });
     } else {
-      const url = setUrl("exams");
+      const url = setUrl("categories");
 
       return await api(url, "POST", data)
         .then((res) => {
           return res.data;
         })
         .catch((err) => {
-          console.error("[Orus System] Catch when create exam in hook");
-          return err;
+          console.error(
+            "[Orus System] Catch when save category in hook:",
+            err.message
+          );
+
+          return null;
         });
     }
   };
 
   return {
-    getExams,
-    getExam,
-    deleteExam,
-    saveExam,
+    getCategories,
+    getCategory,
+    deleteCategory,
+    saveCategory,
   };
 }

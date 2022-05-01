@@ -132,6 +132,7 @@ export default function AddContact(props) {
           if (res?.id) {
             console.log("[Orus System] Create contatc successfully", res.id);
             _handleNewOrEdit();
+            history.push("/contactos");
           }
         });
       }

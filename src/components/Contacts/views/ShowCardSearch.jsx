@@ -18,32 +18,53 @@ export default function ShowCardSearch(props) {
   });
   const _contacts = useContact();
   const input = useRef();
+  // Functions
+  const handleSearch = () => {
+    setState({
+      ...state,
+      timer: "",
+      loading: true,
+    });
+    _contacts
+      .getContacts({
+        search: state.search,
+        itemsPage: 10,
+      })
+      .then((res) => {
+        if (res.data) {
+          setState({
+            ...state,
+            contacts: res.data,
+            meta: res.meta,
+            loading: false,
+          });
+        } else {
+          const messages = Object.values(res.errors);
+
+          console.log("[Orus System] Message of server:", res.errors);
+          window.Swal.fire({
+            title: "Contactos",
+            text: messages[0],
+            icon: "error",
+            showConfirmButton: false,
+            timer: 3000,
+          });
+
+          setState({
+            ...state,
+            contacts: [],
+            meta: {},
+            loading: false,
+          });
+        }
+      });
+  };
 
   useEffect(() => {
     let toTimer = null;
     if (state.search.length > 5) {
       if (state.timer) clearTimeout(state.timer);
-      toTimer = setTimeout(() => {
-        // Buscaar
-        setState({
-          ...state,
-          timer: "",
-          loading: true,
-        });
-        _contacts
-          .getContacts({
-            search: state.search,
-            itemsPage: 10,
-          })
-          .then((res) => {
-            setState({
-              ...state,
-              contacts: res.data,
-              meta: res.meta,
-              loading: false,
-            });
-          });
-      }, 1000);
+      toTimer = setTimeout(() => handleSearch(), 2000);
       setState({
         ...state,
         timer: toTimer,
@@ -52,7 +73,7 @@ export default function ShowCardSearch(props) {
       if (state.timer) clearTimeout(state.timer);
       setState({
         ...state,
-        timer: toTimer,
+        timer: null,
         contacts: [],
         meta: {},
         loading: false,
@@ -81,6 +102,13 @@ export default function ShowCardSearch(props) {
               search: "",
             });
             input.current.value = "";
+          } else if (key === "Enter") {
+            if (state.timer) clearTimeout(state.timer);
+            handleSearch();
+            setState({
+              ...state,
+              timer: null,
+            });
           }
         }}
         ref={input}

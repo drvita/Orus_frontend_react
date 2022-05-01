@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import moment from "moment";
+import { useHistory } from "react-router-dom";
+// import moment from "moment";
 //Componentes
-import Generales from "./views/generalesExam";
+import Generales from "./views/GeneralesExam";
 import Interrogatorios from "./views/interrogatoriosExam";
 import KeraRet from "./views/keraRetExam";
 import Diabetes from "./views/diabetesExam";
@@ -10,8 +11,9 @@ import Agudeza from "./views/agudezaExam";
 import Diagnostico from "./views/diagnosticoExam";
 import Graduacion from "./views/graduacionExam";
 import Observaciones from "./views/observacionesExam";
-import Recomendaciones from "./views/recomendaciones";
+import Recomendaciones from "./views/RecomendationGlass";
 import ShowContact from "../Contacts/views/ShowCard";
+import SideBarRigth from "./views/SideBarRigth";
 // import PrintExam from "./views/print_exam";
 import useExam from "../../hooks/useExam";
 
@@ -21,23 +23,100 @@ export default function Add(props) {
     loading: false,
     panel: 0,
     used: {
-      generales: true,
-      interrogatorios: true,
-      keraRet: true,
-      diabetes: true,
-      agudeza: true,
-      diagnostico: true,
-      graduacion: true,
-      observaciones: true,
-      recomendaciones: true,
+      generales: false,
+      interrogatorios: false,
+      keraRet: false,
+      diabetes: false,
+      agudeza: false,
+      diagnostico: false,
+      graduacion: false,
+      observaciones: false,
+      recomendaciones: false,
     },
   });
   const { id } = props.match.params;
   const _exams = useExam();
+  const history = useHistory();
+
+  // Functions
+  const handlePanel = (num) => {
+    if (isNaN(num)) return;
+    if (typeof num === "string") num = parseInt(num);
+
+    setState({
+      ...state,
+      panel: num,
+    });
+  };
+  const handleSave = () => {
+    const data = {
+      ...state,
+    };
+    const { contact } = data;
+    delete data.loading;
+    delete data.panel;
+    delete data.used;
+    delete data.contact;
+    if (!data.category_ii) delete data.category_ii;
+    if (!data.category_id) delete data.category_id;
+
+    if (
+      (data.cilindrod < 0 && !data.ejeod) ||
+      (data.cilindroi < 0 && !data.ejeoi)
+    ) {
+      window.Swal.fire(
+        "Consultorio",
+        "El campo CILINDRO esta vacio",
+        "warning"
+      );
+      return false;
+    }
+
+    window.Swal.fire({
+      title: "Consultorio",
+      text: data.id
+        ? `¿Desea actualizar el examen de ${contact.name.toUpperCase()}?`
+        : `¿Desea crear un nuevo examen para ${contact.name.toUpperCase()}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: data.id ? "Actualizar" : "Crear",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        _exams.saveExam(data).then((res) => {
+          if (res?.id) {
+            console.log("[Orus System] Save exam successfully", res.id);
+            props.handleNewOrEdit();
+            history.push("/consultorio");
+          } else if (res.hasOwnProperty("errors")) {
+            const messages = Object.values(res.errors);
+
+            console.log("[Orus System] Message of server:", res.errors);
+            window.Swal.fire({
+              title: "Consultorio",
+              text: messages[0],
+              icon: "error",
+              showConfirmButton: false,
+              timer: 3000,
+            });
+          }
+        });
+      }
+    });
+  };
 
   useEffect(() => {
     if (id) {
+      console.log("[Orus System] Loading exam:", id);
+      setState({
+        ...state,
+        loading: false,
+      });
       _exams.getExam(id).then((res) => {
+        res.category_ii = res.category_ii?.id;
+        res.category_id = res.category_id?.id;
+
         setState({
           ...getDataDefault(res),
           loading: false,
@@ -89,247 +168,15 @@ export default function Add(props) {
                 });
               }}
             />
-
-            {state.contact?.id ? (
-              <div className="row my-4">
-                <div className="col">
-                  {state.id ? (
-                    <div className="custom-control custom-switch ">
-                      <input
-                        name="estado"
-                        type="checkbox"
-                        className="custom-control-input"
-                        id="estado"
-                        checked={state.estado}
-                        onChange={() => {}}
-                      />
-                      <label
-                        className={
-                          state.estado
-                            ? "custom-control-label text-muted"
-                            : "custom-control-label text-info"
-                        }
-                        htmlFor="estado"
-                      >
-                        <i
-                          className={
-                            state.estado
-                              ? "fas fa-folder mr-1"
-                              : "fas fa-folder-open mr-1"
-                          }
-                        ></i>
-                        {state.estado
-                          ? "Examen terminado"
-                          : "Examen en proceso"}
-                      </label>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="col">
-                  <label>
-                    <i className="fas fa-calendar mr-1"></i>
-                    Creado:
-                  </label>
-                  <span className="ml-1">
-                    {moment(state.created_at).format("LL")}
-                  </span>
-                </div>
-                {state.age !== state.contact?.edad ||
-                (!state.contact?.edad && !state.id) ? (
-                  <div className="col col-sm-12 input-group">
-                    <label className="input-group-prepend mr-2">Edad</label>
-                    <input
-                      type="number"
-                      className={
-                        state.age
-                          ? "form-control text-right mr-2"
-                          : "form-control text-right mr-2 bg-info"
-                      }
-                      defaultValue={state.edad}
-                      placeholder="Escriba la edad actual"
-                      onChange={(e) => {}}
-                      min="1"
-                      max="120"
-                    />
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
           </div>
 
           {state.contact?.id ? (
             <div className="row">
               <div className="col-2">
-                <div className="nav flex-column nav-tabs">
-                  <a
-                    className={
-                      !state.panel ? "nav-link text-bold active" : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.generales
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Generales {state.used?.generales ? "T" : "F"}
-                  </a>
-
-                  <a
-                    className={
-                      state.panel === 1
-                        ? "nav-link text-bold active"
-                        : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.interrogatorios
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Interrogatorio
-                  </a>
-
-                  <a
-                    className={
-                      state.panel === 2
-                        ? "nav-link text-bold active"
-                        : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.keraRet
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Keratometria
-                  </a>
-
-                  <a
-                    className={
-                      state.panel === 3
-                        ? "nav-link text-bold active"
-                        : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.diabetes
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Diabetes
-                  </a>
-
-                  <a
-                    className={
-                      state.panel === 4
-                        ? "nav-link text-bold active"
-                        : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.agudeza
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Agudeza
-                  </a>
-
-                  <a
-                    className={
-                      state.panel === 5
-                        ? "nav-link text-bold active"
-                        : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.diagnostico
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Diagnostico
-                  </a>
-
-                  <a
-                    className={
-                      state.panel === 6
-                        ? "nav-link text-bold active"
-                        : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.graduacion
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Graduación
-                  </a>
-
-                  <a
-                    className={
-                      state.panel === 7
-                        ? "nav-link text-bold active"
-                        : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.observaciones
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Observaciones
-                  </a>
-
-                  <a
-                    className={
-                      state.panel === 8
-                        ? "nav-link text-bold active"
-                        : "nav-link"
-                    }
-                    href="#general"
-                    onClick={(e) => {}}
-                  >
-                    <i
-                      className={
-                        state.used?.recomendaciones
-                          ? "fas fa-check-circle mr-1 text-success"
-                          : "fas fa-circle mr-1"
-                      }
-                    ></i>
-                    Recomendaciones
-                  </a>
-                </div>
+                <SideBarRigth
+                  state={{ panel: state.panel, ...state.used }}
+                  handle={handlePanel}
+                />
               </div>
               <div className="col-10">
                 {!state.panel ? (
@@ -351,7 +198,18 @@ export default function Add(props) {
                     generality={state.generality ?? ""}
                     temporaoi={state.temporaoi ?? ""}
                     temporaod={state.temporaod ?? ""}
-                    handleGetData={() => {}}
+                    handleGetData={(name, value) => {
+                      if (!name) return;
+
+                      setState({
+                        ...state,
+                        [name]: value,
+                        used: {
+                          ...state.used,
+                          generales: true,
+                        },
+                      });
+                    }}
                   />
                 ) : null}
                 {state.panel === 1 ? (
@@ -360,7 +218,18 @@ export default function Add(props) {
                     coa={state.coa ?? ""}
                     aopp={state.aopp ?? ""}
                     aopf={state.aopf ?? ""}
-                    onChangeInput={() => {}}
+                    onChangeInput={(name, value) => {
+                      if (!name) return;
+
+                      setState({
+                        ...state,
+                        [name]: value,
+                        used: {
+                          ...state.used,
+                          interrogatorios: true,
+                        },
+                      });
+                    }}
                   />
                 ) : null}
 
@@ -370,7 +239,18 @@ export default function Add(props) {
                     keratometriaod={state.keratometriaod ?? ""}
                     rsoi={state.rsoi ?? ""}
                     rsod={state.rsod ?? ""}
-                    onChangeInput={() => {}}
+                    onChangeInput={(name, value) => {
+                      if (!name) return;
+
+                      setState({
+                        ...state,
+                        [name]: value,
+                        used: {
+                          ...state.used,
+                          keraRet: true,
+                        },
+                      });
+                    }}
                   />
                 ) : null}
 
@@ -384,7 +264,18 @@ export default function Add(props) {
                     d_fcloi={state.d_fcloi ?? ""}
                     d_fcloi_time={state.d_fcloi_time ?? ""}
                     oftalmoscopia={state.oftalmoscopia ?? ""}
-                    onChangeInput={() => {}}
+                    onChangeInput={(name, value) => {
+                      if (!name) return;
+
+                      setState({
+                        ...state,
+                        [name]: value,
+                        used: {
+                          ...state.used,
+                          diabetes: true,
+                        },
+                      });
+                    }}
                   />
                 ) : null}
 
@@ -399,7 +290,18 @@ export default function Add(props) {
                     avfod={state.avfod ?? ""}
                     avfoi={state.avfoi ?? ""}
                     avf2o={state.avf2o ?? ""}
-                    onChangeInput={() => {}}
+                    onChangeInput={(name, value) => {
+                      if (!name) return;
+
+                      setState({
+                        ...state,
+                        [name]: value,
+                        used: {
+                          ...state.used,
+                          agudeza: true,
+                        },
+                      });
+                    }}
                   />
                 ) : null}
 
@@ -410,7 +312,18 @@ export default function Add(props) {
                     piod={state.piod ?? ""}
                     pioi={state.pioi ?? ""}
                     txoftalmico={state.txoftalmico ?? ""}
-                    onChangeInput={() => {}}
+                    onChangeInput={(name, value) => {
+                      if (!name) return;
+
+                      setState({
+                        ...state,
+                        [name]: value,
+                        used: {
+                          ...state.used,
+                          diagnostico: true,
+                        },
+                      });
+                    }}
                   />
                 ) : null}
 
@@ -433,14 +346,36 @@ export default function Add(props) {
                     lcmarca={state.lcmarca ?? 0}
                     lcgod={state.lcgod ?? 0}
                     lcgoi={state.lcgoi ?? 0}
-                    onChangeInput={() => {}}
+                    onChangeInput={(name, value) => {
+                      if (!name) return;
+
+                      setState({
+                        ...state,
+                        [name]: value,
+                        used: {
+                          ...state.used,
+                          graduacion: true,
+                        },
+                      });
+                    }}
                   />
                 ) : null}
 
                 {state.panel === 7 ? (
                   <Observaciones
                     observaciones={state.observaciones ?? ""}
-                    onChangeInput={() => {}}
+                    onChangeInput={(name, value) => {
+                      if (!name) return;
+
+                      setState({
+                        ...state,
+                        [name]: value,
+                        used: {
+                          ...state.used,
+                          observaciones: true,
+                        },
+                      });
+                    }}
                   />
                 ) : null}
 
@@ -453,10 +388,19 @@ export default function Add(props) {
                         esferaoi={state.esferaoi ?? ""}
                         cilindrod={state.cilindrod ?? ""}
                         cilindroi={state.cilindroi ?? ""}
-                        nameCategory="category_id"
                         nameItem="item1"
                         title="Recomendacion principal"
-                        onChangeInput={() => {}}
+                        onChangeInput={(value) => {
+                          setState({
+                            ...state,
+                            category_id: value,
+                            category_ii: 0,
+                            used: {
+                              ...state.used,
+                              recomendaciones: true,
+                            },
+                          });
+                        }}
                         update={true}
                       />
                     </div>
@@ -468,10 +412,18 @@ export default function Add(props) {
                           esferaoi={state.esferaoi ?? ""}
                           cilindrod={state.cilindrod ?? ""}
                           cilindroi={state.cilindroi ?? ""}
-                          nameCategory="category_ii"
                           nameItem="item2"
                           title="Recomendacion adicional"
-                          onChangeInput={() => {}}
+                          onChangeInput={(value) => {
+                            setState({
+                              ...state,
+                              category_ii: value,
+                              used: {
+                                ...state.used,
+                                recomendaciones: true,
+                              },
+                            });
+                          }}
                           update={true}
                         />
                       </div>
@@ -484,7 +436,15 @@ export default function Add(props) {
         </div>
         <div className="card-footer text-right">
           <div className="btn-group" role="group">
-            <a href="#close" className="btn btn-default" onClick={(e) => {}}>
+            <a
+              href="#close"
+              className="btn btn-default"
+              onClick={(e) => {
+                e.preventDefault();
+                history.push("/consultorio");
+                props.handleNewOrEdit();
+              }}
+            >
               <i
                 className={
                   state.id ? "fas fa-arrow-left mr-2" : "fas fa-ban mr-2"
@@ -497,7 +457,7 @@ export default function Add(props) {
                 className="btn btn-default"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.print();
+                  // window.print();
                 }}
               >
                 <i className="fas fa-print mr-2"></i>
@@ -509,7 +469,7 @@ export default function Add(props) {
               className={
                 state.contact?.id ? "btn btn-info" : "btn btn-info disabled"
               }
-              onClick={() => {}}
+              onClick={handleSave}
               disabled={state.contact?.id ? false : true}
             >
               <i className="fas fa-save mr-1"></i>
@@ -518,28 +478,30 @@ export default function Add(props) {
           </div>
         </div>
       </div>
-      {/* <PrintExam
-        esferaod={state.esferaod ?? ""}
-        esferaoi={state.esferaoi ?? ""}
-        cilindrod={state.cilindrod ?? ""}
-        cilindroi={state.cilindroi ?? ""}
-        ejeod={state.ejeod ?? ""}
-        ejeoi={state.ejeoi ?? ""}
-        adiciond={state.adiciond ?? ""}
-        adicioni={state.adicioni ?? ""}
-        adicion_media_od={state.adicion_media_od ?? ""}
-        adicion_media_oi={state.adicion_media_oi ?? ""}
-        dpod={state.dpod ?? ""}
-        dpoi={state.dpoi ?? ""}
-        alturaod={state.alturaod ?? ""}
-        alturaoi={state.alturaoi ?? ""}
-        lcmarca={state.lcmarca ?? ""}
-        lcgod={state.lcgod ?? ""}
-        lcgoi={state.lcgoi ?? ""}
-        diagnostico={state.diagnostico ?? ""}
-        paciente={state.contact ?? ""}
-        presbicie={state.presbicie ?? ""}
-      /> */}
+      {/* {state.contact?.id && (
+        <PrintExam
+          esferaod={state.esferaod ?? ""}
+          esferaoi={state.esferaoi ?? ""}
+          cilindrod={state.cilindrod ?? ""}
+          cilindroi={state.cilindroi ?? ""}
+          ejeod={state.ejeod ?? ""}
+          ejeoi={state.ejeoi ?? ""}
+          adiciond={state.adiciond ?? ""}
+          adicioni={state.adicioni ?? ""}
+          adicion_media_od={state.adicion_media_od ?? ""}
+          adicion_media_oi={state.adicion_media_oi ?? ""}
+          dpod={state.dpod ?? ""}
+          dpoi={state.dpoi ?? ""}
+          alturaod={state.alturaod ?? ""}
+          alturaoi={state.alturaoi ?? ""}
+          lcmarca={state.lcmarca ?? ""}
+          lcgod={state.lcgod ?? ""}
+          lcgoi={state.lcgoi ?? ""}
+          diagnostico={state.diagnostico ?? ""}
+          paciente={state.contact ?? ""}
+          presbicie={state.presbicie ?? ""}
+        />
+      )} */}
     </>
   );
 }
@@ -617,190 +579,9 @@ function getDataDefault(data = {}) {
     d_fclod_time: data.d_fclod_time ?? "00:00",
     d_fcloi_time: data.d_fcloi_time ?? "00:00",
     contact: data.customer ?? {},
-    status: data.status ?? false,
-    branch_id: data.branch?.id ?? 12,
+    status: data.status ?? 1,
     contact_id: data.customer?.id,
     category_id: data.category_id ?? 0,
     category_ii: data.category_ii ?? 0,
   };
 }
-
-// class AddComp extends Component {
-//   constructor(props) {
-//     super(props);
-
-//     this.state = {
-//       exam: { id: 0, edad: 20 },
-//       panel: 0,
-//       used: {
-//         generales: false,
-//         interrogatorios: false,
-//         keraRet: false,
-//         diabetes: false,
-//         agudeza: false,
-//         diagnostico: false,
-//         graduacion: false,
-//         observaciones: false,
-//         recomendaciones: false,
-//       },
-//     };
-//   }
-
-//   componentDidMount() {
-//     this.getExam();
-//   }
-
-//   componentDidUpdate(props) {
-//     const { contact } = this.props,
-//       { exam } = this.state;
-
-//     if (props.contact.id !== contact.id && !exam.id) {
-//       this.setState({
-//         exam: {
-//           ...exam,
-//           edad: contact.edad,
-//         },
-//       });
-//     }
-//   }
-
-//   render() {
-//     const { exam, panel, used } = this.state,
-//       { contact: paciente, handleClose: _handleClose } = this.props;
-
-//     return (
-
-//     );
-//   }
-
-//   handleChangeRecomendations = (obj) => {
-//     const { exam, used } = this.state,
-//       key = Object.keys(obj);
-
-//     if (typeof obj === "object") {
-//       this.setState({
-//         exam: {
-//           ...exam,
-//           category_ii: key[0] === "category_id" ? null : exam.category_ii,
-//           ...obj,
-//         },
-//         used: {
-//           ...used,
-//           recomendaciones: true,
-//         },
-//       });
-//     }
-//   };
-//   changeStatus = (e) => {
-//     const { checked } = e.target;
-//     this.handleChangeInput("estado", checked);
-//   };
-//   handleChangeInput = (key, value) => {
-//     const { exam, used } = this.state,
-//       usedto = action.handleTypeInput(key);
-
-//     this.setState({
-//       exam: {
-//         ...exam,
-//         [key]: value,
-//       },
-//       used: usedto
-//         ? {
-//             ...used,
-//             [usedto]: true,
-//           }
-//         : used,
-//     });
-//   };
-//   handleStatus = () => {
-//     this.setState({
-//       status: !this.state.status,
-//     });
-//   };
-//   handleSave = (e) => {
-//     e.preventDefault();
-//     const {
-//         exam: { id, cilindrod, cilindroi, ejeod, ejeoi },
-//       } = this.state,
-//       {
-//         contact: paciente,
-//         options,
-//         handleClose: _handleClose,
-//         _saveExam,
-//       } = this.props;
-
-//     //Verificar si los datos son validos.
-//     if ((cilindrod < 0 && !ejeod) || (cilindroi < 0 && !ejeoi)) {
-//       window.Swal.fire(
-//         "Verificación",
-//         "El campo CILINDRO esta vacio",
-//         "warning"
-//       );
-//       return false;
-//     }
-
-//     //Confirmación de almacenamiento
-//     window.Swal.fire({
-//       title: "Almacenamiento",
-//       text: id
-//         ? "¿Esta seguro de actualizar el examen?"
-//         : "¿Esta seguro de crear un nuevo examen?",
-//       icon: "question",
-//       showCancelButton: true,
-//       confirmButtonText: id ? "Actualizar" : "Crear",
-//       cancelButtonText: "Cancelar",
-//       showLoaderOnConfirm: true,
-//     }).then(({ dismiss }) => {
-//       if (!dismiss) {
-//         let { exam: body } = this.state;
-//         const anos = paciente.f_nacimiento
-//             ? moment().diff(paciente.f_nacimiento, "years")
-//             : 0,
-//           edad = anos < 1 || !anos ? 0 : anos;
-
-//         body.contact_id = paciente.id;
-//         body.edad = body.edad ? body.edad : edad;
-//         body.status = body.estado;
-//         delete body.estado;
-//         if (!body.category_id) body.category_id = null;
-//         if (!body.category_ii) body.category_ii = null;
-
-//         _saveExam({
-//           id,
-//           data: body,
-//           options,
-//         });
-//         _handleClose(true);
-//       }
-//     });
-//   };
-//   getExam = () => {
-//     const { exam, _setContact } = this.props;
-//     if (exam.id) {
-//       console.log("[Orus System] Procesando examen", exam.id);
-//       this.setState({
-//         exam: {
-//           ...exam,
-//           category_id: exam.category_primary ? exam.category_primary.id : null,
-//           category_ii: exam.category_secondary
-//             ? exam.category_secondary.id
-//             : null,
-//         },
-//         load: false,
-//         panel: 0,
-//         used: {
-//           generales: true,
-//           interrogatorios: true,
-//           keraRet: true,
-//           diabetes: true,
-//           agudeza: true,
-//           diagnostico: true,
-//           graduacion: true,
-//           observaciones: true,
-//           recomendaciones: true,
-//         },
-//       });
-//       _setContact(exam.paciente ?? { id: 0 });
-//     }
-//   };
-// }

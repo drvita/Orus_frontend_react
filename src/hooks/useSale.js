@@ -1,4 +1,3 @@
-import { useState } from'react';
 import{ api, setUrl } from '../utils/url';
 
 export default function useSales(ctx){

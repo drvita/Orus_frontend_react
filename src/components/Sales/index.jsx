@@ -22,15 +22,11 @@ import saleHelper from './helpers';
 //Actions
 import { defaultActions } from "../../redux/default/";
 
-
-
-
 export default function IndexSalesComponent() {
 
   const {auth} = useContext(AuthContext);
   const { sales } = useSelector((state) => state);
   const { loading } = sales;
-
 
   const dispatch = useDispatch();
 

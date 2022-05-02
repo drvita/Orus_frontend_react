@@ -1,204 +1,195 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import { useState, useEffect, useContext } from "react";
 import BranchsList from "./views/Branchs";
+import { useDispatch } from "react-redux";
+import { AuthContext } from "../../context/AuthContext";
+
+
 // Actions
 import { defaultActions } from "../../redux/default/";
 
-class ToolsComponent extends Component {
-  constructor(props) {
-    super(props);
+export default function ToolsComponent(){
 
-    this.state = {
-      server: "",
-      company: "",
-      email: "",
-      name: "",
-      username: "",
-      password: "",
-      category_list: [],
-    };
-  }
+  const dispatch = useDispatch();
+  const { auth } = useContext(AuthContext);
 
-  componentDidMount() {
-    //Variables en localStorage
-    const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem")),
-      { _setPageName } = this.props;
+  const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
 
-    this.setState({
-      server: varLocalStorage.host
-        ? varLocalStorage.host
-        : window.location.host.split(":")[0],
-      company: varLocalStorage.company ? varLocalStorage.company : "",
-      email: varLocalStorage.email ? varLocalStorage.email : "",
-      name: varLocalStorage.name ? varLocalStorage.name : "",
-      username: varLocalStorage.username ? varLocalStorage.username : "",
-    });
+  const [state, setState] = useState({
+    server: varLocalStorage.host ? varLocalStorage.host : "",
+    company:  varLocalStorage.company ? varLocalStorage.company : "",
+    email: auth.email ? auth.email : "",
+    name: auth.name ? auth.name : "",
+    username: auth.username ? auth.username : "",
+    password: "",
+    category_list: [],
+  })
 
-    _setPageName("configuraciones");
-  }
+  console.log(state);
 
-  render() {
-    return (
-      <div className="row">
-        <div className="col-6">
-          <div className="card card-primary card-outline">
-            <div className="card-body">
-              <h5 className="card-title">Generales</h5>
-              <p>&nbsp;</p>
-              <div className="input-group mb-3">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-server"></i>
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Servidor"
-                  name="server"
-                  value={this.state.server}
-                  onChange={this.catchInputs}
-                />
-              </div>
-              <div className="input-group mb-3">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-building"></i>
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  className="form-control text-capitalize"
-                  placeholder="Nombre de la empresa"
-                  name="company"
-                  value={this.state.company}
-                  onChange={this.catchInputs}
-                />
-              </div>
-            </div>
-            <div className="card-footer text-right">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={this.clickSave}
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="col-6">
-          <div className="card card-primary card-outline">
-            <div className="card-body">
-              <h5 className="card-title">Usuario</h5>
-              <p>&nbsp;</p>
-              <div className="input-group mb-3">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-at"></i>
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Email"
-                  name="email"
-                  value={this.state.email}
-                  onChange={this.catchInputs}
-                />
-              </div>
-              <div className="input-group mb-3">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-user-tag"></i>
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  className="form-control text-capitalize"
-                  placeholder="Nombre completo"
-                  name="name"
-                  value={this.state.name}
-                  onChange={this.catchInputs}
-                />
-              </div>
-              <hr />
-              <div className="input-group mb-3">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-user-check"></i>
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Usuario"
-                  name="username"
-                  value={this.state.username}
-                  onChange={this.catchInputs}
-                />
-              </div>
-              <div className="input-group mb-3">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-lock"></i>
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Contraseña"
-                  name="password"
-                  value={this.state.password}
-                  onChange={this.catchInputs}
-                />
-              </div>
-            </div>
-            <div className="card-footer text-right">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={this.clickSaveUser}
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
+  useEffect(()=>{
+    dispatch(defaultActions.changeNamePage("configuraciones"));
+  },[])
 
-          <BranchsList />
-        </div>
-      </div>
-    );
-  }
-
-  clickSave = () => {
-    //Variables en localStorage
+  const clickSave = () => {
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-    varLocalStorage.company = this.state.company;
-    varLocalStorage.host = this.state.server;
-    // localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage));
-  };
+    varLocalStorage.company = state.company;
+    localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage));
+  },
+
   clickSaveUser = () => {
+
+    //TODO: Ejecutar llamada a la API para actualizar el usuario
+
+
     //Variables en localStorage
-    let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
-    varLocalStorage.email = this.state.email;
-    varLocalStorage.name = this.state.name;
-    varLocalStorage.username = this.state.username;
-    // localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage));
-  };
+    /* let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
+    varLocalStorage.email = state.email;
+    varLocalStorage.name = state.name;
+    varLocalStorage.username = state.username;
+    localStorage.setItem("OrusSystem", JSON.stringify(varLocalStorage)); */
+  },
+  
   catchInputs = (e) => {
     const { name, value } = e.target;
-    this.setState({
+    setState({
       [name]: value.toLowerCase(),
     });
   };
+
+  return (
+    <div className="row">
+
+      <div className="col-12">
+        <div className="card card-primary card-outline">
+          <div className="card-body">
+            <h5 className="card-title">Generales</h5>
+            <p>&nbsp;</p>
+            <div className="input-group mb-3">
+              <div className="input-group-prepend">
+                <span className="input-group-text">
+                  <i className="fas fa-server"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Servidor"
+                name="server"
+                value={state.server}
+                onChange={catchInputs}
+              />
+            </div>
+            <div className="input-group mb-3">
+              <div className="input-group-prepend">
+                <span className="input-group-text">
+                  <i className="fas fa-building"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                className="form-control text-capitalize"
+                placeholder="Nombre de la empresa"
+                name="company"
+                value={state.company}
+                onChange={catchInputs}
+              />
+            </div>
+          </div>
+          <div className="card-footer text-right">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={clickSave}
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <div className="col-lg-6 col-sm-12">
+        <div className="card card-primary card-outline">
+          <div className="card-body">
+            <h5 className="card-title">Usuario</h5>
+            <p>&nbsp;</p>
+            <div className="input-group mb-3">
+              <div className="input-group-prepend">
+                <span className="input-group-text">
+                  <i className="fas fa-at"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Email"
+                name="email"
+                value={state.email}
+                onChange={catchInputs}
+              />
+            </div>
+            <div className="input-group mb-3">
+              <div className="input-group-prepend">
+                <span className="input-group-text">
+                  <i className="fas fa-user-tag"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                className="form-control text-capitalize"
+                placeholder="Nombre completo"
+                name="name"
+                value={state.name}
+                onChange={catchInputs}
+              />
+            </div>
+            <hr />
+            <div className="input-group mb-3">
+              <div className="input-group-prepend">
+                <span className="input-group-text">
+                  <i className="fas fa-user-check"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Usuario"
+                name="username"
+                value={state.username}
+                onChange={catchInputs}
+              />
+            </div>
+            <div className="input-group mb-3">
+              <div className="input-group-prepend">
+                <span className="input-group-text">
+                  <i className="fas fa-lock"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Contraseña"
+                name="password"
+                value={state.password}
+                onChange={catchInputs}
+              />
+            </div>
+          </div>
+          <div className="card-footer text-right">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={clickSaveUser}
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="col-lg-6 col-md-12 col-sm-12">
+        <BranchsList />
+      </div>
+    </div>
+  );
 }
-
-const mapStateToProps = ({ default: system }) => {
-    return {};
-  },
-  mapActionsToProps = {
-    _setPageName: defaultActions.changeNamePage,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(ToolsComponent);

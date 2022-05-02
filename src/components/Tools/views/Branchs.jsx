@@ -29,9 +29,6 @@ export default function BranchsListComponent() {
         name: data.name?.toString().toLowerCase(),
         address: data.address?.toString().toLowerCase(),
         phone: data.phone?.toString().toLowerCase(),
-        /* name: values.name.toString().toLowerCase(), */
-        /* address: values.address.toString().toLowerCase(), */
-        /* phone: values.phone.toString().toLowerCase(), */
       });
     },
     handleCancelForm = () =>
@@ -58,12 +55,8 @@ export default function BranchsListComponent() {
         handleCancelForm();
       }
     };
-  // handleDeleteConf = ({ id, values }) =>
-  //   helper.deleteConfig(id, options, values.name, dispatch);
-
   useEffect(() => {
     dispatch(configActions.getListConfig(options));
-    //eslint-disable-next-line
   }, []);
 
   return (
@@ -137,21 +130,14 @@ export default function BranchsListComponent() {
               </thead>
               <tbody>
                 {list.map((branch) => (
-                  <tr key={branch.id}>
-                    {/* {console.log(branch.values.name)} */}
+                  branch.name !== 'bank' ? (
+                    <tr key={branch.id}>
+                    {console.log(branch)}
                     <td className="text-capitalize">{branch.data.name}</td>
                     <td className="text-truncate text-capitalize">
-                      {/* {console.log(branch)} */}
                       {branch.data.address ?? "--"}
                     </td>
                     <td className="text-right">
-                      {/* <button
-                        type="button"
-                        className="btn btn-sm btn-warning"
-                        onClick={() => handleDeleteConf(branch)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button> */}
                       <button
                         type="button"
                         className="btn btn-sm btn-primary ml-1"
@@ -161,6 +147,7 @@ export default function BranchsListComponent() {
                       </button>
                     </td>
                   </tr>
+                  ) : null
                 ))}
               </tbody>
             </table>

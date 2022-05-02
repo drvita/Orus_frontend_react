@@ -4,17 +4,18 @@ import { useContext,useState } from "react";
 import PaymentDetails from "./PaymentDetails";
 import UpdateItemModal from "./UpdateItemModal";
 
-//Helper
-import helpers from "../helpers";
+// Context
+import { Sale } from '../../../context/SaleContext';
+import { AuthContext } from "../../../context/AuthContext";
 
 //Hook
 import useSales from '../../../hooks/useSale';
 
-// Sale Context
-import { Sale } from '../../../context/SaleContext';
-import { AuthContext } from "../../../context/AuthContext";
-import moment from "moment";
+//Helper
+import helpers from "../helpers";
 
+//Libraries
+import moment from "moment";
 
 export default function SalesDetailsTableComponent() {
   const sale  = Sale();

@@ -1,9 +1,13 @@
 import { useState, useContext } from "react";
 
-//Custom Hook//
-import useContact from "../../../hooks/useContact";
+//Context
 import { Sale } from "../../../context/SaleContext";
 import { AuthContext } from "../../../context/AuthContext";
+
+//Hooks
+import useContact from "../../../hooks/useContact";
+
+//Helper
 import saleHelper from '../helpers';
 
 function SearchCustomerModal({ handleClose: _close }) {

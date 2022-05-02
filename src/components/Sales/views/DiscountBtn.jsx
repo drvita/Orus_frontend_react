@@ -1,5 +1,6 @@
 //Context
 import { Sale } from '../../../context/SaleContext';
+
 //Helper
 import helper from '../helpers';
 
@@ -7,7 +8,6 @@ export default function DiscountBtnComponent() {
 
   const sale = Sale();
   const pagado = helper.getPagado(sale.payments);
-  //const btnDisabled = sale.total - pagado > 0 && sale.discount === 0 && pagado === 0 ? false : true;
   const btnDisabled = sale.subtotal - pagado > 0 && sale.discount === 0 && pagado === 0 ? false : true;
 
 
@@ -46,7 +46,6 @@ export default function DiscountBtnComponent() {
             //total:helper.getTotal(subtotal, value),
           })
           console.log("Aplicando descuento");
-          
         }
       }
   };

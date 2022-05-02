@@ -1,6 +1,12 @@
 import { useState } from "react";
+
+//Components
 import PaymentModal from "./PaymentModal";
+
+//Context
 import { Sale } from "../../../context/SaleContext";
+
+//Helper
 import helpers from '../helpers';
 
 

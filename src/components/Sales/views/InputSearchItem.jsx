@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
+
+//Redux
 import { connect } from "react-redux";
+
+//Context
 import { Sale } from "../../../context/SaleContext";
-import helper from '../helpers';
 
 //Components
 import ListModal from "./ListItemsModal";
 
 //Hooks
 import useProducts from '../../../hooks/useProducts';
+
+//Helper
+import helper from '../helpers';
 
 function InputSearchItem({ messages, loading }) {
 
@@ -35,12 +41,14 @@ function InputSearchItem({ messages, loading }) {
     searchItem = () => {
       if (textSearch.length > 2) {
         const codes = textSearch.split("*");
+        console.log("CODES----", codes);
         let search = textSearch;
 
         if (codes.length === 2) {
           search = codes[1];
           setCantDefault(parseInt(codes[0]));
         }
+
         getProducts(search);
         setTextSearch("");
       }
@@ -69,7 +77,6 @@ function InputSearchItem({ messages, loading }) {
     },
 
     handleSelectItem = (data) => {
-
       const item = makeItem(data);
       handleAddItem(item);
       setCantDefault(1);
@@ -108,8 +115,6 @@ function InputSearchItem({ messages, loading }) {
       })
     };
 
-
-
   useEffect(() => {
     if (list.length) {
       if (list.length === 1) {
@@ -117,8 +122,21 @@ function InputSearchItem({ messages, loading }) {
           item: list[0],
           cant: cantDefault ? cantDefault : 1,
         });
-        handleAddItem(item);
-        setCantDefault(1);
+
+        if(item.price <= 0){
+          window.Swal.fire({
+            title: "Verificar",
+            text: `El item que intentas agregar tiene un precio de $0, revisa el precio en el almacen`,
+            icon: "warning",
+            showCancelButton: false,
+            confirmButtonText: "Ok",
+            cancelButtonText: "Cancelar",
+            showLoaderOnConfirm: true,
+          })
+        }else{
+          handleAddItem(item);
+          setCantDefault(1);
+        }
       } else {
         setShowList(true);
       }
@@ -174,7 +192,6 @@ const mapStateToProps = ({ storeItem }) => {
     return {
       loading: storeItem.loading,
       messages: storeItem.messages,
-      //meta: storeItem.metaList,
     };
   }
 export default connect(mapStateToProps)(InputSearchItem);

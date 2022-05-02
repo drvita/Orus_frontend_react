@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 //Components
 import InputSearchItem from "./views/InputSearchItem";
 import DiscountBtnComponent from "./views/DiscountBtn";
@@ -14,18 +15,19 @@ import ShowToPay from "./views/ShowToPay";
 import ShowTotal from "./views/ShowTotal";
 import {AuthContext} from '../../context/AuthContext';
 
-//Actions
-import { defaultActions } from "../../redux/default/";
-
 //Context
 import { SaleContext } from "../../context/SaleContext";
 import saleHelper from './helpers';
+
+//Actions
+import { defaultActions } from "../../redux/default/";
+
+
 
 
 export default function IndexSalesComponent() {
 
   const {auth} = useContext(AuthContext);
-
   const { sales } = useSelector((state) => state);
   const { loading } = sales;
 
@@ -67,11 +69,6 @@ export default function IndexSalesComponent() {
       setData({
         pagado,
       });
-
-      /* if (state.id) {
-        dispatch(saleActions.setSale(state));
-      } */
-      
     }
 
   }, []);
@@ -83,24 +80,14 @@ export default function IndexSalesComponent() {
     return () => {
       console.log("[Orus Systme] Cerrando venta");
       localStorage.setItem("OrusSales", "{}");
-      /* dispatch(
-        saleActions.setListSales({
-          result: DEFAULT_STATE_SALES,
-        })
-      ); */
-      
     };
 
   }, []);
 
   //Functions
-  const handleDeleteSale = () => setData({ pagado: 0 }),
+  /* const handleDeleteSale = () => setData({ pagado: 0 }),
     handleSetSale = (res) => {
-      /* setData({
-        ...data,
-        ...res,
-      }); */
-    }
+    } */
 
   return (
     <SaleContext.Provider value={{ ...state, set: setState }}>
@@ -117,7 +104,7 @@ export default function IndexSalesComponent() {
 
             <div className="col-3">
               <div className="card-tools text-right">      
-                <ListSalesBtn setSale={handleSetSale} />
+                <ListSalesBtn/>
 
                 <DiscountBtnComponent/>
 
@@ -130,9 +117,6 @@ export default function IndexSalesComponent() {
             style={{ height: "27rem" }}
           >
             <SalesDetailsTableComponent/>
-            {/* {state.customer && state.customer.id && (
-              <SalesDetailsTableComponent/>
-            )} */}
           </div>
         </div>
 

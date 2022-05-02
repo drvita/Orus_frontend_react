@@ -14,6 +14,8 @@ function ListItemsModal({
     precio: 0,
   });
 
+  const disabled = data.precio <= 0 ? true : false;
+
 
   //Functions
   const handleClose = () => {
@@ -30,7 +32,6 @@ function ListItemsModal({
       });
     },
 
-
     handleSelectItem = () => {
       const toSend = {
         ...data,
@@ -39,6 +40,9 @@ function ListItemsModal({
           precio: data.precio,
         },
       };
+
+      //Item seleccionado
+      console.log("ITEM SELECCIONADO", data.item.precio);
       
       _Select(toSend);
       setData({
@@ -54,7 +58,6 @@ function ListItemsModal({
         ...data,
         [name]: parseInt(value),
       });
-      //console.log("[DEBUG] change: " + name, value);
     };
 
   return (
@@ -168,6 +171,7 @@ function ListItemsModal({
               type="button"
               className="btn btn-primary"
               onClick={handleSelectItem}
+              disabled = { disabled }
             >
               <i className="fas fa-check mr-1"></i>
               Seleccionar

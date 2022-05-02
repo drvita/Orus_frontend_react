@@ -1,5 +1,9 @@
 import { useState } from "react";
+
+//Componentes
 import SearchCustomerModal from "./SearchCustomerModal";
+
+//Context
 import { Sale } from "../../../context/SaleContext";
 
 export default function CustomerBtnComponent() {

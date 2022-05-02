@@ -1,8 +1,15 @@
 import {useEffect, useContext} from 'react';
-import { Sale } from '../../../context/SaleContext';
-import useSale from '../../../hooks/useSale';
-import helpers from '../helpers';
+
+//Context
 import { AuthContext } from "../../../context/AuthContext";
+import { Sale } from '../../../context/SaleContext';
+
+//Hooks
+import useSale from '../../../hooks/useSale';
+
+//Helpers
+import helpers from '../helpers';
+
 
 import moment from "moment";
 
@@ -15,7 +22,7 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     id: 0,
     customer: {
       id: 0,
-      nombre: "venta de mostrador",
+      name: "venta de mostrador",
     },
     contact_id: 2,
     items: [],
@@ -27,7 +34,6 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     branch_id: auth.branch.id,
   }
 
-
   const {
       items,
       discount,
@@ -36,9 +42,9 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
       id,
       customer: client,
       payments
-    } = sale,
+    } = sale;
 
-    saldo = total - abonado;
+    const saldo = total - abonado;
 
     const { branch } = auth;
 
@@ -52,8 +58,6 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     const returnedSale = _saleHook.saveSale(sale);
     returnedSale.then((data)=>{
       if(data.data){
-        console.log("DATA DEVUELTA----", data.data);
-        //guardar venta con formato incial
         sale.set({
           ...sale,
           id: data.data.id,
@@ -70,7 +74,6 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
           if (!dismiss) {
             setTimeout(showPrint, 1000);
           }else{
-            //TODO: Revisar por que no entra al Else
             helpers.confirm("Cerrar la venta actual", () => {
               sale.set(initialSale);
             });
@@ -78,7 +81,7 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
         });
       }
       else{
-        console.log(data);
+        console.error("")
       }
     })
   };
@@ -93,14 +96,11 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
   }
 
   const handleClose = () => {
-    //Cerrar la venta
     sale.set(initialSale);
   };
 
    useEffect(()=>{
     if(paid && sale.subtotal){ 
-      //handlePrintShow();
-      //Validamos si la venta ya tiene un ID, no muestra el modal de imprimir
       if(sale.id){
         return null;
       }else{
@@ -118,7 +118,6 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
       window.removeEventListener("afterprint", ()=>{handleClose()});
     }
   },[])
-  
 
   return (
     <>
@@ -183,8 +182,8 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
                   className="text-uppercase text-center mb-1"
                   style={{ fontSize: 20, fontFamily: "sans-serif" }}
                 >
-                  {client && client.nombre
-                    ? client.nombre
+                  {client && client.name
+                    ? client.name
                     : "Venta de mostrador"}
                   <br />
                   <strong>

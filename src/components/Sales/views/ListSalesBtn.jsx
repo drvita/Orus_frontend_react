@@ -6,11 +6,11 @@ import { Sale } from '../../../context/SaleContext';
 //Components
 import ListSalesModal from "./ListSalesModal";
 
-export default function ListSalesBtn({ setSale: _setSale }) {
+export default function ListSalesBtn() {
 
   const sale = Sale();
-
   const [data, setData] = useState(false);
+  const disabled = sale.items.length ? true : false;
 
   //Functions
   const handleShowListSales = () => {
@@ -23,16 +23,12 @@ export default function ListSalesBtn({ setSale: _setSale }) {
 
     handleSelectSale = (saleSelected) => {
 
-      console.log("Venta Seleccionada", saleSelected);
-
       let pagado = 0;
       saleSelected.payments.forEach((pay) => (pagado = pay.total));
       setData(false);   
 
-
       sale.set({
         id: saleSelected.id,
-        //Revisar
         contact_id: saleSelected.customer.id,
         customer: saleSelected.customer,
         items: saleSelected.items,
@@ -52,6 +48,7 @@ export default function ListSalesBtn({ setSale: _setSale }) {
         className="btn btn-primary mr-1"
         title="Cargar una venta"
         onClick={handleShowListSales}
+        disabled={ disabled }
       >
         <i className="fas fa-list"></i>
       </button>

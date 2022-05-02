@@ -16,6 +16,7 @@ export default function UpdateItemModal({
         [name]: parseInt(value),
       });
     },
+
     handleUpdateItem = () => {
       _update({
         ...item,
@@ -23,6 +24,7 @@ export default function UpdateItemModal({
         subtotal: data.cant * data.price,
       });
     },
+
     handleKeyPress = (key) => {
       if (key === "Enter") handleUpdateItem();
     };

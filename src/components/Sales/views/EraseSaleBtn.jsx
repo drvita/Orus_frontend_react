@@ -1,6 +1,8 @@
 import { useContext } from 'react';
 import { Sale } from '../../../context/SaleContext';
 import helpers from "../helpers.js";
+
+
 import { AuthContext } from '../../../context/AuthContext';
 
 export default function EraseSaleBtnComponent() {

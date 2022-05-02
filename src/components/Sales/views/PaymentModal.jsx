@@ -1,6 +1,9 @@
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
+//Context
 import { ConfigContext } from "../../../context/ConfigContext";
 import { Sale } from '../../../context/SaleContext';
+
+//Helpers
 import helpers from "../helpers";
 
 function PaymentModal({forPaid, handleClose: _close }) {
@@ -9,7 +12,6 @@ function PaymentModal({forPaid, handleClose: _close }) {
     const listBanks = config.data;
     
     const sale = Sale();
-
 
   //States
   const [data, setData] = useState({
@@ -24,12 +26,6 @@ function PaymentModal({forPaid, handleClose: _close }) {
 
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
-
-    if(name === 'auth'){
-      console.log(true);
-    }else{
-      console.log(false);
-    }
 
       let val = value;
 
@@ -77,10 +73,19 @@ function PaymentModal({forPaid, handleClose: _close }) {
             timer: 1500,
           });
           return false;
+        }else if(data.auth.toString().length > 4){
+          window.Swal.fire({
+            icon: "warning",
+            title: "Espesifique solamente 4 numeros",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          return false;
         }
       }
 
       if (data.metodopago === 4) {
+        console.log("Metodo Pago",data.metodoname);
         if (!data.auth) {
           window.Swal.fire({
             icon: "warning",
@@ -113,11 +118,6 @@ function PaymentModal({forPaid, handleClose: _close }) {
       e.preventDefault();
       handleSetPayment();
     };
-
-  useEffect(() => {
-    //dispatch(saleActions.getListBanks());
-    //eslint-disable-next-line
-  }, []);
 
   return (
     <div className="modal d-block" tabIndex="-1">

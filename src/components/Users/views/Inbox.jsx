@@ -1,12 +1,247 @@
 import moment from "moment";
-import { useEffect, useState } from "react";
-import { connect } from "react-redux";
-//Components
+import { useEffect, useState, useContext } from "react";
+import useUsers from "../../../hooks/useUsers";
+import { UserContext } from "../../../context/UserContext";
 import ListInbox from "../../../layouts/list_inbox";
-//Actions
-import { userActions } from "../../../redux/user/index";
 import helper from "../helpers";
 
+//Actions
+import { userActions } from "../../../redux/user/index";
+import { connect } from "react-redux";
+
+export default function InboxComponent(){
+
+  const _users = useUsers();
+
+  const _userContext = useContext(UserContext);
+
+  const [userSelected, setUserSelected] = useState({ id: 0 });
+
+  const [data, setData] = useState({
+    users:[],
+    meta: {},
+  })
+
+  const [loading, setLoading] = useState(false);
+
+  const { users, meta } = data;
+
+  const handleChangeOptions = (key, value) => {
+    /* if (options[key] !== value) {
+      _setOptions({
+        key,
+        value,
+      });
+    } */
+  };
+  
+
+  const deleteItem = () => {
+    setLoading(true)
+    _users.deleteUser(userSelected.id).then((data)=>{
+      window.Swal.fire({
+        icon: 'success',
+        title: 'Usuario eliminado correctamente',
+        showConfirmButton: false,
+        timer: 2500
+      });
+
+      setUserSelected({ id: 0 });
+      _users.getListUsers(_userContext.options).then((data)=>{
+        if(data){
+          setData({
+            ...data,
+            users: data.data,
+            meta: data.meta,
+          })
+          setLoading(false);
+        }
+      })
+    })
+    .catch((error)=>{
+      console.log(error);
+    })
+  };
+
+  const handleUserSelect = ({ checked }, item) => {
+    console.log(checked, item);
+    if (!checked) item = { id: 0 };
+    setUserSelected(item);
+  };
+
+
+ const handleSelectUser = (e, order = { id: 0 }) => {
+    if (e) e.preventDefault();
+    if (order.id) {
+      console.log(order);
+      //TODO: guardar el usuario seleccionado para que el componente pueda acceder a el
+      //TODO: guardar en state local y pasar por props
+    } else if (userSelected.id) {
+      console.log(userSelected.id);
+      _users.getUserById(userSelected.id);
+    }
+  }; 
+
+
+  useEffect(()=>{
+    setLoading(true);
+    _users.getListUsers(_userContext.options).then((data)=>{
+      if(data){
+        console.log(data.data);
+        setData({
+          ...data,
+          users: data.data,
+          meta: data.meta
+        })
+        setLoading(false);
+      }else{
+        console.error("Error al obtener los datos");
+      }
+    })
+  }, [_userContext.options]);
+
+
+  return (
+    <ListInbox
+      title="Lista de productos"
+      icon="id-badge"
+      color="primary"
+      loading={loading}
+      meta={meta}
+      itemSelected={userSelected.id}
+      defaultSearch={ _userContext.options.search }
+      handlePagination={(page) => handleChangeOptions("page", page)}
+      handleSearch={(search) => handleChangeOptions("search", search)}
+      handleDeleteItem={deleteItem}
+      handleEditItem={handleSelectUser}
+      handleSync={() => { 
+        _userContext.set({
+          ..._userContext,
+          options:{
+            page: 1,
+            orderby: "created_at",
+            order: "desc",
+            itemsPage: 10,
+          }
+        })
+      }}
+    >
+      <table className="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nombre</th>
+            <th>Email/Usuario</th>
+            <th>Rol</th>
+            <th>Sucursal</th>
+            {_userContext.options.orderby === "created_at" ? (
+              <th>Creado</th>
+            ) : (
+              <th>Modificado</th>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {users.length ? (
+            <>
+              {users.map((user) => {
+                return (
+                  <tr key={user.id}>
+                    <td className="icheck-primary pl-2">
+                      <input
+                        type="checkbox"
+                        className="form-check-input mt-4"
+                        value={user.id}
+                        id={"item_" + user.id}
+                        checked={userSelected.id === user.id ? true : false}
+                        onChange={({ target }) =>
+                          handleUserSelect(target, user)
+                        }
+                      />
+                      <label
+                        htmlFor={"item_" + user.id}
+                        className="sr-only"
+                      ></label>
+                    </td>
+                    <td className="mailbox-name text-capitalize text-truncate">
+                      <a
+                        href="·link"
+                        onClick={(e) => handleSelectUser(e, user)}
+                        className="text-bold"
+                      >
+                        {user.name}
+                      </a>
+                    </td>
+                    <td className="mailbox-name text-muted text-truncate">
+                      <span>{user.email}</span>
+                    </td>
+                    <td className="mailbox-name text-dark text-bold text-truncate">                  
+                      {helper.getNameRoles(user.roles)}
+                    </td>
+                    <td className="text-truncate">
+                      <span className="text-capitalize">    
+                        {user.branch.data.name}
+                      </span>
+                    </td>
+                    {_userContext.options.orderby === "created_at" ? (
+                      <td className="mailbox-date text-muted text-truncate">
+                        <span>{moment(user.created_at).format("LL")}</span>
+                      </td>
+                    ) : (
+                      <td className="mailbox-date text-muted text-truncate">
+                        <span>{moment(user.updated_at).fromNow()}</span>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </>
+          ) : (
+            <tr>
+              <th className="text-center text-muted" colSpan="6">
+                No hay usuarios registrados
+              </th>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </ListInbox>
+  );
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
 function InboxComponent(props) {
   const {
     loading,
@@ -24,6 +259,8 @@ function InboxComponent(props) {
   
   //States
   const [userSelected, setUserSelected] = useState({ id: 0 });
+
+
   //Functions
   const handleChangeOptions = (key, value) => {
       if (options[key] !== value) {
@@ -33,14 +270,20 @@ function InboxComponent(props) {
         });
       }
     },
+
+
     deleteItem = () => {
       helper.handleDelete(userSelected, options, _deleteUser);
       setUserSelected({ id: 0 });
     },
+
+
     handleUserSelect = ({ checked }, item) => {
       if (!checked) item = { id: 0 };
       setUserSelected(item);
     },
+
+
     handleSelectUser = (e, order = { id: 0 }) => {
       if (e) e.preventDefault();
 
@@ -50,6 +293,8 @@ function InboxComponent(props) {
         _getUser(userSelected.id);
       }
     };
+
+
 
   useEffect(() => {
     _getListUsers(options);
@@ -120,13 +365,11 @@ function InboxComponent(props) {
                     <td className="mailbox-name text-muted text-truncate">
                       <span>{user.email}</span>
                     </td>
-                    <td className="mailbox-name text-dark text-bold text-truncate">
-                     {/*  {console.log(user.roles)} */}
+                    <td className="mailbox-name text-dark text-bold text-truncate">                  
                       {helper.getNameRoles(user.roles)}
                     </td>
                     <td className="text-truncate">
-                      <span className="text-capitalize">
-                        {/* {user.branch.values.name} */}
+                      <span className="text-capitalize">    
                         {user.branch.data.name}
                       </span>
                     </td>
@@ -174,3 +417,5 @@ const mapStateToProps = ({ users }) => {
   };
 
 export default connect(mapStateToProps, mapActionsToProps)(InboxComponent);
+
+ */

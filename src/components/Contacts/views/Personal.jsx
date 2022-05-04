@@ -95,7 +95,7 @@ export default function Personal({ data = {}, handleChange, fn }) {
             name="type"
             value={data.type ?? ""}
             onChange={({ target }) =>
-              handleChange("name", parseInt(target.value))
+              handleChange("type", parseInt(target.value))
             }
           >
             <option value="0">Cliente</option>

@@ -1,71 +1,67 @@
-import { connect } from "react-redux";
+// import { useEffect } from "react";
+import { Store } from "../../context/StoreContext";
 //Components
-import CardMenu from "../../../layouts/card_menu";
-import BrandsInput from "./input_brand";
-import SuppliersInput from "./input_suppliers";
-//Actions
-import { storeActions } from "../../../redux/store/index";
+import CardMenu from "../../layouts/card_menu";
+import BrandsInput from "./views/input_brand";
+import SuppliersInput from "./views/input_suppliers";
 
-function FiltersComponent(props) {
-  const {
-    options,
-    panel,
-    _setOptions,
-    handleChangePage: _handleChangePage,
-  } = props;
+export default function ToolBar() {
+  const context = Store();
 
   //Funciones
-  const handleSetSelectOptions = (target) => {
-      //console.log("[DEBUG] cambio de filtro en almacen");
-      const { name, value, checked } = target;
-      let val = value;
+  const handleSetSelectOptions = ({ name, value, checked }) => {
+    if (name === "itemsPage") value = parseInt(value);
+    if (name === "supplier" && value > 0) value = parseInt(value);
+    if (name === "zero") {
+      if (checked) value = "true";
+      else value = "false";
+    }
 
-      console.log("[Orus System] Cambiando filtros");
-      if (name === "itemsPage") val = parseInt(value);
-      if (name === "supplier" && value > 0) val = parseInt(value);
-      if (name === "zero") {
-        if (checked) val = "true";
-        else val = "false";
-      }
+    context.set({
+      ...context,
+      options: {
+        ...context.options,
+        [name]: value,
+      },
+    });
+  };
+  const handleChangeSupplier = (id) => {
+    context.set({
+      ...context,
+      options: {
+        ...context.options,
+        brand: "",
+        supplier: id,
+      },
+    });
+  };
 
-      _setOptions({
-        key: name,
-        value: val,
-      });
-    },
-    handleChangeBrand = (id) => {
-      console.log("[Orus System] Cambiando filtros");
-      _setOptions({
-        key: "brand",
-        value: id,
-      });
-    },
-    handleChangeSupplier = (id) => {
-      console.log("[Orus System] Cambiando filtros");
-      _setOptions({
-        key: "brand",
-        value: "",
-      });
-      _setOptions({
-        key: "supplier",
-        value: id,
-      });
-    };
+  // useEffect(() => {
+  //   console.log("[DEBUG] Options:", context.options);
+  // }, [context.options]);
 
   return (
-    <CardMenu title={panel === "inbox" ? "Menu y filtros" : "Menu"}>
+    <CardMenu title={context.panel === "inbox" ? "Menu y filtros" : "Menu"}>
       <li className="nav-item">
         <a
           href="#item"
-          className={panel === "inbox" ? "nav-link text-dark" : "nav-link"}
+          className={
+            context.panel === "inbox" ? "nav-link  disabled" : "nav-link"
+          }
           onClick={(e) => {
             e.preventDefault();
-            _handleChangePage("inbox");
+
+            context.set({
+              ...context,
+              panel: "inbox",
+            });
           }}
         >
           <i
             className={
-              panel === "inbox" ? "fas fa-plus mr-1" : "fas fa-minus mr-1"
+              context.panel === "inbox"
+                ? "fas fa-check text-success mr-1"
+                : "fas fa-plus mr-1"
             }
           ></i>
           Productos
@@ -74,15 +70,23 @@ function FiltersComponent(props) {
       <li className="nav-item">
         <a
           href="#item"
-          className={panel === "category" ? "nav-link text-dark" : "nav-link"}
+          className={
+            context.panel === "category" ? "nav-link disabled" : "nav-link "
+          }
           onClick={(e) => {
             e.preventDefault();
-            _handleChangePage("category");
+
+            context.set({
+              ...context,
+              panel: "category",
+            });
           }}
         >
           <i
             className={
-              panel === "category" ? "fas fa-plus mr-1" : "fas fa-minus mr-1"
+              context.panel === "category"
+                ? "fas fa-check text-success mr-1"
+                : "fas fa-plus mr-1"
             }
           ></i>
           Categorias
@@ -91,15 +95,23 @@ function FiltersComponent(props) {
       <li className="nav-item">
         <a
           href="#item"
-          className={panel === "brands" ? "nav-link text-dark" : "nav-link"}
+          className={
+            context.panel === "brands" ? "nav-link disabled" : "nav-link"
+          }
           onClick={(e) => {
             e.preventDefault();
-            _handleChangePage("brands");
+
+            context.set({
+              ...context,
+              panel: "brands",
+            });
           }}
         >
           <i
             className={
-              panel === "brands" ? "fas fa-plus mr-1" : "fas fa-minus mr-1"
+              context.panel === "brands"
+                ? "fas fa-check text-success mr-1"
+                : "fas fa-plus mr-1"
             }
           ></i>
           Marcas
@@ -122,25 +134,27 @@ function FiltersComponent(props) {
           Inventario
         </a>
       </li> */}
-      {panel === "inbox" && (
+      {context.panel === "inbox" && (
         <>
           <li className="nav-item p-1">
             <SuppliersInput
-              supplier={options.supplier}
+              supplier={context.options?.supplier}
               showIcon={false}
               handleChangeSupplier={(id) => handleChangeSupplier(id)}
             />
           </li>
-          {options.supplier ? (
+          {context.options?.supplier && (
             <li className="nav-item p-1">
               <BrandsInput
-                supplier={options.supplier}
-                brand={options.brand}
+                supplier={context.options?.supplier}
+                brand={context.options?.brand}
                 showIcon={false}
-                handleChangeBrand={(id) => handleChangeBrand(id)}
+                handleChangeBrand={(id) =>
+                  handleSetSelectOptions({ name: "brand", value: id })
+                }
               />
             </li>
-          ) : null}
+          )}
           <li className="nav-item p-1">
             <div className="custom-control custom-switch">
               <input
@@ -148,7 +162,7 @@ function FiltersComponent(props) {
                 type="checkbox"
                 className="custom-control-input"
                 id="zero"
-                checked={options.zero === "true" ? true : false}
+                checked={context.options?.zero === "true" ? true : false}
                 onChange={({ target }) => handleSetSelectOptions(target)}
               />
               <label
@@ -165,7 +179,7 @@ function FiltersComponent(props) {
               className="custom-select text-uppercase"
               name="orderby"
               id="orderby"
-              value={options.orderby}
+              value={context.options?.orderby}
               onChange={({ target }) => handleSetSelectOptions(target)}
             >
               <option value="created_at">Fecha de registro</option>
@@ -178,7 +192,7 @@ function FiltersComponent(props) {
               className="custom-select text-uppercase"
               name="order"
               id="order"
-              value={options.order}
+              value={context.options?.order}
               onChange={({ target }) => handleSetSelectOptions(target)}
             >
               <option value="asc">Antiguos</option>
@@ -191,12 +205,12 @@ function FiltersComponent(props) {
               className="custom-select text-uppercase"
               name="itemsPage"
               id="itemsPage"
-              value={options.itemsPage}
+              value={context.options?.itemsPage}
               onChange={({ target }) => handleSetSelectOptions(target)}
             >
-              <option value="10">ver 10</option>
-              <option value="20">ver 20</option>
+              <option value="25">ver 25</option>
               <option value="50">ver 50</option>
+              <option value="75">ver 75</option>
               <option value="100">ver 100</option>
             </select>
           </li>
@@ -205,14 +219,3 @@ function FiltersComponent(props) {
     </CardMenu>
   );
 }
-
-const mapStateToProps = ({ storeItem, contact }) => {
-    return {
-      options: storeItem.options,
-    };
-  },
-  mapActionsToProps = {
-    _setOptions: storeActions.setOptions,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(FiltersComponent);

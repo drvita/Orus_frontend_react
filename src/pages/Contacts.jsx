@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 
 import { ContactContext } from "../context/ContactContext";
@@ -31,10 +32,11 @@ export default function ContactsComponent(props) {
       <div className="row">
         <ToolsBar
           newOrEdit={state.newOrEdit}
-          handleNewOrEdit={() => setState({
-            ...state,
-            newOrEdit: !state.newOrEdit
-          })
+          handleNewOrEdit={() =>
+            setState({
+              ...state,
+              newOrEdit: !state.newOrEdit,
+            })
           }
         />
         {typeof state.newOrEdit === "boolean" ? (

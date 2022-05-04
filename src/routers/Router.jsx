@@ -12,7 +12,7 @@ export default function Router() {
 
   return (
     <Switch>
-      <Route path="/login" render={(props) => <Login />} />
+      <Route path="/login" render={() => <Login />} />
       {auth?.isLogged ? <RouterAuth auth={auth} /> : <RouterPortal />}
       <Route component={NotFound} />
     </Switch>

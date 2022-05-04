@@ -37,6 +37,7 @@ export function api(url, method = "GET", body, controller = null) {
       })
       .catch((err) => {
         console.error("[Orus System] Query API failer:", url);
+        console.error("[Orus System] Query API code:", err?.code);
         console.error("[Orus System] Query API message:", err?.message);
         return reject(err.response?.data);
       });

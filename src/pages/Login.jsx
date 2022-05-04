@@ -30,6 +30,7 @@ export default function Login() {
 
   // Functions
   const handleLogin = () => {
+    const patterEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!state.email) {
       return window.Swal.fire({
         icon: "error",
@@ -42,7 +43,11 @@ export default function Login() {
       });
     }
 
-    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(state.email)) {
+    if (/^@./.test(state.email)) {
+      const user = state.email.replace("@", "");
+
+      state.email = `${user}@domain.com`;
+    } else if (!patterEmail.test(state.email)) {
       return window.Swal.fire({
         icon: "error",
         text: "El usuario debe de ser un correo valido",

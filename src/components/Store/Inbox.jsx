@@ -1,60 +1,67 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { connect } from "react-redux";
-//Components
-import ListInbox from "../../../layouts/list_inbox";
-import { api, getUrl } from "../../../redux/sagas/api";
-//Actions
-import { storeActions } from "../../../redux/store/index";
-import helper from "../helpers";
+import { useHistory } from "react-router-dom";
+import { Store } from "../../context/StoreContext";
+import useStore from "../../hooks/useStore";
 
-function InboxComponent(props) {
-  const {
-    loading,
-    meta,
-    list = [],
-    options,
-    //Functions
-    _getList,
-    _setOptions,
-    _deleteItem,
-    _getItem,
-    _setLoading,
-  } = props;
+//Components
+import ListInbox from "../../layouts/list_inbox";
+import { api, getUrl } from "../../redux/sagas/api";
+//Actions
+import helper from "./helpers";
+
+export default function Inbox(props) {
+  const context = Store();
+  const _store = useStore();
+  const history = useHistory();
   //States
-  const [itemSelected, setItemSelected] = useState({ id: 0 });
+  const [state, setState] = useState({
+    itemSelected: {},
+    items: [],
+    meta: {},
+    loading: false,
+  });
   //Functions
   const handleChangeOptions = (key, value) => {
-      if (options[key] !== value) {
-        _setOptions({
-          key,
-          value,
+      if (context.options[key] !== value) {
+        context.set({
+          ...context,
+          options: {
+            ...context.options,
+            [key]: value,
+          },
         });
       }
     },
     deleteItem = () => {
-      helper.handleDeleteItem(itemSelected, options, _deleteItem);
-      setItemSelected({ id: 0 });
+      helper.handleDeleteItem(state.itemSelected, context.options, () => {});
+      setState({
+        ...state,
+        itemSelected: {},
+      });
     },
     handleItemSelect = ({ checked }, item) => {
-      if (!checked) item = { id: 0 };
-      setItemSelected(item);
+      setState({
+        ...state,
+        itemSelected: checked ? item : {},
+      });
     },
-    handleSelectItem = (e, item = { id: 0 }) => {
+    handleSelectItem = (e, item) => {
       if (e) e.preventDefault();
 
-      if (item.id) {
-        _getItem(item.id);
-      } else if (itemSelected.id) {
-        _getItem(itemSelected.id);
+      if (item?.id) {
+        history.push(`/almacen/${item.id}`);
+      } else if (state.itemSelected?.id) {
+        history.push(`/almacen/${state.itemSelected.id}`);
       }
     },
     handleDownload = async () => {
-      _setLoading(true);
-      const newOptions = { ...options, responseType: "csv" };
+      // _setLoading(true);
+      const newOptions = { ...context.options, responseType: "csv" };
       console.log("[Orus Sytem] Start donwload csv");
       const url = getUrl("store", null, newOptions);
       const data = await api(url);
-      _setLoading();
+      // _setLoading();
       if (data) {
         console.log("[Orus Sytem] Process data csv");
         window.open(URL.createObjectURL(data));
@@ -76,11 +83,26 @@ function InboxComponent(props) {
         });
       }
     };
+  const handleSync = () => {
+    setState({
+      ...state,
+      loading: true,
+    });
+    _store.getItems(context.options).then((res) => {
+      if (res) {
+        setState({
+          ...state,
+          items: res.data,
+          meta: res.meta,
+          loading: false,
+        });
+      }
+    });
+  };
 
   useEffect(() => {
-    _getList(options);
-    //eslint-disable-next-line
-  }, [options]);
+    handleSync();
+  }, [context.options]);
 
   //console.log("[DEBUG] Render", list);
   return (
@@ -88,16 +110,16 @@ function InboxComponent(props) {
       title="Lista de productos"
       icon="id-badge"
       color="primary"
-      loading={loading}
-      meta={meta}
-      itemSelected={itemSelected.id}
-      defaultSearch={options.search}
+      loading={state.loading}
+      meta={state.meta}
+      itemSelected={state.itemSelected?.id}
+      defaultSearch={context.options.search}
       handlePagination={(page) => handleChangeOptions("page", page)}
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleDeleteItem={deleteItem}
       handleEditItem={handleSelectItem}
       handleDownload={handleDownload}
-      handleSync={() => _getList(options)}
+      handleSync={handleSync}
     >
       <table className="table table-hover table-striped">
         <thead>
@@ -111,9 +133,9 @@ function InboxComponent(props) {
           </tr>
         </thead>
         <tbody>
-          {list.length ? (
+          {state.items.length ? (
             <>
-              {list.map((item) => {
+              {state.items.map((item) => {
                 return (
                   <tr key={item.id}>
                     <td className="icheck-primary pl-2">
@@ -122,7 +144,9 @@ function InboxComponent(props) {
                         className="form-check-input mt-4"
                         value={item.id}
                         id={"item_" + item.id}
-                        checked={itemSelected.id === item.id ? true : false}
+                        checked={
+                          state.itemSelected?.id === item.id ? true : false
+                        }
                         onChange={({ target }) =>
                           handleItemSelect(target, item)
                         }
@@ -147,9 +171,7 @@ function InboxComponent(props) {
                       </a>
                     </td>
                     <td className="mailbox-attachment text-capitalize text-truncate text-muted">
-                      <span>
-                        {item.proveedor ? item.proveedor.nombre : "--"}
-                      </span>
+                      <span>{item.proveedor ? item.proveedor.name : "--"}</span>
                     </td>
                     <td className="mailbox-attachment text-uppercase text-truncate text-muted">
                       <span>{item.marca ? item.marca.marca : "--"}</span>
@@ -173,23 +195,3 @@ function InboxComponent(props) {
     </ListInbox>
   );
 }
-
-const mapStateToProps = ({ storeItem }) => {
-    return {
-      list: storeItem.list,
-      meta: storeItem.metaList,
-      messages: storeItem.messages,
-      loading: storeItem.loading,
-      options: storeItem.options,
-    };
-  },
-  mapActionsToProps = {
-    _getList: storeActions.getListStore,
-    _setOptions: storeActions.setOptions,
-    _deleteItem: storeActions.deleteItem,
-    _setItem: storeActions.setItem,
-    _getItem: storeActions.getItem,
-    _setLoading: storeActions.setLoading,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(InboxComponent);

@@ -6,7 +6,6 @@ import { api, setUrl } from "../utils/url";
 export const AuthContext = createContext(null);
 
 export default function useUser({ children }) {
-  
   const history = useHistory();
 
   const LS = sessionStorage.getItem("OrusSystem");
@@ -22,7 +21,7 @@ export default function useUser({ children }) {
     roles: "",
     permissions: [],
   };
-  
+
   const [user, setUser] = useState(() => {
     if (LS && LS !== "undefined") {
       initialSession = JSON.parse(LS);
@@ -30,7 +29,6 @@ export default function useUser({ children }) {
 
     return initialSession;
   });
-
 
   // Functions
   const setUserData = (data) => {
@@ -52,8 +50,6 @@ export default function useUser({ children }) {
       setUser(toSave);
       sessionStorage.setItem("OrusSystem", JSON.stringify(toSave));
     },
-
-
     session = async (credentials) => {
       const { email, password } = credentials;
 
@@ -87,8 +83,6 @@ export default function useUser({ children }) {
           };
         });
     },
-
-
     outSession = async () => {
       return await api("user/logout", "POST")
         .then(() => {
@@ -99,19 +93,27 @@ export default function useUser({ children }) {
         })
         .catch((err) => console.error("[Server] When close session:", err));
     },
-
-
     getCurrentUser = async () => {
-      return await api("user").then((data) => {
-        if (data.message === "Unauthenticated.") {
-          return history.push("/login");
-        }
+      return await api("user")
+        .then((data) => data.data)
+        .catch((err) => {
+          if (err.message === "Unauthenticated.") {
+            if (history.location?.pathname !== "/login") {
+              setUser(initialSession);
+              sessionStorage.setItem(
+                "OrusSystem",
+                JSON.stringify(initialSession)
+              );
 
-        return data.data;
-      });
+              history.push("/login");
+            }
+
+            return;
+          }
+
+          console.log("[Orus System] Responses:", err);
+        });
     },
-
-
     getNotifications = async () => {
       const user = await getCurrentUser().catch(() => {
         // outSession();
@@ -122,8 +124,6 @@ export default function useUser({ children }) {
 
       return user.unreadNotifications;
     },
-
-
     setNotifications = async (payload) => {
       if (typeof payload !== "object") {
         return {
@@ -145,8 +145,6 @@ export default function useUser({ children }) {
         }
       );
     },
-
-
     setBranch = async (branch) => {
       const url = setUrl("users", user.idUser);
       const update = {

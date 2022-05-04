@@ -52,11 +52,11 @@ function InputSuppliersComponent(props) {
               ref={supplierRef}
               onChange={handleChangeSupplier}
             >
-              <option value="0">--Seleccione un Proveedor--</option>
+              <option value="">--Seleccione un Proveedor--</option>
               {suppliers.map((sp) => {
                 return (
                   <option value={sp.id} key={sp.id}>
-                    {sp.nombre}
+                    {sp.name}
                   </option>
                 );
               })}

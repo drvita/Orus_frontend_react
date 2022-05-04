@@ -1,13 +1,13 @@
 import { Route } from "react-router-dom";
 import UserAdd from "../components/Users/add";
-import Store from "../components/Store/index";
+import Store from "../pages/Store";
 import Contacts from "../pages/Contacts";
 import Tools from "../components/Tools/tools";
 import Exams from "../pages/Exams";
 import Order from "../components/Order/index";
 import Sales from "../components/Sales/index";
 import Dashboard from "../pages/AuthDashboard";
-import Users from '../pages/Users';
+import Users from "../pages/Users";
 // import NotifyAllShow from "./components/Layouts/notifyAll";
 
 import ConfigProvider from "../context/ConfigContext";
@@ -38,7 +38,7 @@ export default function Routers({ auth }) {
           path="/usuarios/registro/:id?"
           render={(props) => <UserAdd {...props} page={() => {}} />}
         />
-        
+
         <Route
           path="/usuarios"
           render={(props) => <Users {...props} page={() => {}} />}

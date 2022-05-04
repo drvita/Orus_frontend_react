@@ -1,6 +1,7 @@
 import { api, setUrl } from "../utils/url";
 
 export default function useContact() {
+
   const getContacts = async (options) => {
     if (!options) return null;
 
@@ -19,6 +20,7 @@ export default function useContact() {
         return null;
       });
   };
+
   const getContact = async (id) => {
     if (!id) return false;
 
@@ -37,6 +39,8 @@ export default function useContact() {
         return {};
       });
   };
+
+
   const deleteContact = async (id) => {
     if (!id) return false;
 
@@ -55,6 +59,8 @@ export default function useContact() {
         return false;
       });
   };
+
+  
   const saveContact = async (data) => {
     if (!data) return;
     const { id } = data;

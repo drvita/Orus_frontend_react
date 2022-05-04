@@ -180,7 +180,6 @@ export default function InboxContact() {
                     }
                     onChange={({ target }) => {
                       const { value, checked } = target;
-
                       setState({
                         ...state,
                         contactSelected: checked ? parseInt(value) : "",

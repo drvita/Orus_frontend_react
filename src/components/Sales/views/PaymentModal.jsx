@@ -65,7 +65,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
           });
           return false;
         }
-        if (data.auth.toString().length < 4) {
+        if (data.auth?.length < 4) {
           window.Swal.fire({
             icon: "warning",
             title: "Espesifique los ultimos 4 numeros de la tarjeta",
@@ -73,7 +73,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
             timer: 1500,
           });
           return false;
-        }else if(data.auth.toString().length > 4){
+        }else if(data.auth?.length > 4){
           window.Swal.fire({
             icon: "warning",
             title: "Espesifique solamente 4 numeros",

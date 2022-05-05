@@ -18,6 +18,9 @@ export default function ContactsComponent(props) {
     options: optionsDefault,
     newOrEdit: null,
   });
+
+  console.log("PROPS INICIALES", props);
+
   const { id } = props.match.params;
 
   useEffect(() => {

@@ -4,6 +4,8 @@ import useUsers from "../../../hooks/useUsers";
 import { UserContext } from "../../../context/UserContext";
 import ListInbox from "../../../layouts/list_inbox";
 import helper from "../helpers";
+import { useHistory } from "react-router-dom";
+import { AuthContext } from '../../../context/AuthContext';
 
 //Actions
 import { userActions } from "../../../redux/user/index";
@@ -11,11 +13,12 @@ import { connect } from "react-redux";
 
 export default function InboxComponent(){
 
+  const history = useHistory();
   const _users = useUsers();
-
   const _userContext = useContext(UserContext);
+  const _authContext = useContext(AuthContext);
+  const [userSelected, setUserSelected] = useState('');
 
-  const [userSelected, setUserSelected] = useState({ id: 0 });
 
   const [data, setData] = useState({
     users:[],
@@ -27,6 +30,14 @@ export default function InboxComponent(){
   const { users, meta } = data;
 
   const handleChangeOptions = (key, value) => {
+    console.log(key, value);
+    _userContext.set({
+      ..._userContext,
+      options:{
+        ..._userContext.options,
+        search: value,
+      }
+    })
     /* if (options[key] !== value) {
       _setOptions({
         key,
@@ -34,11 +45,11 @@ export default function InboxComponent(){
       });
     } */
   };
-  
+
 
   const deleteItem = () => {
     setLoading(true)
-    _users.deleteUser(userSelected.id).then((data)=>{
+    _users.deleteUser(userSelected).then((data)=>{
       window.Swal.fire({
         icon: 'success',
         title: 'Usuario eliminado correctamente',
@@ -47,7 +58,8 @@ export default function InboxComponent(){
       });
 
       setUserSelected({ id: 0 });
-      _users.getListUsers(_userContext.options).then((data)=>{
+
+      _users.getListUsers(_userContext.options).then((data) => {
         if(data){
           setData({
             ...data,
@@ -58,19 +70,21 @@ export default function InboxComponent(){
         }
       })
     })
-    .catch((error)=>{
-      console.log(error);
+    .catch((error)=>{      
+      console.error(error);
     })
   };
 
-  const handleUserSelect = ({ checked }, item) => {
-    console.log(checked, item);
+  //Checkbox selected
+  const handleUserSelect = (item) => {
+    console.log(item);
+    let { value , checked } = item;
     if (!checked) item = { id: 0 };
-    setUserSelected(item);
+    setUserSelected(value);
   };
 
-
- const handleSelectUser = (e, order = { id: 0 }) => {
+//Click on userName
+/*  const handleSelectUser = (e, order = { id: 0 }) => {
     if (e) e.preventDefault();
     if (order.id) {
       console.log(order);
@@ -80,14 +94,26 @@ export default function InboxComponent(){
       console.log(userSelected.id);
       _users.getUserById(userSelected.id);
     }
-  }; 
+  };  */
+
+  const handleSelectUser = (e, order = { id: 0 }) => {
+    if(userSelected){
+      history.push(`usuarios/${userSelected}`);
+    }
+    else{
+      window.Swal.fire({
+        title: "Error",
+        text: "Lo sentimos no existe un contacto seleccionado",
+        icon: "error",
+      });
+    }
+  };
 
 
   useEffect(()=>{
     setLoading(true);
     _users.getListUsers(_userContext.options).then((data)=>{
       if(data){
-        console.log(data.data);
         setData({
           ...data,
           users: data.data,
@@ -108,7 +134,7 @@ export default function InboxComponent(){
       color="primary"
       loading={loading}
       meta={meta}
-      itemSelected={userSelected.id}
+      itemSelected={userSelected}
       defaultSearch={ _userContext.options.search }
       handlePagination={(page) => handleChangeOptions("page", page)}
       handleSearch={(search) => handleChangeOptions("search", search)}
@@ -153,24 +179,28 @@ export default function InboxComponent(){
                         className="form-check-input mt-4"
                         value={user.id}
                         id={"item_" + user.id}
-                        checked={userSelected.id === user.id ? true : false}
-                        onChange={({ target }) =>
-                          handleUserSelect(target, user)
-                        }
+                       /*  disabled = { user.id === _authContext.auth.idUser ? true : false} */
+                        checked={userSelected === user.id ? true : false}
+                        onChange={({ target }) => {
+                          const {value, checked} = target;
+                          setUserSelected(checked ? parseInt(value) : "",)                          
+                          //handleUserSelect(target);                    
+                        }}
                       />
                       <label
                         htmlFor={"item_" + user.id}
                         className="sr-only"
                       ></label>
                     </td>
-                    <td className="mailbox-name text-capitalize text-truncate">
-                      <a
-                        href="·link"
-                        onClick={(e) => handleSelectUser(e, user)}
-                        className="text-bold"
-                      >
+                    <td 
+                      className="mailbox-name text-capitalize text-truncate text-bold text-primary"
+                      style={{ cursor: "pointer", maxWidth: 180 }}
+                      onClick={(e) => { 
+                        //handleSelectUser(e, user)
+                        history.push(`usuarios/${user.id}`)                        
+                      }}
+                      >              
                         {user.name}
-                      </a>
                     </td>
                     <td className="mailbox-name text-muted text-truncate">
                       <span>{user.email}</span>

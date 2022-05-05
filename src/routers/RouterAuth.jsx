@@ -40,7 +40,7 @@ export default function Routers({ auth }) {
         />
 
         <Route
-          path="/usuarios"
+          path="/usuarios/:id?"
           render={(props) => <Users {...props} page={() => {}} />}
         />
 

@@ -34,7 +34,7 @@ export default function ToolBarContact({
                 value={context.options?.type}
                 onChange={({ target }) => {
                   const value = parseInt(target.value);
-
+                  
                   context.set({
                     ...context,
                     options: {

@@ -2,23 +2,27 @@ import { useState } from "react";
 import { api, getUrl } from "../../../redux/sagas/api";
 
 export default function UserNameInputComponent(props) {
+  
   const [state, setState] = useState({
     bgColor: "bg-blue",
     validate: "",
     text: "Debe de tener al menos 4 caracteres.",
     searchUser: false,
   });
+
   //Vars
-  const { col, username, userId, onChange: _onChange } = props,
-    { bgColor, validate, text, searchUser } = state;
+  const { col, username, userId, onChange: _onChange } = props, { bgColor, validate, text, searchUser } = state;
   //Functions
   const handleChange = ({ name, value }) => {
+    console.log(name + ":" + value)
       _onChange({
         name,
         value: value.toLowerCase(),
       });
     },
     validUser = () => {
+      console.log("Validate user function");
+
       const regex = /^[\w]{4,16}$/,
         userSearch = username.replace(/\s/g, "");
 
@@ -28,6 +32,7 @@ export default function UserNameInputComponent(props) {
           ...state,
           searchUser: true,
         });
+
         handleSearchUser(userSearch, userId).then((response) => {
           if (response) {
             setState({
@@ -56,6 +61,7 @@ export default function UserNameInputComponent(props) {
           }
         });
       } else {
+
         //User no valid
         if (userSearch.length > 4) {
           setState({

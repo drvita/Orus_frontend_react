@@ -79,7 +79,9 @@ export default function AddContact(props) {
   const history = useHistory();
   let btn_enabled =
     Object.values(contact.validates).filter((val) => val).length === 4;
-  // Functions
+  
+  
+    // Functions
   const handleChangeData = (key, value) => {
     if (!key) return;
 

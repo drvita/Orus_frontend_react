@@ -33,7 +33,7 @@ export default function InputCategoryComponent(props) {
         name={"category" + index}
         value={category ?? ""}
         onChange={({ target }) => handleChangeCategory(target)}
-        ref={references}
+        // ref={references}
       >
         <option value="0">--{textSelect}--</option>
         {categoryData.map((cat) => {

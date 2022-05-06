@@ -5,6 +5,7 @@ import { StoreContext } from "../context/StoreContext";
 //Compinentes
 import Inbox from "../components/Store/Inbox";
 import ToolBar from "../components/Store/ToolBar";
+import Add from "../components/Store/Add";
 
 const optionsDefault = {
   page: 1,
@@ -49,7 +50,7 @@ export default function Store(props) {
         <div className="col-sm-12 col-md-10">
           {state.panel === "inventory" && <div>Inventario</div>}
           {state.panel === "inbox" && <Inbox />}
-          {state.panel === "neworedit" && <div>Editar o agregar</div>}
+          {state.panel === "neworedit" && <Add {...props} />}
           {state.panel === "category" && <div>Catgorias</div>}
           {state.panel === "brands" && <div>Marcas</div>}
         </div>

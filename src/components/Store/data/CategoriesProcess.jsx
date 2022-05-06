@@ -1,14 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import InputCategory from "../views/input_category";
+import useCategory from "../../../hooks/useCategory";
 
 export default function CategoriesProcess({
-  categories,
   category,
   references,
   setCategoryId: _setCategoryId,
 }) {
-  const categoryParents = category.code.toString().split("|");
+  const _categories = useCategory();
+
+  const categoryParents = category.code?.split("|");
+  const [state, setState] = useState({
+    categories: [],
+  });
   const [categoryId, setCategoryId] = useState({
     id0: parseInt(categoryParents[0]),
     id1: parseInt(categoryParents[1]),
@@ -16,13 +21,25 @@ export default function CategoriesProcess({
     id3: parseInt(categoryParents[3]),
   });
   const [categoryList, setCategoryList] = useState({
-    list0: categories,
+    list0: state.categories,
     list1: null,
     list2: null,
     list3: null,
   });
   const inputCategory = [];
   // Functions
+  const getCategories = () => {
+    _categories
+      .getCategories({
+        categoryid: "raiz",
+      })
+      .then(({ data: cat }) => {
+        setState({
+          ...state,
+          categories: cat,
+        });
+      });
+  };
   const handleChangeCat = (target) => {
     const categories = getDataCategoriesId(target, categoryId);
 
@@ -42,6 +59,7 @@ export default function CategoriesProcess({
 
   useEffect(() => {
     const list = routerCategory(categoryId, categoryList);
+    getCategories();
     setCategoryList({
       ...categoryList,
       ...list,
@@ -59,11 +77,13 @@ export default function CategoriesProcess({
           index={index}
           textSelect="Seleccione una categoria"
           handleChangeCategory={handleChangeCat}
-          references={references[index]}
+          // references={references[index]}
         />
       );
     }
   });
+
+  console.log("[DEBUG] Categories:", state.categories);
 
   return (
     <div>

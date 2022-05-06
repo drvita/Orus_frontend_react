@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 //Compinentes
 import Inbox from "./views/Inbox";
 import Filter from "./views/Filters";
-import NewOrEdit from "./add";
+import NewOrEdit from "./Add";
 import Inventario from "./inventory";
 import Categories from "./categories";
 import Brands from "./brands";

@@ -1,5 +1,4 @@
-import React, { Component, useState, useEffect, useContext } from "react";
-import { connect } from "react-redux";
+import React, { Component, useState, useEffect, useContext } from "react"
 import moment from "moment";
 import useUsers from "../../hooks/useUsers";
 import {ConfigContext} from '../../context/ConfigContext';
@@ -8,10 +7,6 @@ import { useHistory } from "react-router-dom";
 //Component
 import UserName from "./views/userNameInput";
 import UserEmail from "./views/userEmailInput";
-//Actions
-import { userActions } from "../../redux/user/index";
-import { configActions } from "../../redux/config";
-import helper from "./helpers";
 
 const initialState = {
       id: 0,
@@ -31,8 +26,8 @@ const initialState = {
       load: false,
 }
 
-export default function UserAddComponent(props){
 
+export default function UserAddComponent(props){
   const { id } = props.match.params;
 
   const { handleNewOrEdit: _handleNewOrEdit, newOrEdit: _newOrEdit } = props;
@@ -46,20 +41,16 @@ export default function UserAddComponent(props){
   const history = useHistory();
 
   function processData(data, setData) {
-    //Setear en el currentUser la data obtenida del usuario
     if(data){
       console.log(data);
-      //setCurrentUser(data)
       setCurrentUser({
         id: data.id,
         role: data.roles[0],
         roles: data.roles,
         permissions: data.permissions,
         username: data.username,
-        //validUserName: data.validUserName ? data.validUserName : false,
         name: data.name,
         email: data.email,
-        //validUserEmail: data.validUserEmail ? data.validUserEmail : false,
         password: '',
         updated_at: data.updated_at,
         created_at: data.created_at,
@@ -83,21 +74,10 @@ export default function UserAddComponent(props){
     }
   },[id]);
 
-  console.log("Current user------",currentUser);
-
-  //const send = !currentUser.load && currentUser.validUserName &&  currentUser.name.length && currentUser.validUserEmail ? false : true;
   const send = !currentUser.load && currentUser.validUserName &&  currentUser.name.length && currentUser.validUserEmail ? false : true;
 
-  console.log(currentUser.load)
-  console.log(currentUser.validUserName)
-  console.log(currentUser.validUserEmail)
-  console.log(currentUser.name.length)
-  console.log("SEND", send);
-
-
-
-
   const catchInputs = ({ name, value, type }) => {
+    console.log(name, value, type);
     if (type === "text") {
       value = value
         .toLowerCase()
@@ -110,11 +90,10 @@ export default function UserAddComponent(props){
     });
   };
 
-  const handleClosePanel = () => {
-    /* const { _setUser } = this.props;
-    _setUser(); */
-  };
-
+  /* const handleClosePanel = () => {
+    const { _setUser } = this.props;
+    _setUser();
+  }; */
 
   const handleSave = () => {
     const {
@@ -129,7 +108,6 @@ export default function UserAddComponent(props){
         validUserEmail,
       } = currentUser;
 
-     // { _saveUser, options } = this.props;
 
       let data = {
       name,
@@ -161,7 +139,6 @@ export default function UserAddComponent(props){
       return false;
     }
 
-    console.log("DEBUG NEW USER", data);
 
     if(id === 0){
       _users.saveUser(data).then((data)=>{
@@ -179,14 +156,32 @@ export default function UserAddComponent(props){
               _handleNewOrEdit();
             }
           });
-          //history.push('/usuarios');
         }
       })
     }else{
-      _users.saveUser(data, id);
+      _users.saveUser(data, id).then((data)=>{
+        if(data){
+          window.Swal.fire({
+            title: "Usuarios",
+            text: `Usuario actualizado correctamente`,
+            icon: "success",
+            showCancelButton: false,
+            confirmButtonText: "Ok",
+            cancelButtonText: "Cancelar",
+            showLoaderOnConfirm: true,
+          }).then(({ dismiss }) => {
+            if (!dismiss) {
+              history.push('/usuarios');
+              _handleNewOrEdit();
+            }
+          });
+        }
+      })
     }
     //helper.handleSave(id, data, options, _saveUser);
   };
+
+
 
   return (
       <div className="row">

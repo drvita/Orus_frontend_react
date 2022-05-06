@@ -56,6 +56,7 @@ export default function InboxContact() {
       meta={state.meta}
       itemSelected={state.contactSelected}
       handlePagination={(page) => {
+        console.log("PAGE------", page);
         if (page) {
           context.set({
             ...context,

@@ -7,10 +7,6 @@ import helper from "../helpers";
 import { useHistory } from "react-router-dom";
 import { AuthContext } from '../../../context/AuthContext';
 
-//Actions
-import { userActions } from "../../../redux/user/index";
-import { connect } from "react-redux";
-
 export default function InboxComponent(){
 
   const history = useHistory();
@@ -30,20 +26,14 @@ export default function InboxComponent(){
   const { users, meta } = data;
 
   const handleChangeOptions = (key, value) => {
-    console.log(key, value);
+
     _userContext.set({
       ..._userContext,
       options:{
         ..._userContext.options,
-        search: value,
+        [key]: value,
       }
     })
-    /* if (options[key] !== value) {
-      _setOptions({
-        key,
-        value,
-      });
-    } */
   };
 
 
@@ -179,7 +169,6 @@ export default function InboxComponent(){
                         className="form-check-input mt-4"
                         value={user.id}
                         id={"item_" + user.id}
-                       /*  disabled = { user.id === _authContext.auth.idUser ? true : false} */
                         checked={userSelected === user.id ? true : false}
                         onChange={({ target }) => {
                           const {value, checked} = target;

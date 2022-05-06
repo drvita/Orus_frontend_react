@@ -8,9 +8,11 @@ export default function UserEmailInputComponent(props) {
     text: "No tiene el formato de un email",
     searchEmail: false,
   });
+
   //Vars
   const { col, email, userId, onChange: _onChange } = props,
     { bgColor, validate, text, searchEmail } = state;
+
   //Functions
   const handleChange = ({ name, value }) => {
       _onChange({
@@ -18,6 +20,7 @@ export default function UserEmailInputComponent(props) {
         value: value.toLowerCase(),
       });
     },
+
     validEmail = () => {
       const regex =
           /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
@@ -29,6 +32,7 @@ export default function UserEmailInputComponent(props) {
           ...state,
           searchUser: true,
         });
+        
         handleSearchUser(emailSearch, userId).then((response) => {
           if (response) {
             setState({

@@ -12,6 +12,7 @@ import UserEmail from "./views/userEmailInput";
 import { userActions } from "../../redux/user/index";
 import { configActions } from "../../redux/config";
 import helper from "./helpers";
+import { suppressDeprecationWarnings } from "moment";
 
 const initialState = {
       id: 0,
@@ -46,20 +47,16 @@ export default function UserAddComponent(props){
   const history = useHistory();
 
   function processData(data, setData) {
-    //Setear en el currentUser la data obtenida del usuario
     if(data){
       console.log(data);
-      //setCurrentUser(data)
       setCurrentUser({
         id: data.id,
         role: data.roles[0],
         roles: data.roles,
         permissions: data.permissions,
         username: data.username,
-        //validUserName: data.validUserName ? data.validUserName : false,
         name: data.name,
         email: data.email,
-        //validUserEmail: data.validUserEmail ? data.validUserEmail : false,
         password: '',
         updated_at: data.updated_at,
         created_at: data.created_at,
@@ -85,19 +82,11 @@ export default function UserAddComponent(props){
 
   console.log("Current user------",currentUser);
 
-  //const send = !currentUser.load && currentUser.validUserName &&  currentUser.name.length && currentUser.validUserEmail ? false : true;
+
   const send = !currentUser.load && currentUser.validUserName &&  currentUser.name.length && currentUser.validUserEmail ? false : true;
 
-  console.log(currentUser.load)
-  console.log(currentUser.validUserName)
-  console.log(currentUser.validUserEmail)
-  console.log(currentUser.name.length)
-  console.log("SEND", send);
-
-
-
-
   const catchInputs = ({ name, value, type }) => {
+    console.log(name, value, type);
     if (type === "text") {
       value = value
         .toLowerCase()
@@ -128,8 +117,7 @@ export default function UserAddComponent(props){
         validUserName,
         validUserEmail,
       } = currentUser;
-
-     // { _saveUser, options } = this.props;
+      
 
       let data = {
       name,
@@ -161,7 +149,6 @@ export default function UserAddComponent(props){
       return false;
     }
 
-    console.log("DEBUG NEW USER", data);
 
     if(id === 0){
       _users.saveUser(data).then((data)=>{
@@ -179,14 +166,32 @@ export default function UserAddComponent(props){
               _handleNewOrEdit();
             }
           });
-          //history.push('/usuarios');
         }
       })
     }else{
-      _users.saveUser(data, id);
+      _users.saveUser(data, id).then((data)=>{
+        if(data){
+          window.Swal.fire({
+            title: "Usuarios",
+            text: `Usuario actualizado correctamente`,
+            icon: "success",
+            showCancelButton: false,
+            confirmButtonText: "Ok",
+            cancelButtonText: "Cancelar",
+            showLoaderOnConfirm: true,
+          }).then(({ dismiss }) => {
+            if (!dismiss) {
+              history.push('/usuarios');
+              _handleNewOrEdit();
+            }
+          });
+        }
+      })
     }
     //helper.handleSave(id, data, options, _saveUser);
   };
+
+
 
   return (
       <div className="row">

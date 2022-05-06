@@ -17,17 +17,18 @@ export default function useUsers() {
     return await api(url, 'DELETE', null);
   }
 
-
   const saveUser = async (data, ID)=> {
+
     if(ID){
       //Actualizamos
+      console.log("Actualizar usuario modificado", ID, data);
       const url = setUrl('users', ID);
+      return await api(url, 'PUT',data);
     }else{
       //Creamos uno nuevo
       const url = setUrl('users');
-      return await api(url, "POST", data)
+      return await api(url, "POST", data);
     }
-    
   }
 
   return{
@@ -38,4 +39,5 @@ export default function useUsers() {
   }
 
 }
+
 

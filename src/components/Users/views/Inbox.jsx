@@ -30,7 +30,7 @@ export default function InboxComponent(){
   const { users, meta } = data;
 
   const handleChangeOptions = (key, value) => {
-    console.log(key, value);
+    console.log("Handle Pagination", key, value);
     _userContext.set({
       ..._userContext,
       options:{
@@ -179,7 +179,6 @@ export default function InboxComponent(){
                         className="form-check-input mt-4"
                         value={user.id}
                         id={"item_" + user.id}
-                       /*  disabled = { user.id === _authContext.auth.idUser ? true : false} */
                         checked={userSelected === user.id ? true : false}
                         onChange={({ target }) => {
                           const {value, checked} = target;

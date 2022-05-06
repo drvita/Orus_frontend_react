@@ -3,7 +3,11 @@ export default function PaginationComponent({
   color,
   handlePagination: _handlePagination,
 }) {
+
+
+
   const handleChangePage = (page) => {
+    //console.log("Siguiente página",page);
     if (_handlePagination) {
       _handlePagination(page);
     } else {

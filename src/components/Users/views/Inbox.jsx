@@ -7,10 +7,6 @@ import helper from "../helpers";
 import { useHistory } from "react-router-dom";
 import { AuthContext } from '../../../context/AuthContext';
 
-//Actions
-import { userActions } from "../../../redux/user/index";
-import { connect } from "react-redux";
-
 export default function InboxComponent(){
 
   const history = useHistory();
@@ -30,20 +26,14 @@ export default function InboxComponent(){
   const { users, meta } = data;
 
   const handleChangeOptions = (key, value) => {
-    console.log("Handle Pagination", key, value);
+
     _userContext.set({
       ..._userContext,
       options:{
         ..._userContext.options,
-        search: value,
+        [key]: value,
       }
     })
-    /* if (options[key] !== value) {
-      _setOptions({
-        key,
-        value,
-      });
-    } */
   };
 
 

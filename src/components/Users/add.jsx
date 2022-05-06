@@ -1,5 +1,4 @@
-import React, { Component, useState, useEffect, useContext } from "react";
-import { connect } from "react-redux";
+import React, { Component, useState, useEffect, useContext } from "react"
 import moment from "moment";
 import useUsers from "../../hooks/useUsers";
 import {ConfigContext} from '../../context/ConfigContext';
@@ -8,11 +7,6 @@ import { useHistory } from "react-router-dom";
 //Component
 import UserName from "./views/userNameInput";
 import UserEmail from "./views/userEmailInput";
-//Actions
-import { userActions } from "../../redux/user/index";
-import { configActions } from "../../redux/config";
-import helper from "./helpers";
-import { suppressDeprecationWarnings } from "moment";
 
 const initialState = {
       id: 0,
@@ -32,8 +26,8 @@ const initialState = {
       load: false,
 }
 
-export default function UserAddComponent(props){
 
+export default function UserAddComponent(props){
   const { id } = props.match.params;
 
   const { handleNewOrEdit: _handleNewOrEdit, newOrEdit: _newOrEdit } = props;
@@ -80,9 +74,6 @@ export default function UserAddComponent(props){
     }
   },[id]);
 
-  console.log("Current user------",currentUser);
-
-
   const send = !currentUser.load && currentUser.validUserName &&  currentUser.name.length && currentUser.validUserEmail ? false : true;
 
   const catchInputs = ({ name, value, type }) => {
@@ -99,11 +90,10 @@ export default function UserAddComponent(props){
     });
   };
 
-  const handleClosePanel = () => {
-    /* const { _setUser } = this.props;
-    _setUser(); */
-  };
-
+  /* const handleClosePanel = () => {
+    const { _setUser } = this.props;
+    _setUser();
+  }; */
 
   const handleSave = () => {
     const {
@@ -117,7 +107,7 @@ export default function UserAddComponent(props){
         validUserName,
         validUserEmail,
       } = currentUser;
-      
+
 
       let data = {
       name,

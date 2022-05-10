@@ -1,14 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-//Components
-import Suppliers from "./views/input_suppliers";
-import Brands from "./views/input_brand";
+
+// Components
+import CategoryInput from "./Categories";
+import Suppliers from "./Suppliers";
+import Brands from "./Brands";
+import Code from "./Code";
+
 import BranchesSelect from "./views/BranchesSelect";
 import BranchesForm from "./views/BranchesForm";
 //Actions
 // import helper from "./helpers";
-import CategoriesProcess from "./data/CategoriesProcess";
 import useStore from "../../hooks/useStore";
 
 const initialState = {
@@ -21,7 +24,7 @@ const initialState = {
   unit: "PZ",
   cant: 1,
   price: 1,
-  supplier: 0,
+  supplier_id: 0,
   category_id: 0,
   branch_default: 12,
   data: {
@@ -29,6 +32,7 @@ const initialState = {
     categories: [],
     inBranches: "",
     codes: [],
+    category_code: [],
   },
   loading: false,
 };
@@ -37,43 +41,24 @@ export default function Add(props) {
   const { id } = props.match.params;
   const [state, setState] = useState(initialState);
   const _store = useStore();
-  const {
-    supplier,
-    category_id,
-    brand_id,
-    code,
-    name,
-    grad,
-    unit,
-    branch_default,
-    data: { category, categories, inBranches, codes: list },
-    loading: LOADING,
-  } = state;
-
-  const idsCategory = category.code
-    ? category.code.split("|").filter((i) => i !== "")
-    : [];
+  const { code, loading: LOADING } = state;
   let readyToSave = false;
-
-  if (idsCategory.includes("1")) {
-    readyToSave = category_id && code && name;
-  } else {
-    readyToSave = category_id && code && name && supplier && brand_id;
-  }
 
   // Functions
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
-      console.log("[DEBUG] Responses:", res);
-      // setState({
-      //   ...state,
-      //   data: {
-      //     ...state.data,
-      //     category: res.categoria,
-      //   },
-      //   loading: false,
-      // });
+      console.log("[DEBUG] http store:", res);
+      setState({
+        ...state,
+        category_id: res.category?.id,
+        // supplier_id: res.supplier?.id,
+        data: {
+          ...state.data,
+          // category: res.categoria,
+        },
+        loading: false,
+      });
     });
   };
 
@@ -101,50 +86,57 @@ export default function Add(props) {
                     <label>Categoria</label>
                   </small>
 
-                  <CategoriesProcess
-                    categories={categories}
-                    category={category}
-                    setCategoryId={() => {}}
-                    references={[]}
+                  <CategoryInput
+                    category={state.category_id}
+                    handleChange={(id, code) => {
+                      setState({
+                        ...state,
+                        category_id: id,
+                        supplier_id: 0,
+                        brand_id: 0,
+                        data: {
+                          ...state.data,
+                          category_code: code,
+                        },
+                      });
+                    }}
                   />
                 </fieldset>
               </div>
             </div>
 
-            {idsCategory.length && !idsCategory.includes("1")
-              ? {
-                  /* <Suppliers
-                    supplier={supplier}
-                    supplierRef={{}}
-                    handleChangeSupplier={(e) => {
-                      setState({
-                        supplier: e,
-                      });
-                    }}
-                  /> */
-                }
-              : null}
+            {Boolean(state.data.category_code.length) &&
+              !state.data.category_code.includes("1") && (
+                <Suppliers
+                  supplier={state.supplier_id}
+                  handleChange={(id) => {
+                    setState({
+                      ...state,
+                      supplier_id: id,
+                      brand_id: 0,
+                    });
+                  }}
+                />
+              )}
 
-            {supplier
-              ? {
-                  /* <Brands
-                    brand={brand_id}
-                    supplier={supplier}
-                    textSelect="Selecione la marca"
-                    brandRef={{}}
-                    handleChangeBrand={(e) => {
-                      setState({
-                        brand_id: e,
-                      });
-                    }}
-                  /> */
-                }
-              : null}
+            {Boolean(state.supplier_id) && (
+              <Brands
+                brand={state.brand_id}
+                supplier={state.supplier_id}
+                textSelect="Selecione la marca"
+                handleChange={(id) => {
+                  setState({
+                    ...state,
+                    brand_id: id,
+                  });
+                }}
+              />
+            )}
 
-            {category_id ? (
+            {state.category_id ? (
               <>
                 <div className="row">
-                  {idsCategory.includes("1") ? (
+                  {state.data.category_code.includes("1") && (
                     <div className="col-3">
                       <small>
                         <label>Graduacion</label>
@@ -159,16 +151,16 @@ export default function Add(props) {
                           type="text"
                           className="form-control"
                           placeholder="+100100"
-                          name="grad"
-                          value={grad}
-                          onChange={() => {}}
-                          onBlur={() => {}}
+                          defaultValue={state.grad}
+                          onChange={({ target }) =>
+                            setState({ ...state, grad: target.value })
+                          }
                           maxLength="7"
                           autoComplete="off"
                         />
                       </div>
                     </div>
-                  ) : null}
+                  )}
                   <div className="col">
                     {state.unit ? (
                       <small>
@@ -181,7 +173,7 @@ export default function Add(props) {
                       <div className="input-group-prepend">
                         <span
                           className={
-                            unit
+                            state.unit
                               ? "input-group-text bg-primary"
                               : "input-group-text bg-warning"
                           }
@@ -193,9 +185,10 @@ export default function Add(props) {
                         type="text"
                         className="form-control"
                         placeholder="Unidad de presentación"
-                        name="unit"
-                        value={unit}
-                        onChange={() => {}}
+                        defaultValue={state.unit}
+                        onChange={({ target }) =>
+                          setState({ ...state, unit: target.value })
+                        }
                         maxLength="4"
                       />
                     </div>
@@ -203,7 +196,7 @@ export default function Add(props) {
                 </div>
                 <div className="row">
                   <div className="col-5">
-                    {code ? (
+                    {state.code ? (
                       <small>
                         <label>Codigo</label>
                       </small>
@@ -211,38 +204,7 @@ export default function Add(props) {
                       <br />
                     )}
 
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <span
-                          className={
-                            code
-                              ? !id && list.length
-                                ? "input-group-text bg-warning"
-                                : "input-group-text bg-primary"
-                              : "input-group-text bg-warning"
-                          }
-                        >
-                          <i className="fas fa-code"></i>
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control text-uppercase"
-                        placeholder="Codigo"
-                        name="code"
-                        ref={{}}
-                        defaultValue={code}
-                        onChange={() => {}}
-                        onBlur={() => {}}
-                        autoComplete="off"
-                        maxLength="18"
-                      />
-                      {!id && list.length ? (
-                        <span className="text-muted text-xs d-block w-100">
-                          El codigo ya esta en uso
-                        </span>
-                      ) : null}
-                    </div>
+                    <Code />
                   </div>
                   <div className="col">
                     <small>
@@ -269,7 +231,7 @@ export default function Add(props) {
                 </div>
                 <div className="row">
                   <div className="col">
-                    {name ? (
+                    {state.name ? (
                       <small>
                         <label>Nombre del producto</label>
                       </small>
@@ -280,7 +242,7 @@ export default function Add(props) {
                       <div className="input-group-prepend">
                         <span
                           className={
-                            name
+                            state.name
                               ? "input-group-text bg-primary"
                               : "input-group-text bg-warning"
                           }
@@ -293,8 +255,7 @@ export default function Add(props) {
                         className="form-control text-uppercase"
                         placeholder="Nombre del producto"
                         name="name"
-                        ref={{}}
-                        defaultValue={name}
+                        defaultValue={state.name}
                         onChange={() => {}}
                         maxLength="149"
                       />

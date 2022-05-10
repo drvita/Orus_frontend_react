@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 //Components
-import Suppliers from "./views/input_suppliers";
+import Suppliers from "./Suppliers";
 import BrandsList from "./data/BrandsList";
 //Actions
 import { storeActions } from "../../redux/store/index";

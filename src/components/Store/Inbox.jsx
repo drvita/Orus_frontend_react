@@ -158,7 +158,7 @@ export default function Inbox(props) {
                     </td>
                     <td className="icheck-primary">
                       <div className="badge badge-dark text-uppercase">
-                        {item.codigo}
+                        {item.code}
                       </div>
                     </td>
                     <td className="mailbox-name text-capitalize text-truncate">
@@ -167,14 +167,14 @@ export default function Inbox(props) {
                         onClick={(e) => handleSelectItem(e, item)}
                         className="text-bold"
                       >
-                        {item.producto}
+                        {item.name}
                       </a>
                     </td>
                     <td className="mailbox-attachment text-capitalize text-truncate text-muted">
-                      <span>{item.proveedor ? item.proveedor.name : "--"}</span>
+                      <span>{item.supplier ? item.supplier.name : "--"}</span>
                     </td>
                     <td className="mailbox-attachment text-uppercase text-truncate text-muted">
-                      <span>{item.marca ? item.marca.marca : "--"}</span>
+                      <span>{item.brand ? item.brand.name : "--"}</span>
                     </td>
                     <td className="mailbox-date text-muted text-truncate text-right">
                       <span>{item.cant_total}</span>

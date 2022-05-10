@@ -48,7 +48,6 @@ export default function ToolBar({ newOrEdit, handleNewOrEdit }) {
           </select>
         </li>
         <li className="nav-item p-2">
-          {/* TODO: SET data picker */}
           <label htmlFor="date">Fecha</label>
           <DatePicker
             className={`form-control`}

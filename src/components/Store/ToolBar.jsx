@@ -2,8 +2,8 @@
 import { Store } from "../../context/StoreContext";
 //Components
 import CardMenu from "../../layouts/card_menu";
-import BrandsInput from "./views/input_brand";
-import SuppliersInput from "./views/input_suppliers";
+import BrandsInput from "./Brands";
+import SuppliersInput from "./Suppliers";
 
 export default function ToolBar() {
   const context = Store();

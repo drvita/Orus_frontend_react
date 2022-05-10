@@ -22,8 +22,6 @@ export async function api(url, method = "GET", body, controller = null) {
   }
   if (controller) param.signal = controller.signal;
 
-  console.log("[DEBUG] API url:", `${PROTOCOL}://${HOST}:${PORT}/api/${url}`);
-
   return await fetch(`${PROTOCOL}://${HOST}:${PORT}/api/${url}`, param)
     .then(async (res) => {
       if (res.status >= 200 && res.status < 300) {

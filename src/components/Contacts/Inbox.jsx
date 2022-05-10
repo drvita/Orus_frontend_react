@@ -56,7 +56,6 @@ export default function InboxContact() {
       meta={state.meta}
       itemSelected={state.contactSelected}
       handlePagination={(page) => {
-        console.log("PAGE------", page);
         if (page) {
           context.set({
             ...context,
@@ -126,8 +125,6 @@ export default function InboxContact() {
           });
         }
       }}
-
-
       handleEditItem={() => {
         if (state.contactSelected) {
           history.push(`contactos/${state.contactSelected}`);
@@ -139,7 +136,6 @@ export default function InboxContact() {
           });
         }
       }}
-
       handleSync={() => {
         context.set({
           ...context,
@@ -199,7 +195,7 @@ export default function InboxContact() {
                   className="mailbox-name text-capitalize text-truncate"
                   style={{ cursor: "pointer", maxWidth: 180 }}
                   onClick={() => {
-                    history.push(`contactos/${contact.id}`)
+                    history.push(`contactos/${contact.id}`);
                   }}
                 >
                   <label

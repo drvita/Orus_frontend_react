@@ -5,7 +5,6 @@ import useCategory from "../../../hooks/useCategory";
 
 export default function CategoriesProcess({
   category,
-  references,
   setCategoryId: _setCategoryId,
 }) {
   const _categories = useCategory();

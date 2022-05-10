@@ -96,10 +96,52 @@ export default function useStore() {
     }
   };
 
+  // Brands functions
+
+  const getBrands = async (options) => {
+    if (!options) return null;
+
+    const url = setUrl("brands", null, options);
+
+    return await api(url, "GET")
+      .then((response) => {
+        return response;
+      })
+      .catch((err) => {
+        console.error(
+          "[Orus System] Catch when get brands list in hook:",
+          err.message
+        );
+
+        throw err;
+      });
+  };
+
+  const getBrand = async (id) => {
+    if (!id) return false;
+
+    const url = setUrl("brands", id);
+
+    return await api(url, "GET")
+      .then((response) => {
+        return response.data;
+      })
+      .catch((err) => {
+        console.error(
+          "[Orus System] Catch when get brands in hook:",
+          err.message
+        );
+
+        throw err;
+      });
+  };
+
   return {
     getItems,
     getItem,
     deleteItem,
     saveItem,
+    getBrands,
+    getBrand,
   };
 }

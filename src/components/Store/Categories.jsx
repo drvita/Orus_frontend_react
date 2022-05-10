@@ -5,7 +5,9 @@ import Input from "../Input";
 import useCategory from "../../hooks/useCategory";
 
 export default function Categories(props) {
+
   const _categories = useCategory();
+
   const [state, setState] = useState({
     categories: [],
     cat1: 0,
@@ -14,6 +16,8 @@ export default function Categories(props) {
     cat4: 0,
     load: true,
   });
+
+
   const input2 = state.categories.filter((cat) => cat.id === state.cat1)[0];
   const input3 = input2?.sons?.filter((cat) => cat.id === state.cat2)[0];
   const input4 = input3?.sons?.filter((cat) => cat.id === state.cat3)[0];
@@ -21,6 +25,7 @@ export default function Categories(props) {
 
   // Functions
   const getCategories = () => {
+    console.log("Function lista de categorias");
     _categories
       .getCategories({
         categoryid: "raiz",
@@ -33,7 +38,9 @@ export default function Categories(props) {
         });
       });
   };
+
   const getCategory = (id) => {
+    console.log("Function Categoria individual");
     _categories.getCategory(id).then((cat) => {
       if (state.cat1 === parseInt(cat.code[0])) {
         if (state.cat2 === parseInt(cat.code[1])) {
@@ -55,7 +62,10 @@ export default function Categories(props) {
       });
     });
   };
+
+
   const handleReturn = () => {
+    console.log("Handle return ejecutado");
     if (state.cat1 && input2 && !input2.sons?.length) {
       return props.handleChange(state.cat1, input2.code);
     } else if (props.category) {
@@ -91,10 +101,12 @@ export default function Categories(props) {
     }
 
     handleReturn();
+
   }, [state]);
 
   useEffect(() => {
     if (state.categories.length && props.category) {
+      console.log("Segundo useEffect ejecutado si xd");
       getCategory(props.category);
     }
   }, [state.categories, props.category]);

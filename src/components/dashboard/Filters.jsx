@@ -1,12 +1,12 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
-
 import { ConfigContext } from "../../context/ConfigContext";
-import useUsers from "../../hooks/useUsers";
+import useUsers from "../../hooks/useUsers"
 
-export default function Filters({ filters, changeState }) {
+export default function Filters({ filters, changeState }) {  
+
   const { user, branch_id, date_end, date_start } = filters;
   const [state, setState] = useState({
     branch_id: branch_id,
@@ -14,9 +14,13 @@ export default function Filters({ filters, changeState }) {
     date_start,
     date_end,
   });
-  const config = useContext(ConfigContext);
+  
+  const [usersList, setUsersList] = useState([]);
   const usersHook = useUsers();
+  const config = useContext(ConfigContext);
   const branches = config.data.filter((c) => c.name === "branches");
+
+
   // Functions
   const sendDataFilter = () => {
       const { user, branch_id, date_end, date_start } = state;
@@ -34,6 +38,15 @@ export default function Filters({ filters, changeState }) {
       });
     };
 
+    useEffect(()=>{
+      usersHook.getListUsers().then((data)=>{
+        if(data){
+          setUsersList(data.data)
+        }else{
+          console.error("Error al obtener la lista de usuarios");
+        }
+      })
+    },[])
   return (
     <div className="border-bottom pb-3 mb-4">
       <div className="card-body p-0 bg-light">
@@ -75,7 +88,7 @@ export default function Filters({ filters, changeState }) {
                 }
               >
                 <option value="">{user === "" ? "Usuarios" : "Todos"}</option>
-                {usersHook.listUsers.map((user) => {
+                {usersList.map((user) => {
                   if (!branch_id) {
                     return (
                       <option key={user.id} value={user.id}>

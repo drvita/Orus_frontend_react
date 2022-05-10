@@ -1,6 +1,7 @@
 import { api, setUrl } from "../utils/url";
 
 export default function useCategory() {
+  
   const getCategories = async (options) => {
     if (!options) return null;
 

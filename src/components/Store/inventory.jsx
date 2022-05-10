@@ -21,7 +21,6 @@ export default class Inventory extends Component {
   }
   componentDidMount() {
     this.getCategories();
-    console.log("Prueba-------------")
   }
   componentDidUpdate(props, state) {
     if (state.catid_3 !== this.state.catid_3) {
@@ -68,9 +67,6 @@ export default class Inventory extends Component {
           <div className="card">
             <div className="card-header">
               <div className="row">
-                {/* <div className="col">
-                  <label>Seleccione la sucursal</label>
-                </div> */}
                 <div className="col">
                   <select
                     className="custom-select"

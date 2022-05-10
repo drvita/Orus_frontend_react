@@ -6,7 +6,7 @@ import Filter from "./views/Filters";
 import NewOrEdit from "./Add";
 import Inventario from "./inventory";
 import Categories from "./categories";
-import Brands from "./brands";
+import Brands from "./brands_page";
 
 //Actions
 import { storeActions } from "../../redux/store/index";
@@ -23,7 +23,7 @@ class IndexStoreComponent extends Component {
   componentDidMount() {
     const { match, history, _getItem, _setItem, _setPageName } = this.props,
       { id } = match.params;
-
+      
     if (parseInt(id)) {
       _getItem(parseInt(id));
     } else if (id === "new") {
@@ -35,8 +35,6 @@ class IndexStoreComponent extends Component {
     }
 
     _setPageName("almacen");
-
-    //console.log("Productos del almacen----INDEX------");
   }
   componentDidUpdate(props) {
     const { messages: MSGS, item, history, _setMessage, _setList } = this.props;

@@ -99,6 +99,7 @@ export default function useStore() {
   // Brands functions
 
   const getBrands = async (options) => {
+    console.log("OPCIONES RECIBIDAS", options);
     if (!options) return null;
 
     const url = setUrl("brands", null, options);

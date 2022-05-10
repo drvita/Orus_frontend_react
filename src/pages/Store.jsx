@@ -1,11 +1,12 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { StoreContext } from "../context/StoreContext";
 
 //Compinentes
-import Inbox from "../components/Store/Inbox";
 import ToolBar from "../components/Store/ToolBar";
+import Inbox from "../components/Store/Inbox";
 import Add from "../components/Store/Add";
+import Categories from './categories_page';
+import Brands from './brands_page';
 
 const optionsDefault = {
   page: 1,
@@ -51,8 +52,8 @@ export default function Store(props) {
           {state.panel === "inventory" && <div>Inventario</div>}
           {state.panel === "inbox" && <Inbox />}
           {state.panel === "neworedit" && <Add {...props} />}
-          {state.panel === "category" && <div>Catgorias</div>}
-          {state.panel === "brands" && <div>Marcas</div>}
+          {state.panel === "category" && <Categories></Categories>}
+          {state.panel === "brands" && <Brands></Brands>}
         </div>
       </div>
     </StoreContext.Provider>

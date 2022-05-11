@@ -50,30 +50,23 @@ export default function CategoriesStoreComponent(){
 
 
   const handleClickParent = (e) => {
-    //Revisar como sustituir la data de redux 
-    /* const { categories = [] } = this.props;
-
     if (e) e.preventDefault();
 
-    setState({
-      category_data: categories,
-      category_id: null,
-    }); */
+    hookCategory.getCategories({categoryid: "raiz"}).then((data)=>{
+      if(data){
+        setState({
+          category_data: data.data,
+          category_id: null,
+        });
+      }else{
+        console.error("Error al obtener la lista de categorias");
+      }
+    })
   };
-  
 
   useEffect(()=>{
     handleLoadCategories();
-    /* const { categories = [] } = this.props;
-    if (props.categories !== categories && categories.length) {
-      this.setState({
-        category_data: categories,
-      });
-    } */
   },[]);
-
-
- 
 
 
   return (
@@ -101,7 +94,6 @@ export default function CategoriesStoreComponent(){
             )}
           </ol>
         </nav>
-
         <Catalogo
           category={category_id}
           categoryData={category_view_sons ?? []}

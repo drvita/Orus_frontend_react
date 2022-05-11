@@ -1,13 +1,20 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { Component, useEffect, useState, useContext } from "react";
 import { connect } from "react-redux";
+import useCategory from "../../../hooks/useCategory";
+import { StoreContext } from "../../../context/StoreContext";
+
 //Actions
 import { categoryActions } from "../../../redux/category/index";
 import helper from "../helpers";
 
 
 export default function CategoryListComponent(props){
+
+  const hookCategory = useCategory();
   
   const ls = JSON.parse(localStorage.getItem("OrusSystem"));
+
+  const storeContext = useContext(StoreContext);
 
   const [state, setState] = useState({
     id: 0,
@@ -25,9 +32,9 @@ export default function CategoryListComponent(props){
   const { category_raiz, category_id, name, add } = state, { loading: load, categoryData } = props;
 
   useEffect(()=>{
+
     const { categoryData = [] } = props;
 
-    //Si existe la prop de la data, guarda en category raiz la data de las categorias
     if (categoryData) {
       setState({
         ...state, 
@@ -38,22 +45,19 @@ export default function CategoryListComponent(props){
 
 
   const handleClickAdd = () => {
-    this.setState({
-      add: !this.state.add,
+    setState({
+      ...state,
+      add: !state.add,
       name: "",
     });
   };
 
   const handleSelectCategory = (cat) => {
-    console.log("Categoria seleccionada", cat)
 
-    const { last, categorySelect: _categorySelect } = props,
-      { category_raiz } = state;
+    const { last, categorySelect: _categorySelect } = props, { category_raiz } = state;
 
     if (last) return false;
     if (!cat.sons || (cat.sons && !cat.sons.length)) return false;
-
-    console.log(cat.id, category_raiz);
 
     _categorySelect({
       category_id: cat.id,
@@ -68,11 +72,115 @@ export default function CategoryListComponent(props){
 
   const handleClickDelete = (id, name) => {
     if (id) {
-      const { _delete } = this.props, item = { id }, options = { categoryid: "raiz" },
+      //const { _delete } = this.props;
+      /* const item = { id }, options = { categoryid: "raiz" },
       text =
-      "Esta seguro de eliminar la categoria: " + name.toUpperCase() + "?";
-      helper.handleDeleteItem(item, options, _delete, text);
+      "Esta seguro de eliminar la categoria: " + name.toUpperCase() + "?"; */
+
+      //Ejecutar hook para eliminar la categoria
+      hookCategory.deleteCategory(id).then((data)=>{
+        if(data){
+          window.Swal.fire({
+            title: "Categorias",
+            text: 'Categoria eliminada correctamente',
+            icon: "success",
+            showCancelButton: false,
+            confirmButtonText:"OK",
+            showLoaderOnConfirm: true,
+          }).then(({ dismiss }) => {
+            if (!dismiss) {
+              storeContext.set({
+                ...storeContext,
+                panel:"inbox",
+              })
+            }
+          });
+        }else{
+          window.Swal.fire({
+            title: "Categorias",
+            text: 'Error al eliminar la categoria',
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonText:"OK",
+            showLoaderOnConfirm: true,
+          })
+        }
+      })
+      //helper.handleDeleteItem(item, options, _delete, text);
     }
+  };
+
+
+ const catchInputs = (e) => {
+    const { name, value } = e.target;
+    setState({
+      ...state, 
+      [name]: value.toLowerCase(),
+    });
+  };
+
+
+  const handleClickSave = () => {
+    //Verificamos campos validos
+    if (state.name.length < 4) {
+      window.Swal.fire(
+        "Verificación",
+        "Debe de escribir el nombre de la categoria",
+        "warning"
+      );
+      //this.nameInput.focus();
+      return false;
+    }
+
+    const { id, category_id, name } = state;
+    const data = { name, category_id: category_id};
+    //const { _save } = this.props;
+    
+    const options = { categoryid: "raiz" };
+
+    const text = id
+        ? "¿Esta seguro de actualizar la categoria?"
+        : "¿Esta seguro de crear una nueva categoria?",
+      _close = () => {
+        setState({
+          ...state,
+          name: "",
+          category_id: 0,
+          add: false,
+        });
+      };
+
+
+      hookCategory.saveCategory(data).then((data)=>{
+        if(data){
+          window.Swal.fire({
+            title: "Categorias",
+            text: 'Categoria guardada correctamente',
+            icon: "success",
+            showCancelButton: false,
+            confirmButtonText:"OK",
+            showLoaderOnConfirm: true,
+          }).then(({ dismiss }) => {
+            if (!dismiss) {
+              storeContext.set({
+                ...storeContext,
+                panel:"inbox",
+              })
+            }
+          });
+        }else{
+          window.Swal.fire(
+            "Categorias",
+            "Error al guardar la categoria",
+            "error"
+          );
+        }
+      });
+
+      
+
+
+    //helper.handleSaveItem(id, data, options, _save, _close, text);
   };
 
 
@@ -90,7 +198,7 @@ export default function CategoryListComponent(props){
           <tbody>
             {!load && category_raiz ? (
               <React.Fragment>
-                {category_raiz.map((cat) => {
+                {category_raiz.map((cat) => {                  
                   return (
                     <tr key={cat.id}>
                       <td className="text-capitalize">
@@ -127,7 +235,7 @@ export default function CategoryListComponent(props){
                               : "btn btn-outline-danger btn-sm"
                           }
                           onClick={(e) => {
-                            handleClickDelete(cat.id, cat.categoria);
+                            handleClickDelete(cat.id, cat.name);
                           }}
                           disabled={cat.hijos && cat.hijos.length}
                         >
@@ -158,16 +266,16 @@ export default function CategoryListComponent(props){
                     className="form-control text-uppercase"
                     autoComplete="off"
                     value={name}
-                    onChange={this.catchInputs}
+                    onChange={catchInputs}
                     ref={(input) => {
-                      this.nameInput = input;
+                      //this.nameInput = input;
                     }}
                   />
                 </td>
                 <td>
                   <button
                     className="btn btn-dark btn-sm"
-                    onClick={this.handleClickSave}
+                    onClick={handleClickSave}
                     disabled={name.length < 3}
                     title="Guardar categoria"
                   >
@@ -465,12 +573,15 @@ export default function CategoryListComponent(props){
 
     helper.handleSaveItem(id, data, options, _save, _close, text);
   };
+
+
   handleClickAdd = () => {
     this.setState({
       add: !this.state.add,
       name: "",
     });
   };
+
   catchInputs = (e) => {
     const { name, value } = e.target;
     this.setState({

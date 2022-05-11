@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 
 import useContact from "../../hooks/useContact";
@@ -10,6 +9,7 @@ export default function Suppliers(props) {
     suppliers: [],
     load: true,
   });
+
   const getSuppliers = () => {
     _contacts
       .getContacts({
@@ -37,13 +37,13 @@ export default function Suppliers(props) {
         </small>
         <Input
           options={state.suppliers}
-          value={props.supplier}
+          value={props.supplier ?? ""}
           text="Seleccione un provedor"
           icon="address-book"
           load={state.load}
           handleChange={(id) => {
-            if (props.handleChange) {
-              props.handleChange(id);
+            if (props.handleChangeSupplier) {
+              props.handleChangeSupplier(id);
             }
           }}
         />

@@ -20,10 +20,13 @@ const optionsDefault = {
 };
 
 export default function Store(props) {
+
   const [state, setState] = useState({
     panel: "inbox",
     options: optionsDefault,
   });
+
+  
   const { id } = props.match.params;
 
   useEffect(() => {

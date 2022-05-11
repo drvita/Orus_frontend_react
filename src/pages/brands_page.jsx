@@ -19,21 +19,23 @@ export default function BrandsComponent(){
     supplier: 0,
     brands: [],
     name: "",
+    loading: false,
   });
-
 
   useEffect(()=>{
     getBrands();
-  },[]);
+  },[state.supplier]);
 
 
   const getBrands = () => {
     const { supplier } = state;
-    console.log(supplier);
     if (supplier) {
-      storeHook.getBrands({supplier, order: "name"}).then((data)=>{
+      storeHook.getBrands({supplier, order: "name"}).then((data)=>{ 
         if(data){
-          console.log(data);
+          setState({
+            ...state,
+            brands: data.data,
+          })
         }else{
           console.error("Error al obtener la lista de marcas");
         }
@@ -41,12 +43,129 @@ export default function BrandsComponent(){
     }
   };
 
+  const handleCancelBtn = () => {
+    setState({
+      ...state, 
+      name: "",
+      id: null,
+    });
+  };
 
-  const { id, supplier, name } = state, { brands, loading } = this.props;
+  const saveBrand = (e) => {
+    e.preventDefault();
+    const { id, name, supplier } = state, data = { name, contact_id: supplier};
+    //const { _saveBrand } = this.props;
+
+    if (name.length < 3) {
+      window.Swal.fire(
+        "Error",
+        "El nombre de la marca debe de tener por lo menos 3 caracteres",
+        "error"
+      );
+      return false;
+    } else if (!supplier) {
+      window.Swal.fire(
+        "Error",
+        "Debe de elegir a un proveedor primero",
+        "error"
+      );
+      return false;
+    }
+
+    window.Swal.fire({
+      title: "Almacenamiento",
+      text: id
+        ? "¿Esta seguro de ACTUALIZAR la marca?"
+        : "¿Esta seguro de CREAR una nueva marca?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007bff",
+      confirmButtonText: id ? "Actualizar" : "Crear",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+
+
+        storeHook.saveItem(data).then((data)=>{
+          if(data){
+            console.log("Data devuleta:", data);
+          }else{
+            console.error("Error al eliminar el item");
+          }
+        })
+        /* _saveBrand({
+          id,
+          data,
+          options: {
+            supplier,
+            order: "name",
+          },
+        }); */
+        this.setState({
+          name: "",
+          id: null,
+        });
+      }
+    });
+  };
+
+  const prevEdit = (brand) => {
+    console.log("BRAND A EDITAR:", brand);
+    setState({
+      ...state, 
+      name: brand.nombre,
+      id: brand.id,
+    });
+  };
+
+  const deleteBrand = (id, item) => {
+    console.log(id, item);
+
+    const { supplier } = state;
+    //{ _deleteBrand } = this.props;
+
+    window.Swal.fire({
+      title: "Eliminar",
+      text: "¿Esta seguro de eliminar la marca " + item.toUpperCase() + "?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        console.log("[Orus Suystem] Enviando datos para eliminar marca", id);
+        //TODO:Ejecutar hook par eiminar marca en lugar de redux
+        /* _deleteBrand({
+          id,
+          options: {
+            supplier,
+            order: "name",
+          },
+        }); */
+      }
+    });
+  };
+
+
+  
+  const changeInput = ({ name, value }) => {
+    console.log(name, value);
+    setState({
+      ...state, 
+      [name]: value.toLowerCase(),
+    });
+  };
+
+  const { id, supplier, name } = state;
+
+  const { loading } = state;
 
   return (
     <div className="row">
-      <div className="col-4">
+      <div className="col-12">
         <div className="card card-primary card-outline">
           <h5 className="card-title mt-2 ml-2 text-bold">
             Marcas para productos
@@ -55,13 +174,14 @@ export default function BrandsComponent(){
             <Suppliers
               supplier={supplier}
               handleChangeSupplier={(id) => {
-                this.setState({
+                setState({
+                  ...state, 
                   supplier: id,
-                  brands: id ? this.state.brands : [],
+                  brands: id ? state.brands : [],
                 });
               }}
             />
-            {!brands.length && (
+            {!state.brands.length && (
               <p className="card-text">
                 <i className="fas fa-info-circle mr-1"></i>
                 Para iniciar, primero seleccione a un proveedor
@@ -79,10 +199,10 @@ export default function BrandsComponent(){
                 Listado de marcas
               </h5>
               <BrandsList
-                brands={brands}
-                handleEdit={(brand) => this.prevEdit(brand)}
+                brands={state.brands}
+                handleEdit={(brand) => prevEdit(brand)}
                 handleDelete={(brand) => {
-                  this.deleteBrand(brand.id, brand.nombre);
+                  deleteBrand(brand.id, brand.name);
                 }}
               />
             </div>
@@ -93,21 +213,21 @@ export default function BrandsComponent(){
                   className="form-control mr-1"
                   name="name"
                   value={name}
-                  onChange={({ target }) => this.changeInput(target)}
+                  onChange={({ target }) => changeInput(target)}
                 />
                 <div className="btn-group">
                   <button
                     type="button"
                     className="btn btn-default"
                     disabled={!name}
-                    onClick={this.handleCancelBtn}
+                    onClick={handleCancelBtn}
                   >
                     <i className="fas fa-eraser"></i>
                   </button>
                   <button
                     type="button"
                     className={id ? "btn btn-success" : "btn btn-primary"}
-                    onClick={this.saveBrand}
+                    onClick={saveBrand}
                     disabled={!name}
                   >
                     <i className="fas fa-save"></i>
@@ -242,17 +362,22 @@ export default function BrandsComponent(){
       id: brand.id,
     });
   };
+  
   handleCancelBtn = () => {
     this.setState({
       name: "",
       id: null,
     });
   };
+
   changeInput = ({ name, value }) => {
     this.setState({
       [name]: value.toLowerCase(),
     });
   };
+
+
+
   deleteBrand = (id, item) => {
     const { supplier } = this.state,
       { _deleteBrand } = this.props;
@@ -279,6 +404,7 @@ export default function BrandsComponent(){
       }
     });
   };
+
   saveBrand = (e) => {
     e.preventDefault();
     const { id, name, supplier } = this.state,

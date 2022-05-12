@@ -71,8 +71,8 @@ function InputSearchItem({ messages, loading }) {
       return {
         id: 0,
         cant: data.cant,
-        price: parseFloat(data.item.precio),
-        subtotal: parseInt(data.cant) * parseFloat(data.item.precio),
+        price: parseFloat(data.item.price),
+        subtotal: parseInt(data.cant) * parseFloat(data.item.price),
         inStorage:
           parseInt(data.item.cantidades) >= parseInt(data.cant) ? true : false,
         out: parseInt(data.item.cantidades) - parseInt(data.cant),

@@ -14,6 +14,7 @@ import CardExams from "../Exam/cards/List";
 import Confirm from "../../layouts/modal";
 import useContact from "../../hooks/useContact";
 import helper from "./helper";
+import Activitys from "../Activitys";
 
 const initialState = {
   id: 0,
@@ -60,6 +61,7 @@ const initialState = {
     birthday: false,
     phones: false,
   },
+  activity: [],
   loading: false,
 };
 
@@ -79,9 +81,8 @@ export default function AddContact(props) {
   const history = useHistory();
   let btn_enabled =
     Object.values(contact.validates).filter((val) => val).length === 4;
-  
-  
-    // Functions
+
+  // Functions
   const handleChangeData = (key, value) => {
     if (!key) return;
 
@@ -335,6 +336,13 @@ export default function AddContact(props) {
               </div>
             ) : null}
           </div>
+          {Boolean(contact.activity.length) && (
+            <div className="row">
+              <div className="col-12">
+                <Activitys data={contact.activity} />
+              </div>
+            </div>
+          )}
         </div>
       ) : null}
       {showModal && (
@@ -346,15 +354,19 @@ export default function AddContact(props) {
 
 function processData(data, setData) {
   if (data) {
+    const birthday = moment(data.metadata?.birthday);
+    const today = moment();
+    const diff = today.diff(birthday, "days");
+
     setData({
       id: data.id,
       name: data.name?.toLowerCase(),
       rfc: data.rfc?.toUpperCase(),
-      gender: data.metadata?.gender,
+      gender: data.metadata?.gender ? data.metadata?.gender : "male",
       email: data.email?.toLowerCase(),
       type: data.type,
       business: data.business,
-      birthday: data.age ? moment(data.metadata?.birthday) : moment(),
+      birthday: diff > 0 ? birthday : today,
       phone_notices: data.phones?.notices,
       phone_cell: data.phones?.cell,
       phone_office: data.phones?.office,
@@ -395,6 +407,7 @@ function processData(data, setData) {
           ).length
         ),
       },
+      activity: data.activity ?? [],
       loading: false,
     });
   }

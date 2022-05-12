@@ -1,8 +1,6 @@
 export default function Input(props) {
   const { showIcon = true } = props;
-
-  // console.log("[DEBUG] Input:", Boolean(props.options?.length), props.options);
-
+  
   return (
     <div className="input-group mb-3">
       {showIcon && (

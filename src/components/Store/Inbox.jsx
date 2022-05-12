@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Store } from "../../context/StoreContext";
 import useStore from "../../hooks/useStore";
+import {StoreContext} from '../../context/StoreContext';
 
 //Components
 import ListInbox from "../../layouts/list_inbox";
@@ -14,6 +15,9 @@ export default function Inbox(props) {
   const context = Store();
   const _store = useStore();
   const history = useHistory();
+  const storeContext = useContext(StoreContext);
+
+
   //States
   const [state, setState] = useState({
     itemSelected: {},
@@ -34,18 +38,75 @@ export default function Inbox(props) {
       }
     },
     deleteItem = () => {
-      helper.handleDeleteItem(state.itemSelected, context.options, () => {});
-      setState({
+      console.log("Funcion de eliminar item", state.itemSelected);
+      window.Swal.fire({
+        title: "Productos",
+        text: "Desea eliminar el producto seleccionado?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#007bff",
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        showLoaderOnConfirm: true,
+      }).then(({ dismiss }) => {
+        if (!dismiss) {
+          //Hook de eliminar producto
+          _store.deleteItem(state.itemSelected.id).then((data)=>{
+            if(data === true){
+              window.Swal.fire({
+                title: "Productos",
+                text: "Producto eliminado correctamente",
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonColor: "#007bff",
+                confirmButtonText: "Ok",
+                cancelButtonText: "Cancelar",
+                showLoaderOnConfirm: true,
+              }).then(({ dismiss }) => {
+                if (!dismiss) {
+                  setState({
+                    ...state,
+                    itemSelected: {},
+                  });
+
+                  setState({
+                    ...state,
+                    loading: true,
+                  });
+
+                  _store.getItems(context.options).then((res) => {
+                    if (res) {
+                      setState({
+                        ...state,
+                        items: res.data,
+                        meta: res.meta,
+                        loading: false,
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          })
+        }
+      });
+
+
+      //helper.handleDeleteItem(state.itemSelected, context.options, () => {});
+      /* setState({
         ...state,
         itemSelected: {},
-      });
+      }); */
     },
+
     handleItemSelect = ({ checked }, item) => {
       setState({
         ...state,
         itemSelected: checked ? item : {},
       });
     },
+
+
     handleSelectItem = (e, item) => {
       if (e) e.preventDefault();
 

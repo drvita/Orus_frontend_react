@@ -6,32 +6,43 @@ import {api, setUrl} from '../utils/url';
 export default function useProducts(){
 
     //Funciones
-    const getProducts = (searchBy)=> {
-        const url = setUrl('store', null, {search: searchBy})
-
-        api(url)
-        .then((data)=>{
-            if(data.data.length !== 0){
-                setState({
-                    ...state,
-                    productList:data.data,
-                })
-            }else{
-                window.Swal.fire(
-                    "Producto no encontrado",
-                    "Verifica el nombre del producto",
-                    "warning"
-                  );
-                console.error('Error al obtener los productos');
-            }
-        })
+    const getProducts = async (searchBy)=> {
+        const url = setUrl('store', null, {search: searchBy});
+        return await api(url);
     }
 
 
-    const [state, setState] = useState({
-        productList:[],
-        getProducts,
-    })
+    const getProductById = async (id)=>{
+        const url = setUrl('store', id);
+        console.log(url);
+        return await api(url);
+    }
 
-    return state;
+
+    const getProductByCode = async(code) =>{
+        const url = setUrl('store', null, {code: code})
+        console.log(url);
+        return await api(url);
+    }
+
+
+    const saveProduct = async(data)=>{
+        console.log("Data a guardar", data);
+        const {id} = data;
+        const url = setUrl('store');
+
+        if(id){
+            //PUT
+            return await api(url, 'PUT', data);
+        }else{
+            return await api(url, 'POST', data);
+        }
+    }
+
+    return {
+        getProducts, 
+        getProductById,
+        getProductByCode,
+        saveProduct,
+    };
 }

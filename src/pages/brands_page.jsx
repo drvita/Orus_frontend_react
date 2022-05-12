@@ -1,18 +1,17 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useContext } from "react";
 import useStore from "../hooks/useStore";
-import { connect } from "react-redux";
+import { StoreContext } from "../context/StoreContext";
 
 //Components
 import Suppliers from "../components/Store/Suppliers";
 import BrandsList from "../components/Store/data/BrandsList";
 
-//Actions
-///import { storeActions } from "../../redux/store/index";
-
 
 export default function BrandsComponent(){
 
   const storeHook = useStore();
+
+  const storeContext = useContext(StoreContext);
 
   const [state, setState] = useState({
     id: null,
@@ -54,7 +53,6 @@ export default function BrandsComponent(){
   const saveBrand = (e) => {
     e.preventDefault();
     const { id, name, supplier } = state, data = { name, contact_id: supplier};
-    //const { _saveBrand } = this.props;
 
     if (name.length < 3) {
       window.Swal.fire(
@@ -74,35 +72,40 @@ export default function BrandsComponent(){
 
     window.Swal.fire({
       title: "Almacenamiento",
-      text: id
-        ? "¿Esta seguro de ACTUALIZAR la marca?"
-        : "¿Esta seguro de CREAR una nueva marca?",
+      text: "¿Esta seguro de CREAR un nuevo producto?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#007bff",
-      confirmButtonText: id ? "Actualizar" : "Crear",
+      confirmButtonText: "Crear",
       cancelButtonText: "Cancelar",
       showLoaderOnConfirm: true,
     }).then(({ dismiss }) => {
       if (!dismiss) {
-
-
-        storeHook.saveItem(data).then((data)=>{
+        storeHook.saveBrand(data).then((data)=>{
           if(data){
-            console.log("Data devuleta:", data);
-          }else{
-            console.error("Error al eliminar el item");
+            window.Swal.fire({
+              title: "Almacenamiento",
+              text: "Producto almacenado correctamente",
+              icon:'success',
+              showCancelButton: false,
+              confirmButtonColor: "#007bff",
+              confirmButtonText: "Ok",
+              cancelButtonText: "Cancelar",
+              showLoaderOnConfirm: true,
+            })
+          }
+          else{
+            console.error("Error al guardar la data enviada");
           }
         })
-        /* _saveBrand({
-          id,
-          data,
-          options: {
-            supplier,
-            order: "name",
-          },
-        }); */
-        this.setState({
+
+        storeContext.set({
+          ...storeContext,
+          panel: 'inbox',
+        })
+
+        setState({
+          ...state, 
           name: "",
           id: null,
         });
@@ -111,7 +114,6 @@ export default function BrandsComponent(){
   };
 
   const prevEdit = (brand) => {
-    console.log("BRAND A EDITAR:", brand);
     setState({
       ...state, 
       name: brand.nombre,
@@ -120,11 +122,7 @@ export default function BrandsComponent(){
   };
 
   const deleteBrand = (id, item) => {
-    console.log(id, item);
-
     const { supplier } = state;
-    //{ _deleteBrand } = this.props;
-
     window.Swal.fire({
       title: "Eliminar",
       text: "¿Esta seguro de eliminar la marca " + item.toUpperCase() + "?",
@@ -137,22 +135,43 @@ export default function BrandsComponent(){
     }).then(({ dismiss }) => {
       if (!dismiss) {
         console.log("[Orus Suystem] Enviando datos para eliminar marca", id);
-        //TODO:Ejecutar hook par eiminar marca en lugar de redux
-        /* _deleteBrand({
-          id,
-          options: {
-            supplier,
-            order: "name",
-          },
-        }); */
+        storeHook.deleteBrand(id).then((data)=>{
+          if(data === true){
+            window.Swal.fire({
+              title:'Marcas',
+              text:'Marca eliminada correctamente',
+              icon:'success',
+              showCancelButton: false,
+              confirmButtonColor: "#007bff",
+              confirmButtonText: "Ok",
+              cancelButtonText: "Cancelar",
+              showLoaderOnConfirm: true,
+
+            })
+          }
+          else{
+            window.Swal.fire({
+              title:'Marcas',
+              text:'Error al eliminar la marca',
+              icon:'error',
+              showCancelButton: false,
+              confirmButtonColor: "#d33",
+              confirmButtonText: "Ok",
+              cancelButtonText: "Cancelar",
+              showLoaderOnConfirm: true,
+
+            })
+          }
+        })
+        storeContext.set({
+          ...storeContext,
+          panel: 'inbox',
+        })
       }
     });
   };
-
-
   
   const changeInput = ({ name, value }) => {
-    console.log(name, value);
     setState({
       ...state, 
       [name]: value.toLowerCase(),

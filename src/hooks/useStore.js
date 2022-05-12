@@ -2,6 +2,7 @@ import { api, setUrl } from "../utils/url";
 
 export default function useStore() {
   const getItems = async (options) => {
+    console.log("optionsssssssssssssssssssssss", options);
     if (!options) return null;
 
     const url = setUrl("store", null, options);
@@ -40,6 +41,7 @@ export default function useStore() {
   };
 
   const deleteItem = async (id) => {
+    console.log("ID A ELIMINAR", id);
     if (!id) return false;
 
     const url = setUrl("store", id);
@@ -98,8 +100,8 @@ export default function useStore() {
     }
   };
 
-  // Brands functions
 
+  // Brands functions
   const getBrands = async (options) => {
     if (!options) return null;
 
@@ -138,6 +140,28 @@ export default function useStore() {
       });
   };
 
+  const saveBrand = async (data) => {
+    const url = setUrl('brands');
+    return await api(url, 'POST', data)
+  }
+
+  const deleteBrand = async (id)=>{
+    const url = setUrl('brands', id);
+    return await api(url, 'DELETE', null)
+    .then(() => {
+      return true;
+    })
+    .catch((err) => {
+      console.error(
+        "[Orus System] Catch when delete item in hook:",
+        err.message
+      );
+
+      throw err;
+    });
+  }
+
+
   return {
     getItems,
     getItem,
@@ -145,5 +169,7 @@ export default function useStore() {
     saveItem,
     getBrands,
     getBrand,
+    saveBrand,
+    deleteBrand,
   };
 }

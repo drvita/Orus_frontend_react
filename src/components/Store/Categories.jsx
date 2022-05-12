@@ -65,7 +65,6 @@ export default function Categories(props) {
 
 
   const handleReturn = () => {
-    console.log("Handle return ejecutado");
     if (state.cat1 && input2 && !input2.sons?.length) {
       return props.handleChange(state.cat1, input2.code);
     } else if (props.category) {
@@ -106,7 +105,6 @@ export default function Categories(props) {
 
   useEffect(() => {
     if (state.categories.length && props.category) {
-      console.log("Segundo useEffect ejecutado si xd");
       getCategory(props.category);
     }
   }, [state.categories, props.category]);

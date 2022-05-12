@@ -3,7 +3,6 @@ export default function BrandsList({
   handleEdit = null,
   handleDelete = null,
 }) {
-  console.log("Brands obtenidas:", brands);
   return (
     <ul className="card-text list-group">
       {!brands.length ? (

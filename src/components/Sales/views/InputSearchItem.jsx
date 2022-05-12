@@ -21,11 +21,13 @@ function InputSearchItem({ messages, loading }) {
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(1);
+  const [list, setList] = useState([]);
 
   const  sale = Sale();
   const { session } = sale;
+  const hookProducts = useProducts();
 
-  const { getProducts, productList: list } = useProducts();
+  //const { getProducts, productList: list } = useProducts();
 
   //Functions
   const handleChangeTextSearch = ({ value }) => {
@@ -41,7 +43,6 @@ function InputSearchItem({ messages, loading }) {
     searchItem = () => {
       if (textSearch.length > 2) {
         const codes = textSearch.split("*");
-        console.log("CODES----", codes);
         let search = textSearch;
 
         if (codes.length === 2) {
@@ -49,7 +50,15 @@ function InputSearchItem({ messages, loading }) {
           setCantDefault(parseInt(codes[0]));
         }
 
-        getProducts(search);
+        hookProducts.getProducts(search).then((data)=>{
+          if(data){
+            console.log(data)
+            setList(data.data);
+          }else{
+            console.error("Error al buscar el producto")
+          }
+        })
+        //getProducts(search);
         setTextSearch("");
       }
     },
@@ -71,7 +80,7 @@ function InputSearchItem({ messages, loading }) {
         session,
         store_items_id: data.item.id,
         descripcion: data.item.descripcion,
-        producto: data.item.producto.toLowerCase(),
+        producto: data.item.name.toLowerCase(),
         category: data.item.categoria ? data.item.categoria.id : 0,
       };
     },

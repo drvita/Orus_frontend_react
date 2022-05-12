@@ -14,17 +14,14 @@ export default function Brands(props) {
   const _store = useStore();
 
   const getBrands = () => {
-    _store
-      .getBrands({
-        supplier: props.supplier,
-      })
-      .then((brands) => {
+    _store.getBrands({supplier: props.supplier}).then((brands) => {
         if(brands){
           console.log(brands);
-          /* setState({
+          setState({
+            ...state, 
           brands: brands.data,  
           load: false,
-        }); */
+        });
         }else{
           console.error("Error al obetner las marcas");
         }

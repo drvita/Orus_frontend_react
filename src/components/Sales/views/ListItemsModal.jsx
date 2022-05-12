@@ -124,7 +124,7 @@ function ListItemsModal({
                               <tr key={item.id}>
                                 <td className="text-right">
                                   <span className="badge badge-dark">
-                                    {item.codigo}
+                                    {item.code}
                                   </span>
                                 </td>
                                 <td className="text-capitalize text-left">
@@ -132,10 +132,10 @@ function ListItemsModal({
                                     href="#select"
                                     onClick={(e) => handleClickItem(e, item)}
                                   >
-                                    {item.producto}
+                                    {item.name}
                                   </a>
                                 </td>
-                                <td>${item.precio}</td>
+                                <td>${item.price}</td>
                               </tr>
                             ))}
                           </>

@@ -4,9 +4,11 @@ import { Store } from "../../context/StoreContext";
 import CardMenu from "../../layouts/card_menu";
 import BrandsInput from "./Brands";
 import SuppliersInput from "./Suppliers";
+import { useHistory } from "react-router-dom";
 
 export default function ToolBar() {
   const context = Store();
+  const history = useHistory();
 
   //Funciones
   const handleSetSelectOptions = ({ name, value, checked }) => {
@@ -50,11 +52,11 @@ export default function ToolBar() {
           }
           onClick={(e) => {
             e.preventDefault();
-
             context.set({
               ...context,
               panel: "inbox",
             });
+            history.push('/almacen');
           }}
         >
           <i
@@ -80,6 +82,8 @@ export default function ToolBar() {
               ...context,
               panel: "category",
             });
+
+            history.push('/almacen');
           }}
         >
           <i
@@ -105,6 +109,8 @@ export default function ToolBar() {
               ...context,
               panel: "brands",
             });
+            
+            history.push('/almacen');
           }}
         >
           <i

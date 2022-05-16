@@ -1,14 +1,20 @@
-import { useSelector } from "react-redux";
+import { useContext } from "react";
 import BranchesFormInputs from "./BranchesFormInputs";
+import { ConfigContext } from "../../../context/ConfigContext";
 
-export default function BranchesForm({ store_item_id, branch_default }) {
-  const { list } = useSelector((state) => state.config);
-  const { item } = useSelector((state) => state.storeItem);
-  //const branches = [];
-  const branches = useSelector(state => state.config.branches)
-  const inBranches = item && item.inBranches ? item.inBranches : [];
+export default function BranchesForm({ store_item_id, branch_default, item }) {
 
-  if (list && list.length) {
+  const configContext = useContext(ConfigContext);
+
+  const branches = configContext.data.filter((c)=>c.name === 'branches');
+
+
+  //TODO: inBranches es la cantidad y precio del producto se leccionado
+  //Se obttiene de la data del producto y se recibe directamente de las props
+  
+  const inBranches = item && item.data.inBranches ? item.data.inBranches : [];
+
+ /*  if (list && list.length) {
     let branchesList = list;
 
     if (branch_default) {
@@ -21,7 +27,7 @@ export default function BranchesForm({ store_item_id, branch_default }) {
         ...co.values,
       });
     });
-  }
+  } */
 
   return (
     <form>

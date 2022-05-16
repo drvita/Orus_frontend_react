@@ -2,7 +2,6 @@ import useProducts from "../../hooks/useProducts";
 import { useState } from "react";
 
 export default function Code(props) {
-  console.log("props del input de codigo", props);
   const hookStore = useProducts();
   const [inUse, setInUse] = useState(false);
 

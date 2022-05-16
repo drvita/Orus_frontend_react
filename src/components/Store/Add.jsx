@@ -3,6 +3,10 @@ import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import useProducts from "../../hooks/useProducts";
+import BranchesSelect from '../../components/Store/views/BranchesSelect';
+import BranchesForm from '../../components/Store/views/BranchesForm';
+import { AuthContext } from "../../context/AuthContext";
+
 
 // Components
 import CategoryInput from "./Categories";
@@ -45,14 +49,13 @@ export default function Add(props) {
   const { code, loading: LOADING } = state;
   let readyToSave = false;
   const storeHook = useProducts();
-
-  console.log("ADD MAIN STATE", state);
+  const authContext = useContext(AuthContext);
 
   // Functions
   const saveProduct = ()=>{
     _store.saveItem(state).then((data) => {
       if(data){
-        console.log(data);
+        console.log("data devuelta al guardar:", data);
         window.Swal.fire({
           title: "Productos",
           text: "Producto guardado correctamente",
@@ -88,13 +91,18 @@ export default function Add(props) {
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
+      console.log("Data del producto", res);
       setState({
         ...state,
+        name: res.name ? res.name : '',
         category_id: res.category?.id,
-        // supplier_id: res.supplier?.id,
+        supplier_id: res.supplier?.id,
+        brand_id: res.brand?.id,
+        branch_default: authContext.auth.branch.id ? authContext.auth.branch.id : '12', 
         data: {
           ...state.data,
-          // category: res.categoria,
+          category: res.category,
+          //inBranches: res.inBranches,
         },
         loading: false,
       });
@@ -131,8 +139,8 @@ export default function Add(props) {
                       setState({
                         ...state,
                         category_id: id,
-                        supplier_id: 0,
-                        brand_id: 0,
+                        //supplier_id: 0,
+                        //brand_id: 0,
                         data: {
                           ...state.data,
                           category_code: code,
@@ -149,7 +157,6 @@ export default function Add(props) {
                 <Suppliers
                   supplier={state.supplier_id}
                   handleChangeSupplier={(id) => {
-                    console.log("id suplier seleccionado", id);
                     setState({
                       ...state,
                       supplier_id: id,
@@ -164,7 +171,8 @@ export default function Add(props) {
                 brand={state.brand_id}
                 supplier={state.supplier_id}
                 textSelect="Selecione la marca"
-                handleChange={(id) => {
+                handleChangeBrand={(id) => {
+                  console.log("id seleccionado en el primero", id);
                   setState({
                     ...state,
                     brand_id: id,
@@ -306,7 +314,7 @@ export default function Add(props) {
                       <input
                         type="text"
                         className="form-control text-uppercase"
-                        placeholder="Nombre del producto"
+                        placeholder="Nombre"
                         name="name"
                         defaultValue={state.name}
                         onChange={({target}) => {
@@ -385,22 +393,29 @@ export default function Add(props) {
                   </h5>
                 </div>
                 <div className="card-body">
-                  {/* <BranchesSelect
-                    branch_default={branch_default}
+                  <BranchesSelect
+                    branch_default={state.branch_default}
                     showIcon={false}
-                    setBranchId={(id) => setState({ branch_default: id })}
-                  /> */}
+                    setBranchId={(target) => {
+                      const { value } = target;
+                      setState({ 
+                        ...state, 
+                        branch_default: value,
+                      })
+                    }}
+                  />
                 </div>
               </div>
             </div>
           </div>
           <div className="row">
             <div className="col">
-              {/* <BranchesForm
-                inBranches={inBranches}
+              <BranchesForm
+                inBranchs={state.data.inBranches}
                 store_item_id={id}
-                branch_default={branch_default}
-              /> */}
+                branch_default={state.branch_default}
+                item = {state}
+              />
             </div>
           </div>
         </div>

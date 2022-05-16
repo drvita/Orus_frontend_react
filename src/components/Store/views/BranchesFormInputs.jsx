@@ -1,13 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { storeActions } from "../../../redux/store/";
+import useStore from "../../../hooks/useStore";
 
-export default function BranchesFormInputs({
-  inBranch = {},
-  branch,
-  store_item_id,
-}) {
+export default function BranchesFormInputs({ inBranch = {}, branch, store_item_id }) {
+
   const [data, setData] = useState({
     id: inBranch.id ?? 0,
     cant: inBranch.cant ?? 0,
@@ -16,7 +13,11 @@ export default function BranchesFormInputs({
     branch_id: branch.id,
     readyToSave: false,
   });
+
   const dispatch = useDispatch();
+  const hookStore = useStore();
+
+
   // functions
   const handleChangeInput = ({ name, value }) => {
     let readyToSave = false;
@@ -36,13 +37,26 @@ export default function BranchesFormInputs({
       [name]: value,
     });
   };
+
+
   const handleSaveInBranch = () => {
-    dispatch(
+
+    //TODO: Quitar dispatch y ejecutar un hook
+    hookStore.saveQantityandPrice(data).then((data)=>{
+      if(data){
+        console.log("Data devuelta", data);
+      }else{
+        console.error("Error al guardar la informacion");
+      }
+    })
+
+   /*  dispatch(
       storeActions.saveInBranch({
         id: data.id,
         data,
       })
-    );
+    ); */
+
     setData({
       ...data,
       readyToSave: false,
@@ -72,7 +86,7 @@ export default function BranchesFormInputs({
               placeholder="Cantidades en existencia"
               name="cant"
               onChange={({ target }) => handleChangeInput(target)}
-              value={data.cant}
+              value={data.cant ? data.cant : data.cant.toString()}
               min={0}
             />
           </div>
@@ -93,7 +107,7 @@ export default function BranchesFormInputs({
               placeholder="Precio"
               name="price"
               onChange={({ target }) => handleChangeInput(target)}
-              value={data.price}
+              value={data.price ? data.price : data.price.toString()}
               min={0}
             />
           </div>

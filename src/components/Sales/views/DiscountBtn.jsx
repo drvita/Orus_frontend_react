@@ -25,7 +25,7 @@ export default function DiscountBtnComponent() {
 
         if (discount.match(isNumeric)) {
           const value = parseInt(discount);
-          const subtotal = helper.getSubTotal(sale.items)
+          //const subtotal = helper.getSubTotal(sale.items)
           sale.set({
             ...sale,
             discount: value,
@@ -38,7 +38,7 @@ export default function DiscountBtnComponent() {
 
           const percent = parseInt(discount.replace("%", "")) / 100,
           value = parseInt(sum * percent);
-          const subtotal = helper.getSubTotal(sale.items)
+          //const subtotal = helper.getSubTotal(sale.items)
           sale.set({
             ...sale,
             discount: value,

@@ -22,6 +22,7 @@ export default function Input(props) {
         value={props.value ?? ""}
         disabled={props.load ?? false}
         onChange={({ target }) => {
+          console.log(target);
           if (props.handleChange) {
             props.handleChange(parseInt(target.value));
           }

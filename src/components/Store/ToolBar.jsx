@@ -1,5 +1,5 @@
-// import { useEffect } from "react";
 import { Store } from "../../context/StoreContext";
+
 //Components
 import CardMenu from "../../layouts/card_menu";
 import BrandsInput from "./Brands";
@@ -109,7 +109,7 @@ export default function ToolBar() {
               ...context,
               panel: "brands",
             });
-            
+
             history.push('/almacen');
           }}
         >
@@ -155,9 +155,12 @@ export default function ToolBar() {
                 supplier={context.options?.supplier}
                 brand={context.options?.brand}
                 showIcon={false}
-                handleChangeBrand={(id) =>
-                  handleSetSelectOptions({ name: "brand", value: id })
-                }
+                handleChangeBrand={(id) =>{
+                  handleSetSelectOptions({
+                      name: "brand", 
+                      value: id 
+                    })
+                }}
               />
             </li>
           )}

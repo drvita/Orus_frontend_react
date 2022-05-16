@@ -8,8 +8,6 @@ import {StoreContext} from '../../context/StoreContext';
 //Components
 import ListInbox from "../../layouts/list_inbox";
 import { api, getUrl } from "../../redux/sagas/api";
-//Actions
-import helper from "./helpers";
 
 export default function Inbox(props) {
   const context = Store();

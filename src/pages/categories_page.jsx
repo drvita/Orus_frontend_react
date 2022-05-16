@@ -1,9 +1,6 @@
-import React, { Component, useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect } from "react";
 import Catalogo from "../components/Store/data/Category_list";
 import useCategory from "../hooks/useCategory";
-//Actions
-import { categoryActions } from "../redux/category/index";
 
 export default function CategoriesStoreComponent(){
 

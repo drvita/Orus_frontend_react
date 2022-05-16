@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 
 import Input from "../Input";
 import useStore from "../../hooks/useStore";
 
 export default function Brands(props) {
-
+  
   const [state, setState] = useState({
     brands: [],
     load: true,
@@ -16,7 +15,6 @@ export default function Brands(props) {
   const getBrands = () => {
     _store.getBrands({supplier: props.supplier}).then((brands) => {
         if(brands){
-          console.log(brands);
           setState({
             ...state, 
           brands: brands.data,  
@@ -32,6 +30,8 @@ export default function Brands(props) {
   useEffect(() => {
     getBrands();
   }, [props.supplier]);
+
+
   return (
     <div className="row">
       <div className="col">
@@ -47,8 +47,9 @@ export default function Brands(props) {
           load={state.load}
           loadText="Cargando marcas"
           handleChange={(id) => {
-            if (props.handleChange) {
-              props.handleChange(id);
+            console.log("ID seleccionado", id);
+            if (props.handleChangeBrand) {
+              props.handleChangeBrand(id);
             }
           }}
         />

@@ -3,6 +3,8 @@ import { api, getUrl } from "../../sagas/api";
 import { storeActions } from "../index";
 
 export default function* handleSaveItemInBranch({ payload }) {
+
+  console.log("Payload del saga", payload);
   try {
     const { data: DATA = {}, id: ID = null } = payload,
       url = getUrl("branches", ID),

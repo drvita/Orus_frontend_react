@@ -2,7 +2,6 @@ import { api, setUrl } from "../utils/url";
 
 export default function useStore() {
   const getItems = async (options) => {
-    console.log("optionsssssssssssssssssssssss", options);
     if (!options) return null;
 
     const url = setUrl("store", null, options);
@@ -101,6 +100,17 @@ export default function useStore() {
   };
 
 
+
+  const saveQantityandPrice = async (data)=>{
+    const { ID } = data;
+    const url = setUrl("branches", ID);
+    const method = ID ? "PUT" : "POST";
+    
+    return await api(url, method, data);
+
+  }
+
+
   // Brands functions
   const getBrands = async (options) => {
     if (!options) return null;
@@ -167,6 +177,7 @@ export default function useStore() {
     getItem,
     deleteItem,
     saveItem,
+    saveQantityandPrice,
     getBrands,
     getBrand,
     saveBrand,

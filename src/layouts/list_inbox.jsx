@@ -3,9 +3,7 @@ import Pagination from "../layouts/pagination";
 import { AuthContext } from "../context/AuthContext";
 
 const ListInbox = (props) => {
-
-  //console.log("PROPS RECIBIDAS", props);
-
+  
   //Const
   const { defaultSearch = "" } = props;
   //States

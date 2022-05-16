@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, useContext } from "react";
+import React, {useState, useEffect, useContext } from "react";
 import useStore from "../hooks/useStore";
 import { StoreContext } from "../context/StoreContext";
 

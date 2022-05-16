@@ -40,7 +40,6 @@ export default function Categories(props) {
   };
 
   const getCategory = (id) => {
-    console.log("Function Categoria individual");
     _categories.getCategory(id).then((cat) => {
       if (state.cat1 === parseInt(cat.code[0])) {
         if (state.cat2 === parseInt(cat.code[1])) {

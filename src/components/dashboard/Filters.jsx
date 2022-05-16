@@ -21,6 +21,7 @@ export default function Filters({ filters, changeState }) {
   const branches = config.data.filter((c) => c.name === "branches");
 
 
+  
   // Functions
   const sendDataFilter = () => {
       const { user, branch_id, date_end, date_start } = state;

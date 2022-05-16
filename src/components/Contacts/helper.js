@@ -1,7 +1,7 @@
 const patternEmail =
   /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})$/i;
 
-const handleVerificationData = (data, showMsg = true) => {
+/* const handleVerificationData = (data, showMsg = true) => {
   const { name, email, birthday, telnumbers, type } = data,
     patternName =
       /^[A-ZÁÉÍÓÚñáéíóúÑ]+\s[A-ZÁÉÍÓÚñáéíóúÑ]{2,}(\s?[A-ZÁÉÍÓÚñáéíóúÑ]+){1,}/gim,
@@ -81,8 +81,11 @@ const handleVerificationData = (data, showMsg = true) => {
   return {
     result: true,
   };
-};
-const saveContact = (title = "contacto", data, _save, id = null) => {
+}; */
+
+
+
+/* const saveContact = (title = "contacto", data, _save, id = null) => {
   window.Swal.fire({
     title: "Almacenamiento",
     text: id
@@ -102,7 +105,10 @@ const saveContact = (title = "contacto", data, _save, id = null) => {
     }
   });
 };
-const changeDataInput = (input, data, _setData) => {
+ */
+
+
+/* const changeDataInput = (input, data, _setData) => {
   const { name, value } = input;
   let val = value;
 
@@ -117,8 +123,11 @@ const changeDataInput = (input, data, _setData) => {
     ...data,
     [name]: val,
   });
-};
-const dataPrimary = {
+}; */
+
+
+
+/* const dataPrimary = {
   name: "",
   telnumbers: { t_casa: "", t_oficina: "", t_movil: "" },
   email: "",
@@ -127,7 +136,10 @@ const dataPrimary = {
   business: 0,
   gender: "female",
 };
-const handleGetDataObject = (key, value, verification) => {
+ */
+
+
+/* const handleGetDataObject = (key, value, verification) => {
   switch (key) {
     case "name":
       return {
@@ -166,7 +178,7 @@ const handleGetDataObject = (key, value, verification) => {
         [key]: value,
       };
   }
-};
+}; */
 
 const toExportActions = {
   isEmail: function (email) {

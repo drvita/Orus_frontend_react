@@ -1,26 +1,23 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useContext } from "react";
 import useStore from "../../../hooks/useStore";
+import {StoreContext} from '../../../context/StoreContext';
 
-export default function BranchesFormInputs({ inBranch = {}, branch, store_item_id }) {
+export default function BranchesFormInputs({ inBranch }) {
 
   const [data, setData] = useState({
     id: inBranch.id ?? 0,
     cant: inBranch.cant ?? 0,
     price: inBranch.price ?? 1,
-    store_item_id,
-    branch_id: branch.id,
+    store_item_id: inBranch.store_item_id ?? 0,
+    branch_id: inBranch.branch_id ?? 0,
     readyToSave: false,
   });
-
-  const dispatch = useDispatch();
+  
   const hookStore = useStore();
+  const storeContext = useContext(StoreContext);
 
-
-  // functions
   const handleChangeInput = ({ name, value }) => {
     let readyToSave = false;
-
     if (name === "cant") {
       value = parseInt(value);
     } else {
@@ -35,37 +32,23 @@ export default function BranchesFormInputs({ inBranch = {}, branch, store_item_i
       readyToSave,
       [name]: value,
     });
+    //TODO: regresar a la vista inbox
+    //---------------------------------
   };
 
-
   const handleSaveInBranch = () => {
-
-    //TODO: Quitar dispatch y ejecutar un hook
     hookStore.saveQantityandPrice(data).then((data)=>{
       if(data){
         console.log("Data devuelta", data);
       }else{
         console.error("Error al guardar la informacion");
       }
-    })
-
-   /*  dispatch(
-      storeActions.saveInBranch({
-        id: data.id,
-        data,
-      })
-    ); */
-
+    });
     setData({
       ...data,
       readyToSave: false,
     });
   };
-
-  useEffect(() => {
-    // console.log("[DEBUG]", inBranch);
-  }, []);
-
   return (
     <>
       <div className="row">
@@ -85,7 +68,7 @@ export default function BranchesFormInputs({ inBranch = {}, branch, store_item_i
               placeholder="Cantidades en existencia"
               name="cant"
               onChange={({ target }) => handleChangeInput(target)}
-              value={data.cant ? data.cant : data.cant.toString()}
+              value={data.cant}
               min={0}
             />
           </div>
@@ -106,7 +89,7 @@ export default function BranchesFormInputs({ inBranch = {}, branch, store_item_i
               placeholder="Precio"
               name="price"
               onChange={({ target }) => handleChangeInput(target)}
-              value={data.price ? data.price : data.price.toString()}
+              value={data.price}
               min={0}
             />
           </div>

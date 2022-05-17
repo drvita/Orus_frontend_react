@@ -1,6 +1,6 @@
 import moment from "moment";
-
 export default function Activitys(props) {
+  console.log(props.data);
   return (
     <div className="card">
       <div className="card-body">

@@ -2,7 +2,6 @@ import React, {useState, useEffect, useContext } from "react";
 import useStore from "../hooks/useStore";
 import { StoreContext } from "../context/StoreContext";
 
-
 //Components
 import Suppliers from "../components/Store/Suppliers";
 import BrandsList from "../components/Store/data/BrandsList";
@@ -132,7 +131,7 @@ export default function BrandsComponent(){
       confirmButtonColor: "#d33",
       confirmButtonText: "Eliminar",
       cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
+      showLoaderOnConfirm: true
     }).then(({ dismiss }) => {
       if (!dismiss) {
         console.log("[Orus Suystem] Enviando datos para eliminar marca", id);

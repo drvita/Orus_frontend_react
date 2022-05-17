@@ -8,8 +8,6 @@ import Add from "../components/Store/Add";
 import Categories from './categories_page';
 import Brands from './brands_page';
 
-
-
 const optionsDefault = {
   page: 1,
   orderby: "created_at",

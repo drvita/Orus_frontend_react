@@ -93,21 +93,22 @@ export default function useStore() {
             "[Orus System] Catch when save item in hook:",
             err.message
           );
-
           throw err;
         });
     }
   };
 
 
-
   const saveQantityandPrice = async (data)=>{
+    console.log("Data a enviar:", data);
+
+    delete data.readyToSave;
+
     const { ID } = data;
+    
     const url = setUrl("branches", ID);
     const method = ID ? "PUT" : "POST";
-    
     return await api(url, method, data);
-
   }
 
 

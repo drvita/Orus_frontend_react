@@ -1,9 +1,12 @@
-import useProducts from "../../hooks/useProducts";
 import { useState } from "react";
+//Hooks
+import useProducts from "../../hooks/useProducts";
+
 
 export default function Code(props) {
+  console.log("PROP--", props);
   const hookStore = useProducts();
-  const [inUse, setInUse] = useState(false);
+  const [inUse, setInUse] = useState(props.code.length === 0 ? true : false);
 
   return (
     <div className="input-group mb-3">
@@ -31,12 +34,19 @@ export default function Code(props) {
         
         onBlur={() => {
           if(props.code.length === 0){
-            return null;
+            setInUse(true);
           }else{
-            hookStore.getProductByCode(props.code).then((data)=>{
-              if(data.data.length){            
-                setInUse(true);
+            hookStore.getProductByCode(props.code, props.id).then((data)=>{
+              if(data.data.length){         
+                if(data.data[0].code === props.code){
+                  console.log("Còdigo de props", props.code);
+                  console.log("Còdigo a validar", data.data[0].code);  
+                  setInUse(false);
+                }else{
+                  setInUse(true);
+                }              
               }else if(data.data.length === 0){
+                console.log("Entrando hasta abajo");
                 setInUse(false);
               }
             })
@@ -47,7 +57,7 @@ export default function Code(props) {
       />
       {inUse === true ? (
         <span className="text-muted text-xs d-block w-100">
-          El codigo ya esta en uso
+          Campo vacio o còdigo en uso
         </span>
       ) : null}
     </div>

@@ -18,8 +18,8 @@ export default function useProducts(){
     }
 
 
-    const getProductByCode = async(code) =>{
-        const url = setUrl('store', null, {code: code})
+    const getProductByCode = async(code, id) =>{
+        const url = setUrl('store', null, {code, id})
         console.log(url);
         return await api(url);
     }

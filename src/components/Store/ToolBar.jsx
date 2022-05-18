@@ -1,5 +1,4 @@
 import { Store } from "../../context/StoreContext";
-
 //Components
 import CardMenu from "../../layouts/card_menu";
 import BrandsInput from "./Brands";
@@ -123,23 +122,30 @@ export default function ToolBar() {
           Marcas
         </a>
       </li>
-      {/* <li className="nav-item">
+      <li className="nav-item">
         <a
           href="#item"
-          className={panel === "inventory" ? "nav-link text-dark" : "nav-link"}
+          className={context.panel === "inventory" ? "nav-link disabled" : "nav-link"}
           onClick={(e) => {
             e.preventDefault();
-            _handleChangePage("inventory");
+
+            context.set({
+              ...context,
+              panel: "inventory",
+            })
+
+            history.push('/almacen');
           }}
         >
           <i
             className={
-              panel === "inventory" ? "fas fa-plus mr-1" : "fas fa-minus mr-1"
+              context.panel === "inventory" ? "fas fa-check text-success mr-1" : "fas fa-plus mr-1"
             }
           ></i>
           Inventario
         </a>
-      </li> */}
+      </li>
+
       {context.panel === "inbox" && (
         <>
           <li className="nav-item p-1">

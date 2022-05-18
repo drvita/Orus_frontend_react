@@ -1,10 +1,13 @@
 import { useEffect, useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+
+
+//Context
 import { StoreContext } from "../../context/StoreContext";
-import useProducts from "../../hooks/useProducts";
-import BranchesSelect from '../../components/Store/views/BranchesSelect';
-import BranchesForm from '../../components/Store/views/BranchesForm';
 import { AuthContext } from "../../context/AuthContext";
+
+//Hooks
+import useStore from "../../hooks/useStore";
 
 // Components
 import CategoryInput from "./Categories";
@@ -12,9 +15,8 @@ import Suppliers from "./Suppliers";
 import Brands from "./Brands";
 import Code from "./Code";
 import Activitys from "../Activitys";
-
-//Actions
-import useStore from "../../hooks/useStore";
+import BranchesSelect from '../../components/Store/views/BranchesSelect';
+import BranchesForm from '../../components/Store/views/BranchesForm';
 
 const initialState = {
   id: 0,
@@ -30,7 +32,7 @@ const initialState = {
   category_id: 0,
   branch_default: 12,
   data: {
-    category: { code: "|||" },
+    category: { code: [] },
     categories: [],
     branches: [],
     codes: [],
@@ -46,14 +48,25 @@ export default function Add(props) {
   const [state, setState] = useState(initialState);
   const _store = useStore();
   const { code, loading: LOADING } = state;
-  let readyToSave = false;
-  const storeHook = useProducts();
   const authContext = useContext(AuthContext);
+  const history = useHistory();
+
+  const idsCategory = state.data.category.code 
+                      ? state.data.category.code.filter((i) => i !== "") 
+                      : [];
+
+  let readyToSave = false;
+  if (idsCategory.includes("1")) {
+    readyToSave = state.category_id && state.code && state.name;
+  } else {
+    readyToSave = state.category_id && state.code && state.name && state.supplier_id && state.brand_id;
+  }
+
+
   // Functions
   const saveProduct = ()=>{
     _store.saveItem(state).then((data) => {
       if(data){
-        console.log("data devuelta al guardar:", data);
         window.Swal.fire({
           title: "Productos",
           text: "Producto guardado correctamente",
@@ -70,6 +83,7 @@ export default function Add(props) {
               ...storeContext,
               panel: 'inbox',
             })
+            history.push('/almacen');
           }
         });
       }else{
@@ -87,6 +101,8 @@ export default function Add(props) {
     })
   }
 
+
+
   const getItem = () => {
     _store.getItem(id).then((res) => {
       console.log("Data del producto", res);
@@ -98,9 +114,10 @@ export default function Add(props) {
         supplier_id: res.supplier?.id,
         brand_id: res.brand?.id,
         branch_default: authContext.auth.branch.id ? authContext.auth.branch.id : '12', 
+        code: res.code ? res.code : '',
         data: {
           ...state.data,
-          category: res.category,
+          category: res.category ? res.category : [],
           inBranches: res.inBranches ? res.inBranches : '',
           branches: res.branches ? res.branches : [],
           activity: res.activity ? res.activity : [],
@@ -139,9 +156,7 @@ export default function Add(props) {
                     handleChange={(id, code) => {
                       setState({
                         ...state,
-                        category_id: id,
-                        //supplier_id: 0,
-                        //brand_id: 0,
+                        category_id: id,                    
                         data: {
                           ...state.data,
                           category_code: code,
@@ -173,7 +188,6 @@ export default function Add(props) {
                 supplier={state.supplier_id}
                 textSelect="Selecione la marca"
                 handleChangeBrand={(id) => {
-                  console.log("id seleccionado en el primero", id);
                   setState({
                     ...state,
                     brand_id: id,
@@ -253,8 +267,9 @@ export default function Add(props) {
                       <br />
                     )}
 
-                    <Code 
-                      code = {state.code}   
+                    <Code
+                      code = {state.code} 
+                      id = {state.id}  
                       onChangeProductCode = {(codeReceibed)=>{
                         setState({
                           ...state,
@@ -362,12 +377,10 @@ export default function Add(props) {
                     onClick={() => {
                       saveProduct();
                     }}
-                    /* className={
+                    className={
                       !readyToSave ? "btn btn-secondary" : "btn btn-primary"
-                    } */
-                    //disabled={!readyToSave}
-                    className = {"btn btn-primary"}
-                    disabled = {false}
+                    }
+                    disabled={!readyToSave}
                   >
                     <i className="fas fa-save mr-1"></i>
                     Guardar
@@ -411,12 +424,10 @@ export default function Add(props) {
           </div>
           <div className="row">
             <div className="col">
-              {Boolean(state.data.branches.length) && (
-                <BranchesForm
+            <BranchesForm
                 store_item_id={id}
                 branches = {state.data.branches}
               />
-              )}
             </div>
           </div>
         </div>

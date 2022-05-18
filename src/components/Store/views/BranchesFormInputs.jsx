@@ -1,6 +1,10 @@
 import { useState, useContext } from "react";
-import useStore from "../../../hooks/useStore";
+
+//Context
 import {StoreContext} from '../../../context/StoreContext';
+
+//Hooks
+import useStore from "../../../hooks/useStore";
 
 export default function BranchesFormInputs({ inBranch }) {
 

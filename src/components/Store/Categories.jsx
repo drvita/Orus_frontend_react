@@ -1,8 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 
-import Input from "../Input";
+//Hooks
 import useCategory from "../../hooks/useCategory";
+
+//Components
+import Input from "../Input";
 
 export default function Categories(props) {
 
@@ -25,7 +27,6 @@ export default function Categories(props) {
 
   // Functions
   const getCategories = () => {
-    console.log("Function lista de categorias");
     _categories
       .getCategories({
         categoryid: "raiz",
@@ -116,7 +117,7 @@ export default function Categories(props) {
         value={state.cat1}
         load={state.load}
         handleChange={(val) =>
-          setState({ ...state, cat1: val, cat2: 0, cat3: 0, cat4: 0 })
+          setState({ ...state, cat1: val, cat2: 0, cat3: 0, cat4: 0, })
         }
       />
 

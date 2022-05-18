@@ -1,6 +1,5 @@
 import moment from "moment";
 export default function Activitys(props) {
-  console.log(props.data);
   return (
     <div className="card">
       <div className="card-body">
@@ -8,7 +7,7 @@ export default function Activitys(props) {
           <i className="fas fa-bars mr-1"></i>
           Actividad
         </h5>
-
+        
         {props.data.map((ac, i) => {
           const { data, type } = ac;
 

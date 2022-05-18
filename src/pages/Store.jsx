@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+
+//Context
 import { StoreContext } from "../context/StoreContext";
 
 //Compinentes
@@ -7,6 +9,7 @@ import Inbox from "../components/Store/Inbox";
 import Add from "../components/Store/Add";
 import Categories from './categories_page';
 import Brands from './brands_page';
+import Inventory from "../components/Store/inventory";
 
 const optionsDefault = {
   page: 1,
@@ -56,6 +59,7 @@ export default function Store(props) {
           {state.panel === "neworedit" && <Add {...props} />}
           {state.panel === "category" && <Categories></Categories>}
           {state.panel === "brands" && <Brands></Brands>}
+          {state.panel === "inventory" && <Inventory></Inventory>}
         </div>
       </div>
     </StoreContext.Provider>

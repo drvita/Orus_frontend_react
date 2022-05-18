@@ -1,11 +1,19 @@
 import { useContext } from "react";
-import BranchesFormInputs from "./BranchesFormInputs";
+
+//Context
 import { ConfigContext } from "../../../context/ConfigContext";
+
+//Components
+import BranchesFormInputs from "./BranchesFormInputs";
 
 export default function BranchesForm({ branches }) {
 
+  console.log("Branches", branches);
+
   const configContext = useContext(ConfigContext);
   const configBranches = configContext.data.filter((c)=>c.name === 'branches');
+
+  console.log("Config branches ------", configBranches);
   
   return (
     <form>

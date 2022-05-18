@@ -64,7 +64,10 @@ export default function useStore() {
 
     if (!data) return;
     const { id } = data;
-    delete data.id;
+
+    //delete data.id;
+    delete data.data;
+    delete data.loading;
 
     if (id) {
       const url = setUrl("store", id);
@@ -100,9 +103,10 @@ export default function useStore() {
 
 
   const saveQantityandPrice = async (data)=>{
-    console.log("Data a enviar:", data);
-
     delete data.readyToSave;
+    //delete data.data;
+
+    console.log("Data a enviar:", data);
 
     const { ID } = data;
     
@@ -110,7 +114,6 @@ export default function useStore() {
     const method = ID ? "PUT" : "POST";
     return await api(url, method, data);
   }
-
 
   // Brands functions
   const getBrands = async (options) => {

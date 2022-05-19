@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+
 
 //Context
 import { StoreContext } from "../context/StoreContext";
@@ -9,7 +11,7 @@ import Inbox from "../components/Store/Inbox";
 import Add from "../components/Store/Add";
 import Categories from './categories_page';
 import Brands from './brands_page';
-import Inventory from "../components/Store/inventory";
+import Inventory from "./StoreInventory";
 
 const optionsDefault = {
   page: 1,
@@ -28,14 +30,18 @@ export default function Store(props) {
     options: optionsDefault,
   });
 
-  
+  const history = useHistory();
   const { id } = props.match.params;
 
   useEffect(() => {
-    setState({
-      ...state,
-      panel: id ? "neworedit" : "inbox",
-    });
+    if(parseInt(id) === 'number' || id === undefined){
+      setState({
+        ...state,
+        panel: id ? "neworedit" : "inbox",
+      });
+    }else{
+      history.push("/almacen");
+    }
   }, [id]);
 
   return (
@@ -54,7 +60,6 @@ export default function Store(props) {
           <ToolBar />
         </div>
         <div className="col-sm-12 col-md-10">
-          {state.panel === "inventory" && <div>Inventario</div>}
           {state.panel === "inbox" && <Inbox />}
           {state.panel === "neworedit" && <Add {...props} />}
           {state.panel === "category" && <Categories></Categories>}

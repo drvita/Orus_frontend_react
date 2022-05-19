@@ -20,6 +20,8 @@ export default function useCategory() {
         return null;
       });
   };
+
+
   const getCategory = async (id) => {
     if (!id) return false;
 
@@ -38,6 +40,8 @@ export default function useCategory() {
         return {};
       });
   };
+
+  
   const deleteCategory = async (id) => {
     console.log("ID de la categoria a eliminar", id);
     if (!id) return false;

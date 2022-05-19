@@ -15,7 +15,6 @@ export default function Inbox(props) {
   const history = useHistory();
   const storeContext = useContext(StoreContext);
 
-
   //States
   const [state, setState] = useState({
     itemSelected: {},

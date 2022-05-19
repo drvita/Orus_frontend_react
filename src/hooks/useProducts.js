@@ -3,7 +3,7 @@ import {api, setUrl} from '../utils/url';
 
 
 export default function useProducts(){
-
+    
     //Funciones
     const getProducts = async (searchBy)=> {
         const url = setUrl('store', null, {search: searchBy});

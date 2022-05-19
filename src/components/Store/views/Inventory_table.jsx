@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 export default function InventoryTableView({ header, body, items }) {
+
   return (
     <div className="table-responsive">
       <table className="table table-sm table-bordered table-hover">
@@ -13,7 +14,6 @@ export default function InventoryTableView({ header, body, items }) {
         <tbody>
           {body.map((row, i) => {
             const zero = row.props.children.type === "label" ? true : false;
-
             return (
               <tr className={zero ? "table-secondary" : ""} key={i}>
                 {row}
@@ -34,7 +34,7 @@ export default function InventoryTableView({ header, body, items }) {
                     <td key={grad + i} className="text-center">
                       {items.length ? (
                         items.map((item, index) => {
-                          return grad === item.graduacion ? (
+                          return grad === item.grad ? (
                             <>
                               {item.cant_total ? (
                                 <span
@@ -46,7 +46,7 @@ export default function InventoryTableView({ header, body, items }) {
                                   }
                                 >
                                   <Link
-                                    to={"/almacen/registro/" + item.id}
+                                    to={"/almacen/" + item.id}
                                     className="text-light"
                                   >
                                     {item.cant_total}

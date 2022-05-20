@@ -10,6 +10,8 @@ export default function CustomerBtnComponent() {
 
   // Modal
   const [modal, setModal] = useState(false);
+
+  
   const handleModal = () => {
     setModal(!modal);
   };

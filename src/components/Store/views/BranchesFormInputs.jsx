@@ -1,24 +1,25 @@
-import { useState, useContext } from "react";
-
+import { useState, useContext, useEffect } from "react";
 //Context
 import {StoreContext} from '../../../context/StoreContext';
 
 //Hooks
 import useStore from "../../../hooks/useStore";
 
-export default function BranchesFormInputs({ inBranch }) {
+export default function BranchesFormInputs({ inBranch, branchID, storeItemID }) {
 
-  const [data, setData] = useState({
-    id: inBranch.id ?? 0,
-    cant: inBranch.cant ?? 0,
-    price: inBranch.price ?? 1,
-    store_item_id: inBranch.store_item_id ?? 0,
-    branch_id: inBranch.branch_id ?? 0,
-    readyToSave: false,
-  });
-  
+  //console.log(storeItemID);
+
   const hookStore = useStore();
   const storeContext = useContext(StoreContext);
+
+  const [data, setData] = useState({
+    id: 0,
+    cant:0,
+    price: 1,
+    store_item_id: 0,
+    branch_id:0,
+    readyToSave: false,
+  });
 
   const handleChangeInput = ({ name, value }) => {
     let readyToSave = false;
@@ -36,14 +37,14 @@ export default function BranchesFormInputs({ inBranch }) {
       readyToSave,
       [name]: value,
     });
-    //TODO: regresar a la vista inbox
-    //---------------------------------
   };
 
   const handleSaveInBranch = () => {
     hookStore.saveQantityandPrice(data).then((data)=>{
       if(data){
         console.log("Data devuelta", data);
+        
+
       }else{
         console.error("Error al guardar la informacion");
       }
@@ -53,6 +54,18 @@ export default function BranchesFormInputs({ inBranch }) {
       readyToSave: false,
     });
   };
+
+  useEffect(()=>{
+    setData({
+      id: inBranch.id ? inBranch.id : 0,
+      cant: inBranch.cant ? inBranch.cant : 0,
+      price: inBranch.price ? inBranch.price : 0,
+      readyToSave: false,
+      store_item_id: storeItemID,
+      branch_id: branchID,
+    });
+  }, [inBranch])
+
   return (
     <>
       <div className="row">

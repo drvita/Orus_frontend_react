@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-
 //Context
 import { StoreContext } from "../context/StoreContext";
 
@@ -24,6 +23,7 @@ const optionsDefault = {
   zero: "false",
 };
 
+
 export default function Store(props) {
   const [state, setState] = useState({
     panel: "inbox",
@@ -34,14 +34,18 @@ export default function Store(props) {
   const { id } = props.match.params;
 
   useEffect(() => {
-    if(parseInt(id) === 'number' || id === undefined){
+    setState({
+      ...state,
+      panel: id ? "neworedit" : "inbox",
+    });
+    /* if(parseInt(id) === 'number' || id === undefined){
       setState({
         ...state,
         panel: id ? "neworedit" : "inbox",
       });
     }else{
       history.push("/almacen");
-    }
+    } */
   }, [id]);
 
   return (

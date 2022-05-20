@@ -1,10 +1,12 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import InventoryTableView from "../components/Store/views/Inventory_table";
 import useCategory from "../hooks/useCategory";
 import useStore from "../hooks/useStore";
+import SetPriceModal from "../components/Store/views/SetPriceModal";
+
 
 export default function Inventory(){
-
+  
   const [state, setState] = useState({
     catData_1: [],
     catData_2: [],
@@ -17,6 +19,8 @@ export default function Inventory(){
     meta: {},
     price: 0,
   });
+
+  const [modal, setModal] = useState(false);
 
   const hookCategory = useCategory();
   const hookStore = useStore();
@@ -43,58 +47,12 @@ export default function Inventory(){
   } while (i < parseFloat(state.meta.rangoSup) + 0.25);
 
 
-  const handleToPrice = () => {
-    /* const { price, catid_3: catid, load } = this.state;
-
-    if (price && catid) {
-      console.log("Send data to API", price, catid);
-
-      const ls = JSON.parse(localStorage.getItem("OrusSystem")),
-        url =
-          "http://" +
-          ls.host +
-          "/api/store/prices?cat=" +
-          catid +
-          "&price=" +
-          price;
-
-      //Cargando
-      if (!load) {
-        this.setState({
-          load: true,
-        });
-      }
-
-      //Categories main
-      // TODO:  FETCH CON BODY PENDIENTE()
-      fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + ls.token,
-        },
-      })
-        .then((res) => res.json())
-        .then((result) => {
-          console.log("[Orus System] Item actualizados", result);
-          this.setState({
-            load: false,
-          });
-        });
-    } */
+  const handleModal = () => {
+    setModal(!modal);
   };
 
-  const handelChangePrice = (e) => {
-    /* const { value } = e.target;
-    this.setState({
-      price: parseInt(value),
-    }); */
-  };
 
   const getItems = async (catid) => {
-
-    console.log("ID seleccionado", catid);
 
     const { load } = state;
 
@@ -103,7 +61,7 @@ export default function Inventory(){
       itemsPage: 500,
     };
 
-    
+
     //Cargando
     if (!load) {
       setState({
@@ -114,14 +72,10 @@ export default function Inventory(){
 
     hookStore.getItems(filters).then((data)=>{
       if(data){
-        console.log("Data recibida",data.data)
-        //let dataToFilter = data.data
-        //const filteredData = dataToFilter.filter((item) => item.category.id === catid );
-
-        //Validar el length de la data filtrada, para saber si hay items o no
+        const noGraduationData = data.data.filter((item) => item.grad !== '+000000' );
         setState({
           ...state, 
-          items: data.data ? data.data : [],
+          items: noGraduationData ? noGraduationData : [],
           catid_3: catid,
           load: false,
         });
@@ -181,7 +135,6 @@ export default function Inventory(){
   const getCategories = () => {
     hookCategory.getCategories({categoryid: "raiz"}).then((data)=>{
       if(data && data.data){
-        console.log(data.data[0]);
         setState({
           ...state, 
           catData_1: data.data[0].sons,
@@ -294,14 +247,18 @@ export default function Inventory(){
                   ) : (
                     <React.Fragment>
                       <div className="row mb-2">
-                        <div className="col">
+                        <div className="col mt-2">
                           Total de productos: <label>{state.items.length}</label>
+                        </div>
+                        <div className="col">
+                          <button className="btn btn-success" onClick={handleModal}>Asignar Precio</button>
                         </div>
                         <div className="col-6">
                           <div className="row">          
                           </div>
                         </div>
                       </div>
+                      {modal && <SetPriceModal handleClose={handleModal} />}
 
                       <InventoryTableView
                         header={header}

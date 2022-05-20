@@ -134,7 +134,7 @@ export default function ToolBar() {
               panel: "inventory",
             })
 
-            history.push('/almacen');
+            //history.push('/almacen');
           }}
         >
           <i

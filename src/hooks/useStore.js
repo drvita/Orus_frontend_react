@@ -104,15 +104,24 @@ export default function useStore() {
 
   const saveQantityandPrice = async (data)=>{
     delete data.readyToSave;
-    //delete data.data;
+    const { id } = data;
 
-    console.log("Data a enviar:", data);
+    console.log(id, data.store_item_id);
 
-    const { ID } = data;
-    
-    const url = setUrl("branches", ID);
-    const method = ID ? "PUT" : "POST";
-    return await api(url, method, data);
+    if(id === 0){
+      //delete data.id
+      //delete data.branch_id
+      const url = setUrl("branches");
+      const method = "POST";
+      console.log(method);
+      console.log("Data a enviar", data);
+      return await api(url, method, data);
+    }else{
+      console.log("data a enviar",data);
+      const url = setUrl("branches", id);
+      const method = "PUT";
+      return await api(url, method, data);
+    }
   }
 
   // Brands functions

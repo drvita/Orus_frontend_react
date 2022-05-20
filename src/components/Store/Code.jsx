@@ -4,7 +4,6 @@ import useProducts from "../../hooks/useProducts";
 
 
 export default function Code(props) {
-  console.log("PROP--", props);
   const hookStore = useProducts();
   const [inUse, setInUse] = useState(props.code.length === 0 ? true : false);
 

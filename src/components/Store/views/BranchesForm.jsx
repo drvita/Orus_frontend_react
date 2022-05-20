@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 //Context
 import { ConfigContext } from "../../../context/ConfigContext";
@@ -6,15 +6,13 @@ import { ConfigContext } from "../../../context/ConfigContext";
 //Components
 import BranchesFormInputs from "./BranchesFormInputs";
 
-export default function BranchesForm({ branches }) {
+export default function BranchesForm({ branches, storeItemID }) {
 
-  console.log("Branches", branches);
+  console.log("----",storeItemID);
 
   const configContext = useContext(ConfigContext);
   const configBranches = configContext.data.filter((c)=>c.name === 'branches');
 
-  console.log("Config branches ------", configBranches);
-  
   return (
     <form>
       {configBranches.map((branch) => {
@@ -30,6 +28,8 @@ export default function BranchesForm({ branches }) {
             <div className="card-body">
             <BranchesFormInputs
               inBranch={currentBranch[0] ?? {}}
+              branchID = {branch.id}
+              storeItemID = {storeItemID}
             />
             </div>
           </div>

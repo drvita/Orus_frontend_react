@@ -35,7 +35,6 @@ export default function Inbox(props) {
       }
     },
     deleteItem = () => {
-      console.log("Funcion de eliminar item", state.itemSelected);
       window.Swal.fire({
         title: "Productos",
         text: "Desea eliminar el producto seleccionado?",
@@ -161,8 +160,6 @@ export default function Inbox(props) {
   useEffect(() => {
     handleSync();
   }, [context.options]);
-
-  //console.log("[DEBUG] Render", list);
   return (
     <ListInbox
       title="Lista de productos"

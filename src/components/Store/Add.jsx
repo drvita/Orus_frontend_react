@@ -1,7 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 
-
 //Context
 import { StoreContext } from "../../context/StoreContext";
 import { AuthContext } from "../../context/AuthContext";
@@ -55,13 +54,12 @@ export default function Add(props) {
                       ? state.data.category.code.filter((i) => i !== "") 
                       : [];
 
-  let readyToSave = false;
+  let readyToSave = false;  
   if (idsCategory.includes("1")) {
     readyToSave = state.category_id && state.code && state.name;
   } else {
     readyToSave = state.category_id && state.code && state.name && state.supplier_id && state.brand_id;
   }
-
 
   // Functions
   const saveProduct = ()=>{
@@ -105,7 +103,7 @@ export default function Add(props) {
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
-      console.log("Data del producto", res);
+      console.log("API response", res);
       setState({
         ...state,
         id: res.id ? res.id : 0,
@@ -425,8 +423,8 @@ export default function Add(props) {
           <div className="row">
             <div className="col">
             <BranchesForm
-                store_item_id={id}
                 branches = {state.data.branches}
+                storeItemID = {state.id}
               />
             </div>
           </div>

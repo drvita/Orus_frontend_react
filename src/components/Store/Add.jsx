@@ -129,7 +129,7 @@ export default function Add(props) {
     if (id) {
       getItem();
     }
-  }, [id]);
+  }, [id]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="row">

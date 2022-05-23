@@ -57,7 +57,7 @@ export default function BranchsListComponent() {
     };
   useEffect(() => {
     dispatch(configActions.getListConfig(options));
-  }, []);
+  }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="card card-primary card-outline">

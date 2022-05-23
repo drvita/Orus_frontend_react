@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import { Sale } from '../../../context/SaleContext';
 import helpers from "../helpers.js";
 

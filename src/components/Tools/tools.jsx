@@ -28,7 +28,7 @@ export default function ToolsComponent(){
 
   useEffect(()=>{
     dispatch(defaultActions.changeNamePage("configuraciones"));
-  },[])
+  },[])// eslint-disable-line react-hooks/exhaustive-deps
 
   const clickSave = () => {
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));

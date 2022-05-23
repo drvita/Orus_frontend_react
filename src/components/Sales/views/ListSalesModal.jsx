@@ -86,7 +86,7 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
         console.error("Error al obtener las ventas");
       }
     });
-  }, [search]);
+  }, [search]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="modal d-block" tabIndex="-1">

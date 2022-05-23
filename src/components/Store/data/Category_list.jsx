@@ -1,11 +1,6 @@
-import React, { Component, useEffect, useState, useContext } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useState, useContext } from "react";
 import useCategory from "../../../hooks/useCategory";
 import { StoreContext } from "../../../context/StoreContext";
-
-//Actions
-import { categoryActions } from "../../../redux/category/index";
-import helper from "../helpers";
 
 
 export default function CategoryListComponent(props){
@@ -29,7 +24,7 @@ export default function CategoryListComponent(props){
     load: false,
   });
 
-  const { category_raiz, category_id, name, add } = state, { loading: load, categoryData } = props;
+  const { category_raiz, category_id, name, add } = state, { loading: load } = props;
 
   useEffect(()=>{
 
@@ -41,7 +36,7 @@ export default function CategoryListComponent(props){
         category_raiz: categoryData,
       });
     }
-  },[props])
+  },[props])// eslint-disable-line react-hooks/exhaustive-deps
 
 
   const handleClickAdd = () => {
@@ -132,13 +127,13 @@ export default function CategoryListComponent(props){
       return false;
     }
 
-    const { id, category_id, name } = state;
+    const { category_id, name } = state;
     const data = { name, category_id: category_id};
     //const { _save } = this.props;
     
-    const options = { categoryid: "raiz" };
+    //const options = { categoryid: "raiz" };
 
-    const text = id
+   /*  const text = id
         ? "¿Esta seguro de actualizar la categoria?"
         : "¿Esta seguro de crear una nueva categoria?",
       _close = () => {
@@ -149,7 +144,7 @@ export default function CategoryListComponent(props){
           add: false,
         });
       };
-
+ */
 
       hookCategory.saveCategory(data).then((data)=>{
         if(data){

@@ -29,7 +29,7 @@ export default function Brands(props) {
 
   useEffect(() => {
     getBrands();
-  }, [props.supplier]);
+  }, [props.supplier]);// eslint-disable-line react-hooks/exhaustive-deps
 
 
   return (

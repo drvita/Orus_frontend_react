@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Store } from "../../context/StoreContext";
 import useStore from "../../hooks/useStore";
-import {StoreContext} from '../../context/StoreContext';
 
 //Components
 import ListInbox from "../../layouts/list_inbox";
@@ -13,7 +12,7 @@ export default function Inbox(props) {
   const context = Store();
   const _store = useStore();
   const history = useHistory();
-  const storeContext = useContext(StoreContext);
+  //const storeContext = useContext(StoreContext);
 
   //States
   const [state, setState] = useState({

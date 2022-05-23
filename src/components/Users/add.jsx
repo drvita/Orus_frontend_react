@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, useContext } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import moment from "moment";
 import useUsers from "../../hooks/useUsers";
 import {ConfigContext} from '../../context/ConfigContext';
@@ -30,7 +30,7 @@ const initialState = {
 export default function UserAddComponent(props){
   const { id } = props.match.params;
 
-  const { handleNewOrEdit: _handleNewOrEdit, newOrEdit: _newOrEdit } = props;
+  const { handleNewOrEdit: _handleNewOrEdit } = props;
 
   const _users = useUsers();
   const configContext = useContext(ConfigContext);
@@ -72,7 +72,7 @@ export default function UserAddComponent(props){
     }else{
       console.log("ID NO ENCONTRADO");
     }
-  },[id]);
+  },[id]);// eslint-disable-line react-hooks/exhaustive-deps
 
   const send = !currentUser.load && currentUser.validUserName &&  currentUser.name.length && currentUser.validUserEmail ? false : true;
 

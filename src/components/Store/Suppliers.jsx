@@ -29,7 +29,7 @@ export default function Suppliers(props) {
 
   useEffect(() => {
     getSuppliers();
-  }, []);
+  }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="row">

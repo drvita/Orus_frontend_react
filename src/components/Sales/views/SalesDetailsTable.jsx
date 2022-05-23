@@ -8,9 +8,6 @@ import UpdateItemModal from "./UpdateItemModal";
 import { Sale } from '../../../context/SaleContext';
 import { AuthContext } from "../../../context/AuthContext";
 
-//Hook
-import useSales from '../../../hooks/useSale';
-
 //Helper
 import helpers from "../helpers";
 
@@ -19,11 +16,10 @@ import moment from "moment";
 
 export default function SalesDetailsTableComponent() {
   const sale  = Sale();
-  const _saleHook = useSales();
   const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
   const paid = sale.subtotal <= pagado ? true : false;
   const { auth } = useContext(AuthContext);
-  const {rol: userMain, roles} = auth;
+  const {roles} = auth;
 
    const [data, setData] = useState({
       showUpdateItem: false,
@@ -134,14 +130,14 @@ export default function SalesDetailsTableComponent() {
     };
 
      
-  const handlePrintShow = () => {
+  /* const handlePrintShow = () => {
     _saleHook.saveSale(sale);
     window.addEventListener("afterprint", handlePrint);
     window.print();
-  };
+  }; */
 
 
-  const handlePrint = () => {
+ /*  const handlePrint = () => {
     const path = window.location.pathname;
 
     if (path !== "/notas") {
@@ -164,7 +160,7 @@ export default function SalesDetailsTableComponent() {
       payments: [],
       })
     });
-  };
+  }; */
 
 
   return (

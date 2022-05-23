@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import { Sale } from '../../../context/SaleContext';
 
 export default function ShowTotal(){

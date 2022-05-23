@@ -161,7 +161,7 @@ function InputSearchItem({ messages, loading }) {
       });
     }
 
-  }, [list]);
+  }, [list]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="btn-group text-center d-print-none">

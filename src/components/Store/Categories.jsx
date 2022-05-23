@@ -101,13 +101,13 @@ export default function Categories(props) {
 
     handleReturn();
 
-  }, [state]);
+  }, [state]);// eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (state.categories.length && props.category) {
       getCategory(props.category);
     }
-  }, [state.categories, props.category]);
+  }, [state.categories, props.category]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div>

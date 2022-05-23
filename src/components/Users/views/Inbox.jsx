@@ -5,14 +5,14 @@ import { UserContext } from "../../../context/UserContext";
 import ListInbox from "../../../layouts/list_inbox";
 import helper from "../helpers";
 import { useHistory } from "react-router-dom";
-import { AuthContext } from '../../../context/AuthContext';
+//import { AuthContext } from '../../../context/AuthContext';
 
 export default function InboxComponent(){
 
   const history = useHistory();
   const _users = useUsers();
   const _userContext = useContext(UserContext);
-  const _authContext = useContext(AuthContext);
+  //const _authContext = useContext(AuthContext);
   const [userSelected, setUserSelected] = useState('');
 
 
@@ -66,12 +66,12 @@ export default function InboxComponent(){
   };
 
   //Checkbox selected
-  const handleUserSelect = (item) => {
+  /* const handleUserSelect = (item) => {
     console.log(item);
     let { value , checked } = item;
     if (!checked) item = { id: 0 };
     setUserSelected(value);
-  };
+  }; */
 
 //Click on userName
 /*  const handleSelectUser = (e, order = { id: 0 }) => {
@@ -114,7 +114,7 @@ export default function InboxComponent(){
         console.error("Error al obtener los datos");
       }
     })
-  }, [_userContext.options]);
+  }, [_userContext.options]);// eslint-disable-line react-hooks/exhaustive-deps
 
 
   return (

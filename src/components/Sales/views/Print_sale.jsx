@@ -110,14 +110,14 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
       return null;
     } 
 
-  },[paid, sale.total]);
+  },[paid, sale.total]);// eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(()=>{
     window.addEventListener("afterprint", ()=>{handleClose()});
     return ()=>{
       window.removeEventListener("afterprint", ()=>{handleClose()});
     }
-  },[])
+  },[])// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

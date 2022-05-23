@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useContext } from "react";
-import { useSelector } from "react-redux";
+import { useContext } from "react";
 import { ConfigContext } from "../../../context/ConfigContext";
 
 export default function BranchesSelect({ branch_default , showIcon = true, setBranchId }) {

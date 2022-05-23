@@ -1,11 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import InventoryTableView from "../components/Store/views/Inventory_table";
-import useCategory from "../hooks/useCategory";
-import useStore from "../hooks/useStore";
 import SetPriceModal from "../components/Store/views/SetPriceModal";
 
+//Hooks
+import useCategory from "../hooks/useCategory";
+import useStore from "../hooks/useStore";
+
+//Context
+import { ConfigContext } from "../context/ConfigContext";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Inventory(){
+
+  const configContext = useContext(ConfigContext);
+  const listBranches = configContext.data.filter((c) => c.name === "branches");
+
+  const authContext = useContext(AuthContext);
+  const currentBranch = authContext.auth.branch;
   
   const [state, setState] = useState({
     catData_1: [],
@@ -18,6 +29,12 @@ export default function Inventory(){
     items: [],
     meta: {},
     price: 0,
+  });
+
+  const [globalData, setGlobalData] = useState({
+    branchSelected: currentBranch ? currentBranch.id : 0,
+    productPrice: 0,
+    productCategoryId: 0,
   });
 
   const [modal, setModal] = useState(false);
@@ -47,21 +64,69 @@ export default function Inventory(){
   } while (i < parseFloat(state.meta.rangoSup) + 0.25);
 
 
+  const disabled = state.items.length !== 0 ? false : true;
+  const disablenBtnModal = globalData.branchSelected === 0 || 
+                           globalData.productPrice === 0  || 
+                           globalData.productCategoryId === 0 ? true : false;
+
   const handleModal = () => {
     setModal(!modal);
   };
 
 
+  const savePriceGlobal =  () => {
+    hookStore.saveGlobalPrice(globalData).then((data)=>{
+      handleModal();
+      if(data){
+        console.log(data);
+        window.Swal.fire({
+          title: "Productos",
+          text: "Precio asignado correctamente",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: "#007bff",
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        }).then(({ dismiss }) => {
+          if (!dismiss) {
+            setGlobalData({
+              branchSelected: currentBranch ? currentBranch.id : 0,
+              productPrice: 0,
+              productCategoryId: 0,
+            })
+          }
+        });
+      }else{
+        console.error("Error en la cosulta");
+        window.Swal.fire({
+          title: "Productos",
+          text: "Erro al guardar el precio global",
+          icon: "error",
+          showCancelButton: false,
+          confirmButtonColor: "#007bff",
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        }).then(({ dismiss }) => {
+          if (!dismiss) {
+            setGlobalData({
+              branchSelected: currentBranch ? currentBranch.id : 0,
+              productPrice: 0,
+              productCategoryId: 0,
+            })
+          }
+        });
+      }
+    });
+  }
+
   const getItems = async (catid) => {
-
     const { load } = state;
-
     const filters = {
       cat:catid,
       itemsPage: 500,
     };
-
-
     //Cargando
     if (!load) {
       setState({
@@ -152,7 +217,7 @@ export default function Inventory(){
 
   useEffect(()=>{
     getCategories();
-  },[]);
+  },[]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return(
     <div className="row">
@@ -251,14 +316,29 @@ export default function Inventory(){
                           Total de productos: <label>{state.items.length}</label>
                         </div>
                         <div className="col">
-                          <button className="btn btn-success" onClick={handleModal}>Asignar Precio</button>
+                          <button disabled = {disabled} className="btn btn-success" onClick={handleModal}>Asignar Precio</button>
                         </div>
                         <div className="col-6">
-                          <div className="row">          
+                          <div className="row">
                           </div>
                         </div>
                       </div>
-                      {modal && <SetPriceModal handleClose={handleModal} />}
+                      {
+                        modal && <SetPriceModal 
+                          branches = {listBranches} 
+                          currentBranch = {currentBranch}
+                          handleChange={(name, value) => {
+                            setGlobalData({
+                              ...globalData,
+                              [name]: parseInt(value),
+                              productCategoryId: state.items.length ? state.items[0].category.id : 0,
+                            })
+                          }} 
+                          handleClose={handleModal} 
+                          disabled = {disablenBtnModal}
+                          handleSave = {savePriceGlobal}
+                        />
+                      }
 
                       <InventoryTableView
                         header={header}

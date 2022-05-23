@@ -1,7 +1,4 @@
-import { useState, useContext } from "react";
-
-function SetPriceModal({ handleClose: _close }) {
-    
+function SetPriceModal({currentBranch, handleSave: _handleSave ,handleClose: _close, branches, handleChange: _handleChange, disabled }) {
   return (
     <div className="modal d-block" tabIndex="-1">
       <div className="modal-dialog" role="document">
@@ -13,20 +10,36 @@ function SetPriceModal({ handleClose: _close }) {
             </button>
           </div>
 
-
           <div className="modal-body p-2">
               <div className="d-flex flex-column justify-content-start align-items-start">
-                  <label className="text-center">Selecciona la rama</label>
-                  <select className="form-control" id="">
-                      <option value="">Option 1</option>
-                      <option value="">Option 2</option>
-                      <option value="">Option 3</option>
+                  <label className="text-center">Sucrusales</label>
+                  <select 
+                    className="form-control" 
+                    id=""
+                    name="branchSelected"
+                    defaultValue={currentBranch.name}
+                    onChange={({target})=>{
+                      const {name, value} = target;
+                      _handleChange(name, value);
+                    }}>
+                    <option value={0}>-- Seleciona una sucursal --</option>
+                    {branches.map((branch)=>{
+                      return(
+                        <option key={branch.id} value={branch.id}>
+                          {branch.data.name.toUpperCase()}
+                        </option>
+                      )
+                    })}
                   </select>
 
                   <br />
 
                   <label>Precio</label>
-                  <input type="text" className="form-control" placeholder="Precio"/>
+                  <input onChange={({target})=>{
+                    const {name, value} = target;
+                    _handleChange(name, value);
+
+                  }} name = "productPrice" type="number" defaultValue={0} className="form-control" placeholder="Precio"/>
 
               </div>
           </div>
@@ -37,7 +50,7 @@ function SetPriceModal({ handleClose: _close }) {
               Cancelar
             </button>
 
-            <button type="button" className="btn btn-success" >
+            <button onClick={_handleSave} disabled={disabled} type="button" className="btn btn-success" >
               Asignar
             </button>
           </div>

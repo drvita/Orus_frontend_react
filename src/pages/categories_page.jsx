@@ -64,7 +64,7 @@ export default function CategoriesStoreComponent(){
 
   useEffect(()=>{
     handleLoadCategories();
-  },[]);
+  },[]);// eslint-disable-line react-hooks/exhaustive-deps
 
 
   return (

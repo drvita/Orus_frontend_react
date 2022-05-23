@@ -124,7 +124,18 @@ export default function useStore() {
     }
   }
 
-  // Brands functions
+  const saveGlobalPrice = async (data) => {
+    console.log("Data a guardar:", data);
+    const idCategory = data.productCategoryId;
+    const URL = setUrl(`store/setprice/${idCategory}`);
+    const method = 'POST';
+    console.log(URL);
+    delete data.productCategoryId;
+
+    return await api(URL, method, data);
+  }
+
+  // Brands functions -------------------------
   const getBrands = async (options) => {
     if (!options) return null;
 
@@ -139,7 +150,6 @@ export default function useStore() {
           "[Orus System] Catch when get brands list in hook:",
           err.message
         );
-
         throw err;
       });
   };
@@ -191,6 +201,7 @@ export default function useStore() {
     deleteItem,
     saveItem,
     saveQantityandPrice,
+    saveGlobalPrice,
     getBrands,
     getBrand,
     saveBrand,

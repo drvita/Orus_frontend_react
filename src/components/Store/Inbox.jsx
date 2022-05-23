@@ -159,7 +159,7 @@ export default function Inbox(props) {
 
   useEffect(() => {
     handleSync();
-  }, [context.options]);
+  }, [context.options]);// eslint-disable-line react-hooks/exhaustive-deps
   return (
     <ListInbox
       title="Lista de productos"

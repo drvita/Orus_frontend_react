@@ -37,10 +37,6 @@ export default function ToolBar() {
     });
   };
 
-  // useEffect(() => {
-  //   console.log("[DEBUG] Options:", context.options);
-  // }, [context.options]);
-
   return (
     <CardMenu title={context.panel === "inbox" ? "Menu y filtros" : "Menu"}>
       <li className="nav-item">

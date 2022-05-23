@@ -47,7 +47,7 @@ export default function Filters({ filters, changeState }) {
           console.error("Error al obtener la lista de usuarios");
         }
       })
-    },[])
+    },[])// eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="border-bottom pb-3 mb-4">
       <div className="card-body p-0 bg-light">

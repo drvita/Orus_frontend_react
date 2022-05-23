@@ -31,7 +31,7 @@ export default function UsersComponent(props){
           ...state,
           newOrEdit: id ? true : false,
         });
-      }, [id]);
+      }, [id]);// eslint-disable-line react-hooks/exhaustive-deps
 
     return(
         <UserContext.Provider value={{...state, set: setState}}>

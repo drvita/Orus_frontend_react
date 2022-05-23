@@ -23,7 +23,7 @@ export default function BrandsComponent(){
 
   useEffect(()=>{
     getBrands();
-  },[state.supplier]);
+  },[state.supplier]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   const getBrands = () => {
@@ -52,7 +52,7 @@ export default function BrandsComponent(){
 
   const saveBrand = (e) => {
     e.preventDefault();
-    const { id, name, supplier } = state, data = { name, contact_id: supplier};
+    const {  name, supplier } = state, data = { name, contact_id: supplier};
 
     if (name.length < 3) {
       window.Swal.fire(
@@ -122,7 +122,6 @@ export default function BrandsComponent(){
   };
 
   const deleteBrand = (id, item) => {
-    const { supplier } = state;
     window.Swal.fire({
       title: "Eliminar",
       text: "¿Esta seguro de eliminar la marca " + item.toUpperCase() + "?",

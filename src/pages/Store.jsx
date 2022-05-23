@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+//import { useHistory } from "react-router-dom";
 
 //Context
 import { StoreContext } from "../context/StoreContext";
@@ -30,7 +30,7 @@ export default function Store(props) {
     options: optionsDefault,
   });
 
-  const history = useHistory();
+  //const history = useHistory();
   const { id } = props.match.params;
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function Store(props) {
     }else{
       history.push("/almacen");
     } */
-  }, [id]);
+  }, [id]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StoreContext.Provider value={{ ...state, set: setState }}>

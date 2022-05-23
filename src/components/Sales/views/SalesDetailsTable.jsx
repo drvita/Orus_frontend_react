@@ -174,9 +174,9 @@ export default function SalesDetailsTableComponent() {
           {sale.items && sale.items.length ? (
             <>
               {sale.items.map((item, index) => {
+                console.log(item);
                 const disabled = (sale.subtotal && paid) || sale.payments.length || sale.discount;
                 const diffDay = moment(Date.now()).diff(moment(sale.created_at),"days");
-                console.log("DIFERENCIA DE DIAS DE LA VENTA:", diffDay);
                 if (!item.store_items_id) return null;
                 return (
                   <tr key={index}>
@@ -198,8 +198,8 @@ export default function SalesDetailsTableComponent() {
                             handleShowUpdateItem(e, item);
                           }
                         }}
-                      >
-                        {item.producto}
+                      >                    
+                        {item.producto ? item.producto : item.name}                  
                       </a>
                       <label className="w-full d-block">
                         <span className="badge badge-dark mr-1">

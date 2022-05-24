@@ -14,8 +14,6 @@ const ListInbox = (props) => {
   const _authContext = useContext(AuthContext);
   const { auth } = _authContext;
 
-
-
   useEffect(() => {
     let toTimer = null;
     if (props.handleSearch) {

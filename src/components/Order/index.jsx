@@ -49,6 +49,7 @@ class indexOrderComponent extends Component {
     }
     _setPageName("pedidos");
   }
+  
   componentDidUpdate(props, state) {
     const { order, history, messages: MSGS, _setContact } = this.props,
       { panel } = this.state;

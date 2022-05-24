@@ -1,54 +1,118 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { connect } from "react-redux";
 
 //Components
 import Main from "../../../layouts/list_inbox";
+
 //Actions
 import { orderActions } from "../../../redux/order";
 import helper from "../helpers";
 
+
+//Hooks
+import useOrder from "../../../hooks/useOrder";
+
+//Context
+import { OrderContext } from "../../../context/OderContext";
+
 const InboxOrderComponent = (props) => {
+  const orderContext = useContext(OrderContext);
+  const orderHook = useOrder();
+  const options = orderContext.options;
+
+  const [pedidos, setPedidos] = useState({
+    data: [],
+    meta:{},
+    loading: false,
+  });
+
   const {
-    orders: pedidos = [],
-    meta,
-    options,
-    loading,
+    //orders: pedidos = [],
+    //meta,
+    //options,
+    //loading,
     //Functions
-    _getList,
+    //_getList,
     _getOrder,
     _setOrder,
-    _setOptions,
+    //_setOptions,
     _deleteOrder,
     _saveOrder,
   } = props;
+
   const [orderSelected, setOrderSelected] = useState({ id: 0 });
 
+  const getList = ()=>{
+    setPedidos({
+      ...pedidos,
+      loading: true,
+    })
+    orderHook.getListOrders(options).then((data)=>{
+      if(data){
+        setPedidos({
+          data: data.data,
+          meta: data.meta,
+        })
+      }else{
+        console.error("Error al obtener la lista de pedidos");
+      }
+    })
+  }
+
   const handleChangeOptions = (key, value) => {
-    _setOptions({
+    console.log(key, "   ", value);
+    orderContext.set({
+      ...orderContext,
+      options:{
+        ...options,
+        [key]: value,
+      }
+    });
+
+    /* _setOptions({
       key,
       value,
-    });
-  };
+    }); */
+  };  
+
   const handleSelectOrder = (e, order = { id: 0 }) => {
     if (e) e.preventDefault();
-
+    
     if (order.id) {
-      _setOrder(order);
+      console.log("Entrando al primero");
+      //Setear la orden en contexto global
+      /* orderContext.set({
+        ...orderContext,
+        panel:'newOrder',
+        order: order,
+      }) */
+      //_setOrder(order);
     } else if (orderSelected.id) {
+      console.log("Entrando al segundo", order);
+      //Traer la order con hook y setearla en context
       _getOrder(orderSelected.id);
     }
-    props.handleChangePanel(null, 3);
   };
+
+
   const handleOrderSelect = ({ checked }, pedido) => {
+    //Funcion que se ejecuta cuando se selecciona el checkbox
+    console.log(checked, " -- ", pedido);
     if (!checked) pedido = { id: 0 };
+
+    //Setea el pedido en el state
     setOrderSelected(pedido);
   };
+
+
   const deleteOrder = () => {
     helper.handleDeleteOrder(orderSelected, options, _deleteOrder);
     setOrderSelected({ id: 0 });
   };
+
+
   const handleStatus = () => {
     if (orderSelected.id && orderSelected.estado < 3) {
       helper.handleSaveOrder(
@@ -62,26 +126,36 @@ const InboxOrderComponent = (props) => {
   };
 
   useEffect(() => {
-    _getList(options);
+    getList();
     // eslint-disable-next-line
   }, [options]);
-
-  //console.log("[DEBUG] Render", pedidos);
 
   return (
     <Main
       title="Listado de pedidos"
       icon="clipboard-list"
       color="warning"
-      meta={meta}
+      meta={pedidos.meta}
       itemSelected={orderSelected.id}
-      loading={loading}
+      loading={pedidos.loading}
       defaultSearch={options.search}
       handlePagination={(page) => handleChangeOptions("page", page)}
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleEditItem={handleSelectOrder}
       handleDeleteItem={deleteOrder}
-      handleSync={() => _getList(options)}
+      handleSync={() => {
+        orderContext.set({
+          ...orderContext,
+          options:{
+            page: 1,
+            orderby: "created_at",
+            order: "desc",
+            itemsPage: 10,
+            status: 0,
+            search: "",
+          }
+        })
+      }}
       handleStatus={handleStatus}
     >
       <table className="table table-hover table-striped">
@@ -98,8 +172,8 @@ const InboxOrderComponent = (props) => {
           </tr>
         </thead>
         <tbody>
-          {pedidos.length ? (
-            pedidos.map((pedido) => {
+          {pedidos.data.length ? (
+            pedidos.data.map((pedido) => {
               return (
                 <tr key={pedido.id}>
                   <td>
@@ -217,6 +291,7 @@ const mapStateToProps = ({ order }) => {
       loading: order.loading,
     };
   },
+
   mapActionsToProps = {
     _getList: orderActions.getListOrder,
     _getOrder: orderActions.getOrder,

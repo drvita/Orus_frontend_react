@@ -8,6 +8,7 @@ import Order from "../components/Order/index";
 import Sales from "../components/Sales/index";
 import Dashboard from "../pages/AuthDashboard";
 import Users from "../pages/Users";
+import Orders from '../pages/Orders';
 // import NotifyAllShow from "./components/Layouts/notifyAll";
 
 import ConfigProvider from "../context/ConfigContext";
@@ -64,7 +65,7 @@ export default function Routers({ auth }) {
           render={(props) => <Tools {...props} page={() => {}} />}
         />
 
-        <Route path="/pedidos/:id?" render={(props) => <Order {...props} />} />
+        <Route path="/pedidos/:id?" render={(props) => <Orders {...props} />} />
 
         <Route
           path="/notas/:id?"

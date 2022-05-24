@@ -80,10 +80,6 @@ export default function IndexSalesComponent() {
 
   }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
-  //Functions
-  /* const handleDeleteSale = () => setData({ pagado: 0 }),
-    handleSetSale = (res) => {
-    } */
 
   return (
     <SaleContext.Provider value={{ ...state, set: setState }}>

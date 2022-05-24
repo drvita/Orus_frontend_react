@@ -1,10 +1,12 @@
-import React, { Component } from "react";
+import React, { Component, useState, useEffect} from "react";
 import { connect } from "react-redux";
+
 //Components
 import SearchContact from "../Contacts/views/ShowCard";
 import ListExam from "../Exam/views/List";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
+
 //Actions
 import { contactActions } from "../../redux/contact";
 import { examActions } from "../../redux/exam";
@@ -29,6 +31,9 @@ class AsistentComponent extends Component {
       load: true,
     };
   }
+
+
+
   componentDidMount() {
     const { contact, exam } = this.props;
 
@@ -46,6 +51,8 @@ class AsistentComponent extends Component {
       }
     }
   }
+
+
   componentDidUpdate(props) {
     const { category, contact, exam, msg_exams, _setMsgExam, _getContact } =
         this.props,
@@ -95,8 +102,6 @@ class AsistentComponent extends Component {
     const { contact_id, items, exam, exam_id, examEdit, codes, session } =
         this.state,
       { contact, load_order: LOADING, _saveExam } = this.props;
-
-    //console.log("[DEBUG] codes", codes, exam);
 
     return (
       <div className="card card-warning card-outline">

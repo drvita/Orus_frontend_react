@@ -45,7 +45,7 @@ export default function useCategory() {
   const deleteCategory = async (id) => {
     console.log("ID de la categoria a eliminar", id);
     if (!id) return false;
-
+    
     const url = setUrl("categories", id);
 
     return await api(url, "DELETE")

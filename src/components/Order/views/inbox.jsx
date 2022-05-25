@@ -36,7 +36,7 @@ const InboxOrderComponent = (props) => {
     //Functions
     //_getList,
     _getOrder,
-    _setOrder,
+    //_setOrder,
     //_setOptions,
     _deleteOrder,
     _saveOrder,
@@ -79,7 +79,7 @@ const InboxOrderComponent = (props) => {
 
   const handleSelectOrder = (e, order = { id: 0 }) => {
     if (e) e.preventDefault();
-    
+
     if (order.id) {
       console.log("Entrando al primero");
       //Setear la orden en contexto global

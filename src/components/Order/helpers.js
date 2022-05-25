@@ -89,8 +89,11 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
     }
   });
 };
+
 const getDataTemporary = (field) => {
     const data = JSON.parse(localStorage.getItem("OrusSystem") ?? "");
+
+    console.log("Data de local", data);
 
     if (!data.orders) {
       data.orders = [];
@@ -98,6 +101,8 @@ const getDataTemporary = (field) => {
 
     return field ? data.orders : data;
   },
+
+
   addDataTemporary = (data) => {
     const local = getDataTemporary();
     let localToSave = {
@@ -120,7 +125,9 @@ const getDataTemporary = (field) => {
   getDataOneItem = (id) => {
     const local = getDataTemporary(),
       data = local.orders.filter((item) => item.id === id);
-
+      if(data){
+        console.log(data);
+      }
     return data[0] ?? {};
   };
 

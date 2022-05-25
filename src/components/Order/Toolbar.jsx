@@ -53,7 +53,7 @@ export default function Toolbar(){
                 </div>
                 <div className="p-0 card-body">
                 <ul className="nav nav-pills flex-column">
-                    <li className="nav-item">
+                    {/* <li className="nav-item">
                     <a
                         href="#item"
                         className={orderContext.panel === 'pending' ? "nav-link active" : "nav-link"}
@@ -67,7 +67,7 @@ export default function Toolbar(){
                     >
                         <i className="mr-2 fas fa-notes-medical"></i> Pendientes
                     </a>
-                    </li>
+                    </li> */}
                     <li className="nav-item">
                     <a
                         href="#item"
@@ -83,7 +83,7 @@ export default function Toolbar(){
                         <i className="mr-2 fas fa-clipboard-list"></i> Pedidos
                     </a>
                     </li>
-                    {mainRole === "admin" ? (
+                    {/* {mainRole === "admin" ? (
                     <li className="nav-item">
                         <a
                         href="#item"
@@ -99,7 +99,7 @@ export default function Toolbar(){
                         <i className="mr-2 fas fa-folder-open"></i> Reporte
                         </a>
                     </li>
-                    ) : null}
+                    ) : null} */}
 
                     {orderContext.panel === 'inbox' ? (
                         <Fragment>

@@ -1,13 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
+
+//Hooks
+import useProducts from "../../../hooks/useProducts";
+
 //Actions
 import { storeActions } from "../../../redux/store/";
 
 function SearchItemsComponent(props) {
+
+  const hookProducts = useProducts();
+
   // Props and vars
   const {
-      items,
+      //items,
       meta,
       item = { producto: "" },
       _getList,
@@ -15,44 +22,83 @@ function SearchItemsComponent(props) {
       handleItemSelect: _handleItemSelect,
     } = props,
     perPage = 10;
+
+
+
   // States
   const [search, setSearch] = useState(item.producto),
+
     [timer, setTimer] = useState(""),
+
     [load, setLoad] = useState(false);
+
+
+  const [items, setItems] = useState([]);
+
+
+ /*  useEffect(()=>{
+    if(search.length === 0){
+      return null
+    }else{
+      hookProducts.getProducts(search).then((data)=>{
+        if(data){
+          setTimeout(() => {
+            setItems(data.data);
+            setLoad(false);
+          }, 2300);
+        }
+        else{
+          console.error("Error al obtener la lista de productos");
+        }
+      })
+    }
+  },[search]) */
+
+
   // { dataLoggin: user } = useSelector((state) => state.users);
   // Functions
   const handleChangeSearch = ({ target }) => {
       const { value } = target;
       setSearch(value.toLowerCase());
       setLoad(true);
-    },
-    handleSelect = (item) => {
-      _setList({
+    };
+
+
+  const handleSelect = (item) => {
+    console.log(item);
+      /* _setList({
         result: {
           list: [],
           metaList: {},
         },
-      });
+      }); */
+
       _handleItemSelect(item);
-      setSearch(item.producto.toUpperCase());
+      setSearch(item.name.toUpperCase());
+      setItems([]);
     };
 
   useEffect(() => {
     let toTimer = null;
     if (search.length > 2 && !item.store_items_id) {
+      console.log("Primer condicional");
       if (timer) clearTimeout(timer);
       toTimer = setTimeout(() => {
-        _getList({
-          search: search,
-          itemsPage: perPage,
-          // branch: user.branch.id ? user.branch.id : null,
-        });
+        hookProducts.getProducts(search).then((data)=>{
+          if(data){
+              setItems(data.data);
+          }
+          else{
+            console.error("Error al obtener la lista de productos");
+          }
+        })
         setTimer("");
         setLoad(false);
       }, 1000);
       setTimer(toTimer);
     }
     if (!search.length && items.length) {
+      console.log("Segundo condicional");
       if (timer) clearTimeout(timer);
       _setList({
         result: {
@@ -63,6 +109,8 @@ function SearchItemsComponent(props) {
       setLoad(false);
     }
   }, [search]);
+
+
   useEffect(() => {
     return () => {
       _setList({
@@ -162,7 +210,7 @@ function getItemToShow(i, handleSelect) {
           }}
         >
           <span className="text-truncate text-uppercase text-muted">
-            [S]-{i.producto}
+            [S]-{i.name}
           </span>
           <span className="badge badge-dark badge-pill">{i.cant_total}</span>
         </a>
@@ -179,7 +227,7 @@ function getItemToShow(i, handleSelect) {
         }}
       >
         <span className="text-truncate text-uppercase text-primary">
-          {i.producto}
+          {i.name}
         </span>
         <span className="badge badge-dark badge-pill">{i.cant_total}</span>
       </a>
@@ -196,7 +244,7 @@ function getItemToShow(i, handleSelect) {
         }}
       >
         <span className="text-truncate text-uppercase text-danger">
-          [X]-{i.producto}
+          [X]-{i.name}
         </span>
         <span className="badge badge-dark badge-pill">{i.cant_total}</span>
       </a>
@@ -214,7 +262,7 @@ function getItemToShow(i, handleSelect) {
       }}
     >
       <span className="text-truncate text-uppercase text-primary">
-        {i.producto}
+        {i.name}
       </span>
       <span className="badge badge-dark badge-pill">{i.cant}</span>
     </a>

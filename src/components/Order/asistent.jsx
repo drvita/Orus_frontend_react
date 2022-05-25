@@ -1,5 +1,15 @@
 import React, { Component, useState, useEffect} from "react";
 import { connect } from "react-redux";
+import generalHelper from '../../utils/helpers';
+
+//Context
+import { OrderContext } from "../../context/OderContext";
+
+//Hooks
+import useCategory from "../../hooks/useCategory";
+import useContact from "../../hooks/useContact";
+import useOrder from "../../hooks/useOrder";
+import useExam from "../../hooks/useExam";
 
 //Components
 import SearchContact from "../Contacts/views/ShowCard";
@@ -16,7 +26,306 @@ import helper_exam from "../Exam/helpers";
 import helper from "./helpers";
 import saleHelper from "../Sales/helpers";
 
-class AsistentComponent extends Component {
+export default function AsistentComponent(){
+
+  const [state, setState] = useState({
+    session: generalHelper.getSession(),
+    contact_id: 0,
+    items: [],
+    codes: {},
+    exam_id: null,
+    exam: {},
+    examEdit: false,
+    load: true,
+    LOADING: false,
+    data:{},
+  });
+
+  //const { contact_id, items, exam, exam_id, examEdit, codes, session } = state;
+  const contact = [];
+  const load_order = false;
+  const exam = {};
+
+  /* const mapStateToProps = ({ contact, exam, order, category }) => {
+    return {
+      load_contact: contact.loading,
+      contact: contact.contact,
+      exam: exam.exam,
+      msg_exams: exam.messages,
+      options: order.options,
+      load_order: order.loading,
+      category: category.category,
+    };
+  }, */
+
+/* 
+  useEffect(()=>{
+    if (contacto.id) {
+      const data = helper.getDataOneItem(contacto.id);
+      if (data) {
+        console.log("Data del useEffect", data);
+        setState({
+          ...state,
+          contact,
+          contact_id: contacto.id,
+          items: data.items ?? [],
+          session: data.session ?? state.session,
+          exam: exam ?? state.exam,
+          exam_id: exam.id ?? state.exam_id,
+        });
+      }
+    }
+  },[contacto]); */
+
+
+  const handleContactSelect = (contact)=>{
+    console.log("Contacto recibido", contact);
+    const data = helper.getDataOneItem(contact.id);
+    console.log(data);
+    setState({
+      ...state,
+      contact_id: contact.id ?? 0,
+      exam: contact.exams[0] ? contact.exams[0]: {},
+      exam_id: contact.exams.length ? contact.exams[0].id :  0,
+      data: contact ? contact : {},
+    })
+  }
+
+
+
+  const handleChangeInput = (key, value) => {
+    if (key === "exam") {
+      if (value.category_id) {
+        handleGetCategories(value.category_id);
+      }
+      if (!value.id) {
+        setState({
+          ...state,
+          exam_id: 0,
+          exam: {},
+          codes: {},
+        });
+      } else {
+        setState({
+          ...state,
+          exam_id: value.id,
+          exam: value,
+          codes: {},
+        });
+      }
+    }
+    if (key === "codes") {
+      setState({
+        ...state,
+        codes: value,
+      });
+    } else {
+      setState({
+        ...state,
+        [key]: value,
+      });
+    }
+  };
+
+
+  const handleGetCategories = (cat_id) => {
+    //const { _getCategory } = this.props;
+    //_getCategory({ id: cat_id});
+  };
+
+  return(
+      <div className="card card-warning card-outline">
+        <div className="card-header">
+          <h3 className="card-title">
+            <i className="fas fa-clipboard-list mr-1"></i>Nuevo pedido
+          </h3>
+        </div>
+        <div className="card-body">
+          <div className="form-group d-print-none">
+            <SearchContact
+              title="cliente"
+              legend={
+                !contact.id
+                  ? "Busque el paciente por nombre para crearun nuevo pedido"
+                  : null
+              }
+              readOnly={state.exam_id !== null}
+              handleContactSelect = {handleContactSelect}
+            />
+          </div>
+          {state.contact_id ? (
+            <React.Fragment>
+              {state.exam_id !== null ? (
+                <React.Fragment>
+                  {state.examEdit ? (
+                    <div className="form-group">
+                      <Exam
+                        id={state.exam_id}
+                        examEdit={true}
+                        exam={exam}
+                        ChangeInput={this.handleChangeInput}
+                      />
+                    </div>
+                  ) : (
+                    <React.Fragment>
+                      <div className="form-group">
+                        <div className="input-group">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text">
+                              <i className="fas fa-notes-medical mr-1"></i>{" "}
+                              Examen:
+                            </span>
+                          </div>
+                          <input
+                            type="text"
+                            className={
+                              state.exam_id
+                                ? exam.observaciones
+                                  ? "form-control text-right pr-2 bg-info text-bold"
+                                  : "form-control text-right pr-2"
+                                : "form-control text-center"
+                            }
+                            value={
+                              state.exam_id
+                                ? exam.observaciones
+                                  ? state.exam_id + " [Revise las observaciones]"
+                                  : state.exam_id
+                                : "Sin examen"
+                            }
+                            readOnly={true}
+                          />
+                          <div className="float-right">                            
+                            <div className="btn-group btn-sm">
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                onClick={(e) =>
+                                  this.handleChangeInput("exam_id", null)
+                                }
+                              >
+                                <i className="fas fa-exchange-alt"></i>
+                              </button>
+                              {exam.id ? (
+                                <button
+                                  type="button"
+                                  className="btn btn-info btn-sm"
+                                  onClick={(e) =>
+                                    this.handleChangeInput("examEdit", true)
+                                  }
+                                  disabled={state.examEdit}
+                                >
+                                  <i className="fas fa-edit"></i>
+                                </button>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {(exam.id > 0 && exam.status) || !exam.id ? (
+                        <Items
+                          items={state.items}
+                          session={state.session}
+                          codes={state.codes}
+                          ChangeInput={handleChangeInput}
+                        />
+                      ) : (
+                        <span className="alert">
+                          <h5 className="w-100 text-center">
+                            <i className="fas fa-info-circle mr-1"></i>
+                            <span className="text-muted">
+                              Es necesario que el examen este terminado para
+                              continuar con el pedido
+                            </span>
+                          </h5>
+                        </span>
+                      )}
+                    </React.Fragment>
+                  )}
+                </React.Fragment>
+              ) : (
+                <div className="form-group">
+                  <ListExam
+                    exams={contact.examenes}
+                    allSelect
+                    handleSelectedExam={(exam) =>
+                      this.handleChangeInput("exam", exam)
+                    }
+                  />
+                  <div className="btn-group">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={(e) => this.handleChangeInput("exam", { id: 0 })}
+                    >
+                      <i className="fas fa-ban mr-1"></i>
+                      Sin examen
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      /* onClick={(e) =>
+                        helper_exam.handleSaveExam(contact, null, _saveExam)
+                      } */
+                    >
+                      <i className="fas fa-notes-medical mr-1"></i>
+                      Nuevo examen
+                    </button>
+                  </div>
+                </div>
+              )}
+            </React.Fragment>
+          ) : null}
+        </div>
+        {!state.examEdit ? (
+          <div className="card-footer">
+            <div className="mailbox-controls text-right">
+              <div className="btn-group">
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  /* onClick={handleCancel} */
+                >
+                  <i className="fas fa-ban mr-1"></i>
+                  {state.contact_id ? "Cancelar" : "Cerrar"}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-default btn-sm"
+                  /* onClick={handleSaveStorage} */
+                  disabled={!state.contact_id}
+                >
+                  <i className="fas fa-clock mr-1"></i>
+                  Temporal
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-warning btn-sm text-bold"
+                  /* onClick={handleSave} */
+                  disabled={
+                    state.contact_id && state.exam_id !== null && state.items.length
+                      ? false
+                      : true
+                  }
+                >
+                  <i className="fas fa-save mr-1"></i> Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {state.LOADING ? (
+          <div className="overlay dark">
+            <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+//--------------------------------Class Component---------------------------//
+
+
+/* class AsistentComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -32,11 +341,8 @@ class AsistentComponent extends Component {
     };
   }
 
-
-
   componentDidMount() {
     const { contact, exam } = this.props;
-
     if (contact.id) {
       const data = helper.getDataOneItem(contact.id);
       if (data) {
@@ -99,9 +405,8 @@ class AsistentComponent extends Component {
   }
 
   render() {
-    const { contact_id, items, exam, exam_id, examEdit, codes, session } =
-        this.state,
-      { contact, load_order: LOADING, _saveExam } = this.props;
+    const { contact_id, items, exam, exam_id, examEdit, codes, session } = this.state;
+    const { contact, load_order: LOADING, _saveExam } = this.props;
 
     return (
       <div className="card card-warning card-outline">
@@ -310,6 +615,9 @@ class AsistentComponent extends Component {
     helper.addDataTemporary(data);
     this.handleCancel();
   };
+
+
+
   handleCancel = () => {
     const { handleClose: _handleClose, _setContact } = this.props;
 
@@ -324,6 +632,9 @@ class AsistentComponent extends Component {
     _handleClose();
     _setContact();
   };
+
+
+
   handleGetCategories = (cat_id) => {
     const { _getCategory } = this.props;
 
@@ -331,10 +642,12 @@ class AsistentComponent extends Component {
       id: cat_id,
     });
   };
+
+
+
   handleChangeInput = (key, value) => {
     if (key === "exam") {
       if (value.category_id) {
-        //this.getCategories(value);
         this.handleGetCategories(value.category_id);
       }
       if (!value.id) {
@@ -361,6 +674,9 @@ class AsistentComponent extends Component {
       });
     }
   };
+
+
+
   handleCodeName = (category) => {
     let code = "";
     if (category.depende_de) {
@@ -377,6 +693,9 @@ class AsistentComponent extends Component {
     }
     return code;
   };
+
+
+
   getCategories = (category, exam) => {
     const { category_id, esferaod, esferaoi, cilindrod, cilindroi, id } = exam;
 
@@ -408,8 +727,10 @@ class AsistentComponent extends Component {
       },
     });
   };
+
+
+  
   handleSave = (e) => {
-    //Valid data
     let categories_wrong = 0;
     const { options, _saveOrder, _setContact } = this.props,
       { items: items_state, exam_id, session, contact_id } = this.state,
@@ -443,12 +764,9 @@ class AsistentComponent extends Component {
       items: JSON.stringify(items),
       status: 0,
     };
-
-    //TODO:ORDER DATA//
     console.log("[DEBUG ORDER data]", data);
 
     if (exam_id) data.exam_id = parseInt(exam_id);
-    //Save
     helper.handleSaveOrder(null, data, options, _saveOrder, () =>
       _setContact({})
     );
@@ -475,4 +793,4 @@ const mapStateToProps = ({ contact, exam, order, category }) => {
     _getCategory: categoryActions.getCategory,
   };
 
-export default connect(mapStateToProps, mapActionsToProps)(AsistentComponent);
+export default connect(mapStateToProps, mapActionsToProps)(AsistentComponent); */

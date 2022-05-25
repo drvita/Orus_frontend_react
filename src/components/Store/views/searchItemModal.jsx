@@ -9,7 +9,9 @@ import {useSelector} from 'react-redux';
 
 function AddItemModalComponent(props) {
 
+  //TODO: obtener current user del AuthConfig
   const currentUser = useSelector((state)=> state.users.dataLoggin);
+
 
   //Props and vars
   const {
@@ -31,7 +33,11 @@ function AddItemModalComponent(props) {
       descripcion: "",
       category: 0,
     }),
+
     [showDesc, setShowDesc] = useState(false);
+
+
+
   //Functions
   const _reset = () => {
       setItem({
@@ -47,15 +53,22 @@ function AddItemModalComponent(props) {
         category: 0,
       });
     },
+
+
+
     close = () => {
       _reset();
       _handleCloseModal();
     },
+
+
+
     hanleChangeDataItem = (data) => {
-      //console.log("[DEBUG] select item", data);
+      console.log(data);
       setItem({
+        ...item,
         id: 0,
-        producto: data.producto.toLowerCase(),
+        producto: data.name.toLowerCase(),
         precio: parseFloat(data.precio),
         out: data.cantidades,
         cantidad: 1,
@@ -66,6 +79,8 @@ function AddItemModalComponent(props) {
         category: data.categoria ? data.categoria.id : 0,
       });
     },
+
+
     handleChangeItem = (key, value) => {
       setItem({
         ...item,

@@ -47,9 +47,9 @@ export default function IndexOrderComponent(props){
 
                 <div className="col-sm-12 col-md-10">
                     {state.panel === "inbox" && <Inbox />}
-                    {state.panel === "newOrder" && <AddOrder {...props} />}
-                    {state.panel === "pending" && <p>Pendientes</p>}
+                    {state.panel === "newOrder" && <AddOrder {...props} />}                   
                     {state.panel === "reports" && <p>Reportes</p>}
+                    {/* {state.panel === "pending" && <p>Pendientes</p>} */}
                     {/* {state.panel === "pending" && <Pending></Pending>} */}
                     {/* {state.panel === "pending" && <Pending></Pending>} */}
                     {/* {state.panel === "reports" && <Inventory></Inventory>} */}

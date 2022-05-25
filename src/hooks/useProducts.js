@@ -17,7 +17,6 @@ export default function useProducts(){
         return await api(url);
     }
 
-
     const getProductByCode = async(code, id) =>{
         const url = setUrl('store', null, {code, id})
         console.log(url);

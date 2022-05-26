@@ -24,7 +24,7 @@ function AddItemModalComponent(props) {
   const [item, setItem] = useState({
       id: 0,
       producto: codeDefault,
-      cantidad: cantDefault,
+      cant: cantDefault,
       precio: 0,
       out: 0,
       inStorage: 0,
@@ -45,7 +45,7 @@ function AddItemModalComponent(props) {
         producto: "",
         precio: 0,
         out: 0,
-        cantidad: 1,
+        cant: 1,
         inStorage: 0,
         subtotal: 0,
         store_items_id: 0,
@@ -64,19 +64,19 @@ function AddItemModalComponent(props) {
 
 
     hanleChangeDataItem = (data) => {
-      console.log(data);
       setItem({
         ...item,
         id: 0,
-        producto: data.name.toLowerCase(),
-        precio: parseFloat(data.precio),
+        name: data.name.toLowerCase(),
+        //producto: data.name.toLowerCase(),
+        precio: parseFloat(data.price),
         out: data.cantidades,
-        cantidad: 1,
+        cant: 1,
         inStorage: 0,
         subtotal: 0,
         store_items_id: data.id,
         descripcion: "",
-        category: data.categoria ? data.categoria.id : 0,
+        category: data.category ? data.category.id : 0,
       });
     },
 
@@ -87,14 +87,16 @@ function AddItemModalComponent(props) {
         [key]: key === "descripcion" ? value : parseInt(value),
       });
     },
+
+
     hanldeSendBack = () => {
       const verify = helper.verifyItem(item);
 
       if (!verify) return false;
 
-      item.inStorage = item.out >= item.cantidad ? true : false;
-      item.out = item.out >= item.cantidad ? 0 : item.cantidad - item.out;
-      item.subtotal = parseFloat(item.cantidad * item.precio);
+      item.inStorage = item.out >= item.cant ? true : false;
+      item.out = item.out >= item.cant ? 0 : item.cant - item.out;
+      item.subtotal = parseFloat(item.cant * item.precio);
       item.branch_id = currentUser.branch.id;
       _handleAddItem(item);
       close();
@@ -126,7 +128,7 @@ function AddItemModalComponent(props) {
                       type="number"
                       className="form-control"
                       placeholder="Cantidad"
-                      value={item.cantidad}
+                      value={item.cant}
                       min="0"
                       max="100"
                       onChange={({ target }) =>
@@ -187,7 +189,7 @@ function AddItemModalComponent(props) {
                 type="button"
                 className="btn btn-primary btn-sm text-bold"
                 disabled={
-                  item.store_items_id && item.cantidad && item.precio
+                  item.store_items_id && item.cant && item.precio
                     ? false
                     : true
                 }

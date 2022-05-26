@@ -5,10 +5,8 @@ import { OrderContext } from "../context/OderContext";
 
 //Components
 import Inbox from '../components/Order/views/inbox';
-import Pending from '../components/Order/views/inbox';
 import Asistent from '../components/Order/asistent';
-import AddOrder from '../components/Order/asistent';
-import Chat from '../components/Order/asistent';
+import AddOrder from '../components/Order/editOrder';
 import Toolbar from '../components//Order/Toolbar.jsx';
 
 const initialOptions = {
@@ -47,12 +45,8 @@ export default function IndexOrderComponent(props){
 
                 <div className="col-sm-12 col-md-10">
                     {state.panel === "inbox" && <Inbox />}
-                    {state.panel === "newOrder" && <AddOrder {...props} />}                   
-                    {state.panel === "reports" && <p>Reportes</p>}
-                    {/* {state.panel === "pending" && <p>Pendientes</p>} */}
-                    {/* {state.panel === "pending" && <Pending></Pending>} */}
-                    {/* {state.panel === "pending" && <Pending></Pending>} */}
-                    {/* {state.panel === "reports" && <Inventory></Inventory>} */}
+                    {state.panel === "newOrder" && <Asistent {...props} />}                   
+                    {state.panel === "edit" && <AddOrder {...props}></AddOrder>}
                 </div>
       </div>
         </OrderContext.Provider>

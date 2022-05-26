@@ -7,35 +7,31 @@ export default function ListItemComponent(props){
     itemNew: false,
     code: "",
     cant: 1,
-  })
-
-  //const [total, setTotal] = useState(0);
+  });
 
   const { itemNew, code, cant } = state;
   const { items, codes, session, status = true, noPrice } = props;
   const price = !noPrice;
   let total = 0;
-  
 
   const handleSetCantItem = (id, cant) => {
-    console.log("handleSetCantItem");
-      /* const { items, ChangeInput: _changeInput } = this.props,
+    console.log(id, cant);
+      const { items, ChangeInput: _changeInput } = props,
         items_rest = items.map((item) => {
           if (item.store_items_id === id) {
-            item.cantidad = item.cantidad + cant;
-            item.subtotal = item.cantidad * item.precio;
+            console.log(item);
+            item.cant = item.cant + cant;
+            item.subtotal = item.cant * item.precio;
           }
-  
           return item;
         }),
-        itemsToSave = items_rest.filter((item) => item.cantidad > 0);
-      _changeInput("items", itemsToSave); */
+        itemsToSave = items_rest.filter((item) => item.cant > 0);
+      _changeInput("items", itemsToSave);
     };
 
   
   const deleteItem = (id) => {
-    console.log("deleteItem");
-      /* const { items, status = true, ChangeInput: _changeInput } = this.props;
+      const { items, status = true, ChangeInput: _changeInput } = props;
       const itemsToSave = items.filter((e) => e.store_items_id !== id);
   
       if (!status) {
@@ -45,7 +41,7 @@ export default function ListItemComponent(props){
         );
         return false;
       }
-      _changeInput("items", itemsToSave); */
+      _changeInput("items", itemsToSave);
     };
 
   const handleSetCode = ({ code, oi, od }) => {
@@ -68,12 +64,12 @@ export default function ListItemComponent(props){
         );
   
         if (itemFound !== -1) {
-          const cantidad = items[itemFound].cantidad + item.cantidad,
+          const cantidad = items[itemFound].cant + item.cant,
             precio = item.precio,
-            subtotal = items[itemFound].precio * cantidad;
+            subtotal = items[itemFound].precio * cant;
   
           if (items[itemFound].precio === precio) {
-            items[itemFound].cantidad = cantidad;
+            items[itemFound].cant = cant;
             items[itemFound].subtotal = subtotal;
           } else {
             items.push(item);
@@ -168,8 +164,8 @@ export default function ListItemComponent(props){
                   <tr key={item.store_items_id}>
                     {status ? (
                       <>
-                        <td>
-                          {item.cantidad > 1 ? (
+                        <td>                                                
+                          {item.cant > 1 ? (
                             <i
                               className="fas fa-minus mr-2 text-primary"
                               title="Quitar"
@@ -199,13 +195,14 @@ export default function ListItemComponent(props){
                     ) : null}
 
                     <th scope="row" className="text-right">
-                      {item.cantidad}
+                      {/* Revisar que si regresa la cantidad total del producto */}
+                      {item.cant}
                     </th>
                     <td>
                       {!item.inStorage ? (
                         <i className="text-warning fas fa-circle mr-1"></i>
                       ) : null}
-                      <span className="text-capitalize">{item.producto}</span>
+                      <span className="text-capitalize">{item.name}</span>
                       {item.descripcion ? (
                         <span className="text-muted ml-2">
                           ({item.descripcion})

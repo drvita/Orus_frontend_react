@@ -7,29 +7,30 @@ export default function useOrder(){
         return await api(url);
     }
 
-    const getOrder = async ()=>{
-
+    const getOrder = async (orderID)=>{
+        const url = setUrl('orders', orderID.id);
+        console.log(url);
+        return await api(url);
+        //console.log("Id de la orden a obtener", orderID.id);
     }
 
-
-    //Set Id on Context
-    const setOrder = async ()=>{
-
-    }
-
-    //Set options to get list on context
-    const setOptions = ()=>{
-
+    const saveOrder = ()=>{
+        console.log("Hook save order excuted");
     }
 
     const deleteOrder = ()=>{
 
     }
 
-    const saveOrder = ()=>{
+
+    const setOrder = async ()=>{
 
     }
 
+
+    const setOptions = ()=>{
+
+    }
 
     return{
         getListOrders,

@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect} from "react";
+import React, { Component, useState, useEffect, useContext} from "react";
 import { connect } from "react-redux";
 import generalHelper from '../../utils/helpers';
 
@@ -26,7 +26,7 @@ import helper_exam from "../Exam/helpers";
 import helper from "./helpers";
 import saleHelper from "../Sales/helpers";
 
-export default function AsistentComponent(){
+export default function AsistentComponent(props){
 
   const [state, setState] = useState({
     session: generalHelper.getSession(),
@@ -41,8 +41,10 @@ export default function AsistentComponent(){
     data:{},
   });
 
+  const orderContext = useContext(OrderContext);
+
   //const { contact_id, items, exam, exam_id, examEdit, codes, session } = state;
-  const contact = [];
+  //const contact = [];
   const load_order = false;
   const exam = {};
 
@@ -78,6 +80,9 @@ export default function AsistentComponent(){
   },[contacto]); */
 
 
+  console.log(state);
+
+
   const handleContactSelect = (contact)=>{
     console.log("Contacto recibido", contact);
     const data = helper.getDataOneItem(contact.id);
@@ -87,13 +92,82 @@ export default function AsistentComponent(){
       contact_id: contact.id ?? 0,
       exam: contact.exams[0] ? contact.exams[0]: {},
       exam_id: contact.exams.length ? contact.exams[0].id :  0,
+      items: data.items ?? [],
       data: contact ? contact : {},
     })
-  }
+  };
 
+
+  const handleCancel = () => {
+    setState({ session: generalHelper.getSession(),
+      contact_id: 0,
+      items: [],
+      codes: {},
+      exam_id: null,
+      exam: {},
+      examEdit: false,
+      load: true,
+      LOADING: false,
+      data:{},
+    });
+    //_handleClose();
+    //_setContact();
+  };
+
+
+  const handleSave = (e) => {
+    console.log("Entrando a handle save");
+    let categories_wrong = 0;
+
+    //Viene de redux
+    const { options, _saveOrder, _setContact } = props;
+    const { items: items_state, exam_id, session, contact_id } = state;
+    
+    const items = items_state.map((item) => {
+        if (item.category === 4) categories_wrong++;
+
+        return {
+          cant: item.cantidad,
+          price: item.precio,
+          subtotal: item.subtotal,
+          inStorage: item.inStorage,
+          session: item.session,
+          out: item.out,
+          descripcion: item.descripcion,
+          store_items_id: item.store_items_id,
+        };
+      });
+
+    if (items.length === categories_wrong) {
+      window.Swal.fire({
+        title: "Verificacion",
+        text: "No hay productos para procesar en un pedido",
+        icon: "warning",
+      });
+      return false;
+    }
+
+    let data = {
+      session: session,
+      contact_id: contact_id,
+      items: JSON.stringify(items),
+      status: 0,
+    };
+
+    console.log("[DEBUG ORDER data]", data);
+
+    if (exam_id) data.exam_id = parseInt(exam_id);
+
+    //TODO:Guardar la orden con el hook y setear el contacto al estado inicial
+
+   /*  helper.handleSaveOrder(null, data, options, _saveOrder, () =>
+      _setContact({})
+    ); */
+  };
 
 
   const handleChangeInput = (key, value) => {
+    console.log(key, value);
     if (key === "exam") {
       if (value.category_id) {
         handleGetCategories(value.category_id);
@@ -128,9 +202,11 @@ export default function AsistentComponent(){
   };
 
 
+
   const handleGetCategories = (cat_id) => {
-    //const { _getCategory } = this.props;
-    //_getCategory({ id: cat_id});
+    console.log("Get Categories", cat_id);
+    const { _getCategory } = this.props;
+    _getCategory({ id: cat_id});
   };
 
   return(
@@ -145,7 +221,7 @@ export default function AsistentComponent(){
             <SearchContact
               title="cliente"
               legend={
-                !contact.id
+                !state.data.id
                   ? "Busque el paciente por nombre para crearun nuevo pedido"
                   : null
               }
@@ -159,6 +235,7 @@ export default function AsistentComponent(){
                 <React.Fragment>
                   {state.examEdit ? (
                     <div className="form-group">
+                      Prueba de entrada
                       <Exam
                         id={state.exam_id}
                         examEdit={true}
@@ -245,7 +322,7 @@ export default function AsistentComponent(){
               ) : (
                 <div className="form-group">
                   <ListExam
-                    exams={contact.examenes}
+                    exams={state.data.exams}
                     allSelect
                     handleSelectedExam={(exam) =>
                       this.handleChangeInput("exam", exam)
@@ -286,7 +363,7 @@ export default function AsistentComponent(){
                   /* onClick={handleCancel} */
                 >
                   <i className="fas fa-ban mr-1"></i>
-                  {state.contact_id ? "Cancelar" : "Cerrar"}
+                  {state.contact_id ? "Cancelar" : "Cerrar"}  
                 </button>
                 <button
                   type="button"
@@ -300,7 +377,7 @@ export default function AsistentComponent(){
                 <button
                   type="button"
                   className="btn btn-warning btn-sm text-bold"
-                  /* onClick={handleSave} */
+                  onClick={handleSave}
                   disabled={
                     state.contact_id && state.exam_id !== null && state.items.length
                       ? false
@@ -772,6 +849,10 @@ export default function AsistentComponent(){
     );
   };
 }
+
+
+const { options, _saveOrder, _setContact } = this.props;
+
 
 const mapStateToProps = ({ contact, exam, order, category }) => {
     return {

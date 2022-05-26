@@ -44,7 +44,7 @@ export default function Toolbar(){
                 <i className="mr-2 fas fa-plus"></i>
                 Pedido nuevo
             </a>
-
+            
             <div className="card">
                 <div className="card-header">
                     <h5 className="card-title text-dark">
@@ -171,7 +171,7 @@ export default function Toolbar(){
                 </div>
             </div>
 
-            {orderContext.panel === 'edit' ? <Chat table="orders" idRow={order.id} /> : null}
+            {/* {orderContext.panel === 'edit' ? <Chat table="orders" idRow={order.id} /> : null} */}
             </div>
       </div>
     )

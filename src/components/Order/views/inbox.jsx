@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 //Components
 import Main from "../../../layouts/list_inbox";
@@ -42,6 +43,8 @@ const InboxOrderComponent = (props) => {
     _saveOrder,
   } = props;
 
+  const history = useHistory();
+
   const [orderSelected, setOrderSelected] = useState({ id: 0 });
 
   const getList = ()=>{
@@ -49,6 +52,7 @@ const InboxOrderComponent = (props) => {
       ...pedidos,
       loading: true,
     })
+
     orderHook.getListOrders(options).then((data)=>{
       if(data){
         setPedidos({
@@ -70,39 +74,22 @@ const InboxOrderComponent = (props) => {
         [key]: value,
       }
     });
-
-    /* _setOptions({
-      key,
-      value,
-    }); */
   };  
 
   const handleSelectOrder = (e, order = { id: 0 }) => {
     if (e) e.preventDefault();
-
-    if (order.id) {
-      console.log("Entrando al primero");
-      //Setear la orden en contexto global
-      /* orderContext.set({
-        ...orderContext,
-        panel:'newOrder',
-        order: order,
-      }) */
-      //_setOrder(order);
-    } else if (orderSelected.id) {
-      console.log("Entrando al segundo", order);
-      //Traer la order con hook y setearla en context
-      _getOrder(orderSelected.id);
+    if(order.id !== 0){
+      history.push(`${order.id}`)
+      console.log(order.id);
+    }else{  
+      history.push(`pedidos/${orderSelected.id}`);
+      console.log(orderSelected.id)
     }
   };
 
-
   const handleOrderSelect = ({ checked }, pedido) => {
-    //Funcion que se ejecuta cuando se selecciona el checkbox
     console.log(checked, " -- ", pedido);
     if (!checked) pedido = { id: 0 };
-
-    //Setea el pedido en el state
     setOrderSelected(pedido);
   };
 

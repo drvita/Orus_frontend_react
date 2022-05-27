@@ -79,7 +79,7 @@ const InboxOrderComponent = (props) => {
   const handleSelectOrder = (e, order = { id: 0 }) => {
     if (e) e.preventDefault();
     if(order.id !== 0){
-      history.push(`${order.id}`)
+      history.push(`/pedidos/${order.id}`)
       console.log(order.id);
     }else{  
       history.push(`pedidos/${orderSelected.id}`);

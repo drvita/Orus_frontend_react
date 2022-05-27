@@ -46,7 +46,8 @@ export default function AsistentComponent(props){
   //const { contact_id, items, exam, exam_id, examEdit, codes, session } = state;
   //const contact = [];
   const load_order = false;
-  const exam = {};
+  const {exam} = state;
+  const orderHook = useOrder();
 
   /* const mapStateToProps = ({ contact, exam, order, category }) => {
     return {
@@ -99,7 +100,8 @@ export default function AsistentComponent(props){
 
 
   const handleCancel = () => {
-    setState({ session: generalHelper.getSession(),
+    setState({ 
+      session: generalHelper.getSession(),
       contact_id: 0,
       items: [],
       codes: {},
@@ -110,8 +112,13 @@ export default function AsistentComponent(props){
       LOADING: false,
       data:{},
     });
-    //_handleClose();
-    //_setContact();
+
+    if(!state.contact_id){
+      orderContext.set({
+        ...orderContext,
+        panel:'inbox',
+      });
+    }
   };
 
 
@@ -122,7 +129,7 @@ export default function AsistentComponent(props){
     //Viene de redux
     const { options, _saveOrder, _setContact } = props;
     const { items: items_state, exam_id, session, contact_id } = state;
-    
+
     const items = items_state.map((item) => {
         if (item.category === 4) categories_wrong++;
 
@@ -150,7 +157,8 @@ export default function AsistentComponent(props){
     let data = {
       session: session,
       contact_id: contact_id,
-      items: JSON.stringify(items),
+      items: items,
+      //items: JSON.stringify(items),
       status: 0,
     };
 
@@ -158,7 +166,12 @@ export default function AsistentComponent(props){
 
     if (exam_id) data.exam_id = parseInt(exam_id);
 
+    console.log("Data a guardar:", data);
+
     //TODO:Guardar la orden con el hook y setear el contacto al estado inicial
+    orderHook.saveOrder(data).then((data)=>{
+      console.log("Funcion de save del hook");
+    })
 
    /*  helper.handleSaveOrder(null, data, options, _saveOrder, () =>
       _setContact({})
@@ -167,12 +180,15 @@ export default function AsistentComponent(props){
 
 
   const handleChangeInput = (key, value) => {
+
     console.log(key, value);
     if (key === "exam") {
+      console.log(value);
       if (value.category_id) {
         handleGetCategories(value.category_id);
       }
       if (!value.id) {
+        console.log("Entradndo 1")
         setState({
           ...state,
           exam_id: 0,
@@ -180,6 +196,7 @@ export default function AsistentComponent(props){
           codes: {},
         });
       } else {
+        console.log("Entradndo 2")
         setState({
           ...state,
           exam_id: value.id,
@@ -240,7 +257,7 @@ export default function AsistentComponent(props){
                         id={state.exam_id}
                         examEdit={true}
                         exam={exam}
-                        ChangeInput={this.handleChangeInput}
+                        ChangeInput={handleChangeInput}
                       />
                     </div>
                   ) : (
@@ -277,7 +294,7 @@ export default function AsistentComponent(props){
                                 type="button"
                                 className="btn btn-secondary btn-sm"
                                 onClick={(e) =>
-                                  this.handleChangeInput("exam_id", null)
+                                  handleChangeInput("exam_id", null)
                                 }
                               >
                                 <i className="fas fa-exchange-alt"></i>
@@ -287,7 +304,7 @@ export default function AsistentComponent(props){
                                   type="button"
                                   className="btn btn-info btn-sm"
                                   onClick={(e) =>
-                                    this.handleChangeInput("examEdit", true)
+                                    handleChangeInput("examEdit", true)
                                   }
                                   disabled={state.examEdit}
                                 >
@@ -325,14 +342,14 @@ export default function AsistentComponent(props){
                     exams={state.data.exams}
                     allSelect
                     handleSelectedExam={(exam) =>
-                      this.handleChangeInput("exam", exam)
+                      handleChangeInput("exam", exam)
                     }
                   />
                   <div className="btn-group">
                     <button
                       type="button"
                       className="btn btn-secondary"
-                      onClick={(e) => this.handleChangeInput("exam", { id: 0 })}
+                      onClick={(e) => handleChangeInput("exam", { id: 0 })}
                     >
                       <i className="fas fa-ban mr-1"></i>
                       Sin examen
@@ -360,7 +377,7 @@ export default function AsistentComponent(props){
                 <button
                   type="button"
                   className="btn btn-default btn-sm"
-                  /* onClick={handleCancel} */
+                  onClick={handleCancel}
                 >
                   <i className="fas fa-ban mr-1"></i>
                   {state.contact_id ? "Cancelar" : "Cerrar"}  
@@ -692,7 +709,6 @@ export default function AsistentComponent(props){
     helper.addDataTemporary(data);
     this.handleCancel();
   };
-
 
 
   handleCancel = () => {

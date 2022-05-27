@@ -1,9 +1,11 @@
 import React, { Component, useState, useEffect, useContext } from "react";
 import moment from "moment";
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 
 //Context
 import { AuthContext } from "../../context/AuthContext";
+import { OrderContext } from "../../context/OderContext";
 
 //Hooks
 import useOrder from "../../hooks/useOrder";
@@ -44,7 +46,9 @@ export default function EditOrderComponent(props){
       updated_at: null,
   });
 
-  const order = [];
+  //const order = [];
+
+  const orderContext = useContext(OrderContext);
 
   const {
     id,
@@ -68,6 +72,8 @@ export default function EditOrderComponent(props){
   const hookOrder = useOrder();
   const authContext = useContext(AuthContext);
   const role = authContext.auth.roles;
+  const currentUser = authContext.auth;
+  const history = useHistory();
 
 
   const { /* order, */ loading: LOADING } = props;
@@ -79,31 +85,55 @@ export default function EditOrderComponent(props){
 
   
   const handleClose = (e) => {
-    /* const { _setOrder } = this.props;
+    //Cambiamos el panel a inbox y rgresamos al estado inicial
+    setState({
+      id: 0,
+      paciente: {},
+      session: null,
+      lab_id: 0,
+      npedidolab: "",
+      observaciones: "",
+      ncaja: 0,
+      nota:{},
+      items: [],
+      exam: {},
+      codes: {},
+      status: 0,
+      created: {},
+      created_at: null,
+      updated: {},
+      updated_at: null,
+    });
 
-    if (e) e.preventDefault();
-    _setOrder();
-    this.props.handleChangePanel(null, 0); */
+    orderContext.set({
+      ...orderContext,
+      panel:'inbox',
+    });
+
+    history.push("/pedidos");
   };
 
   const handleSave = () => {
-    /* //Validid data
-    const { id, npedidolab, ncaja, status, lab_id, observaciones, items } =
-        this.state,
-      { options, _saveOrder, currentUser } = this.props,
-      itemsToJson = items.map((item) => {
+    console.log(currentUser);
+    //Validid data
+    const { id, npedidolab, ncaja, status, lab_id, observaciones, items } = state;
+    const { options, _saveOrder /* currentUser */ } = props;
+    const itemsToJson = items.map((item) => {
         return {
           ...item,
           cant: item.cantidad,
           price: item.precio,
         };
       });
+
+
     let data = {
       npedidolab,
       ncaja,
       status,
       observaciones,
-      items: JSON.stringify(itemsToJson),
+      items: itemsToJson,
+      //items: JSON.stringify(itemsToJson),
       branch_id: currentUser.branch.id,
     };
     if (lab_id) data.lab_id = lab_id;
@@ -121,7 +151,12 @@ export default function EditOrderComponent(props){
       return false;
     }
     //Save
-    helper.handleSaveOrder(id, data, options, _saveOrder); */
+    console.log("Data a guardar", data);
+
+    hookOrder.saveOrder(data).then((data)=>{
+      console.log("Funcion de guardar");
+    })
+    //helper.handleSaveOrder(id, data, options, _saveOrder);
   };
 
   const handleDeleteOrder = () => {
@@ -136,10 +171,6 @@ export default function EditOrderComponent(props){
       ...state,
       [key]: value
     })
-    /* setState({
-      ...state,
-      [key]: value,
-    }); */
   };
 
   useEffect(()=>{
@@ -155,6 +186,7 @@ export default function EditOrderComponent(props){
           npedidolab: dataReceibed.npedidolab ?? "",
           observaciones: dataReceibed.observaciones ?? "",
           ncaja: dataReceibed.ncaja ?? 0,
+          nota: dataReceibed.nota ?? {},
           items: dataReceibed.items ?? [],
           exam: dataReceibed.exam ?? {},
           codes: dataReceibed.codes ?? {},
@@ -172,7 +204,7 @@ export default function EditOrderComponent(props){
   
   return (
     <>
-      { order ? (
+      { state ? (
         <>
           <div className="card card-warning card-outline d-print-none">
             <div className="card-header">
@@ -231,7 +263,7 @@ export default function EditOrderComponent(props){
               <div className="text-right mailbox-controls">
                 <div className="btn-group">
                   <a
-                    href="#close"
+                    href=""
                     className="btn btn-secondary btn-sm"
                     onClick={(e) => handleClose(e)}
                   >
@@ -260,7 +292,7 @@ export default function EditOrderComponent(props){
               <div className="card">
                 <div className="text-center mailbox-controls with-border">
                   <div className="btn-group">
-                    {order.nota && !order.nota.id ? (
+                    {state.nota && !state.nota.id ? (
                       <button
                         type="button"
                         className="btn btn-default btn-sm"
@@ -392,10 +424,10 @@ export default function EditOrderComponent(props){
                             </div>
                           </div>
                         </div>
-                        {order && order.id ? (
+                        {state && state.id ? (
                           <ShowPaymentsComponent
-                            nota={order.nota}
-                            orderId={order.id}
+                            nota={state.nota}
+                            orderId={state.id}
                           />
                         ) : null}
                       </div>
@@ -427,7 +459,7 @@ export default function EditOrderComponent(props){
             <div className={`col-${exam && exam.id ? 3 : 12} pt-6`}>
               <h6 className="w-100 d-block">Meta data</h6>
               {/* <Dashboard
-                register={created_at ?? ""}
+                created_at={created_at ?? ""}
                 created={created ? created.name : ""}
                 updated={updated ? updated.name : ""}
                 updated_at={updated_at ?? ""}

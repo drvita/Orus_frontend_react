@@ -1,6 +1,7 @@
 import {Fragment ,useContext} from 'react';
 import { OrderContext } from "../../context/OderContext";
 import { AuthContext } from '../../context/AuthContext';
+import { useHistory } from 'react-router-dom';
 
 //Components
 import Chat from './asistent';
@@ -12,6 +13,7 @@ export default function Toolbar(){
     const mainRole = authContext.auth.roles;
     const options = orderContext.options;
     const order = orderContext.order;
+    const history = useHistory();
 
 
     const handleSetSelectOptions = ({ target }) => {
@@ -77,7 +79,8 @@ export default function Toolbar(){
                             orderContext.set({
                                 ...orderContext,
                                 panel: 'inbox'                                
-                            })                            
+                            });
+                            history.push("/pedidos");                         
                         }}
                     >
                         <i className="mr-2 fas fa-clipboard-list"></i> Pedidos

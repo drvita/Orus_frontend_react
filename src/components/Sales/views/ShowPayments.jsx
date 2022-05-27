@@ -4,16 +4,31 @@ import { saleActions } from "../../../redux/sales";
 import PaymentModal from "./PaymentModal";
 import helpers from "../helpers";
 import PrintSaleComponent from "./Print_sale";
+import useSales from "../../../hooks/useSale";
+
+import { SaleContext } from "../../../context/SaleContext";
+
 
 export default function ShowPaymentsComponent({ nota, orderId }) {
-  //State
+
+  //TODO: Crear un context de venta para la venta en este componente
+  //Los hijos de este componente modifican la venta de esta componentes
+
+
+  //State         
   const [data, setData] = useState({
     showPayment: false,
     totalPayments: 0,
     toPaid: 0,
   });
-  const dispatch = useDispatch(),
-    { sale } = useSelector((state) => state.sales);
+
+
+  const [mainSale, setMainSale] = useState({})
+
+  const dispatch = useDispatch();
+
+  const hookSale = useSales();
+
   //Functions
   const handleShowPayment = () => {
       setData({
@@ -21,17 +36,40 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
         showPayment: true,
       });
     },
+
     handleClosePayment = () => {
       setData({
         ...data,
         showPayment: false,
       });
     },
+
+
     getSale = (id) => {
-      if (id) dispatch(saleActions.getSale(id));
+      hookSale.getSaleById(id).then((data)=>{
+        if(data){
+          let venta = data.data[0];
+          let totalPayments = 0;
+          console.log(venta);
+          venta.payments.forEach((pay) => (totalPayments += parseInt(pay.total)));
+
+          setMainSale(venta);
+          //TODO: 
+
+          setData({
+            ...data,
+            totalPayments,
+            toPaid: parseInt(venta.total) - totalPayments,
+          });
+          
+        }else{
+          console.error("Error al obtener la venta");
+        }
+      })
     },
+
     handleDeletePayment = ({ id, total, metodoname }) => {
-      helpers.confirm(
+     /*  helpers.confirm(
         `Realmente desea eliminar el pago ${metodoname}, de ${total}`,
         () => {
           dispatch(
@@ -41,24 +79,25 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
             })
           );
         }
-      );
+      ); */
     };
 
   useEffect(() => {
-    if (sale.id) {
+    getSale(nota.id);
+    /* if (mainSale & mainSale.id) {
       let totalPayments = 0;
-      sale.payments.forEach((pay) => (totalPayments += parseInt(pay.total)));
-
+      mainSale.payments.forEach((pay) => (totalPayments += parseInt(pay.total)));
       setData({
         ...data,
         totalPayments,
-        toPaid: parseInt(sale.total) - totalPayments,
+        toPaid: parseInt(mainSale.total) - totalPayments,
       });
+
     } else {
       getSale(nota.id);
-    }
+    } */
     //eslint-disable-next-line
-  }, [sale]);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -67,16 +106,16 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
     // eslint-disable-next-line
   }, []);
 
-  if (sale && sale.id) {
+  if (mainSale && mainSale.id) {
     return (
       <div className="card">
         <div className="card-body">
           <div className="row d-print-none">
             <div className="col">
-              <label>Nota:</label> {sale.id}
+              <label>Nota:</label> {mainSale.id}
             </div>
             <div className="col">
-              <label>Total:</label> ${sale.subtotal}
+              <label>Total:</label> ${mainSale.subtotal}
             </div>
             <div className="col">
               <label>Abonado:</label> ${data.totalPayments}
@@ -105,7 +144,7 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {sale.payments.map((pay) => (
+                  {mainSale.payments.map((pay) => (
                     <tr key={pay.id}>
                       <th>{pay.id}</th>
                       <td className="text-uppercase">{pay.metodoname}</td>
@@ -132,7 +171,7 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
             <div className="col text-right">
               <div className="btn-group">
                 <PrintSaleComponent
-                  sale={sale}
+                  sale = {mainSale}
                   order={orderId}
                   payed={data.totalPayments}
                   text="Imprimir"
@@ -154,9 +193,9 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
           {data.showPayment && (
             <PaymentModal
               handleClose={handleClosePayment}
-              sale={{
-                ...sale,
-                contact_id: sale.customer.id,
+              saleSend={{
+                ...mainSale,
+                contact_id: mainSale.customer.id,
               }}
               forPaid={data.toPaid}
             />

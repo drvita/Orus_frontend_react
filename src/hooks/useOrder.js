@@ -11,17 +11,19 @@ export default function useOrder(){
         const url = setUrl('orders', orderID.id);
         console.log(url);
         return await api(url);
-        //console.log("Id de la orden a obtener", orderID.id);
     }
 
-    const saveOrder = ()=>{
-        console.log("Hook save order excuted");
+    const saveOrder = async (data)=>{
+        console.log("Data recibida en la funcion:", data);
+        const method = data.id ? 'PUT' : 'POST';
+        const url = setUrl('orders');
+        console.log(url, " -- ", method);
+        //return await api(url, method, data);
     }
 
     const deleteOrder = ()=>{
 
     }
-
 
     const setOrder = async ()=>{
 

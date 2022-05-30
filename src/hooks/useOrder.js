@@ -18,7 +18,7 @@ export default function useOrder(){
         const method = data.id ? 'PUT' : 'POST';
         const url = setUrl('orders');
         console.log(url, " -- ", method);
-        //return await api(url, method, data);
+        return await api(url, method, data);
     }
 
     const deleteOrder = ()=>{

@@ -10,7 +10,6 @@ import useSale from '../../../hooks/useSale';
 //Helpers
 import helpers from '../helpers';
 
-
 import moment from "moment";
 
 export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {

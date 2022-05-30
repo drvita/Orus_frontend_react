@@ -16,6 +16,7 @@ const initialOptions = {
     itemsPage: 10,
     status: 0,
     search: "",
+    
 };
 
 

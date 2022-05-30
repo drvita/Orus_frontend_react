@@ -29,7 +29,6 @@ import saleHelper from "../Sales/helpers";
 export default function AsistentComponent(props){
 
   const [state, setState] = useState({
-    session: generalHelper.getSession(),
     contact_id: 0,
     items: [],
     codes: {},
@@ -39,65 +38,44 @@ export default function AsistentComponent(props){
     load: true,
     LOADING: false,
     data:{},
+    session: generalHelper.getSession(),
   });
 
+
   const orderContext = useContext(OrderContext);
-
-  //const { contact_id, items, exam, exam_id, examEdit, codes, session } = state;
-  //const contact = [];
-  const load_order = false;
-  const {exam} = state;
   const orderHook = useOrder();
+  const examHook = useExam();
 
-  /* const mapStateToProps = ({ contact, exam, order, category }) => {
-    return {
-      load_contact: contact.loading,
-      contact: contact.contact,
-      exam: exam.exam,
-      msg_exams: exam.messages,
-      options: order.options,
-      load_order: order.loading,
-      category: category.category,
-    };
-  }, */
+  const load_order = false;
+  const { exam } = state;
 
-/* 
-  useEffect(()=>{
-    if (contacto.id) {
-      const data = helper.getDataOneItem(contacto.id);
-      if (data) {
-        console.log("Data del useEffect", data);
-        setState({
-          ...state,
-          contact,
-          contact_id: contacto.id,
-          items: data.items ?? [],
-          session: data.session ?? state.session,
-          exam: exam ?? state.exam,
-          exam_id: exam.id ?? state.exam_id,
-        });
-      }
-    }
-  },[contacto]); */
-
-
-  console.log(state);
-
-
-  const handleContactSelect = (contact)=>{
+  const handleContactSelect = (contact) => {
     console.log("Contacto recibido", contact);
-    const data = helper.getDataOneItem(contact.id);
-    console.log(data);
-    setState({
-      ...state,
-      contact_id: contact.id ?? 0,
-      exam: contact.exams[0] ? contact.exams[0]: {},
-      exam_id: contact.exams.length ? contact.exams[0].id :  0,
-      items: data.items ?? [],
-      data: contact ? contact : {},
-    })
+    if(contact.id === 0){
+      setState({
+        contact_id: 0,
+        items: [],
+        codes: {},
+        exam_id: null,
+        exam: {},
+        examEdit: false,
+        load: true,
+        LOADING: false,
+        data:{},
+        session: generalHelper.getSession(),
+      })
+    }else{
+      const data = helper.getDataOneItem(contact.id);
+      setState({
+        ...state,
+        contact_id: contact.id ?? 0,
+        exam: contact.exams[0] ? contact.exams[0]: {},
+        exam_id: contact.exams.length ? contact.exams[0].id :  null,
+        items: data.items ?? [],
+        data: contact ? contact : {},
+      })
+    }
   };
-
 
   const handleCancel = () => {
     setState({ 
@@ -125,20 +103,17 @@ export default function AsistentComponent(props){
   const handleSave = (e) => {
     console.log("Entrando a handle save");
     let categories_wrong = 0;
-
-    //Viene de redux
-    const { options, _saveOrder, _setContact } = props;
     const { items: items_state, exam_id, session, contact_id } = state;
 
     const items = items_state.map((item) => {
         if (item.category === 4) categories_wrong++;
 
         return {
-          cant: item.cantidad,
+          cant: item.cant,
           price: item.precio,
           subtotal: item.subtotal,
           inStorage: item.inStorage,
-          session: item.session,
+          session: session,
           out: item.out,
           descripcion: item.descripcion,
           store_items_id: item.store_items_id,
@@ -158,37 +133,45 @@ export default function AsistentComponent(props){
       session: session,
       contact_id: contact_id,
       items: items,
-      //items: JSON.stringify(items),
       status: 0,
     };
-
     console.log("[DEBUG ORDER data]", data);
-
     if (exam_id) data.exam_id = parseInt(exam_id);
-
-    console.log("Data a guardar:", data);
 
     //TODO:Guardar la orden con el hook y setear el contacto al estado inicial
     orderHook.saveOrder(data).then((data)=>{
-      console.log("Funcion de save del hook");
+      if(data){
+        window.Swal.fire({
+          icon: "success",
+          title: "Pedido guardado correctamente",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        console.log("State despuès de guardar:",state);
+        orderContext.set({
+          ...orderContext,
+          panel: 'inbox',
+        })
+      }
     })
-
-   /*  helper.handleSaveOrder(null, data, options, _saveOrder, () =>
-      _setContact({})
-    ); */
   };
 
 
   const handleChangeInput = (key, value) => {
-
     console.log(key, value);
+
+    console.log(state);
+
     if (key === "exam") {
-      console.log(value);
+      console.log("Entrando al primer condicional");
+
       if (value.category_id) {
+        console.log("Primer IF");
         handleGetCategories(value.category_id);
       }
+
       if (!value.id) {
-        console.log("Entradndo 1")
+        console.log("Segundo IF");
         setState({
           ...state,
           exam_id: 0,
@@ -196,7 +179,7 @@ export default function AsistentComponent(props){
           codes: {},
         });
       } else {
-        console.log("Entradndo 2")
+        console.log("ELSE")
         setState({
           ...state,
           exam_id: value.id,
@@ -205,6 +188,8 @@ export default function AsistentComponent(props){
         });
       }
     }
+
+
     if (key === "codes") {
       setState({
         ...state,
@@ -216,8 +201,16 @@ export default function AsistentComponent(props){
         [key]: value,
       });
     }
-  };
 
+    /* if(key === 'exam_id'){
+      console.log("Entrando al final");
+      setState({
+        ...state,
+        exam_id: 0,
+        exam: {},
+      })
+    } */
+  };
 
 
   const handleGetCategories = (cat_id) => {
@@ -227,32 +220,37 @@ export default function AsistentComponent(props){
   };
 
   return(
+
       <div className="card card-warning card-outline">
         <div className="card-header">
           <h3 className="card-title">
             <i className="fas fa-clipboard-list mr-1"></i>Nuevo pedido
           </h3>
         </div>
+
+
         <div className="card-body">
           <div className="form-group d-print-none">
             <SearchContact
               title="cliente"
-              legend={
-                !state.data.id
+              legend={ !state.data.id
                   ? "Busque el paciente por nombre para crearun nuevo pedido"
                   : null
               }
               readOnly={state.exam_id !== null}
               handleContactSelect = {handleContactSelect}
+              data = {state.data}
             />
           </div>
+
+
+
           {state.contact_id ? (
             <React.Fragment>
               {state.exam_id !== null ? (
                 <React.Fragment>
                   {state.examEdit ? (
                     <div className="form-group">
-                      Prueba de entrada
                       <Exam
                         id={state.exam_id}
                         examEdit={true}
@@ -315,6 +313,7 @@ export default function AsistentComponent(props){
                           </div>
                         </div>
                       </div>
+
                       {(exam.id > 0 && exam.status) || !exam.id ? (
                         <Items
                           items={state.items}
@@ -346,20 +345,44 @@ export default function AsistentComponent(props){
                     }
                   />
                   <div className="btn-group">
+
                     <button
                       type="button"
                       className="btn btn-secondary"
-                      onClick={(e) => handleChangeInput("exam", { id: 0 })}
+                      onClick={(e) => {
+                        setState({
+                          ...state,
+                          exam_id: 0,
+                          exam: {},
+                        })
+                      }}
                     >
                       <i className="fas fa-ban mr-1"></i>
                       Sin examen
                     </button>
+
                     <button
                       type="button"
                       className="btn btn-secondary"
-                      /* onClick={(e) =>
-                        helper_exam.handleSaveExam(contact, null, _saveExam)
-                      } */
+                      onClick={(e) => {
+                        e.preventDefault();
+
+                        let dataNewExam = {
+                          contact_id: state.data.id,
+                          name: state.data.name
+                        };
+
+;                        examHook.saveExam(dataNewExam).then((data) => {
+                          if(data){   
+                            console.log("Data del examen creado", data);
+                            setState({
+                              ...state,
+                              exam_id: data.id,
+                            })
+                          }
+                        })
+                        //helper_exam.handleSaveExam(contact, null, _saveExam)
+                      }}
                     >
                       <i className="fas fa-notes-medical mr-1"></i>
                       Nuevo examen

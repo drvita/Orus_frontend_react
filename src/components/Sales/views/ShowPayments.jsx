@@ -14,6 +14,7 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
   //TODO: Crear un context de venta para la venta en este componente
   //Los hijos de este componente modifican la venta de esta componentes
 
+  //TODO: tambien se puede agregar la venta al context inicial que está en el componente Store.jsx
 
   //State         
   const [data, setData] = useState({
@@ -21,7 +22,6 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
     totalPayments: 0,
     toPaid: 0,
   });
-
 
   const [mainSale, setMainSale] = useState({})
 

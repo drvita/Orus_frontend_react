@@ -5,6 +5,8 @@ export default function ShowContactComponent(props) {
   const { data = {}, readOnly = false, title = "contacto", legend } = props;
   const history = useHistory();
 
+  //console.log("props recibidas", props);
+
   return (
     <div className="w-100 d-block">
       {legend && !data.id && (
@@ -19,6 +21,8 @@ export default function ShowContactComponent(props) {
             <i className="fas fa-user mr-2"></i> {title}
           </span>
         </div>
+
+        
         {data.id ? (
           <>
             <span className="form-control bg-light">
@@ -41,7 +45,7 @@ export default function ShowContactComponent(props) {
                     onClick={() => {
                       window.Swal.fire({
                         title: "Contactos",
-                        text: `¿Esta seguro de cambiar de ${props.title}?`,
+                        text: `¿Esta seguro de cambiar de xd ${props.title}?`,
                         icon: "question",
                         showCancelButton: true,
                         // confirmButtonColor: "#d33",
@@ -51,6 +55,7 @@ export default function ShowContactComponent(props) {
                       }).then(({ dismiss }) => {
                         if (!dismiss) {
                           props.handleContactSelect({ id: 0 });
+                          //props.handleContactSelect();
                         }
                       });
                     }}

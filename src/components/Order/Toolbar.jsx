@@ -72,7 +72,7 @@ export default function Toolbar(){
                     </li> */}
                     <li className="nav-item">
                     <a
-                        href="#item"
+                        href=""
                         className={orderContext.panel === 'inbox' ? "nav-link active" : "nav-link"}
                         onClick={(e) => {
                             e.preventDefault();

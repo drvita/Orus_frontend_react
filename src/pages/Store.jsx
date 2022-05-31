@@ -7,9 +7,10 @@ import { StoreContext } from "../context/StoreContext";
 import ToolBar from "../components/Store/ToolBar";
 import Inbox from "../components/Store/Inbox";
 import Add from "../components/Store/Add";
-import Categories from './categories_page';
-import Brands from './brands_page';
+import Categories from "./StoreCategories";
+import Brands from "./StoreBrand";
 import Inventory from "./StoreInventory";
+import Entries from "./StoreEntries";
 
 const optionsDefault = {
   page: 1,
@@ -21,7 +22,6 @@ const optionsDefault = {
   brand: "",
   zero: "false",
 };
-
 
 export default function Store(props) {
   const [state, setState] = useState({
@@ -36,7 +36,7 @@ export default function Store(props) {
       ...state,
       panel: id ? "neworedit" : "inbox",
     });
-  }, [id]);// eslint-disable-line react-hooks/exhaustive-deps
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StoreContext.Provider value={{ ...state, set: setState }}>
@@ -59,6 +59,7 @@ export default function Store(props) {
           {state.panel === "category" && <Categories></Categories>}
           {state.panel === "brands" && <Brands></Brands>}
           {state.panel === "inventory" && <Inventory></Inventory>}
+          {state.panel === "entries" && <Entries></Entries>}
         </div>
       </div>
     </StoreContext.Provider>

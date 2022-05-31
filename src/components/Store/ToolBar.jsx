@@ -51,7 +51,7 @@ export default function ToolBar() {
               ...context,
               panel: "inbox",
             });
-            history.push('/almacen');
+            history.push("/almacen");
           }}
         >
           <i
@@ -78,7 +78,7 @@ export default function ToolBar() {
               panel: "category",
             });
 
-            history.push('/almacen');
+            history.push("/almacen");
           }}
         >
           <i
@@ -105,7 +105,7 @@ export default function ToolBar() {
               panel: "brands",
             });
 
-            history.push('/almacen');
+            history.push("/almacen");
           }}
         >
           <i
@@ -121,24 +121,53 @@ export default function ToolBar() {
       <li className="nav-item">
         <a
           href="#item"
-          className={context.panel === "inventory" ? "nav-link disabled" : "nav-link"}
+          className={
+            context.panel === "inventory" ? "nav-link disabled" : "nav-link"
+          }
           onClick={(e) => {
             e.preventDefault();
 
             context.set({
               ...context,
               panel: "inventory",
-            })
+            });
 
             //history.push('/almacen');
           }}
         >
           <i
             className={
-              context.panel === "inventory" ? "fas fa-check text-success mr-1" : "fas fa-plus mr-1"
+              context.panel === "inventory"
+                ? "fas fa-check text-success mr-1"
+                : "fas fa-plus mr-1"
             }
           ></i>
           Inventario
+        </a>
+      </li>
+      <li className="nav-item">
+        <a
+          href="#item"
+          className={
+            context.panel === "entries" ? "nav-link disabled" : "nav-link"
+          }
+          onClick={(e) => {
+            e.preventDefault();
+
+            context.set({
+              ...context,
+              panel: "entries",
+            });
+          }}
+        >
+          <i
+            className={
+              context.panel === "inventory"
+                ? "fas fa-check text-success mr-1"
+                : "fas fa-plus mr-1"
+            }
+          ></i>
+          Entradas
         </a>
       </li>
 
@@ -157,11 +186,11 @@ export default function ToolBar() {
                 supplier={context.options?.supplier}
                 brand={context.options?.brand}
                 showIcon={false}
-                handleChangeBrand={(id) =>{
+                handleChangeBrand={(id) => {
                   handleSetSelectOptions({
-                      name: "brand", 
-                      value: id 
-                    })
+                    name: "brand",
+                    value: id,
+                  });
                 }}
               />
             </li>

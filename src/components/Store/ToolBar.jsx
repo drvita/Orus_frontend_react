@@ -78,7 +78,7 @@ export default function ToolBar() {
               panel: "category",
             });
 
-            history.push("/almacen");
+            history.push("/almacen/categorias");
           }}
         >
           <i
@@ -105,7 +105,7 @@ export default function ToolBar() {
               panel: "brands",
             });
 
-            history.push("/almacen");
+            history.push("/almacen/marcas");
           }}
         >
           <i
@@ -132,7 +132,7 @@ export default function ToolBar() {
               panel: "inventory",
             });
 
-            //history.push('/almacen');
+            history.push("/almacen/inventario");
           }}
         >
           <i
@@ -158,11 +158,13 @@ export default function ToolBar() {
               ...context,
               panel: "entries",
             });
+
+            history.push("/almacen/entradas");
           }}
         >
           <i
             className={
-              context.panel === "inventory"
+              context.panel === "entries"
                 ? "fas fa-check text-success mr-1"
                 : "fas fa-plus mr-1"
             }

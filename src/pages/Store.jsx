@@ -32,9 +32,33 @@ export default function Store(props) {
   const { id } = props.match.params;
 
   useEffect(() => {
+    console.log("[DEBUG] is number:", id, isNaN(id), isNaN("16"));
+
+    let panel = "inbox";
+
+    if (id) {
+      if (!isNaN(id)) {
+        panel = "neworedit";
+      } else {
+        switch (id?.toLowerCase()) {
+          case "categorias":
+            panel = "category";
+            break;
+          case "marcas":
+            panel = "brands";
+            break;
+          case "inventario":
+            panel = "inventory";
+            break;
+          default:
+            panel = "entries";
+        }
+      }
+    }
+
     setState({
       ...state,
-      panel: id ? "neworedit" : "inbox",
+      panel,
     });
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 

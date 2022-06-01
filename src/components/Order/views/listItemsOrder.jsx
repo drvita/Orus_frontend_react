@@ -13,6 +13,31 @@ export default function ListItemComponent(props){
   const { items, codes, session, status = true, noPrice } = props;
   const price = !noPrice;
   let total = 0;
+  const productCategories = []
+
+  //Guardamos en un array las categorias de los items agreados
+  //Hacemos un array.includes para ver si existe al menos una categoria válida
+  //Si existe, habilitamos el boton, si no existe, deshabilitamos boton y mostramos la alerta
+
+
+
+  //Execute this function every time a new item is added
+  const validateList = () => {
+
+    items.forEach(item => {
+      productCategories.push(item.category);
+    });
+
+    console.log(productCategories);
+
+    let valid = productCategories.includes(3);
+
+    console.log(valid);
+
+    return valid;
+  };
+
+
 
   const handleSetCantItem = (id, cant) => {
     console.log(id, cant);
@@ -55,7 +80,6 @@ export default function ListItemComponent(props){
 
 
   const handleAddItem = (item) => {
-    console.log("Item seleccionado", item);
 
       if (item) {
         let { items, ChangeInput: _changeInput } = props;
@@ -76,6 +100,10 @@ export default function ListItemComponent(props){
           }
         } else {
           items.push(item);
+
+          //validateList();
+
+          props.validValue(validateList)
         }
         _changeInput("items", items);
       }
@@ -84,10 +112,10 @@ export default function ListItemComponent(props){
     
 
   return (
-    <div className="card ">
+    <div className = {items.length !== 0 ? "card border border-success" : "card border border-warning"}>
       <div className="card-header">
         <h3 className="card-title">
-          <i className="fas fa-shopping-cart"></i> Pedido
+          <i className="fas fa-shopping-cart"></i> Lista de Productos
         </h3>
         <div className="card-tools">
           {session && !itemNew ? (
@@ -194,8 +222,7 @@ export default function ListItemComponent(props){
                       </>
                     ) : null}
 
-                    <th scope="row" className="text-right">
-                      {/* Revisar que si regresa la cantidad total del producto */}
+                    <th scope="row" className="text-right">                
                       {item.cant}
                     </th>
                     <td>
@@ -244,6 +271,8 @@ export default function ListItemComponent(props){
               </tr>
             )}
           </tbody>
+
+
           {items.length && price ? (
             <tfoot>
               <tr>
@@ -260,6 +289,9 @@ export default function ListItemComponent(props){
           ) : null}
         </table>
       </div>
+
+
+
       {codes && codes.code ? (
         <div className="card-footer">
           {codes.od === codes.oi ? (

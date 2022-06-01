@@ -1,5 +1,6 @@
 import React, { Component, useState, useEffect, useContext} from "react";
 import { connect } from "react-redux";
+import moment from "moment";
 import generalHelper from '../../utils/helpers';
 
 //Context
@@ -26,6 +27,7 @@ import helper_exam from "../Exam/helpers";
 import helper from "./helpers";
 import saleHelper from "../Sales/helpers";
 
+
 export default function AsistentComponent(props){
 
   const [state, setState] = useState({
@@ -40,6 +42,7 @@ export default function AsistentComponent(props){
     LOADING: false,
     data:{},
     session: generalHelper.getSession(),
+    isValidProductList: false,
   });
 
 
@@ -104,6 +107,7 @@ export default function AsistentComponent(props){
   };
 
   const handleNewExam = ()=>{
+
     let dataNewExam = {
       contact_id: state.data.id,
       name: state.data.name
@@ -112,14 +116,21 @@ export default function AsistentComponent(props){
     examHook.saveExam(dataNewExam).then((data)=>{
       if(data){
 
+        let exam = {
+          id:data.id,
+          status: data.status,
+          created_at: data.created_at,
+        }
+
+        let updatedList = state.examsList;
+        updatedList.push(exam);
+
+        
         setState({
           ...state,
           exam_id: data.id,
-          exam:{
-            id:data.id,
-            status: data.status,
-            created_at: data.created_at,
-          }
+          exam: exam,
+          examsList: updatedList
         })
 
         window.Swal.fire({
@@ -178,6 +189,7 @@ export default function AsistentComponent(props){
       items: items,
       status: 0,
     };
+
     console.log("[DEBUG ORDER data]", data);
     if (exam_id) data.exam_id = parseInt(exam_id);
 
@@ -201,9 +213,6 @@ export default function AsistentComponent(props){
 
 
   const handleChangeInput = (key, value) => {
-    console.log(key, value);
-
-    console.log(state);
 
     if (key === "exam") {
       console.log("Entrando al primer condicional");
@@ -244,15 +253,6 @@ export default function AsistentComponent(props){
         [key]: value,
       });
     }
-
-    /* if(key === 'exam_id'){
-      console.log("Entrando al final");
-      setState({
-        ...state,
-        exam_id: 0,
-        exam: {},
-      })
-    } */
   };
 
 
@@ -261,8 +261,6 @@ export default function AsistentComponent(props){
     const { _getCategory } = this.props;
     _getCategory({ id: cat_id});
   };
-
-
 
 
   return(
@@ -300,9 +298,18 @@ export default function AsistentComponent(props){
               </div>
               <div class="card-body">
                 <p class="badge badge-success">{`# ID ${state.contact_id}`}</p>
-                <p className="card-text">{state.data.name.toUpperCase()}</p>
-                <p className="card-text">{state.data.email ?? 'Email no registrado'}</p>
-                <p className="card-text">{state.data.phones.cell ?? 'Telefono no registrado'}</p> 
+                <p className="card-text">
+                  <i className="fas fa-user-circle mr-1"></i>
+                  {state.data.name.toUpperCase()}
+                </p>
+                <p className="card-text">
+                  <i className="fas fa-at mr-1"></i>
+                  {state.data.email ?? 'Email no registrado'} 
+                </p>
+                <p className="card-text">
+                  <i className="fas fa-phone-alt mr-1"></i>
+                  {state.data.phones.cell === "" ? `Telefono no registrado` : state.data.phones.cell}
+                </p> 
                 <button className="btn btn-primary" disabled = {state.exam_id ? true: false} onClick={()=>{
                   setState({ 
                     session: generalHelper.getSession(),
@@ -333,7 +340,7 @@ export default function AsistentComponent(props){
                             <div class="card col-lg-4 border border-success">
                               <div class="card-header">
                                 <h3 className="card-title">
-                                  <i className="fas fa-user-alt mr-1"></i>
+                                  <i className="fas fa-notes-medical mr-1"></i>
                                   Examen Seleccionado
                                   <i className="ml-5 fas fa-check mr-1 bg-success"></i>
                                 </h3>
@@ -342,12 +349,14 @@ export default function AsistentComponent(props){
                                 <p className = "card-text">
                                       <span className="badge badge-success mr-3 mb-2">{`# ${exam.id}`}</span>
                                 </p>
-                                <p className="font-weight-bold">Fecha de creacion: <span className="font-weight-normal">{exam.created_at}</span></p>
+                                <p className="font-weight-bold">Creado: <span className="font-weight-normal">{moment(exam.created_at).fromNow()}</span></p>
+                                <p className="font-weight-bold">Fecha: <span className="font-weight-normal">{exam.created_at}</span></p>
                                 <p className="font-weight-bold">Estatus: <span className="font-weight-normal">{exam.status}</span></p>
-                                <button className="btn btn-primary" onClick={()=>{
+                                <button className="btn btn-primary" disabled = {state.items.length ? true : false} onClick={()=>{
                                   setState({
                                     ...state,
-                                    exam_id: null
+                                    exam_id: null,
+                                    exam: {},
                                   })
                                 }}>Cambiar</button>
                               </div>
@@ -374,7 +383,7 @@ export default function AsistentComponent(props){
                                   }}>
                                     <p className = "card-text">
                                       <span className="badge badge-warning mr-3 mb-2">{`# ${exam.id}`}</span>
-                                      {exam.created_at}
+                                      {moment(exam.created_at).fromNow()}
                                     </p>
                                   </div>
                                 ))}
@@ -401,8 +410,41 @@ export default function AsistentComponent(props){
         </div>
 
         {/* Validacion 3 --- Seleccion de productos una vez seleccionado el examen */}
+        {!state.contact_id ? null : state.exam_id ? (
+          <div className="mb-2">
+            <Items
+              items={state.items}
+              session={state.session}
+              codes={state.codes}
+              ChangeInput={handleChangeInput}
+              validValue = {(value)=>{
 
-        
+                //Setear el valor que regresa value en el state
+                //Tomar el valor del state para habilitar o desahabilitar el boton
+                value();
+              }}
+
+            />
+            <div className="d-flex justify-content-end">
+              <button onClick={()=>{
+                orderContext.set({
+                  ...orderContext,
+                  panel: 'inbox',
+                })
+              }} className = "btn btn-secondary mr-3"> Cancelar</button>
+              <button className = "btn btn-success mr-2">Siguiente</button>
+            </div>
+          </div>
+          
+        ): (
+          <div class="col-lg-12 text-center mt-3 mb-3">
+            <h4>
+              <i className="fas fa-exclamation-circle mr-1"></i>
+              Crea o selecciona un examen antes de agregar productos!
+            </h4>
+          </div>
+        )}
+
       </div>
     </div>
   );

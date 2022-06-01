@@ -61,8 +61,6 @@ function AddItemModalComponent(props) {
       _handleCloseModal();
     },
 
-
-
     hanleChangeDataItem = (data) => {
       setItem({
         ...item,

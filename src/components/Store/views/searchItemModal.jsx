@@ -74,7 +74,7 @@ function AddItemModalComponent(props) {
         subtotal: 0,
         store_items_id: data.id,
         descripcion: "",
-        category: data.category ? data.category.id : 0,
+        category: data.category ? data.category : 0,
       });
     },
 

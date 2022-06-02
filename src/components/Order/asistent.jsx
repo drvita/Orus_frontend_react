@@ -26,6 +26,7 @@ import { orderActions } from "../../redux/order";
 import helper_exam from "../Exam/helpers";
 import helper from "./helpers";
 import saleHelper from "../Sales/helpers";
+import PaymentModal from "../Sales/views/PaymentModal";
 
 
 export default function AsistentComponent(props){
@@ -42,7 +43,12 @@ export default function AsistentComponent(props){
     LOADING: false,
     data:{},
     session: generalHelper.getSession(),
-    isValidProductList: false,
+    listReady: false,
+    showModal: false,
+    sale:{
+      saleToal:0,
+      salePayments:[],
+    }
   });
 
 
@@ -50,8 +56,21 @@ export default function AsistentComponent(props){
   const orderHook = useOrder();
   const examHook = useExam();
 
+  const productCodes = [];
+  
+  state.items.forEach((item) => productCodes.push(item.category.code.codeCategory[0]));
+
   const load_order = false;
   const { exam } = state;
+
+
+
+  const changeListStatus = (status)=>{
+    setState({
+      ...state,
+      listReady: status,
+    })
+  }
   
 
   const handleContactSelect = (contact) => {
@@ -75,8 +94,6 @@ export default function AsistentComponent(props){
       setState({
         ...state,
         contact_id: contact.id ?? 0,
-        //exam: contact.exams[0] ? contact.exams[0]: {},
-        //exam_id: contact.exams.length ? contact.exams[0].id :  null,
         examsList: contact.exams.length ? contact.exams : [],
         items: data.items ?? [],
         data: contact ? contact : {},
@@ -263,8 +280,19 @@ export default function AsistentComponent(props){
   };
 
 
+  const showModal = ()=>{
+    setState({
+      ...state,
+
+    })
+  }
+
+
+
+
   return(
     <div className="mainAssitentComponent"> 
+
       <div className="card card-warning card-outline col-lg-12">
 
         <div className="card-header">
@@ -274,7 +302,7 @@ export default function AsistentComponent(props){
           </h3>
         </div>
 
-        <div className="card-body d-flex justify-content-around col-lg-12 col-md-12 col-sm-12">
+        <div className="card-body d-flex justify-content-start col-lg-12">
 
           {/* Validacion 1 --- Seleccion de cliente */}
           {!state.contact_id ? (
@@ -288,12 +316,12 @@ export default function AsistentComponent(props){
               />      
             </div>
           ):(
-            <div class="card col-lg-4 border border-success">
+            <div class="card col-lg-5 mr-5 border border-success">
               <div class="card-header">
                 <h3 className="card-title">
                   <i className="fas fa-user-alt mr-1"></i>
                   Cliente seleccionado
-                  <i className="ml-5 fas fa-check mr-1 bg-success"></i>
+                  <i className="ml-5 fas fa-check mr-1"></i>
                 </h3>
               </div>
               <div class="card-body">
@@ -337,12 +365,12 @@ export default function AsistentComponent(props){
                     state.examsList.length ? 
                           state.exam_id ? 
                           (
-                            <div class="card col-lg-4 border border-success">
+                            <div class="card col-lg-5 border border-success">
                               <div class="card-header">
                                 <h3 className="card-title">
                                   <i className="fas fa-notes-medical mr-1"></i>
                                   Examen Seleccionado
-                                  <i className="ml-5 fas fa-check mr-1 bg-success"></i>
+                                  <i className="ml-5 fas fa-check mr-1"></i>
                                 </h3>
                               </div>
                               <div class="card-body">
@@ -363,7 +391,7 @@ export default function AsistentComponent(props){
                             </div>
                           ) :
                           (
-                            <div class="card col-lg-4 border border-warning">
+                            <div class="card col-lg-5 border border-warning">
                               <div class="card-header">
                                 <h3 className="card-title">
                                   <i className="fas fa-user-alt mr-1"></i>
@@ -392,7 +420,7 @@ export default function AsistentComponent(props){
                             </div> 
                           ) : 
                           (
-                            <div class="card col-lg-4 border border-warning">
+                            <div class="card col-lg-5 border border-warning">
                               <div class="card-header">
                                 <h3 className="card-title">
                                   <i className="fas fa-user-alt mr-1"></i>
@@ -411,39 +439,66 @@ export default function AsistentComponent(props){
 
         {/* Validacion 3 --- Seleccion de productos una vez seleccionado el examen */}
         {!state.contact_id ? null : state.exam_id ? (
-          <div className="mb-2">
-            <Items
-              items={state.items}
-              session={state.session}
-              codes={state.codes}
-              ChangeInput={handleChangeInput}
-              validValue = {(value)=>{
-
-                //Setear el valor que regresa value en el state
-                //Tomar el valor del state para habilitar o desahabilitar el boton
-                value();
-              }}
-
-            />
-            <div className="d-flex justify-content-end">
-              <button onClick={()=>{
-                orderContext.set({
-                  ...orderContext,
-                  panel: 'inbox',
-                })
-              }} className = "btn btn-secondary mr-3"> Cancelar</button>
-              <button className = "btn btn-success mr-2">Siguiente</button>
-            </div>
-          </div>
-          
+          <Items
+            items={state.items}
+            session={state.session}
+            codes={state.codes}
+            ChangeInput={handleChangeInput}
+            productCodes = {productCodes}
+            listStatus = {changeListStatus}
+        />
         ): (
-          <div class="col-lg-12 text-center mt-3 mb-3">
-            <h4>
+          <div class="col-lg-10 text-center mt-3 mb-3">
+            <h5>
               <i className="fas fa-exclamation-circle mr-1"></i>
               Crea o selecciona un examen antes de agregar productos!
-            </h4>
+            </h5>
           </div>
         )}
+
+        {/* Validacion 4 --- Opciones de pago del pedido*/}
+        {state.listReady ? (
+          <div class="card col-lg-12 border bg-warning">
+            <div class="card-header">
+              <h3 className="card-title">
+                <i className="fas fa-money-bill mr-1"></i>
+                  Opciones de pago
+              </h3>
+            </div>
+            <div class="card-body">
+              <div className="">
+                <button className="btn btn-success mr-4" onClick={()=>{
+                  setState({
+                    ...state,
+                    showModal: true,
+                  })
+                }}>
+                <i className="fas fa-money-bill-alt mr-1"></i>
+                  Abonar
+                </button>
+                <button className="btn btn-secondary">
+                  <i className="fas fa-ban mr-1"></i>
+                  Sin abono inicial
+                </button>
+              </div>
+            </div>
+          </div> 
+        ): null}
+
+        {/* Modal validation */}
+        {state.showModal ? (
+          <PaymentModal
+          handleClose = {() => {
+            setState({
+              ...state,
+              showModal: true,
+            })
+          }}
+          />
+        ) : null}
+
+
+
 
       </div>
     </div>

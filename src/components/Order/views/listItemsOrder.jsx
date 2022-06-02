@@ -7,37 +7,32 @@ export default function ListItemComponent(props){
     itemNew: false,
     code: "",
     cant: 1,
+    validList: true,
   });
 
   const { itemNew, code, cant } = state;
-  const { items, codes, session, status = true, noPrice } = props;
+  const { items, codes, session, status = true, noPrice, productCodes, listStatus } = props;
   const price = !noPrice;
+
   let total = 0;
-  const productCategories = []
+
+
+  useEffect(()=>{
+    validateList();
+  },[productCodes])
 
   //Guardamos en un array las categorias de los items agreados
   //Hacemos un array.includes para ver si existe al menos una categoria válida
   //Si existe, habilitamos el boton, si no existe, deshabilitamos boton y mostramos la alerta
-
-
-
   //Execute this function every time a new item is added
+  
   const validateList = () => {
-
-    items.forEach(item => {
-      productCategories.push(item.category);
-    });
-
-    console.log(productCategories);
-
-    let valid = productCategories.includes(3);
-
-    console.log(valid);
-
-    return valid;
+    let valid = productCodes.some((code) => parseInt(code) === 1 || parseInt(code) === 2)
+    setState({
+      ...state,
+      validList: valid
+    })
   };
-
-
 
   const handleSetCantItem = (id, cant) => {
     console.log(id, cant);
@@ -56,6 +51,7 @@ export default function ListItemComponent(props){
 
   
   const deleteItem = (id) => {
+      console.log("Delete item function");
       const { items, status = true, ChangeInput: _changeInput } = props;
       const itemsToSave = items.filter((e) => e.store_items_id !== id);
   
@@ -66,6 +62,15 @@ export default function ListItemComponent(props){
         );
         return false;
       }
+
+      console.log(itemsToSave);
+
+      let updatedCodes = itemsToSave.forEach((item) => {
+        //state.productCategories.push(item.category.code.codeCategory[0]);
+      });
+
+      console.log(updatedCodes);
+
       _changeInput("items", itemsToSave);
     };
 
@@ -100,19 +105,14 @@ export default function ListItemComponent(props){
           }
         } else {
           items.push(item);
-
-          //validateList();
-
-          props.validValue(validateList)
         }
         _changeInput("items", items);
       }
-    };
-
-    
+    };    
 
   return (
-    <div className = {items.length !== 0 ? "card border border-success" : "card border border-warning"}>
+    <div className="col-lg-12 bg-success">
+      <div className = {items.length !== 0 ? "card border border-success col-lg-10" : "card border border-warning col-lg-10"}>
       <div className="card-header">
         <h3 className="card-title">
           <i className="fas fa-shopping-cart"></i> Lista de Productos
@@ -140,8 +140,11 @@ export default function ListItemComponent(props){
           ) : null}
         </div>
       </div>
+
       <div className="card-body table-responsive p-0">
         <table className="table table-sm m-0">
+
+
           <thead>
             <tr>
               {status ? (
@@ -184,6 +187,8 @@ export default function ListItemComponent(props){
               ) : null}
             </tr>
           </thead>
+
+
           <tbody>
             {items.length ? (
               items.map((item) => {
@@ -288,11 +293,27 @@ export default function ListItemComponent(props){
             </tfoot>
           ) : null}
         </table>
+
+        {state.validList === false && items.length !== 0 ? (
+          <div className="d-flex justify-content-center">
+            <p className="bg-warning w-50 text-center">
+              <i className="fas fa-info-circle mr-1"></i>
+              Debes agregar al menos un Monofocal o Armazon a la lista!
+            </p>
+          </div>
+          ) : null}
+
+        <div className="d-flex justify-content-end mb-2">
+          <button className="btn btn-secondary mr-3">Cancelar</button>
+          <button className="btn btn-success mr-2" disabled = {state.validList === false ?  true : false} onClick= {()=>{
+            props.listStatus(state.validList);
+          }}>Siguiente</button>
+        </div>
       </div>
 
 
 
-      {codes && codes.code ? (
+     {/*  {codes && codes.code ? (
         <div className="card-footer">
           {codes.od === codes.oi ? (
             <div className="row">
@@ -338,7 +359,7 @@ export default function ListItemComponent(props){
             </div>
           )}
         </div>
-      ) : null}
+      ) : null} */}
 
       {itemNew ? (
         <AddModal
@@ -351,6 +372,7 @@ export default function ListItemComponent(props){
           })}
         />
       ) : null}
+    </div>
     </div>
   );
 }

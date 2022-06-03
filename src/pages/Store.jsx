@@ -32,8 +32,6 @@ export default function Store(props) {
   const { id } = props.match.params;
 
   useEffect(() => {
-    console.log("[DEBUG] is number:", id, isNaN(id), isNaN("16"));
-
     let panel = "inbox";
 
     if (id) {

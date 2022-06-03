@@ -49,7 +49,7 @@ const getSession = () => {
 };
 
 
-const getForPay = (items, payments, discount)=>{
+const getForPay = (items, payments, discount) => {
 
   let pay = 0, total = 0;
 

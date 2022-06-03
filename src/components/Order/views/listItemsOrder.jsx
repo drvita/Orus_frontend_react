@@ -2,16 +2,17 @@ import React, { Component, useState, useEffect } from "react";
 import AddModal from "../../Store/views/searchItemModal";
 
 export default function ListItemComponent(props){
-
+  
   const [state, setState] = useState({
     itemNew: false,
     code: "",
     cant: 1,
     validList: true,
+    //showHideButtons: props.showHideBtns,
   });
 
   const { itemNew, code, cant } = state;
-  const { items, codes, session, status = true, noPrice, productCodes, listStatus } = props;
+  const { items, codes, session, status = true, noPrice, productCodes, listStatus, showHideBtns } = props;
   const price = !noPrice;
 
   let total = 0;
@@ -111,35 +112,36 @@ export default function ListItemComponent(props){
     };    
 
   return (
-    <div className="col-lg-12 bg-success">
-      <div className = {items.length !== 0 ? "card border border-success col-lg-10" : "card border border-warning col-lg-10"}>
-      <div className="card-header">
-        <h3 className="card-title">
-          <i className="fas fa-shopping-cart"></i> Lista de Productos
-        </h3>
-        <div className="card-tools">
-          {session && !itemNew ? (
-            <button
-              className={
-                !status
-                  ? "btn btn-too btn-outline-secondary disabled"
-                  : "btn btn-too btn-primary text-bold"
-              }
-              disabled={!status}
-              onClick={(e) => {
-                setState({
-                  ...state,
-                  itemNew: !state.itemNew,
-                  code: "",
-                  cant: 1,
-                });
-              }}
-            >
-              <i className="fas fa-plus mr-1"></i> Agregar
-            </button>
-          ) : null}
+    <div className="col-lg-10 d-flex align-self-center justify-content-center p-0">
+
+      <div className = {items.length !== 0 ? "card border border-success col-lg-12" : "card border border-warning col-lg-12"}>
+        <div className="card-header">
+          <h3 className="card-title">
+            <i className="fas fa-shopping-cart"></i> Lista de Productos
+          </h3>
+          <div className="card-tools">
+            {session && !itemNew ? (
+              <button
+                className={
+                  !status
+                    ? "btn btn-too btn-outline-secondary disabled"
+                    : "btn btn-too btn-primary text-bold"
+                }
+                disabled={showHideBtns ? true : false}
+                onClick={(e) => {
+                  setState({
+                    ...state,
+                    itemNew: !state.itemNew,
+                    code: "",
+                    cant: 1,
+                  });
+                }}
+              >
+                <i className="fas fa-plus mr-1"></i> Agregar
+              </button>
+            ) : null}
+          </div>
         </div>
-      </div>
 
       <div className="card-body table-responsive p-0">
         <table className="table table-sm m-0">
@@ -257,7 +259,7 @@ export default function ListItemComponent(props){
                         <button
                           type="button"
                           className="btn btn-sm btn-muted"
-                          disabled={!status}
+                          disabled={showHideBtns ? true : false}
                           onClick={() => deleteItem(item.store_items_id)}
                         >
                           <i className="fas fa-trash"></i>
@@ -303,12 +305,20 @@ export default function ListItemComponent(props){
           </div>
           ) : null}
 
-        <div className="d-flex justify-content-end mb-2">
-          <button className="btn btn-secondary mr-3">Cancelar</button>
-          <button className="btn btn-success mr-2" disabled = {state.validList === false ?  true : false} onClick= {()=>{
-            props.listStatus(state.validList);
-          }}>Siguiente</button>
-        </div>
+          {!showHideBtns ? (
+            <div className="d-flex justify-content-end mb-2">
+              <button className="btn btn-secondary mr-3">Cancelar</button>
+              <button className="btn btn-success mr-2" disabled = {state.validList === false ?  true : false} onClick= {()=>{
+                props.changeTotal(total,state.validList);
+                setState({
+                  ...state,
+                  showHideBtns: true,
+                })
+              }}>Siguiente</button>
+          </div>
+          ): null}
+
+        
       </div>
 
 

@@ -10,9 +10,47 @@ export default function StoreEntries() {
         name: "",
         branch_id: 0,
         cant: 0,
+        price: 0,
+        branches: [],
+        branch_default: null,
       },
     ],
   });
+  const setNewItem = (id, item) => {
+    const items = [...state.items];
+
+    items.forEach((i) => {
+      if (i.id === id) {
+        i.id = item.id;
+        i.code = item.code;
+        i.name = item.name;
+        i.branches = item.branches;
+        i.branch_default = item.branch_default ?? null;
+      }
+    });
+
+    setState({
+      items,
+    });
+  };
+  const setDataItem = (item) => {
+    const items = [...state.items];
+
+    items.forEach((i) => {
+      if (i.id === item.id) {
+        i.cant = item.cant;
+        i.price = item.price;
+        i.branch_id = item.branch_id;
+      }
+    });
+
+    setState({
+      items,
+    });
+  };
+  const saveItems = () => {
+    console.log("[DEBUG] Items", state.items);
+  };
 
   useEffect(() => {
     // console.log("[DEBUG] Items", state.items);
@@ -39,6 +77,9 @@ export default function StoreEntries() {
                     name: "",
                     branch_id: 0,
                     cant: 0,
+                    price: 0,
+                    branches: [],
+                    branch_default: null,
                   });
 
                   setState({
@@ -59,16 +100,20 @@ export default function StoreEntries() {
                 eraseItem={(item) => {
                   const items = [...state.items];
                   const newItems = items.filter((i) => i.id !== item.id);
-                  console.log("[DEBUG] delete Item", item, newItems);
+
                   setState({
                     items: newItems,
                   });
                 }}
+                setItemNew={setNewItem}
+                setData={setDataItem}
               />
             ))}
           </div>
           <div className="card-footer text-right">
-            <button className="btn btn-primary">Enviar</button>
+            <button className="btn btn-primary" onClick={saveItems}>
+              Enviar
+            </button>
           </div>
         </div>
       </div>

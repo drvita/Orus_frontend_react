@@ -2,6 +2,7 @@ import React, { Component, useState, useEffect, useContext} from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 import generalHelper from '../../utils/helpers';
+import saleHelper from '../../components/Sales/helpers';
 
 //Context
 import { OrderContext } from "../../context/OderContext";
@@ -25,8 +26,7 @@ import { categoryActions } from "../../redux/category";
 import { orderActions } from "../../redux/order";
 import helper_exam from "../Exam/helpers";
 import helper from "./helpers";
-import saleHelper from "../Sales/helpers";
-import PaymentModal from "../Sales/views/PaymentModal";
+import PaymentModal from "./views/PaymentModal";
 
 
 export default function AsistentComponent(props){
@@ -46,10 +46,14 @@ export default function AsistentComponent(props){
     listReady: false,
     showModal: false,
     sale:{
-      saleToal:0,
-      salePayments:[],
+      total:0,
+      discount:0, 
+      payments:[],
     }
   });
+
+
+  console.log(state.sale.payments);
 
 
   const orderContext = useContext(OrderContext);
@@ -63,15 +67,30 @@ export default function AsistentComponent(props){
   const load_order = false;
   const { exam } = state;
 
-
-
-  const changeListStatus = (status)=>{
+  const changeTotal = (total, status)=>{
+    console.log("[DEBUG] TOTAL", total);
     setState({
       ...state,
       listReady: status,
-    })
+      sale: {
+        ...state.sale,
+        total:total,
+      },
+    });
   }
-  
+
+  const setPayments = (payments)=>{
+    setState({
+      ...state,
+      showModal: false,
+      sale:{
+        ...state.sale,
+        payments: payments,
+      }
+    })
+    console.log("Payments recibidos de regreso", payments)
+  };
+
 
   const handleContactSelect = (contact) => {
     console.log("Contacto recibido", contact);
@@ -124,7 +143,6 @@ export default function AsistentComponent(props){
   };
 
   const handleNewExam = ()=>{
-
     let dataNewExam = {
       contact_id: state.data.id,
       name: state.data.name
@@ -283,12 +301,8 @@ export default function AsistentComponent(props){
   const showModal = ()=>{
     setState({
       ...state,
-
     })
   }
-
-
-
 
   return(
     <div className="mainAssitentComponent"> 
@@ -302,7 +316,7 @@ export default function AsistentComponent(props){
           </h3>
         </div>
 
-        <div className="card-body d-flex justify-content-start col-lg-12">
+        <div className="card-body d-flex justify-content-center col-lg-12">
 
           {/* Validacion 1 --- Seleccion de cliente */}
           {!state.contact_id ? (
@@ -355,8 +369,6 @@ export default function AsistentComponent(props){
               </div>
             </div>
           )}
-
-
 
 
           {/* Validacion 2 --- Seleccion de examen o creacion de uno nuevo */}
@@ -443,9 +455,10 @@ export default function AsistentComponent(props){
             items={state.items}
             session={state.session}
             codes={state.codes}
-            ChangeInput={handleChangeInput}
             productCodes = {productCodes}
-            listStatus = {changeListStatus}
+            showHideBtns = {state.listReady}
+            ChangeInput={handleChangeInput}
+            changeTotal = {changeTotal}
         />
         ): (
           <div class="col-lg-10 text-center mt-3 mb-3">
@@ -456,10 +469,49 @@ export default function AsistentComponent(props){
           </div>
         )}
 
+        {/* Validación 5 --- lista de abonos al pago */}
+        {state.sale.payments.length || state.sale.discount > 0 ? (
+          <div className="card col-lg-10 d-flex align-self-center">
+            <div class="card-header border-success">
+              <h3 className="card-title">
+                <i className="fas fa-money-bill-alt mr-1"></i>  
+                  Lista de abonos
+              </h3>
+            </div>
+
+            <div className="card-body d-flex justify-content-space-around">
+
+              <div className="col-lg-4 d-flex justify-content-center align-items-center">
+                <h5 className="font-weight-bold">Descuento: <span className="font-weight-normal">$0</span></h5>
+              </div>
+
+              <div className="col-lg-8">              
+                {state.sale.payments.map((payment, index) => (
+                  <div className="d-flex justify-content-around align-items-center font-weight-bold mb-2" id = {payment.id} key={index}>
+                    <p className="m-0"><span className="text-success">Abono </span>{payment.metodoname}</p>
+                    <p className="m-0">30 Junio 2022</p>
+                    <p className="m-0 text-primary">${payment.total}</p> 
+                    <button className="btn btn-sm btn-muted"><i className="fas fa-trash"></i></button>              
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="card-footer text-right mr-5 d-flex justify-content-end">
+              <h6 className="mr-4 text-success"><span className="font-weight-bold text-dark">Abono total:</span> ${saleHelper.getPagado(state.sale.payments)}</h6>
+              <h6 className="text-danger"><span className="font-weight-bold text-dark">Por pagar:</span>${state.sale.total - saleHelper.getPagado(state.sale.payments)}</h6>
+            </div>
+
+          </div>
+
+        ): null}
+
+
+
         {/* Validacion 4 --- Opciones de pago del pedido*/}
         {state.listReady ? (
-          <div class="card col-lg-12 border bg-warning">
-            <div class="card-header">
+          <div class="card col-lg-10 d-flex align-self-center border border-bottom-primary">
+            <div class="card-header border-primary">
               <h3 className="card-title">
                 <i className="fas fa-money-bill mr-1"></i>
                   Opciones de pago
@@ -476,9 +528,19 @@ export default function AsistentComponent(props){
                 <i className="fas fa-money-bill-alt mr-1"></i>
                   Abonar
                 </button>
-                <button className="btn btn-secondary">
+                <button className="btn btn-secondary mr-4" disabled = {state.sale.payments.length ? true : false}>
                   <i className="fas fa-ban mr-1"></i>
                   Sin abono inicial
+                </button>
+
+                <button className="btn btn btn-outline-info" disabled = {state.sale.payments.length ? true : false}  onClick={()=>{
+                  setState({
+                    ...state,
+                    listReady: false,
+                  })
+                }}>
+                  <i className="fas fa-backspace mr-1"></i>
+                  Agregar otro producto
                 </button>
               </div>
             </div>
@@ -491,14 +553,14 @@ export default function AsistentComponent(props){
           handleClose = {() => {
             setState({
               ...state,
-              showModal: true,
+              showModal: false,
             })
           }}
+          sale = {state.sale}
+          forPaid = {state.sale.total - saleHelper.getPagado(state.sale.payments)}
+          handleSetPayments = {setPayments}
           />
         ) : null}
-
-
-
 
       </div>
     </div>

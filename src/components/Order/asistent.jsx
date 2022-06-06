@@ -27,6 +27,7 @@ import { orderActions } from "../../redux/order";
 import helper_exam from "../Exam/helpers";
 import helper from "./helpers";
 import PaymentModal from "./views/PaymentModal";
+import DiscountModal from "./views/DiscountModal";
 
 
 export default function AsistentComponent(props){
@@ -45,6 +46,7 @@ export default function AsistentComponent(props){
     session: generalHelper.getSession(),
     listReady: false,
     showModal: false,
+    discountModal: false,
     sale:{
       total:0,
       discount:0, 
@@ -52,8 +54,6 @@ export default function AsistentComponent(props){
     }
   });
 
-
-  console.log(state.sale.payments);
 
 
   const orderContext = useContext(OrderContext);
@@ -77,6 +77,34 @@ export default function AsistentComponent(props){
         total:total,
       },
     });
+  }
+
+  const penddingToPay = () => {
+    let pendding = saleHelper.getTotal(state.sale.total, state.sale.discount) - saleHelper.getPagado(state.sale.payments);
+    return pendding;
+  }
+
+  const deletePayment = (e, id)=>{
+    e.preventDefault();
+    let filteredPayments = state.sale.payments.filter((payment) => payment.id !== id);
+    setState({
+      ...state,
+      sale:{
+        ...state.sale,
+        payments: filteredPayments,
+      }
+    })
+  };
+
+  const setDiscount = (discount)=>{
+    setState({
+      ...state,
+      sale:{
+        ...state.sale,
+        discount:discount,
+      },
+      discountModal: false,
+    })
   }
 
   const setPayments = (payments)=>{
@@ -459,6 +487,10 @@ export default function AsistentComponent(props){
             showHideBtns = {state.listReady}
             ChangeInput={handleChangeInput}
             changeTotal = {changeTotal}
+            cancelListProducts = {()=> setState({
+              ...state,
+              items:[],
+            })}
         />
         ): (
           <div class="col-lg-10 text-center mt-3 mb-3">
@@ -470,43 +502,74 @@ export default function AsistentComponent(props){
         )}
 
         {/* Validación 5 --- lista de abonos al pago */}
-        {state.sale.payments.length || state.sale.discount > 0 ? (
-          <div className="card col-lg-10 d-flex align-self-center">
-            <div class="card-header border-success">
-              <h3 className="card-title">
-                <i className="fas fa-money-bill-alt mr-1"></i>  
-                  Lista de abonos
-              </h3>
+        {state.listReady ? (
+          <div className="col-lg-10 d-flex align-self-center p-0 mt-5">
+            <div className="card col-lg-4">
+              <div class="card-header border-primary">
+                <h3 className="card-title">
+                  <i className="fas fa-percent mr-1"></i>  
+                    Descuento
+                </h3>
+              </div>
+              <div className="card-body">
+                <h5 className="font-weight-bold">Descuento: <span className="font-weight-normal">${state.sale.discount}</span></h5>
+                <button type="button" class="btn btn-sm btn-outline-danger" disabled = {state.sale.discount ? false : true} onClick={()=>{
+                  setState({
+                    ...state,
+                    sale:{
+                      ...state.sale,
+                      discount: 0,
+                    }
+                  })
+                }}>                  
+                  Eliminar descuento
+                  <i className="fas fa-window-close ml-1"></i>
+                </button>
+              </div>
             </div>
 
-            <div className="card-body d-flex justify-content-space-around">
+            <div className="card col-lg-8">
 
-              <div className="col-lg-4 d-flex justify-content-center align-items-center">
-                <h5 className="font-weight-bold">Descuento: <span className="font-weight-normal">$0</span></h5>
+              <div class="card-header border-primary">
+                <h3 className="card-title">
+                  <i className="fas fa-money-bill-alt mr-1"></i>  
+                    Lista de abonos
+                </h3>
               </div>
 
-              <div className="col-lg-8">              
-                {state.sale.payments.map((payment, index) => (
-                  <div className="d-flex justify-content-around align-items-center font-weight-bold mb-2" id = {payment.id} key={index}>
-                    <p className="m-0"><span className="text-success">Abono </span>{payment.metodoname}</p>
-                    <p className="m-0">30 Junio 2022</p>
-                    <p className="m-0 text-primary">${payment.total}</p> 
-                    <button className="btn btn-sm btn-muted"><i className="fas fa-trash"></i></button>              
+              <div className="card-body">
+                {state.sale.payments.length ? (
+                  <div>
+                    <div className="col-lg-12">              
+                      {state.sale.payments.map((payment, index) => (
+                        <div className="d-flex justify-content-around align-items-center font-weight-bold mb-2" id = {payment.id} key={index}>
+                          <p className="m-0"><span className="text-success"></span>{index + 1}</p>
+                          <p className="m-0"><span className="text-success">Abono </span>{payment.metodoname}</p>
+                          <p className="m-0">{moment(Date.now()).format('MMMM DD YYYY')}</p>
+                          <p className="m-0 text-primary">${payment.total}</p> 
+                          <button className="btn btn-sm btn-muted" id={payment.id} onClick={(e)=>{deletePayment(e, payment.id)}}>
+                            <i className="fas fa-trash"></i>
+                          </button>              
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                ) : (
+                  <p className="text-center bg-warning">
+                    <i className="fas fa-info-circle mr-1"></i>
+                    No tiene abonos en este pedido
+                  </p>
+                )}
+                
+                <div className="card-footer text-right d-flex justify-content-end">
+                  <h6 className="mr-4 text-success"><span className="font-weight-bold text-dark">Abono total:</span> ${saleHelper.getPagado(state.sale.payments)}</h6>
+                  <h6 className="text-danger"><span className="font-weight-bold text-dark">Por pagar:</span>${penddingToPay()}</h6>
+                </div>
+
               </div>
             </div>
-
-            <div className="card-footer text-right mr-5 d-flex justify-content-end">
-              <h6 className="mr-4 text-success"><span className="font-weight-bold text-dark">Abono total:</span> ${saleHelper.getPagado(state.sale.payments)}</h6>
-              <h6 className="text-danger"><span className="font-weight-bold text-dark">Por pagar:</span>${state.sale.total - saleHelper.getPagado(state.sale.payments)}</h6>
-            </div>
-
           </div>
-
         ): null}
-
-
 
         {/* Validacion 4 --- Opciones de pago del pedido*/}
         {state.listReady ? (
@@ -519,35 +582,57 @@ export default function AsistentComponent(props){
             </div>
             <div class="card-body">
               <div className="">
+
                 <button className="btn btn-success mr-4" onClick={()=>{
                   setState({
                     ...state,
                     showModal: true,
                   })
-                }}>
+                }}
+                disabled = {penddingToPay() === 0 ? true : false}
+                >
                 <i className="fas fa-money-bill-alt mr-1"></i>
                   Abonar
                 </button>
-                <button className="btn btn-secondary mr-4" disabled = {state.sale.payments.length ? true : false}>
+
+                <button className="btn btn-primary mr-4" disabled = {state.sale.payments.length || state.sale.discount ? true : false} onClick={()=>{            
+                  setState({
+                    ...state,
+                    discountModal: true,
+                  })
+                }}>
+                  <i className="fas fa-percent mr-1"></i>
+                  Aplicar un descuento
+                </button>
+
+                <button className="btn btn-secondary mr-4" disabled = {state.sale.payments.length || state.sale.discount ? true : false}>
                   <i className="fas fa-ban mr-1"></i>
                   Sin abono inicial
                 </button>
 
-                <button className="btn btn btn-outline-info" disabled = {state.sale.payments.length ? true : false}  onClick={()=>{
+                <button className="btn btn btn-outline-info" disabled = {state.sale.payments.length || state.sale.discount ? true : false}  onClick={()=>{
                   setState({
                     ...state,
                     listReady: false,
                   })
                 }}>
-                  <i className="fas fa-backspace mr-1"></i>
+                  <i className="fas fa-plus mr-1"></i>
                   Agregar otro producto
                 </button>
+
+                {penddingToPay() === 0 ? (
+                  <button className="btn btn-warning ml-3">
+                    <i className="fas fa-save mr-2"></i>
+                    Guardar venta
+                  </button>
+                ) : null}                
+
               </div>
             </div>
           </div> 
         ): null}
 
-        {/* Modal validation */}
+        {/* Payment Modal validation */}
         {state.showModal ? (
           <PaymentModal
           handleClose = {() => {
@@ -557,10 +642,26 @@ export default function AsistentComponent(props){
             })
           }}
           sale = {state.sale}
-          forPaid = {state.sale.total - saleHelper.getPagado(state.sale.payments)}
+          forPaid = {penddingToPay()}
           handleSetPayments = {setPayments}
           />
         ) : null}
+
+
+        {/* Discount Modal validation*/}
+        {state.discountModal ? (
+          <DiscountModal
+            items = {state.sale}
+            total = {state.sale.total}
+            closeModal = {()=>{
+              setState({
+                ...state,
+                discountModal: false,
+              })
+            }}
+            setDiscountProp = {setDiscount}
+          />
+        ):null}
 
       </div>
     </div>

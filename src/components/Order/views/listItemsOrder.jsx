@@ -12,10 +12,12 @@ export default function ListItemComponent(props){
   });
 
   const { itemNew, code, cant } = state;
-  const { items, codes, session, status = true, noPrice, productCodes, listStatus, showHideBtns } = props;
+  const { items, codes, session, status = true, noPrice, productCodes, listStatus, showHideBtns, cancelListProducts } = props;
   const price = !noPrice;
 
   let total = 0;
+
+  console.log(showHideBtns);
 
 
   useEffect(()=>{
@@ -146,7 +148,6 @@ export default function ListItemComponent(props){
       <div className="card-body table-responsive p-0">
         <table className="table table-sm m-0">
 
-
           <thead>
             <tr>
               {status ? (
@@ -200,31 +201,36 @@ export default function ListItemComponent(props){
                     {status ? (
                       <>
                         <td>                                                
-                          {item.cant > 1 ? (
+                          {item.cant > 1 && showHideBtns ? (
+                            <i className="fas fa-minus mr-2 text-muted"></i>                            
+                          ) : showHideBtns ? (
+                            <i className="fas fa-minus mr-2 text-muted"></i>     
+                          ) : (
                             <i
                               className="fas fa-minus mr-2 text-primary"
                               title="Quitar"
-                              style={{ cursor: "pointer" }}
+                              style={{ cursor: "pointer" }}                              
                               onClick={() =>
-                                handleSetCantItem(
-                                  item.store_items_id,
-                                  -1
-                                )
+                                handleSetCantItem(item.store_items_id, -1)
                               }
-                            ></i>
-                          ) : (
-                            <i className="fas fa-minus mr-2 text-muted"></i>
-                          )}
+                            ></i>                             
+                          )                      
+                                                     
+                          }
                         </td>
                         <td>
-                          <i
-                            className="fas fa-plus mr-2 text-primary"
-                            title="Agregar"
-                            style={{ cursor: "pointer" }}
-                            onClick={() =>
-                              handleSetCantItem(item.store_items_id, 1)
-                            }
+                          {showHideBtns ? (
+                            <i className="fas fa-plus mr-2 text-muted"></i>                            
+                          ):(
+                            <i
+                              className="fas fa-plus mr-2 text-primary"
+                              title="Agregar"
+                              style={{ cursor: "pointer" }}                            
+                              onClick={() =>
+                                handleSetCantItem(item.store_items_id, 1)
+                              }
                           ></i>
+                          )}                  
                         </td>
                       </>
                     ) : null}
@@ -270,9 +276,9 @@ export default function ListItemComponent(props){
                 );
               })
             ) : (
-              <tr>
+              <tr className="">
                 <td className="text-center" colSpan={status ? 7 : 4}>
-                  <i className="fas fa-info-circle mr-1"></i>
+                  <i className="fas fa-info-circle mr-1 mt-4"></i>
                   Seleccione articulos primero
                 </td>
               </tr>
@@ -307,7 +313,7 @@ export default function ListItemComponent(props){
 
           {!showHideBtns ? (
             <div className="d-flex justify-content-end mb-2">
-              <button className="btn btn-secondary mr-3">Cancelar</button>
+              <button className="btn btn-secondary mr-3" onClick={cancelListProducts}>Cancelar</button>
               <button className="btn btn-success mr-2" disabled = {state.validList === false ?  true : false} onClick= {()=>{
                 props.changeTotal(total,state.validList);
                 setState({

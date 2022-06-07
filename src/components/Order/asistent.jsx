@@ -1,5 +1,4 @@
-import React, { Component, useState, useEffect, useContext} from "react";
-import { connect } from "react-redux";
+import React, {useState, useContext} from "react";
 import moment from "moment";
 import generalHelper from '../../utils/helpers';
 import saleHelper from '../../components/Sales/helpers';
@@ -8,27 +7,15 @@ import saleHelper from '../../components/Sales/helpers';
 import { OrderContext } from "../../context/OderContext";
 
 //Hooks
-import useCategory from "../../hooks/useCategory";
-import useContact from "../../hooks/useContact";
 import useOrder from "../../hooks/useOrder";
 import useExam from "../../hooks/useExam";
 
 //Components
 import SearchContact from "../Contacts/views/ShowCard";
-import ListExam from "../Exam/views/List";
-import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
-
-//Actions
-import { contactActions } from "../../redux/contact";
-import { examActions } from "../../redux/exam";
-import { categoryActions } from "../../redux/category";
-import { orderActions } from "../../redux/order";
-import helper_exam from "../Exam/helpers";
 import helper from "./helpers";
 import PaymentModal from "./views/PaymentModal";
 import DiscountModal from "./views/DiscountModal";
-
 
 export default function AsistentComponent(props){
 
@@ -43,7 +30,7 @@ export default function AsistentComponent(props){
     load: true,
     LOADING: false,
     data:{},
-    session: generalHelper.getSession(),
+    session: generalHelper.getSession(),//
     listReady: false,
     showModal: false,
     discountModal: false,
@@ -59,16 +46,11 @@ export default function AsistentComponent(props){
   const orderContext = useContext(OrderContext);
   const orderHook = useOrder();
   const examHook = useExam();
-
   const productCodes = [];
-  
   state.items.forEach((item) => productCodes.push(item.category.code.codeCategory[0]));
-
-  const load_order = false;
   const { exam } = state;
 
   const changeTotal = (total, status)=>{
-    console.log("[DEBUG] TOTAL", total);
     setState({
       ...state,
       listReady: status,
@@ -116,7 +98,6 @@ export default function AsistentComponent(props){
         payments: payments,
       }
     })
-    console.log("Payments recibidos de regreso", payments)
   };
 
 
@@ -219,7 +200,9 @@ export default function AsistentComponent(props){
 
 
   const handleSave = (e) => {
+
     let categories_wrong = 0;
+
     const { items: items_state, exam_id, session, contact_id } = state;
 
     const items = items_state.map((item) => {
@@ -253,7 +236,7 @@ export default function AsistentComponent(props){
       status: 0,
     };
 
-    console.log("[DEBUG ORDER data]", data);
+
     if (exam_id) data.exam_id = parseInt(exam_id);
 
     //TODO:Guardar la orden con el hook y setear el contacto al estado inicial
@@ -270,6 +253,13 @@ export default function AsistentComponent(props){
           ...orderContext,
           panel: 'inbox',
         })
+      }else{
+        window.Swal.fire({
+          icon: "danger",
+          title: "Error al guardar el pedido",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     })
   };
@@ -278,15 +268,11 @@ export default function AsistentComponent(props){
   const handleChangeInput = (key, value) => {
 
     if (key === "exam") {
-      console.log("Entrando al primer condicional");
-
       if (value.category_id) {
-        console.log("Primer IF");
         handleGetCategories(value.category_id);
       }
 
       if (!value.id) {
-        console.log("Segundo IF");
         setState({
           ...state,
           exam_id: 0,
@@ -294,7 +280,6 @@ export default function AsistentComponent(props){
           codes: {},
         });
       } else {
-        console.log("ELSE")
         setState({
           ...state,
           exam_id: value.id,
@@ -318,19 +303,11 @@ export default function AsistentComponent(props){
     }
   };
 
-
   const handleGetCategories = (cat_id) => {
     console.log("Get Categories", cat_id);
     const { _getCategory } = this.props;
     _getCategory({ id: cat_id});
   };
-
-
-  const showModal = ()=>{
-    setState({
-      ...state,
-    })
-  }
 
   return(
     <div className="mainAssitentComponent"> 
@@ -501,7 +478,7 @@ export default function AsistentComponent(props){
           </div>
         )}
 
-        {/* Validación 5 --- lista de abonos al pago */}
+        {/* Validación 4 --- lista de abonos al pago */}
         {state.listReady ? (
           <div className="col-lg-10 d-flex align-self-center p-0 mt-5">
             <div className="card col-lg-4">
@@ -513,15 +490,7 @@ export default function AsistentComponent(props){
               </div>
               <div className="card-body">
                 <h5 className="font-weight-bold">Descuento: <span className="font-weight-normal">${state.sale.discount}</span></h5>
-                <button type="button" class="btn btn-sm btn-outline-danger" disabled = {state.sale.discount ? false : true} onClick={()=>{
-                  setState({
-                    ...state,
-                    sale:{
-                      ...state.sale,
-                      discount: 0,
-                    }
-                  })
-                }}>                  
+                <button type="button" class="btn btn-sm btn-outline-danger" disabled = {state.sale.discount ? false : true} onClick={()=>{setDiscount(0)}}>                  
                   Eliminar descuento
                   <i className="fas fa-window-close ml-1"></i>
                 </button>
@@ -571,7 +540,7 @@ export default function AsistentComponent(props){
           </div>
         ): null}
 
-        {/* Validacion 4 --- Opciones de pago del pedido*/}
+        {/* Validacion 5 --- Opciones de pago del pedido*/}
         {state.listReady ? (
           <div class="card col-lg-10 d-flex align-self-center border border-bottom-primary">
             <div class="card-header border-primary">
@@ -620,8 +589,8 @@ export default function AsistentComponent(props){
                   Agregar otro producto
                 </button>
 
-                {penddingToPay() === 0 ? (
-                  <button className="btn btn-warning ml-3">
+                {state.sale.payments.length ? (
+                  <button className="btn btn-warning ml-3" onClick={handleSave}>
                     <i className="fas fa-save mr-2"></i>
                     Guardar venta
                   </button>

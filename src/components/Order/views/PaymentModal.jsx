@@ -7,8 +7,6 @@ import { ConfigContext } from "../../../context/ConfigContext";
 import helpers from '../../Sales/helpers';
 
 function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _handleSetPayments }) {
-
-    console.log("PROP DE VENTA", sale);
     const config = useContext(ConfigContext);
     const listBanks = config.data;
 
@@ -86,7 +84,6 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
       }
 
       if (data.metodopago === 4) {
-        console.log("Metodo Pago",data.metodoname);
         if (!data.auth) {
           window.Swal.fire({
             icon: "warning",

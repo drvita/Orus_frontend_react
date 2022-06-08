@@ -50,11 +50,9 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
         if(data){
           let venta = data.data[0];
           let totalPayments = 0;
-          console.log(venta);
           venta.payments.forEach((pay) => (totalPayments += parseInt(pay.total)));
 
           setMainSale(venta);
-          //TODO: 
 
           setData({
             ...data,

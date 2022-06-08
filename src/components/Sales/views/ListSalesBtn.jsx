@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 //Context
 import { Sale } from '../../../context/SaleContext';
@@ -52,10 +52,12 @@ export default function ListSalesBtn() {
       >
         <i className="fas fa-list"></i>
       </button>
+
+
       {data && (
         <ListSalesModal
           handleClose={handleCloseListSales}
-          handleSelect={handleSelectSale}
+          handleSelect={handleSelectSale}      
         />
       )}
     </>

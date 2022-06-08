@@ -1,20 +1,20 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Sale } from '../../../context/SaleContext';
 import helpers from "../helpers.js";
+import { useHistory } from 'react-router-dom';
 
 
 import { AuthContext } from '../../../context/AuthContext';
 
-export default function EraseSaleBtnComponent() {
+export default function EraseSaleBtnComponent(props) {
 
   const sale = Sale();
   const disabled = sale.customer.id || sale.items.length ? false : true;
-
   const {auth} = useContext(AuthContext);
+  const history = useHistory();
 
   //Functions
   const eraseSale = () => {
-    console.log("Borrar venta con boton");
       sale.set({
         id: 0,
         customer: {
@@ -30,14 +30,22 @@ export default function EraseSaleBtnComponent() {
         payments: [],
         branch_id: auth.branch.id,
       })
+
+      if( props.match.params.id){
+        history.push('/notas')
+      }else{
+        return null
+      }
+
     },
 
     handleEraseSale = () => {
-      helpers.confirm(
-        "¿Desea terminar esta venta y crear una nueva?",
-        eraseSale
-      );
+      helpers.confirm("¿Desea terminar esta venta y crear una nueva?", eraseSale);
     };
+
+
+
+
   return (
     <button
       className="btn btn-warning ml-1"

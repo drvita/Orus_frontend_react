@@ -30,7 +30,7 @@ export default function AsistentComponent(props){
     load: true,
     LOADING: false,
     data:{},
-    session: generalHelper.getSession(),//
+    session: generalHelper.getSession(),
     listReady: false,
     showModal: false,
     discountModal: false,
@@ -102,7 +102,6 @@ export default function AsistentComponent(props){
 
 
   const handleContactSelect = (contact) => {
-    console.log("Contacto recibido", contact);
     if(contact.id === 0){
       setState({
         contact_id: 0,
@@ -203,7 +202,7 @@ export default function AsistentComponent(props){
 
     let categories_wrong = 0;
 
-    const { items: items_state, exam_id, session, contact_id } = state;
+    const { items: items_state, exam_id, session, contact_id, sale } = state;
 
     const items = items_state.map((item) => {
         if (item.category === 4) categories_wrong++;
@@ -233,7 +232,9 @@ export default function AsistentComponent(props){
       session: session,
       contact_id: contact_id,
       items: items,
-      status: 0,
+      //El status solo se envia cuando se haca una edicion de una venta      
+      //status: 0,
+      sale: sale
     };
 
 
@@ -248,7 +249,6 @@ export default function AsistentComponent(props){
           showConfirmButton: false,
           timer: 1500,
         });
-        console.log("State despuès de guardar:",state);
         orderContext.set({
           ...orderContext,
           panel: 'inbox',
@@ -304,7 +304,6 @@ export default function AsistentComponent(props){
   };
 
   const handleGetCategories = (cat_id) => {
-    console.log("Get Categories", cat_id);
     const { _getCategory } = this.props;
     _getCategory({ id: cat_id});
   };

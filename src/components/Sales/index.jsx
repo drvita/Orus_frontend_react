@@ -19,6 +19,7 @@ import {AuthContext} from '../../context/AuthContext';
 //Context
 import { SaleContext } from "../../context/SaleContext";
 import saleHelper from './helpers';
+import useSales from "../../hooks/useSale";
 
 //Actions
 import { defaultActions } from "../../redux/default/";
@@ -28,11 +29,9 @@ export default function IndexSalesComponent(props) {
   const {auth} = useContext(AuthContext);
   const { sales } = useSelector((state) => state);
   const { loading } = sales;
+  const hookSale = useSales();
 
   const history = useHistory();
-
-  console.log(history);
-
   const dispatch = useDispatch();
 
   const [state, setState] = useState({
@@ -88,11 +87,27 @@ export default function IndexSalesComponent(props) {
 
   useEffect(()=>{
     if(props.match.params.id){
-      //TODO: cargar la venta que coincida con el id recibido en el paràmetro de la URL
+      hookSale.getSaleById(props.match.params.id).then((data)=>{
+        if(data){
+          setState({
+            ...state,
+            id: data.data.id,
+            contact_id: data.data.customer.id,
+            items: data.data.items,
+            session: data.data.session,
+            discount: data.data.discount,    
+            subtotal: data.data.subtotal,
+            total: data.data.total,
+            payments: data.data.payments, 
+            branch_id:data.data.branch.id,
+            created_at: data.data.created_at,                                           
+          })
+        }
+      })
     }else{
-      return null,
+      return null;
     }
-  });
+  },[]);
 
 
   return (
@@ -114,7 +129,9 @@ export default function IndexSalesComponent(props) {
 
                 <DiscountBtnComponent/>
 
-                <EraseBtn/>
+                <EraseBtn
+                  {...props}
+                />
               </div>
             </div>
           </nav>

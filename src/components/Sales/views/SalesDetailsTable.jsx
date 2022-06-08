@@ -66,14 +66,11 @@ export default function SalesDetailsTableComponent() {
 
 
     handleDeletePayment = ({ id, total, metodoname }) => {
-      //TODO: revisar metodoname, viene como undefined
-      console.log("DEBUG",id, total, metodoname);
       const newPayments = sale.payments.filter(
         (payment) => payment.id !== id
       )
 
       helpers.confirm(
-        //`Realmente desea eliminar el pago ${metodoname}, de ${total}`,
         `Realmente desea eliminar el pago de  $${total}`,
         () => {        
           sale.set({
@@ -85,7 +82,6 @@ export default function SalesDetailsTableComponent() {
     },
 
     handleShowUpdateItem = (e, item) => {
-      console.log("Funcion ejecutada");
       if (e) e.preventDefault();
       setData({
         ...data,
@@ -170,7 +166,6 @@ export default function SalesDetailsTableComponent() {
           {sale.items && sale.items.length ? (
             <>
               {sale.items.map((item, index) => {
-                console.log(item);
                 const disabled = (sale.subtotal && paid) || sale.payments.length || sale.discount;
                 const diffDay = moment(Date.now()).diff(moment(sale.created_at),"days");
                 if (!item.store_items_id) return null;
@@ -239,13 +234,10 @@ export default function SalesDetailsTableComponent() {
             <>
               {sale.payments.map((pay, index) => {
                 const diffPay = moment(Date.now()).diff(moment(pay.created_at),"days");
-                console.log('Diferencia de dias', diffPay);
-                console.log(pay.created_at);
                   const disabled = (roles === 'admin') ? false : (roles === 'ventas') ? diffPay === 0 ? false: true : false; 
                 return (
                   <tr key={index}>
-                    {handleDeleteBtn(handleDeletePayment, pay, disabled)} 
-                    {console.log(pay)}
+                    {handleDeleteBtn(handleDeletePayment, pay, disabled)}               
                     <td>
                       <a
                         href="#link"

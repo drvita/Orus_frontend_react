@@ -15,10 +15,7 @@ export default function ListItemComponent(props){
   const price = !noPrice;
 
   let total = 0;
-
-  console.log("Product Codes",productCodes);
-
-
+  
   useEffect(()=>{
     validateList();
   },[productCodes]);

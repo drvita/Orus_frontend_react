@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import moment from "moment";
 import { useHistory } from "react-router-dom";
+import moment from "moment";
+
 
 //Context
 import { AuthContext } from "../../context/AuthContext";
@@ -14,17 +15,12 @@ import LabOrder from "./views/labOrder";
 import Bicelacion from "./views/bicelacionOrder";
 import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
-import Dashboard from "../Contacts/Dashboard";
 import ShowPaymentsComponent from "../Sales/views/ShowPayments";
 import ExamModal from "./ExamModal";
 
 
-//Actions
+//Helper
 import helper from "./helpers";
-import { orderActions } from "../../redux/order/";
-import { saleActions } from "../../redux/sales/";
-import { DEFAULT_STATE_ORDER } from "../../redux/order/reducer";
-import { DEFAULT_STATE_SALES } from "../../redux/sales/reducer";
 
 export default function EditOrderComponent(props){
 
@@ -78,8 +74,7 @@ export default function EditOrderComponent(props){
   const orderContext = useContext(OrderContext);
 
 
-  const { /* order, */ loading: LOADING } = props;
-
+  const { loading: LOADING } = props;
 
   const fNacimiento = new Date(paciente.f_nacimiento ?? "") < new Date() ? moment(paciente.f_nacimiento) : null;
 
@@ -90,6 +85,7 @@ export default function EditOrderComponent(props){
     setState({
       id: 0,
       paciente: {},
+      contact_id:0,
       session: null,
       lab_id: 0,
       npedidolab: "",
@@ -104,6 +100,7 @@ export default function EditOrderComponent(props){
       created_at: null,
       updated: {},
       updated_at: null,
+      nota_id: 0,
     });
 
     orderContext.set({
@@ -115,10 +112,7 @@ export default function EditOrderComponent(props){
   };
 
   const handleSave = () => {
-    console.log(currentUser);
-    //Validid data
-    const { id, npedidolab, ncaja, status, lab_id, observaciones, codes, items } = state;
-    const { options, _saveOrder /* currentUser */ } = props;
+    const { id, npedidolab, ncaja, status, lab_id, observaciones, items, contact_id } = state;
     const itemsToJson = items.map((item) => {
         return {
           ...item,
@@ -134,11 +128,13 @@ export default function EditOrderComponent(props){
       status,
       observaciones,
       items: itemsToJson,
-      //items: JSON.stringify(itemsToJson),
       branch_id: currentUser.branch.id,
+      contact_id
     };
+
+
     if (lab_id) data.lab_id = lab_id;
-    //Validity
+    //Validity    
     if (status === 1 && !lab_id && toString(npedidolab).length) {
       window.Swal.fire(
         "Verificación",
@@ -152,10 +148,12 @@ export default function EditOrderComponent(props){
       return false;
     }
     //Save
-    console.log("Data a guardar", data);
-
     hookOrder.saveOrder(data).then((data)=>{
-      console.log("Funcion de guardar");
+      if(data){
+        console.log("Data devuelta el editar la orden:", data);
+      }else{
+        console.error("Error al guardar la orden editada");
+      }
     })
     //helper.handleSaveOrder(id, data, options, _saveOrder);
   };
@@ -167,7 +165,6 @@ export default function EditOrderComponent(props){
 
 
   const handleChangeInput = (key, value) => {
-    console.log(key, value);
     setState({
       ...state,
       [key]: value
@@ -178,7 +175,6 @@ export default function EditOrderComponent(props){
     hookOrder.getOrder(idurl).then((data)=>{
       if(data){
         let dataReceibed = data.data;
-        console.log(dataReceibed);
         setState({
           id: dataReceibed.id ?? 0,
           paciente: dataReceibed.paciente ?? {},
@@ -196,6 +192,8 @@ export default function EditOrderComponent(props){
           created_at: dataReceibed.created_at ?? null,
           updated: dataReceibed.updated ?? {},
           updated_at: dataReceibed.updated_at ?? null,
+          nota_id: dataReceibed.nota.id,
+          contact_id: dataReceibed.paciente.id,
         })
       }else{
         console.error("Error al obtener los datos");
@@ -322,12 +320,12 @@ export default function EditOrderComponent(props){
 
 
                 <div className="w-75 d-flex flex-column justify-content-center align-items-center">                      
-                  <div className="mt-3 ">   
+                  <div className="mt-3 ">
                     <button className="btn btn-info mr-2" onClick={() => setShowModal(true)} disabled = {Object.keys(exam).length ? false : true}>
                       {Object.keys(exam).length ? "Ver examen" : "Sin examen asignado"}                      
                       <i className="fas fa-eye ml-2"></i>
                     </button>  
-                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                    <button className="btn btn-primary" onClick={() => history.push(`/notas/${state.nota_id}`)}>
                       Ver Nota
                       <i className="fas fa-money-bill ml-2"></i>
                     </button>  
@@ -435,13 +433,7 @@ export default function EditOrderComponent(props){
                               <label htmlFor="checkboxSuccess1"></label>
                             </div>
                           </div>
-                        </div>
-                        {state && state.id ? (
-                          <ShowPaymentsComponent
-                            nota={state.nota}
-                            orderId={state.id}
-                          />
-                        ) : null}
+                        </div>                  
                       </div>
                     ) : null}
 

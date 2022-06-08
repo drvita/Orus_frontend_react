@@ -10,7 +10,7 @@ import useSales from "../../../hooks/useSale";
 import moment from "moment";
 
 
-function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
+function ListSalesModal({ handleClose: _close, handleSelect: _select,  }) {
 
   const _sales = useSales();
   
@@ -148,17 +148,18 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                             </tr>
                           ))}
                         </>
-                      ) : (
-                        <tr>
-                          <td>No existen ventas para esta coincidencia</td>
-                        </tr>
+                      ) : (                             
+                        <div className="overlay dark">
+                          <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+                          Cargando las ventas!!
+                        </div>
+
                       )}
                     </>
                   ) : (
                     <tr>
                       <td>
-                        <i className="fas fa-info-circle mr-1"></i> Escriba el
-                        folio o nombre para cargar una venta                
+                        <i className="fas fa-info-circle mr-1"></i> Escriba el folio o nombre para cargar una venta                
                       </td>
                     </tr>
                   )}

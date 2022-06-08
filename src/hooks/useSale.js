@@ -14,14 +14,15 @@ export default function useSales(ctx){
         return await api(url)
     };
 
-    const getSaleById = async (name)=> {
-        const saleFilter = {
-            orderBy:'created_at',
-            order:'desc',
-            itemsPage: 25, 
-            search: name,
-        }
-        const url = setUrl('sales', null, saleFilter)
+    const getSaleById = async (id)=> {
+        /* const saleFilter = {
+            //orderBy:'created_at',
+            //order:'desc',
+            //itemsPage: 25, 
+            search: id,
+        } */
+        const url = setUrl('sales', id);
+        console.log(url);
         return await api(url)
     }
 

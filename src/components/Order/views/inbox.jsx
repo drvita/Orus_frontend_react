@@ -66,7 +66,6 @@ const InboxOrderComponent = (props) => {
   }
 
   const handleChangeOptions = (key, value) => {
-    console.log(key, "   ", value);
     orderContext.set({
       ...orderContext,
       options:{
@@ -80,15 +79,12 @@ const InboxOrderComponent = (props) => {
     if (e) e.preventDefault();
     if(order.id !== 0){
       history.push(`/pedidos/${order.id}`)
-      console.log(order.id);
     }else{  
       history.push(`pedidos/${orderSelected.id}`);
-      console.log(orderSelected.id)
     }
   };
 
   const handleOrderSelect = ({ checked }, pedido) => {
-    console.log(checked, " -- ", pedido);
     if (!checked) pedido = { id: 0 };
     setOrderSelected(pedido);
   };

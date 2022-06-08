@@ -15,13 +15,11 @@ const initialOptions = {
     order: "desc",
     itemsPage: 10,
     status: 0,
-    search: "",
-    
+    search: "",  
 };
 
 
 export default function IndexOrderComponent(props){
-
     const [state, setState] = useState({
         panel: "inbox",
         options: initialOptions,

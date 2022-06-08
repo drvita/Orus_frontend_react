@@ -3,7 +3,13 @@ import { useEffect, useState } from "react";
 import { Config } from "../../context/ConfigContext";
 import useStore from "../../hooks/useStore";
 
-export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
+export default function FormEntries({
+  data,
+  eraseItem,
+  setItemNew,
+  setData,
+  setBranch,
+}) {
   const configContext = Config();
   const branches = configContext?.data.filter(
     (conf) => conf.name === "branches"
@@ -16,20 +22,33 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
     cant: 0,
     price: 0,
     currentCant: 0,
+    branchesId: [],
   });
   const store = useStore();
   const searchProductByItem = async () => {
+    if (!state.code) return;
+
     const items = await store.getItems({ code: state.code });
     const item = items?.data.length ? items.data[0] : {};
 
     if (item && Object.keys(item).length) {
-      setItemNew(state.id, item);
+      setItemNew(state.id, state.branch_id, item);
+    } else {
+      window.Swal.fire({
+        title: "Almacen",
+        text: "Codigo no encontrado",
+        icon: "warning",
+      });
+      setState({
+        ...state,
+        code: "",
+      });
     }
   };
   const setDataByBranch = () => {
     const branch_id = data.branch_default
       ? data.branch_default
-      : state.branch_id;
+      : data.branch_id;
     let currentCant = 0,
       currentPrice = 0;
 
@@ -42,25 +61,38 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
         const inBranch = branch_select[0];
 
         currentCant = inBranch.cant;
-        currentPrice = inBranch.price;
+        currentPrice = data.price ? data.price : inBranch.price;
+      }
+
+      if (!currentPrice) {
+        currentPrice = data.price ? data.price : state.price;
       }
     }
     return [branch_id, currentCant, currentPrice];
   };
+  const getBranchesId = () => {
+    const branches = [];
+    data.branches?.forEach((branch) => branches.push(branch.branch_id));
+
+    return branches;
+  };
 
   useEffect(() => {
     const [branch_id, currentCant, currentPrice] = setDataByBranch();
+    const branchesId = getBranchesId();
 
-    // console.log("[DEBUG] reload:", branch_id, currentCant, currentPrice, data);
+    // console.log("[DEBUG] reload effect:", data);
     setState({
       ...state,
       id: data.id,
       code: data.code,
+      cant: data.cant,
       branch_id,
       currentCant,
       price: currentPrice,
+      branchesId,
     });
-  }, [data.id, state.branch_id]);
+  }, [data.id, data.branch_id]);
 
   return (
     <div className="form-row border-bottom mt-2">
@@ -72,7 +104,7 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
           placeholder="Codigo del producto"
           id="code"
           disabled={typeof state.id === "number" ? true : false}
-          defaultValue={state.code}
+          value={state.code}
           onChange={({ target }) =>
             setState({ ...state, code: target.value.toLowerCase() })
           }
@@ -106,16 +138,23 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
           value={data.branch_default ? data.branch_default : state.branch_id}
           onChange={({ target }) => {
             if (!isNaN(target.value)) {
-              setState({ ...state, branch_id: parseInt(target.value) });
+              setBranch(state.id, state.branch_id, parseInt(target.value));
             }
           }}
         >
           <option value={0}>--- Seleccione una sucursal ---</option>
-          {branches.map((branch) => (
-            <option key={branch.id} value={branch.id}>
-              {branch.data?.name}
-            </option>
-          ))}
+          {branches.map((branch) => {
+            // console.log("[DEBUG] Map branches:", data.branches_used, branch.id);
+            if (data.branches_used.includes(branch.id)) {
+              return null;
+            }
+
+            return (
+              <option key={branch.id} value={branch.id}>
+                {branch.data?.name}
+              </option>
+            );
+          })}
         </select>
       </div>
       <div className="form-group col-1">
@@ -137,10 +176,13 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
           placeholder="Cantidad"
           id="cant"
           disabled={typeof state.id === "string" ? true : false}
-          defaultValue={state.cant}
+          value={state.cant ?? 0}
           onChange={({ target }) => {
             if (!isNaN(target.value)) {
-              setState({ ...state, cant: parseInt(target.value) });
+              setState({
+                ...state,
+                cant: parseInt(target.value ? target.value : 0),
+              });
             }
           }}
         />
@@ -159,6 +201,7 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
               setState({ ...state, price: parseInt(target.value) });
             }
           }}
+          onKeyPress={({ key }) => key === "Enter" && setData(state)}
         />
       </div>
       <div className="form-group col-1 text-right pt-4">

@@ -107,7 +107,8 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
   }, []);
 
   if (mainSale && mainSale.id) {
-    return (
+    return <p>En espera . . .</p>
+   /*  return (
       <div className="card">
         <div className="card-body">
           <div className="row d-print-none">
@@ -202,13 +203,14 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
           )}
         </div>
       </div>
-    );
+    ); */
   } else {
     return (
-      <span className="d-block text-center text-dark my-4">
+      <p>En espera . . .</p>
+     /*  <span className="d-block text-center text-dark my-4">
         <i className="fas fa-info-circle mr-1"></i>
         Sin datos de ventas
-      </span>
+      </span> */
     );
   }
 }

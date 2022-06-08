@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 //Components
 import InputSearchItem from "./views/InputSearchItem";
@@ -22,11 +23,15 @@ import saleHelper from './helpers';
 //Actions
 import { defaultActions } from "../../redux/default/";
 
-export default function IndexSalesComponent() {
+export default function IndexSalesComponent(props) {
 
   const {auth} = useContext(AuthContext);
   const { sales } = useSelector((state) => state);
   const { loading } = sales;
+
+  const history = useHistory();
+
+  console.log(history);
 
   const dispatch = useDispatch();
 
@@ -79,6 +84,15 @@ export default function IndexSalesComponent() {
     };
 
   }, []);// eslint-disable-line react-hooks/exhaustive-deps
+
+
+  useEffect(()=>{
+    if(props.match.params.id){
+      //TODO: cargar la venta que coincida con el id recibido en el paràmetro de la URL
+    }else{
+      return null,
+    }
+  });
 
 
   return (

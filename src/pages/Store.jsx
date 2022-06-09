@@ -25,7 +25,7 @@ const optionsDefault = {
 
 export default function Store(props) {
   const [state, setState] = useState({
-    panel: "inbox",
+    panel: "",
     options: optionsDefault,
   });
 
@@ -48,8 +48,11 @@ export default function Store(props) {
           case "inventario":
             panel = "inventory";
             break;
-          default:
+          case "entradas":
             panel = "entries";
+            break;
+          default:
+            panel = "inbox";
         }
       }
     }

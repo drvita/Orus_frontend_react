@@ -59,9 +59,25 @@ export default function useStore() {
       });
   };
 
-  const saveItem = async (data) => {
-    console.log("Data de item a guardar:", data);
+  const saveItemByList = async (items) => {
+    if (!items) return;
+    const url = setUrl("store/bylist");
 
+    return await api(url, "POST", { items })
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        console.error(
+          "[Orus System] Catch when save items by list in hook:",
+          err.message
+        );
+
+        throw err;
+      });
+  };
+
+  const saveItem = async (data) => {
     if (!data) return;
     const { id } = data;
 
@@ -101,14 +117,13 @@ export default function useStore() {
     }
   };
 
-
-  const saveQantityandPrice = async (data)=>{
+  const saveQantityandPrice = async (data) => {
     delete data.readyToSave;
     const { id } = data;
 
     console.log(id, data.store_item_id);
 
-    if(id === 0){
+    if (id === 0) {
       //delete data.id
       //delete data.branch_id
       const url = setUrl("branches");
@@ -116,24 +131,24 @@ export default function useStore() {
       console.log(method);
       console.log("Data a enviar", data);
       return await api(url, method, data);
-    }else{
-      console.log("data a enviar",data);
+    } else {
+      console.log("data a enviar", data);
       const url = setUrl("branches", id);
       const method = "PUT";
       return await api(url, method, data);
     }
-  }
+  };
 
   const saveGlobalPrice = async (data) => {
     console.log("Data a guardar:", data);
     const idCategory = data.productCategoryId;
     const URL = setUrl(`store/setprice/${idCategory}`);
-    const method = 'POST';
+    const method = "POST";
     console.log(URL);
     delete data.productCategoryId;
 
     return await api(URL, method, data);
-  }
+  };
 
   // Brands functions -------------------------
   const getBrands = async (options) => {
@@ -174,32 +189,32 @@ export default function useStore() {
   };
 
   const saveBrand = async (data) => {
-    const url = setUrl('brands');
-    return await api(url, 'POST', data)
-  }
+    const url = setUrl("brands");
+    return await api(url, "POST", data);
+  };
 
-  const deleteBrand = async (id)=>{
-    const url = setUrl('brands', id);
-    return await api(url, 'DELETE', null)
-    .then(() => {
-      return true;
-    })
-    .catch((err) => {
-      console.error(
-        "[Orus System] Catch when delete item in hook:",
-        err.message
-      );
+  const deleteBrand = async (id) => {
+    const url = setUrl("brands", id);
+    return await api(url, "DELETE", null)
+      .then(() => {
+        return true;
+      })
+      .catch((err) => {
+        console.error(
+          "[Orus System] Catch when delete item in hook:",
+          err.message
+        );
 
-      throw err;
-    });
-  }
-
+        throw err;
+      });
+  };
 
   return {
     getItems,
     getItem,
     deleteItem,
     saveItem,
+    saveItemByList,
     saveQantityandPrice,
     saveGlobalPrice,
     getBrands,

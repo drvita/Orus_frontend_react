@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import FormEntries from "../components/Store/FormEntries";
 import { Config } from "../context/ConfigContext";
+import useStore from "../hooks/useStore";
 
 export default function StoreEntries() {
   const configContext = Config();
@@ -8,6 +9,7 @@ export default function StoreEntries() {
     (conf) => conf.name === "branches"
   );
   const branchesId = branches.map((b) => b.id);
+  const store = useStore();
   const [state, setState] = useState({
     items: [
       {
@@ -39,6 +41,7 @@ export default function StoreEntries() {
             title: "Almacen",
             text: "Codigo ya se encuentra en la lsta",
             icon: "warning",
+            timer: 2500,
           });
           break;
         }
@@ -58,6 +61,7 @@ export default function StoreEntries() {
           title: "Almacen",
           text: "Codigo ya fue agregado a la lista en todas sus sucursales",
           icon: "warning",
+          timer: 2500,
         });
         break;
       }
@@ -66,6 +70,7 @@ export default function StoreEntries() {
         i.id = item.id;
         i.code = item.code;
         i.name = item.name;
+        i.price = item.price;
         i.branches = item.branches;
         i.branches_used = branches_used[i.id] ?? [];
         i.branch_default = item.branch_default ?? null;
@@ -96,6 +101,7 @@ export default function StoreEntries() {
         title: "Almacen",
         text: "La cantidad de productos (ingreso), es un valor requerido",
         icon: "warning",
+        timer: 2500,
       });
       return;
     }
@@ -105,6 +111,7 @@ export default function StoreEntries() {
         title: "Almacen",
         text: "Es necesario establecer un precio mayor a cero",
         icon: "warning",
+        timer: 2500,
       });
       return;
     }
@@ -114,6 +121,7 @@ export default function StoreEntries() {
         title: "Almacen",
         text: "Por favor seleccione una sucursal",
         icon: "warning",
+        timer: 2500,
       });
       return;
     }
@@ -166,7 +174,37 @@ export default function StoreEntries() {
     });
   };
   const saveItems = () => {
-    console.log("[DEBUG] Items", state.items);
+    const items = state.items.filter((i) => typeof i.id === "number");
+    const newItems = [];
+
+    for (let i = 0; i < items.length; i++) {
+      delete items[i].branch_default;
+      delete items[i].branches;
+      delete items[i].branches_used;
+      delete items[i].name;
+      delete items[i].code;
+    }
+    // MFPLAR-000075
+    store
+      .saveItemByList(items)
+      .then((res) => {
+        console.log("[DEBUG] Items save", items, res);
+
+        window.Swal.fire({
+          title: "Almacen",
+          text: "Productos almacenados con exito",
+          icon: "success",
+          timer: 2500,
+        });
+        newItems.push(getNewItem());
+        setState({
+          ...state,
+          items: newItems,
+        });
+      })
+      .catch((err) =>
+        console.log("[DEBUG] Error when save items:", err.message)
+      );
   };
 
   useEffect(() => {

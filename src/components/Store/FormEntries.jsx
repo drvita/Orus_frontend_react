@@ -38,6 +38,7 @@ export default function FormEntries({
         title: "Almacen",
         text: "Codigo no encontrado",
         icon: "warning",
+        timer: 2500,
       });
       setState({
         ...state,
@@ -61,7 +62,7 @@ export default function FormEntries({
         const inBranch = branch_select[0];
 
         currentCant = inBranch.cant;
-        currentPrice = data.price ? data.price : inBranch.price;
+        currentPrice = inBranch.price;
       }
 
       if (!currentPrice) {
@@ -81,7 +82,6 @@ export default function FormEntries({
     const [branch_id, currentCant, currentPrice] = setDataByBranch();
     const branchesId = getBranchesId();
 
-    // console.log("[DEBUG] reload effect:", data);
     setState({
       ...state,
       id: data.id,
@@ -172,7 +172,11 @@ export default function FormEntries({
         <label htmlFor="cant">Ingreso</label>
         <input
           type="text"
-          className="form-control"
+          className={
+            data.cant !== state.cant
+              ? "form-control is-warning"
+              : "form-control"
+          }
           placeholder="Cantidad"
           id="cant"
           disabled={typeof state.id === "string" ? true : false}
@@ -191,7 +195,11 @@ export default function FormEntries({
         <label htmlFor="price">Precio</label>
         <input
           type="text"
-          className="form-control"
+          className={
+            data.price !== state.price
+              ? "form-control is-warning"
+              : "form-control"
+          }
           placeholder="Precio"
           id="price"
           disabled={typeof state.id === "string" ? true : false}

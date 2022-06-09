@@ -21,12 +21,18 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
     auth: null,
   });
 
+  //console.log(data);
+
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
+
+    console.log(name, value, type );
 
       let val = value;
 
       if (type === "number" || type === "select-one") val = parseFloat(value);
+
+     console.log(typeof val, name);
 
       setData({
         ...data,
@@ -55,6 +61,7 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
         data.metodopago !== 4 &&
         data.metodopago !== 0
       ) {
+
         if (!data.bank_id) {
           window.Swal.fire({
             icon: "warning",
@@ -64,7 +71,9 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
           });
           return false;
         }
-        if (data.auth?.length < 4) {
+
+
+        if (data.auth.toString()?.length < 4) {
           window.Swal.fire({
             icon: "warning",
             title: "Espesifique los ultimos 4 numeros de la tarjeta",
@@ -72,7 +81,7 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
             timer: 1500,
           });
           return false;
-        }else if(data.auth?.length > 4){
+        }else if(data.auth.toString()?.length > 4){
           window.Swal.fire({
             icon: "warning",
             title: "Espesifique solamente 4 numeros",
@@ -84,6 +93,7 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
       }
 
       if (data.metodopago === 4) {
+        console.log("4 siempre entra aqui...")
         if (!data.auth) {
           window.Swal.fire({
             icon: "warning",
@@ -106,11 +116,6 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
 
       _handleSetPayments(payments);
 
-
-     /*  sale.set({
-        ...sale,
-        payments: payments,
-      }) */
       
     },
 

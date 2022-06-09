@@ -9,7 +9,6 @@ export default function useOrder(){
 
     const getOrder = async (orderID)=>{
         const url = setUrl('orders', orderID.id);
-        console.log(url);
         return await api(url);
     }
 
@@ -17,7 +16,6 @@ export default function useOrder(){
         console.log("Data recibida en la funcion:", data);
         const method = data.id ? 'PUT' : 'POST';
         const url = setUrl('orders');
-        console.log(url, " -- ", method);
         return await api(url, method, data);
     }
     

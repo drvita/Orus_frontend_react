@@ -17,6 +17,7 @@ import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
 import ShowPaymentsComponent from "../Sales/views/ShowPayments";
 import ExamModal from "./ExamModal";
+import ModalNota from "./ModalNota";
 
 
 //Helper
@@ -43,6 +44,7 @@ export default function EditOrderComponent(props){
   });
 
   const [showModal, setShowModal] = useState(false);
+  const [showModalNota, setShowModalNota] =  useState(false);
 
   const {
     id,
@@ -100,7 +102,7 @@ export default function EditOrderComponent(props){
       created_at: null,
       updated: {},
       updated_at: null,
-      nota_id: 0,
+      sale:{},
     });
 
     orderContext.set({
@@ -155,12 +157,10 @@ export default function EditOrderComponent(props){
         console.error("Error al guardar la orden editada");
       }
     })
-    //helper.handleSaveOrder(id, data, options, _saveOrder);
   };
 
   const handleDeleteOrder = () => {
-    /* const { order, options, _deleteOrder } = this.props;
-    helper.handleDeleteOrder(order, options, _deleteOrder); */
+
   };
 
 
@@ -175,6 +175,7 @@ export default function EditOrderComponent(props){
     hookOrder.getOrder(idurl).then((data)=>{
       if(data){
         let dataReceibed = data.data;
+        console.log(dataReceibed);
         setState({
           id: dataReceibed.id ?? 0,
           paciente: dataReceibed.paciente ?? {},
@@ -192,7 +193,7 @@ export default function EditOrderComponent(props){
           created_at: dataReceibed.created_at ?? null,
           updated: dataReceibed.updated ?? {},
           updated_at: dataReceibed.updated_at ?? null,
-          nota_id: dataReceibed.nota.id,
+          sale: dataReceibed.sale ?? {},
           contact_id: dataReceibed.paciente.id,
         })
       }else{
@@ -226,7 +227,7 @@ export default function EditOrderComponent(props){
                 {/* Nombre del paciente */}
                 <h6 className="d-flex mb-2">
                   <i className="mr-2 fas fa-user"></i>
-                  <span className="text-capitalize m-0 text-secondary">{paciente.nombre}</span>                
+                  <span className="text-capitalize m-0 text-secondary">{paciente.name}</span>                
                 </h6>
                 {/* Email del paciente */}
                 {paciente.email ? (
@@ -325,7 +326,7 @@ export default function EditOrderComponent(props){
                       {Object.keys(exam).length ? "Ver examen" : "Sin examen asignado"}                      
                       <i className="fas fa-eye ml-2"></i>
                     </button>  
-                    <button className="btn btn-primary" onClick={() => history.push(`/notas/${state.nota_id}`)}>
+                    <button className="btn btn-primary" onClick={() => setShowModalNota(true)}>
                       Ver Nota
                       <i className="fas fa-money-bill ml-2"></i>
                     </button>  
@@ -468,13 +469,22 @@ export default function EditOrderComponent(props){
 
           </div>
 
-          {/* MODAL VALIDATION */}
+          {/* MODAL VALIDATION EXAM */}
           {showModal ? (
             <ExamModal
               handleClose = {()=> setShowModal(false)}          
-              exam = {state.exam}
+              exam = {state.exam}              
             />
           ): null}
+
+
+           {/* MODAL VALIDATION NOTA*/}
+          {showModalNota ? (
+            <ModalNota
+              handleClose={()=>setShowModalNota(false)}
+              sale = {state.sale}
+            />          
+          ):null}
 
         </>
       ) : null}

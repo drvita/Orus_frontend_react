@@ -167,7 +167,7 @@ const InboxOrderComponent = (props) => {
                         value={pedido.id}
                         id={"order_" + pedido.id}
                         checked={orderSelected.id === pedido.id ? true : false}
-                        disabled={pedido.estado > 2}
+                        disabled={pedido.status > 2}
                         onChange={({ target }) =>
                           handleOrderSelect(target, pedido)
                         }
@@ -195,7 +195,7 @@ const InboxOrderComponent = (props) => {
                         }
                       >
                         <i className="fas fa-user text-sm mr-2"></i>
-                        {pedido.paciente.nombre}
+                        {pedido.paciente.name}
                       </span>
                     </a>
                   </td>
@@ -210,11 +210,11 @@ const InboxOrderComponent = (props) => {
                     {pedido.status === 1 ? (
                       <div>
                         <span className="mr-1 text-dark">
-                          {pedido.laboratorio
-                            ? pedido.laboratorio.nombre
+                          {pedido.lab
+                            ? pedido.lab.nombre
                             : "Sin asignar"}
                         </span>
-                        {pedido.laboratorio ? "/ " + pedido.npedidolab : ""}
+                        {pedido.lab ? "/ " + pedido.npedidolab : ""}
                       </div>
                     ) : pedido.status === 2 ? (
                       <small>

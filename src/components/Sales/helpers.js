@@ -65,22 +65,16 @@ const getForPay = (items, payments, discount) => {
 }
 
 const getSubTotal = (items)=> {
-
-  //Suma de los items
   let subTotal = 0;
   items.forEach((item)=>{
     subTotal += item.subtotal;
   }) 
-  console.log("SubTotal:", subTotal);
+
   return subTotal;
 }
 
 
 const getTotal = (subtotal, discount)=> {
-  console.log("Subtotal:", subtotal);
-  console.log("Descuento:", discount);
-  
-  //subtotal menos descuento
   return subtotal - discount;
 }
 
@@ -90,7 +84,6 @@ const getPagado = (payments = []) => {
   payments.forEach((payment)=>{
     pagado += payment.total;
   })
-
   return pagado;
 }
 

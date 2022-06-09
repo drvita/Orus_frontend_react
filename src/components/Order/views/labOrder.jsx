@@ -42,10 +42,10 @@ export default function LabOrderComponent({
             {suppliers && suppliers.length ? (
               <>
                 <option value="0">Seleccione un proveedor</option>
-                {suppliers.map((s) => {
+                {suppliers.map((s) => {                                    
                   return (
                     <option key={s.id} value={s.id}>
-                      {s.nombre}
+                      {s.name}
                     </option>
                   );
                 })}

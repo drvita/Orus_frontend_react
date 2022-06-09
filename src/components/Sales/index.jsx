@@ -84,7 +84,6 @@ export default function IndexSalesComponent(props) {
 
   }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
-
   useEffect(()=>{
     if(props.match.params.id){
       hookSale.getSaleById(props.match.params.id).then((data)=>{

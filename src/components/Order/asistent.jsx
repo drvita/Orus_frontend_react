@@ -232,15 +232,23 @@ export default function AsistentComponent(props){
       session: session,
       contact_id: contact_id,
       items: items,
-      //El status solo se envia cuando se haca una edicion de una venta      
-      //status: 0,
-      sale: sale
+      sale:{
+        discount: sale.discount,
+      }
     };
+
+    if(sale.payments.length){
+      let finalPayments = sale.payments;
+      finalPayments.forEach((payment)=>{
+        delete payment.id;
+        delete payment.metodoname;
+      })
+      data.sale.payments = finalPayments;
+    }
 
 
     if (exam_id) data.exam_id = parseInt(exam_id);
 
-    //TODO:Guardar la orden con el hook y setear el contacto al estado inicial
     orderHook.saveOrder(data).then((data)=>{
       if(data){
         window.Swal.fire({
@@ -573,7 +581,7 @@ export default function AsistentComponent(props){
                   Aplicar un descuento
                 </button>
 
-                <button className="btn btn-secondary mr-4" disabled = {state.sale.payments.length || state.sale.discount ? true : false}>
+                <button className="btn btn-secondary mr-4" disabled = {state.sale.payments.length || state.sale.discount ? true : false} onClick={handleSave}>
                   <i className="fas fa-ban mr-1"></i>
                   Sin abono inicial
                 </button>

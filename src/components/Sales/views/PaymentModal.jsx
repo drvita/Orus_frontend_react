@@ -26,17 +26,13 @@ function PaymentModal({forPaid, handleClose: _close }) {
 
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
-
       let val = value;
-
       if (type === "number" || type === "select-one") val = parseFloat(value);
-
       setData({
         ...data,
         [name]: val,
       });
     },
-
     handleSetPayment = () => {
       const payments = [...sale.payments];
       let pagado = 0;
@@ -85,7 +81,6 @@ function PaymentModal({forPaid, handleClose: _close }) {
       }
 
       if (data.metodopago === 4) {
-        console.log("Metodo Pago",data.metodoname);
         if (!data.auth) {
           window.Swal.fire({
             icon: "warning",

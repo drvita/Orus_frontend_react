@@ -62,13 +62,9 @@ function SearchCustomerModal({ handleClose: _close }) {
       })
     },
     handleClickCustomer = (e, customer) => {
-      //console.log("Customer Seleccionado:", customer);
       e.preventDefault();
-
-      console.log("ID customer venta:", sale.customer.id, "ID customer seleccionado:",customer.id);
-
+      
       if (sale.customer.id !== customer.id) {
-        console.log(![0, 2].includes(sale.customer.id));
         if (![0, 2].includes(sale.customer.id)) {
           window.Swal.fire({  
             title: "Ventas",
@@ -79,10 +75,7 @@ function SearchCustomerModal({ handleClose: _close }) {
             cancelButtonText: "Cancelar",
             showLoaderOnConfirm: true,
           }).then(({ dismiss }) => {
-            if (!dismiss) {
-              console.log("Entrando al Dissmiss");
-              console.log(customer)
-              //sale.setCustomer(customer);
+            if (!dismiss) {                          
               sale.set({
                 id: 0,
                 customer: {

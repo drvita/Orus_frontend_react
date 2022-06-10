@@ -64,28 +64,7 @@ export default function InboxComponent(){
       console.error(error);
     })
   };
-
-  //Checkbox selected
-  /* const handleUserSelect = (item) => {
-    console.log(item);
-    let { value , checked } = item;
-    if (!checked) item = { id: 0 };
-    setUserSelected(value);
-  }; */
-
-//Click on userName
-/*  const handleSelectUser = (e, order = { id: 0 }) => {
-    if (e) e.preventDefault();
-    if (order.id) {
-      console.log(order);
-      //TODO: guardar el usuario seleccionado para que el componente pueda acceder a el
-      //TODO: guardar en state local y pasar por props
-    } else if (userSelected.id) {
-      console.log(userSelected.id);
-      _users.getUserById(userSelected.id);
-    }
-  };  */
-
+  
   const handleSelectUser = (e, order = { id: 0 }) => {
     if(userSelected){
       history.push(`usuarios/${userSelected}`);

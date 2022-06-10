@@ -1,4 +1,4 @@
-import React, { Component, Fragment, useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 
 //Context
 import { OrderContext } from "../context/OderContext";
@@ -33,7 +33,7 @@ export default function IndexOrderComponent(props){
             ...state,
             panel: id ? 'edit' : 'inbox',
         })
-    },[id])
+    },[id])// eslint-disable-next-line
 
     return(
         <OrderContext.Provider value={{...state, set: setState}}>
@@ -41,7 +41,6 @@ export default function IndexOrderComponent(props){
                 <div className="col-sm-12 col-md-2">
                     <Toolbar />
                 </div>
-
                 <div className="col-sm-12 col-md-10">
                     {state.panel === "inbox" && <Inbox />}
                     {state.panel === "newOrder" && <Asistent {...props} />}                   

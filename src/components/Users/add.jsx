@@ -40,9 +40,8 @@ export default function UserAddComponent(props){
 
   const history = useHistory();
 
-  function processData(data, setData) {
+  function processData(data) {
     if(data){
-      console.log(data);
       setCurrentUser({
         id: data.id,
         role: data.roles[0],
@@ -70,14 +69,13 @@ export default function UserAddComponent(props){
         }
       },[id])
     }else{
-      console.log("ID NO ENCONTRADO");
+      console.error("ID NO ENCONTRADO");
     }
   },[id]);// eslint-disable-line react-hooks/exhaustive-deps
 
   const send = !currentUser.load && currentUser.validUserName &&  currentUser.name.length && currentUser.validUserEmail ? false : true;
 
   const catchInputs = ({ name, value, type }) => {
-    console.log(name, value, type);
     if (type === "text") {
       value = value
         .toLowerCase()

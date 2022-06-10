@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
 
 //Components
 import InputSearchItem from "./views/InputSearchItem";
@@ -30,8 +29,6 @@ export default function IndexSalesComponent(props) {
   const { sales } = useSelector((state) => state);
   const { loading } = sales;
   const hookSale = useSales();
-
-  const history = useHistory();
   const dispatch = useDispatch();
 
   const [state, setState] = useState({
@@ -74,7 +71,6 @@ export default function IndexSalesComponent(props) {
   }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-
     dispatch(defaultActions.changeNamePage("punto de venta"));
 
     return () => {

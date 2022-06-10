@@ -1,13 +1,15 @@
 import { useState, useContext } from "react";
-
 import moment from "moment";
+
+//Context
+import { AuthContext } from "../../context/AuthContext";
+
+//Components
 import PaymentsDetails from "../Sales/views/reportPaymentsDetails";
 import ReportPays from "../Sales/views/reportPays";
 import ReportBank from "../Sales/views/reportBank";
 import Filters from "./Filters";
 import BoxCut from "./boxCut";
-
-import { AuthContext } from "../../context/AuthContext";
 
 const Dashboard = () => {
   const { auth } = useContext(AuthContext);
@@ -31,7 +33,6 @@ const Dashboard = () => {
 
 
   const changeAllState = (obj) => { 
-    console.log("Filters Seted up",obj);
     if (typeof obj !== "object") {
       console.error("[Orus system] The filters data not is a object:", obj);
       return;

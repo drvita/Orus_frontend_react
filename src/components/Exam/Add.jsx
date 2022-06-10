@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-// import moment from "moment";
+
+
+
 //Componentes
 import Generales from "./views/GeneralesExam";
 import Interrogatorios from "./views/interrogatoriosExam";
@@ -14,7 +16,6 @@ import Observaciones from "./views/observacionesExam";
 import Recomendaciones from "./views/RecomendationGlass";
 import ShowContact from "../Contacts/views/ShowCard";
 import SideBarRigth from "./views/SideBarRigth";
-// import PrintExam from "./views/print_exam";
 import useExam from "../../hooks/useExam";
 
 export default function Add(props) {

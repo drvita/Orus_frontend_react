@@ -47,7 +47,6 @@ export default function Brands(props) {
           load={state.load}
           loadText="Cargando marcas"
           handleChange={(id) => {
-            console.log("ID seleccionado", id);
             if (props.handleChangeBrand) {
               props.handleChangeBrand(id);
             }

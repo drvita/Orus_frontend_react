@@ -8,8 +8,6 @@ import BranchesFormInputs from "./BranchesFormInputs";
 
 export default function BranchesForm({ branches, storeItemID }) {
 
-  console.log("----",storeItemID);
-
   const configContext = useContext(ConfigContext);
   const configBranches = configContext.data.filter((c)=>c.name === 'branches');
 
@@ -17,7 +15,6 @@ export default function BranchesForm({ branches, storeItemID }) {
     <form>
       {configBranches.map((branch) => {
         const currentBranch = branches.filter((i)=> i.branch_id === branch.id )
-        console.log(currentBranch);
         return (
           <div className="card" key={branch.id}>
             <div className="card-header">

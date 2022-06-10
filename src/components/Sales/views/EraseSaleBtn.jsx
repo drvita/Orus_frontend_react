@@ -1,10 +1,11 @@
-import { useContext, useEffect } from 'react';
-import { Sale } from '../../../context/SaleContext';
+import { useContext } from 'react';
 import helpers from "../helpers.js";
 import { useHistory } from 'react-router-dom';
 
 
+//Context
 import { AuthContext } from '../../../context/AuthContext';
+import { Sale } from '../../../context/SaleContext';
 
 export default function EraseSaleBtnComponent(props) {
 

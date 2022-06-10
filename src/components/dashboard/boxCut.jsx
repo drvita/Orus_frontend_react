@@ -1,4 +1,6 @@
-import React, { Component } from "react";
+import { Component } from "react";
+
+//Componentes
 import { dollarUS } from "../../utils/current";
 
 export default class BoxCut extends Component {

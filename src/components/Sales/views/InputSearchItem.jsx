@@ -52,13 +52,11 @@ function InputSearchItem({ messages, loading }) {
 
         hookProducts.getProducts(search).then((data)=>{
           if(data){
-            console.log(data)
             setList(data.data);
           }else{
             console.error("Error al buscar el producto")
           }
         })
-        //getProducts(search);
         setTextSearch("");
       }
     },

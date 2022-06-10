@@ -1,12 +1,18 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+//Components
 import PaginationComponent from "../../layouts/pagination";
 import GraduacionExamComponent from "../Exam/views/graduacionExam";
 import BicelacionOrderComponent from "./views/bicelacionOrder";
 import LabOrderComponent from "./views/labOrder";
+
+
 //Actions
 import { orderActions } from "../../redux/order";
+
+//helpers
 import helpers from "./helpers";
 
 export default function ReportOrderComponent({ handleChangePanel: panel }) {

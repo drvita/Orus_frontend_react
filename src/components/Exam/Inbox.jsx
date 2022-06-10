@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import moment from "moment";
 
-import Inbox from "../../layouts/list_inbox";
+//Context
 import { Exams } from "../../context/ExamContext";
+
+//Components
+import Inbox from "../../layouts/list_inbox";
 import useExam from "../../hooks/useExam";
 
 export default function InboxExams() {

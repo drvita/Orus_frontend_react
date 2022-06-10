@@ -43,7 +43,6 @@ export default function useCategory() {
 
   
   const deleteCategory = async (id) => {
-    console.log("ID de la categoria a eliminar", id);
     if (!id) return false;
     
     const url = setUrl("categories", id);
@@ -62,7 +61,6 @@ export default function useCategory() {
       });
   };
   const saveCategory = async (data) => {
-    console.log("DATA CATEGORIA A GUARDAR:", data);
     if (!data) return;
     const { id } = data;
     delete data.id;

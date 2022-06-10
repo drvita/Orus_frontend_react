@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+//Componentes
 import moment from "moment";
 import Inbox from "../../layouts/list_inbox";
 import AddContact from "./Add";
 import CardMenu from "../../layouts/card_menu";
+
+
 //Actions
 import { contactActions } from "../../redux/contact/";
 import { defaultActions } from "../../redux/default/";
@@ -83,7 +86,6 @@ class IndexContactComponent extends Component {
   render() {
     const { contacts, loading, meta } = this.props,
       { contact, newOrEdit, contactSelected, options } = this.state;
-    //domain = /^.{1,100}@domain(.com)?$/gim;
 
     return (
       <div className="row">

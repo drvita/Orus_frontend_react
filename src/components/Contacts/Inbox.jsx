@@ -3,9 +3,12 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
+//Components
 import Inbox from "../../layouts/list_inbox";
-import { Contacts } from "../../context/ContactContext";
 import useContact from "../../hooks/useContact";
+
+//Context
+import { Contacts } from "../../context/ContactContext";
 
 export default function InboxContact() {
   const context = Contacts();

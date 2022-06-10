@@ -62,14 +62,12 @@ export default function useExam() {
 
 
   const saveExam = async (data) => {
-    console.log("Data a enviar:", data);
 
     if (!data) return;
     const { id } = data;
     delete data.id;
 
     if (id) {
-      console.log("Edicion");
       const url = setUrl("exams", id);
 
       return await api(url, "PUT", data)
@@ -81,7 +79,6 @@ export default function useExam() {
           return err;
         });
     } else {
-      console.log("Nuevo examen");
       const url = setUrl("exams");
 
       return await api(url, "POST", data)

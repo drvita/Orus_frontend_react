@@ -132,7 +132,6 @@ export default function BranchsListComponent() {
                 {list.map((branch) => (
                   branch.name !== 'bank' ? (
                     <tr key={branch.id}>
-                    {console.log(branch)}
                     <td className="text-capitalize">{branch.data.name}</td>
                     <td className="text-truncate text-capitalize">
                       {branch.data.address ?? "--"}

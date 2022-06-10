@@ -11,14 +11,14 @@ export default function ListItemComponent(props){
   });
 
   const { itemNew, code, cant } = state;
-  const { items, session, status = true, noPrice, productCodes, listStatus, showHideBtns, cancelListProducts } = props;
+  const { items, session, status = true, noPrice, productCodes, showHideBtns, cancelListProducts } = props;
   const price = !noPrice;
 
   let total = 0;
   
   useEffect(()=>{
     validateList();
-  },[productCodes]);
+  },[productCodes]);// eslint-disable-next-line
 
 
   const validateList = () => {
@@ -31,15 +31,12 @@ export default function ListItemComponent(props){
     }else{
       return null;
     }
-    
   };
 
   const handleSetCantItem = (id, cant) => {
-    console.log(id, cant);
       const { items, ChangeInput: _changeInput } = props,
         items_rest = items.map((item) => {
           if (item.store_items_id === id) {
-            console.log(item);
             item.cant = item.cant + cant;
             item.subtotal = item.cant * item.precio;
           }
@@ -51,7 +48,6 @@ export default function ListItemComponent(props){
 
   
   const deleteItem = (id) => {
-      console.log("Delete item function");
       const { items, status = true, ChangeInput: _changeInput } = props;
       const itemsToSave = items.filter((e) => e.store_items_id !== id);
   
@@ -294,7 +290,7 @@ export default function ListItemComponent(props){
 
           {!showHideBtns ? (
             <div className="d-flex justify-content-end mb-2">
-              <button className="btn btn-secondary mr-3" onClick={cancelListProducts}>Cancelar</button>
+              <button className="btn btn-secondary mr-3" onClick={cancelListProducts} disabled = {state.validList === false ?  true : false}>Cancelar</button>
               <button className="btn btn-success mr-2" disabled = {state.validList === false ?  true : false} onClick= {()=>{
                 props.changeTotal(total,state.validList);
                 setState({

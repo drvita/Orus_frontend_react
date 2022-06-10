@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 //Context
 import { Sale } from '../../../context/SaleContext';

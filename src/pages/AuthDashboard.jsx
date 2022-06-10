@@ -28,7 +28,6 @@ export default function Dashboard() {
   };
 
   const changeAllState = (obj) => {
-    console.log("Filters Seted up", obj);
     if (typeof obj !== "object") {
       console.error("[Orus system] The filters data not is a object:", obj);
       return;

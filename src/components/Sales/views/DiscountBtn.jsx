@@ -25,27 +25,19 @@ export default function DiscountBtnComponent() {
 
         if (discount.match(isNumeric)) {
           const value = parseInt(discount);
-          //const subtotal = helper.getSubTotal(sale.items)
           sale.set({
             ...sale,
             discount: value,
-            ///Revisar, al agregar descuento guarda la venta
-            //total:helper.getTotal(subtotal, value),
           });
-          console.log("Aplicando descuento");
 
         } else if (discount.match(isPercen)) {
 
           const percent = parseInt(discount.replace("%", "")) / 100,
           value = parseInt(sum * percent);
-          //const subtotal = helper.getSubTotal(sale.items)
           sale.set({
             ...sale,
-            discount: value,
-            ///Revisar, al agregar descuento guarda la venta
-            //total:helper.getTotal(subtotal, value),
-          })
-          console.log("Aplicando descuento");
+            discount: value,            
+          })          
         }
       }
   };

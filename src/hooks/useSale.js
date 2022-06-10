@@ -22,7 +22,6 @@ export default function useSales(ctx){
             search: id,
         } */
         const url = setUrl('sales', id);
-        console.log(url);
         return await api(url)
     }
 
@@ -46,11 +45,9 @@ export default function useSales(ctx){
 
 
         try {
-          console.log("DATA A GUARDAR------", data);
           const { id } = sale,
             url = setUrl("sales", id),
             method = id ? "PUT" : "POST";
-            console.log(url);
             return await api(url, method, data)
         } catch (e) {
           console.error(

@@ -13,19 +13,16 @@ export default function useProducts(){
 
     const getProductById = async (id)=>{
         const url = setUrl('store', id);
-        console.log(url);
         return await api(url);
     }
 
     const getProductByCode = async(code, id) =>{
         const url = setUrl('store', null, {code, id})
-        console.log(url);
         return await api(url);
     }
 
 
     const saveProduct = async(data)=>{
-        console.log("Data a guardar", data);
         const {id} = data;
         const url = setUrl('store');
 

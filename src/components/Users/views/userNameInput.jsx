@@ -14,15 +14,12 @@ export default function UserNameInputComponent(props) {
   const { col, username, userId, onChange: _onChange } = props, { bgColor, validate, text, searchUser } = state;
   //Functions
   const handleChange = ({ name, value }) => {
-    console.log(name + ":" + value)
       _onChange({
         name,
         value: value.toLowerCase(),
       });
     },
     validUser = () => {
-      console.log("Validate user function");
-
       const regex = /^[\w]{4,16}$/,
         userSearch = username.replace(/\s/g, "");
 

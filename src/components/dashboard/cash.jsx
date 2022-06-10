@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import moment from "moment";
 import "moment/locale/es";
 
@@ -162,8 +162,6 @@ export default class Cash extends Component {
         let { host, token } = this.state;
 
         if (confirm && efectivo) {
-          //Actualiza el pedido o creamos un pedido nuevo según el ID
-          console.log("Enviando datos ATM a API");
           return fetch("http://" + host + "/api/atms/" + id, {
             method: "DELETE",
             headers: {
@@ -242,9 +240,6 @@ export default class Cash extends Component {
           },
           url = "http://" + host + "/api/atms";
         if (confirm && efectivo) {
-          //Actualiza el pedido o creamos un pedido nuevo según el ID
-          
-          console.log("Enviando datos ATM a API");
           return fetch(url, {
             method: "POST",
             body: JSON.stringify(body),
@@ -298,15 +293,11 @@ export default class Cash extends Component {
     });
   };
   getAtms = () => {
-    //Variables en localStorage
     let { host, token } = this.state,
       { date, user } = this.props,
       url = "http://" + host + "/api/atms",
       atmDate = "?date=" + date,
       atmUser = user ? "&user=" + user : "";
-
-    //Realiza la peticion de los productos faltantes
-    console.log("Descargando datos de efectivo");
 
     fetch(url + atmDate + atmUser, {
       method: "GET",
@@ -324,12 +315,10 @@ export default class Cash extends Component {
             text: "Ups!\n Hubo un error, intentelo mas tarde",
             icon: "error",
           });
-          console.log(res);
         }
         return res.json();
       })
       .then(async (data) => {
-        console.log("Almacenando datos de efectivo");
         if (!data.message) {
           let efectivo = 0;
           await data.data.map((atm) => {

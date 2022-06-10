@@ -278,11 +278,6 @@ class StoreLote extends Component {
               store_items_id: id,
             };
 
-          //Actualiza el pedido o creamos un pedido nuevo según el ID
-          console.log("Enviando datos del producto a API");
-
-          
-          
           return fetch("http://" + ls.host + "/api/items", {
             method: "POST",
             body: JSON.stringify(body),
@@ -321,7 +316,6 @@ class StoreLote extends Component {
         let data = result.value;
 
         if (data.data) {
-          console.log("Lote almacenada");
           this.setState({
             load: true,
             loteNew: false,
@@ -362,7 +356,6 @@ class StoreLote extends Component {
         return response.json();
       })
       .then((data) => {
-        console.log("Descargando lotes");
         this.setState({
           id,
           lote: data,
@@ -408,10 +401,7 @@ class StoreLote extends Component {
               tr.classList.remove("bg-danger");
             }, 6500);
 
-          //Inicio de proceso de eliminción por API
-          console.log("Solicitud de eliminación de lote por API");
 
-          
           return fetch("http://" + ls.host + "/api/items/" + id, {
             method: "DELETE",
             signal: this.signal,
@@ -453,7 +443,6 @@ class StoreLote extends Component {
       },
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
-        console.log("Producto eliminado");
         this.setState({
           load: true,
           loteNew: false,
@@ -465,7 +454,6 @@ class StoreLote extends Component {
           }
         );
       } else if (result && !result.dismiss) {
-        console.log("Orus res: ", result);
         window.Swal.fire(
           "Error",
           "Se perdio la conexion con el servidor",

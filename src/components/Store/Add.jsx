@@ -103,7 +103,6 @@ export default function Add(props) {
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
-      console.log("API response", res);
       setState({
         ...state,
         id: res.id ? res.id : 0,

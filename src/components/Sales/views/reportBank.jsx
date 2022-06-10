@@ -22,8 +22,6 @@ export default function ReportBank({ filters }) {
 
     const bankUrls = setUrl("payments", null, bankFilters);
 
-    console.log("REPORT BANK URL", bankUrls);
-
     const { data, message } = await api(bankUrls);
 
     if (data) {

@@ -6,8 +6,6 @@ export default function* handleGetList({ payload }) {
   try {
     const url = getUrl("sales", null, payload),
       result = yield call(api, url);
-      console.log("SALE RESULT SAGA", result);
-
     yield put(
       saleActions.setListSales({
         result: {

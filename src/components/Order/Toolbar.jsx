@@ -1,20 +1,12 @@
 import {Fragment ,useContext} from 'react';
-import { OrderContext } from "../../context/OderContext";
-import { AuthContext } from '../../context/AuthContext';
 import { useHistory } from 'react-router-dom';
-
-//Components
-import Chat from './asistent';
+//Context
+import { OrderContext } from "../../context/OderContext";
 
 export default function Toolbar(){
     const orderContext = useContext(OrderContext);
-    const authContext = useContext(AuthContext);
-
-    const mainRole = authContext.auth.roles;
     const options = orderContext.options;
-    const order = orderContext.order;
     const history = useHistory();
-
 
     const handleSetSelectOptions = ({ target }) => {
         const { value, name } = target;
@@ -55,24 +47,8 @@ export default function Toolbar(){
                 </div>
                 <div className="p-0 card-body">
                 <ul className="nav nav-pills flex-column">
-                    {/* <li className="nav-item">
-                    <a
-                        href="#item"
-                        className={orderContext.panel === 'pending' ? "nav-link active" : "nav-link"}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            orderContext.set({
-                                ...orderContext,
-                                panel:'pending'
-                            })
-                        }}
-                    >
-                        <i className="mr-2 fas fa-notes-medical"></i> Pendientes
-                    </a>
-                    </li> */}
                     <li className="nav-item">
-                    <a
-                        href=""
+                    <a                
                         className={orderContext.panel === 'inbox' ? "nav-link active" : "nav-link"}
                         onClick={(e) => {
                             e.preventDefault();
@@ -86,23 +62,6 @@ export default function Toolbar(){
                         <i className="mr-2 fas fa-clipboard-list"></i> Pedidos
                     </a>
                     </li>
-                    {/* {mainRole === "admin" ? (
-                    <li className="nav-item">
-                        <a
-                        href="#item"
-                        className={orderContext.panel === 'reports' ? "nav-link active" : "nav-link"}
-                        onClick={(e)=>{
-                            e.preventDefault();
-                            orderContext.set({
-                                ...orderContext,
-                                panel:'reports'
-                            })
-                        }}
-                        >
-                        <i className="mr-2 fas fa-folder-open"></i> Reporte
-                        </a>
-                    </li>
-                    ) : null} */}
 
                     {orderContext.panel === 'inbox' ? (
                         <Fragment>
@@ -122,7 +81,8 @@ export default function Toolbar(){
                             <option value="2">Bicelación</option>
                             <option value="3">Terminado</option>
                             <option value="4">Entregado</option>
-                            {/* <option value="5">Garantia</option> */}
+
+
                         </select>
                         </li>
                         <li className="nav-item p-2">
@@ -173,8 +133,6 @@ export default function Toolbar(){
                 </ul>
                 </div>
             </div>
-
-            {/* {orderContext.panel === 'edit' ? <Chat table="orders" idRow={order.id} /> : null} */}
             </div>
       </div>
     )

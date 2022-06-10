@@ -27,7 +27,6 @@ export default function Code(props) {
 
         onChange={({target}) => {
           const {name, value} = target;
-          console.log(name, value);
           props.onChangeProductCode(value);
         }}
         
@@ -37,15 +36,12 @@ export default function Code(props) {
           }else{
             hookStore.getProductByCode(props.code, props.id).then((data)=>{
               if(data.data.length){         
-                if(data.data[0].code === props.code){
-                  console.log("Còdigo de props", props.code);
-                  console.log("Còdigo a validar", data.data[0].code);  
+                if(data.data[0].code === props.code){                                  
                   setInUse(false);
                 }else{
                   setInUse(true);
                 }              
-              }else if(data.data.length === 0){
-                console.log("Entrando hasta abajo");
+              }else if(data.data.length === 0){              
                 setInUse(false);
               }
             })

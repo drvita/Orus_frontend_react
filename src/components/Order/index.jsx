@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-//import { Link } from "react-router-dom";
 //Components
 import Inbox from "./views/inbox";
 import Asistent from "./asistent";
@@ -107,8 +106,6 @@ class indexOrderComponent extends Component {
     const { panel } = this.state,
       { order, options, mainRole } = this.props;
     let showpanel = this.showPanel(panel);
-
-    //console.log("[DEBUG] orders", order);
 
     return (
       <div className="row">

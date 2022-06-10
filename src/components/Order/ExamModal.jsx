@@ -1,3 +1,4 @@
+//Components
 import Exam from '../Exam/views/examShort';
 
 export default function ExamModal({ handleClose: _close, exam }) {

@@ -13,30 +13,20 @@ export default function useOrder(){
     }
 
     const saveOrder = async (data)=>{
-        console.log("Data recibida en la funcion:", data);
         const method = data.id ? 'PUT' : 'POST';
         const url = setUrl('orders');
         return await api(url, method, data);
     }
     
-    const deleteOrder = ()=>{
-
+    const deleteOrder = async (id)=>{
+        const method = "DELETE";
+        const url = setUrl('orders', id);
+        return await api(url, method);
     }
-
-    const setOrder = async ()=>{
-
-    }
-
-
-    const setOptions = ()=>{
-
-    }
-
+    
     return{
         getListOrders,
         getOrder,
-        setOrder,
-        setOptions,
         deleteOrder,
         saveOrder,
     }

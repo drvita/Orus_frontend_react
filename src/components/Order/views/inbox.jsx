@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 //Components
 import Main from "../../../layouts/list_inbox";
 
 //Actions
-import { orderActions } from "../../../redux/order";
 import helper from "../helpers";
 
 
@@ -30,16 +28,6 @@ const InboxOrderComponent = (props) => {
   });
 
   const {
-    //orders: pedidos = [],
-    //meta,
-    //options,
-    //loading,
-    //Functions
-    //_getList,
-    _getOrder,
-    //_setOrder,
-    //_setOptions,
-    _deleteOrder,
     _saveOrder,
   } = props;
 
@@ -91,10 +79,38 @@ const InboxOrderComponent = (props) => {
 
 
   const deleteOrder = () => {
-    helper.handleDeleteOrder(orderSelected, options, _deleteOrder);
-    setOrderSelected({ id: 0 });
-  };
+    window.Swal.fire({
+      title: '¿Estás seguro de eliminar la orden?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Eliminar',
+    }).then(({dismiss})=>{
+      if(!dismiss){
+        orderHook.deleteOrder(orderSelected.id);
 
+        window.Swal.fire({
+          icon: "success",
+          title: "Orden eliminada correctamente",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        orderContext.set({
+          ...orderContext,
+          options:{
+            page: 1,
+            orderby: "created_at",
+            order: "desc",
+            itemsPage: 10,
+            status: 0,
+            search: "",
+          }
+        })
+      }
+    })
+  };
 
   const handleStatus = () => {
     if (orderSelected.id && orderSelected.estado < 3) {
@@ -235,10 +251,10 @@ const InboxOrderComponent = (props) => {
                     ) : null}
                   </td>
                   <td className="mailbox-attachment">
-                    {pedido.nota ? (
-                      <Link to={"/notas/registro/" + pedido.nota.id}>
+                    {pedido.sale ? (
+                      <Link to={"/notas/registro/" + pedido.sale.id}>
                         <span className="badge badge-success">
-                          {pedido.nota.id}
+                          {pedido.sale.id}
                         </span>
                       </Link>
                     ) : (
@@ -266,22 +282,4 @@ const InboxOrderComponent = (props) => {
   );
 };
 
-const mapStateToProps = ({ order }) => {
-    return {
-      orders: order.list,
-      options: order.options,
-      meta: order.metaList,
-      loading: order.loading,
-    };
-  },
-
-  mapActionsToProps = {
-    _getList: orderActions.getListOrder,
-    _getOrder: orderActions.getOrder,
-    _setOrder: orderActions.setOrder,
-    _setOptions: orderActions.setOptions,
-    _deleteOrder: orderActions.deleteOrder,
-    _saveOrder: orderActions.saveOrder,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(InboxOrderComponent);
+export default (InboxOrderComponent);

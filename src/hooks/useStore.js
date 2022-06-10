@@ -40,7 +40,6 @@ export default function useStore() {
   };
 
   const deleteItem = async (id) => {
-    console.log("ID A ELIMINAR", id);
     if (!id) return false;
 
     const url = setUrl("store", id);
@@ -121,18 +120,11 @@ export default function useStore() {
     delete data.readyToSave;
     const { id } = data;
 
-    console.log(id, data.store_item_id);
-
     if (id === 0) {
-      //delete data.id
-      //delete data.branch_id
       const url = setUrl("branches");
       const method = "POST";
-      console.log(method);
-      console.log("Data a enviar", data);
       return await api(url, method, data);
     } else {
-      console.log("data a enviar", data);
       const url = setUrl("branches", id);
       const method = "PUT";
       return await api(url, method, data);
@@ -140,11 +132,9 @@ export default function useStore() {
   };
 
   const saveGlobalPrice = async (data) => {
-    console.log("Data a guardar:", data);
     const idCategory = data.productCategoryId;
     const URL = setUrl(`store/setprice/${idCategory}`);
     const method = "POST";
-    console.log(URL);
     delete data.productCategoryId;
 
     return await api(URL, method, data);

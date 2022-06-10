@@ -196,7 +196,6 @@ export default class Inventory extends Component {
     const { price, catid_3: catid, load } = this.state;
 
     if (price && catid) {
-      console.log("Send data to API", price, catid);
 
       const ls = JSON.parse(localStorage.getItem("OrusSystem")),
         url =
@@ -337,13 +336,11 @@ export default class Inventory extends Component {
 
     if(data){
       if (data && data.hijos.length) {
-        console.log("Descarga de categoria exitos");
         this.setState({
           catData_1: data.hijos,
         });
       }
     }else{
-      console.log("Error al descargar categorías");
       console.error("[Orus system] Salida por error:", message);
       window.Swal.fire(
         "Fallo de conexion",

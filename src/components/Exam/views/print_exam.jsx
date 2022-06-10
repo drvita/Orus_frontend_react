@@ -42,7 +42,6 @@ export default function PrintExamComponent(props) {
           <div className="row">
             {list.map((sucursal) => (
               <div className="col" key={sucursal.id}>
-                {console.log(sucursal)}
                 <h5 className="text-capitalize">{sucursal.data.name}</h5>
                 <label className="text-capitalize mx-2">
                   {sucursal.data.address}

@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import moment from "moment";
-
 
 //Context
 import { AuthContext } from "../../context/AuthContext";
@@ -10,15 +9,12 @@ import { OrderContext } from "../../context/OderContext";
 //Hooks
 import useOrder from "../../hooks/useOrder";
 
-//Components
+//Components  
 import LabOrder from "./views/labOrder";
 import Bicelacion from "./views/bicelacionOrder";
-import Exam from "../Exam/views/examShort";
 import Items from "./views/listItemsOrder";
-import ShowPaymentsComponent from "../Sales/views/ShowPayments";
 import ExamModal from "./ExamModal";
 import ModalNota from "./ModalNota";
-
 
 //Helper
 import helper from "./helpers";
@@ -49,19 +45,14 @@ export default function EditOrderComponent(props){
   const {
     id,
     paciente,
-    session,
     lab_id,
     npedidolab,
     ncaja,
     observaciones,
     items,
     exam = {},
-    codes,
     status,
-    created,
     created_at,
-    updated,
-    updated_at,
   } = state;
 
 
@@ -80,7 +71,7 @@ export default function EditOrderComponent(props){
 
   const fNacimiento = new Date(paciente.f_nacimiento ?? "") < new Date() ? moment(paciente.f_nacimiento) : null;
 
-  const telefonos = Object.values(paciente.telefonos ?? {}).filter((tel) => tel !== "");
+  const telefonos = Object.values(paciente.phones ?? {}).filter((tel) => tel !== "");
   
   
   const handleClose = (e) => {
@@ -114,7 +105,7 @@ export default function EditOrderComponent(props){
   };
 
   const handleSave = () => {
-    const { id, npedidolab, ncaja, status, lab_id, observaciones, items, contact_id } = state;
+    const { npedidolab, ncaja, status, lab_id, observaciones, items, contact_id } = state;
     const itemsToJson = items.map((item) => {
         return {
           ...item,
@@ -152,7 +143,7 @@ export default function EditOrderComponent(props){
     //Save
     hookOrder.saveOrder(data).then((data)=>{
       if(data){
-        console.log("Data devuelta el editar la orden:", data);
+        console.log("[DEBUG]:", data);
       }else{
         console.error("Error al guardar la orden editada");
       }
@@ -160,7 +151,30 @@ export default function EditOrderComponent(props){
   };
 
   const handleDeleteOrder = () => {
+    window.Swal.fire({
+      title: '¿Estás seguro de eliminar la orden?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Eliminar',
+    }).then(({dismiss})=>{
+      if(!dismiss){
+        hookOrder.deleteOrder(id);
+        window.Swal.fire({
+          icon: "success",
+          title: "Orden eliminada correctamente",
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
+        orderContext.set({
+          ...orderContext,
+          panel: 'inbox',
+        })
+
+      }
+    })
   };
 
 
@@ -175,7 +189,6 @@ export default function EditOrderComponent(props){
     hookOrder.getOrder(idurl).then((data)=>{
       if(data){
         let dataReceibed = data.data;
-        console.log(dataReceibed);
         setState({
           id: dataReceibed.id ?? 0,
           paciente: dataReceibed.paciente ?? {},
@@ -200,7 +213,7 @@ export default function EditOrderComponent(props){
         console.error("Error al obtener los datos");
       }
     });
-  },[id])
+  },[id])// eslint-disable-next-line
   
   return (
     <>
@@ -255,8 +268,10 @@ export default function EditOrderComponent(props){
                     <h6 className="mb-2">
                        <i className="mr-1 fas fa-phone"></i>
                       <span className="text-muted">Telefonos no registrado</span>
-                    </h6>                  
+                    </h6>                
                   )}
+
+                  
                 {/*Fecha de nacimiento del paciente*/}
                 {role === "admin" ? (                    
                     <span className="mailbox-read-time">
@@ -305,6 +320,8 @@ export default function EditOrderComponent(props){
                           <i className="fas fa-mobile-alt"></i>
                         </a>
                       ) : null}
+
+
                       {paciente.email && (
                         <a
                           href={"mailto:" + paciente.email}

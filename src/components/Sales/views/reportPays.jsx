@@ -25,8 +25,6 @@ export default function ReportPays({ filters, changeState }) {
 
     const reportPaysUrl = setUrl("payments", null, newFiltersPays);
 
-    console.log("REPORT PAYS URL", reportPaysUrl);
-
     const { data, message } = await api(
       `payments?date_start=${date_start}&date_end=${date_end}&itemsPage=12&page=1&type=methods`
     );

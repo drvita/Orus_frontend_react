@@ -5,7 +5,7 @@ const handleStatusString = (status) => {
     case 1:
       return "laboratorio";
     case 2:
-      return "bicelacion";
+      return "bicelacion"; 
     case 3:
       return "terminado";
     case 4:
@@ -23,7 +23,6 @@ const getStatusType = [
 ];
 const handleDeleteOrder = (order, options, _delete) => {
   if (order.id) {
-    //Check sale
     if (order.estado) {
       window.Swal.fire({
         title: "Verificacion",
@@ -40,7 +39,7 @@ const handleDeleteOrder = (order, options, _delete) => {
       });
       return false;
     }
-    //delete confirm
+
     window.Swal.fire({
       text: `¿Esta seguro de eliminar el pedido ${order.id}?`,
       icon: "question",
@@ -63,7 +62,6 @@ const handleDeleteOrder = (order, options, _delete) => {
   }
 };
 
-//TODO:HANDLE SAVE ORDER//
 const handleSaveOrder = (id, data, options, _save, _erase) => {
   window.Swal.fire({
     title: "Almacenamiento",
@@ -72,12 +70,10 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
       : "¿Esta seguro de crear un nuevo pedido?",
     icon: "question",
     showCancelButton: true,
-    //confirmButtonColor: "#007bff",
     confirmButtonText: id ? "Actualizar" : "Crear",
     cancelButtonText: "Cancelar",
     showLoaderOnConfirm: true,
   }).then(({ dismiss }) => {
-    console.log("[DEBUG HELPER data]", data);
     if (!dismiss && _save) {
       _save({
         data,
@@ -92,8 +88,6 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
 
 const getDataTemporary = (field) => {
     const data = JSON.parse(localStorage.getItem("OrusSystem") ?? "");
-
-    console.log("Data de local", data);
 
     if (!data.orders) {
       data.orders = [];
@@ -126,7 +120,7 @@ const getDataTemporary = (field) => {
     const local = getDataTemporary(),
       data = local.orders.filter((item) => item.id === id);
       if(data){
-        console.log(data);
+
       }
     return data[0] ?? {};
   };

@@ -7,7 +7,6 @@ export default function PaginationComponent({
 
 
   const handleChangePage = (page) => {
-    //console.log("Siguiente página",page);
     if (_handlePagination) {
       _handlePagination(page);
     } else {

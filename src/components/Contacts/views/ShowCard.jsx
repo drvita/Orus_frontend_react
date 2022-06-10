@@ -5,8 +5,6 @@ export default function ShowContactComponent(props) {
   const { data = {}, readOnly = false, title = "contacto", legend } = props;
   const history = useHistory();
 
-  //console.log("props recibidas", props);
-
   return (
     <div className="w-100 d-block">
       {legend && !data.id && (

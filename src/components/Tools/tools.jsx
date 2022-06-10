@@ -24,7 +24,6 @@ export default function ToolsComponent(){
     category_list: [],
   })
 
-  console.log(state);
 
   useEffect(()=>{
     dispatch(defaultActions.changeNamePage("configuraciones"));

@@ -9,6 +9,8 @@ import AddOrNew from "./Add";
 import { defaultActions } from "../../redux/default/";
 import { configActions } from "../../redux/config";
 
+
+
 class IndexExamComponent extends Component {
   constructor(props) {
     super(props);

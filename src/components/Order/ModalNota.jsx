@@ -1,12 +1,10 @@
-import helper from '../Sales/helpers';
+import { useHistory } from "react-router-dom";
+
 
 export default function ModalNota({ handleClose: _close, sale}) {
-    console.log(sale);
 
-    const getForPay = ()=>{
-        //return helper.getForPay()
-        //total - pay - discount
-    }
+  const history =  useHistory();
+
   return (
       <div className="modal d-block">
       <div className="modal-dialog" role="document">
@@ -14,9 +12,6 @@ export default function ModalNota({ handleClose: _close, sale}) {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Nota</h5>
-            {/* {sale.id ? (
-                <a href="#" class="badge badge-success mt-2 ml-2">#{sale.id}</a>
-            ):null} */}
             <button type="button" className="close" onClick={() => _close()}>
               <span aria-hidden="true">&times;</span>
             </button>
@@ -56,7 +51,7 @@ export default function ModalNota({ handleClose: _close, sale}) {
                 Cancelar
                 </button>
 
-                <button className="btn btn-info" onClick={()=> alert("Mostrar venta completa")}>
+                <button className="btn btn-info" onClick={()=>history.push(`/notas/${sale.id}`)}>
                   <i className="fas fa-money-bill-alt mr-2"></i>
                   Editar nota
                 </button>

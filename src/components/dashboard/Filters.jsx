@@ -1,8 +1,12 @@
 import { useContext, useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
+import "react-datepicker/dist/react-datepicker.css";
+
+//Context
 import { ConfigContext } from "../../context/ConfigContext";
+
+//Hooks
 import useUsers from "../../hooks/useUsers"
 
 export default function Filters({ filters, changeState }) {  

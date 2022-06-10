@@ -4,8 +4,7 @@ import useContact from "../../hooks/useContact";
 import Input from "../Input";
 
 export default function Suppliers(props) {
-  //console.log("props recibidas en supliers", props);
-
+  
   const _contacts = useContact();
   const [state, setState] = useState({
     suppliers: [],

@@ -35,27 +35,6 @@ function SearchItemsComponent(props) {
 
   const [items, setItems] = useState([]);
 
-
- /*  useEffect(()=>{
-    if(search.length === 0){
-      return null
-    }else{
-      hookProducts.getProducts(search).then((data)=>{
-        if(data){
-          setTimeout(() => {
-            setItems(data.data);
-            setLoad(false);
-          }, 2300);
-        }
-        else{
-          console.error("Error al obtener la lista de productos");
-        }
-      })
-    }
-  },[search]) */
-
-
-  // { dataLoggin: user } = useSelector((state) => state.users);
   // Functions
   const handleChangeSearch = ({ target }) => {
       const { value } = target;
@@ -65,14 +44,6 @@ function SearchItemsComponent(props) {
 
 
   const handleSelect = (item) => {
-    console.log(item);
-      /* _setList({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      }); */
-
       _handleItemSelect(item);
       setSearch(item.name.toUpperCase());
       setItems([]);
@@ -81,7 +52,6 @@ function SearchItemsComponent(props) {
   useEffect(() => {
     let toTimer = null;
     if (search.length > 2 && !item.store_items_id) {
-      console.log("Primer condicional");
       if (timer) clearTimeout(timer);
       toTimer = setTimeout(() => {
         hookProducts.getProducts(search).then((data)=>{
@@ -98,7 +68,6 @@ function SearchItemsComponent(props) {
       setTimer(toTimer);
     }
     if (!search.length && items.length) {
-      console.log("Segundo condicional");
       if (timer) clearTimeout(timer);
       _setList({
         result: {

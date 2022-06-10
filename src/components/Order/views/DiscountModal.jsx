@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function DiscountModal({sale, total, setDiscountProp, closeModal: _closeModal}){
+export default function DiscountModal({ total, setDiscountProp, closeModal: _closeModal}){
 
     const [discount, setDiscount] = useState(0);
 
@@ -9,7 +9,6 @@ export default function DiscountModal({sale, total, setDiscountProp, closeModal:
         const  isNumeric = /^[0-9]+$/gms;
         const isPercen = /^[0-9]{2,3}%$/gms;
 
-
         if(discount === null){
             return null;
           }else{
@@ -17,14 +16,12 @@ export default function DiscountModal({sale, total, setDiscountProp, closeModal:
             let sum = total;
 
             if (discount.match(isNumeric)) {
-              const value = parseInt(discount); 
-              console.log("Value devuleto:", value);  
+              const value = parseInt(discount);            
               setDiscountProp(value)   
 
             } else if (discount.match(isPercen)) {
               const percent = parseInt(discount.replace("%", "")) / 100,
               value = parseInt(sum * percent);
-              console.log("Value devuleto:", value);  
               setDiscountProp(value);
             }
           }
@@ -48,8 +45,7 @@ export default function DiscountModal({sale, total, setDiscountProp, closeModal:
               <div className="modal-body p-2">
                   <input value={discount} className="form-control" type="text" onChange={(e)=>{
                       const target = e.target;
-                      const {name, value} = target;   
-                      console.log(value);
+                      const {value} = target;
                       setDiscount(value);
                   }}/>
                   <p className="ml-1 text-info mt-2">*Escribe la cantidad o el porcentaje con un "%" al final</p>

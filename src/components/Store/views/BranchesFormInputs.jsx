@@ -5,10 +5,7 @@ import useStore from "../../../hooks/useStore";
 
 export default function BranchesFormInputs({ inBranch, branchID, storeItemID }) {
 
-  //console.log(storeItemID);
-
   const hookStore = useStore();
-  //const storeContext = useContext(StoreContext);
 
   const [data, setData] = useState({
     id: 0,
@@ -40,9 +37,6 @@ export default function BranchesFormInputs({ inBranch, branchID, storeItemID }) 
   const handleSaveInBranch = () => {
     hookStore.saveQantityandPrice(data).then((data)=>{
       if(data){
-        console.log("Data devuelta", data);
-        
-
       }else{
         console.error("Error al guardar la informacion");
       }

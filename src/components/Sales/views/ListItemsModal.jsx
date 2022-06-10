@@ -40,9 +40,6 @@ function ListItemsModal({
           precio: data.precio,
         },
       };
-
-      //Item seleccionado
-      console.log("ITEM SELECCIONADO", data.item.precio);
       
       _Select(toSend);
       setData({

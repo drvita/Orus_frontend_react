@@ -21,8 +21,6 @@ export default function ReportPaymentsDetails({ filters }) {
 
     const paymentsUrl = setUrl("payments", null, paymentsFilters);
 
-    console.log("REPORT PAYMENTS DETAILS URL", paymentsUrl);
-
     const { data, message, meta } = await api(paymentsUrl);
 
     if (data) {
@@ -33,7 +31,6 @@ export default function ReportPaymentsDetails({ filters }) {
         load: false,
       });
     } else if (message) {
-      console.log(message);
       setState({
         ...state,
         load: false,

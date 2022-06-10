@@ -21,18 +21,12 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
     auth: null,
   });
 
-  //console.log(data);
-
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
-
-    console.log(name, value, type );
 
       let val = value;
 
       if (type === "number" || type === "select-one") val = parseFloat(value);
-
-     console.log(typeof val, name);
 
       setData({
         ...data,
@@ -93,7 +87,6 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
       }
 
       if (data.metodopago === 4) {
-        console.log("4 siempre entra aqui...")
         if (!data.auth) {
           window.Swal.fire({
             icon: "warning",
@@ -115,8 +108,6 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
       payments.forEach((pay) => (pagado += pay.total));
 
       _handleSetPayments(payments);
-
-      
     },
 
     handleSubmitForm = (e) => {

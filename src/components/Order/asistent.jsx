@@ -1,7 +1,5 @@
 import React, {useState, useContext} from "react";
 import moment from "moment";
-import generalHelper from '../../utils/helpers';
-import saleHelper from '../../components/Sales/helpers';
 
 //Context
 import { OrderContext } from "../../context/OderContext";
@@ -9,6 +7,11 @@ import { OrderContext } from "../../context/OderContext";
 //Hooks
 import useOrder from "../../hooks/useOrder";
 import useExam from "../../hooks/useExam";
+
+//Helpers
+import generalHelper from '../../utils/helpers';
+import saleHelper from '../../components/Sales/helpers';
+
 
 //Components
 import SearchContact from "../Contacts/views/ShowCard";
@@ -18,12 +21,11 @@ import PaymentModal from "./views/PaymentModal";
 import DiscountModal from "./views/DiscountModal";
 
 export default function AsistentComponent(props){
-
   const [state, setState] = useState({
     contact_id: 0,
+    exam_id: null,
     items: [],
     codes: {},
-    exam_id: null,
     exam: {},
     examsList: [],
     examEdit: false,
@@ -125,28 +127,6 @@ export default function AsistentComponent(props){
         items: data.items ?? [],
         data: contact ? contact : {},
       })
-    }
-  };
-
-  const handleCancel = () => {
-    setState({ 
-      session: generalHelper.getSession(),
-      contact_id: 0,
-      items: [],
-      codes: {},
-      exam_id: null,
-      exam: {},
-      examEdit: false,
-      load: true,
-      LOADING: false,
-      data:{},
-    });
-
-    if(!state.contact_id){
-      orderContext.set({
-        ...orderContext,
-        panel:'inbox',
-      });
     }
   };
 
@@ -342,16 +322,16 @@ export default function AsistentComponent(props){
               />      
             </div>
           ):(
-            <div class="card col-lg-5 mr-5 border border-success">
-              <div class="card-header">
+            <div className="card col-lg-5 mr-5 border border-success">
+              <div className="card-header">
                 <h3 className="card-title">
                   <i className="fas fa-user-alt mr-1"></i>
                   Cliente seleccionado
                   <i className="ml-5 fas fa-check mr-1"></i>
                 </h3>
               </div>
-              <div class="card-body">
-                <p class="badge badge-success">{`# ID ${state.contact_id}`}</p>
+              <div className="card-body">
+                <p className="badge badge-success">{`# ID ${state.contact_id}`}</p>
                 <p className="card-text">
                   <i className="fas fa-user-circle mr-1"></i>
                   {state.data.name.toUpperCase()}
@@ -389,15 +369,15 @@ export default function AsistentComponent(props){
                     state.examsList.length ? 
                           state.exam_id ? 
                           (
-                            <div class="card col-lg-5 border border-success">
-                              <div class="card-header">
+                            <div className="card col-lg-5 border border-success">
+                              <div className="card-header">
                                 <h3 className="card-title">
                                   <i className="fas fa-notes-medical mr-1"></i>
                                   Examen Seleccionado
                                   <i className="ml-5 fas fa-check mr-1"></i>
                                 </h3>
                               </div>
-                              <div class="card-body">
+                              <div className="card-body">
                                 <p className = "card-text">
                                       <span className="badge badge-success mr-3 mb-2">{`# ${exam.id}`}</span>
                                 </p>
@@ -415,15 +395,15 @@ export default function AsistentComponent(props){
                             </div>
                           ) :
                           (
-                            <div class="card col-lg-5 border border-warning">
-                              <div class="card-header">
+                            <div className="card col-lg-5 border border-warning">
+                              <div className="card-header">
                                 <h3 className="card-title">
                                   <i className="fas fa-user-alt mr-1"></i>
                                   Lista de Examenes
                                   <i className="fas fa-exclamation-circle ml-5"></i>
                                 </h3>
                               </div>
-                              <div class="card-body">
+                              <div className="card-body">
                                 <p className="text-secondary">*Seleciona un examen o crea uno nuevo para continuar</p>
                                 {state.examsList.map((exam, index) => (
                                   <div className="border-bottom mb-1 cursor-pointer" key={index} onClick={()=>{
@@ -444,15 +424,15 @@ export default function AsistentComponent(props){
                             </div> 
                           ) : 
                           (
-                            <div class="card col-lg-5 border border-warning">
-                              <div class="card-header">
+                            <div className="card col-lg-5 border border-warning">
+                              <div className="card-header">
                                 <h3 className="card-title">
                                   <i className="fas fa-user-alt mr-1"></i>
                                   Lista de Examenes
                                   <i className="fas fa-exclamation-circle ml-5"></i>
                                 </h3>
                               </div>
-                              <div class="card-body">
+                              <div className="card-body">
                                 <p>*No tiene ningun examen asignado</p>
                                 <button className="btn btn-primary" onClick={handleNewExam}>Nuevo examen</button>
                               </div>
@@ -477,7 +457,7 @@ export default function AsistentComponent(props){
             })}
         />
         ): (
-          <div class="col-lg-10 text-center mt-3 mb-3">
+          <div className="col-lg-10 text-center mt-3 mb-3">
             <h5>
               <i className="fas fa-exclamation-circle mr-1"></i>
               Crea o selecciona un examen antes de agregar productos!
@@ -489,7 +469,7 @@ export default function AsistentComponent(props){
         {state.listReady ? (
           <div className="col-lg-10 d-flex align-self-center p-0 mt-5">
             <div className="card col-lg-4">
-              <div class="card-header border-primary">
+              <div className="card-header border-primary">
                 <h3 className="card-title">
                   <i className="fas fa-percent mr-1"></i>  
                     Descuento
@@ -497,7 +477,7 @@ export default function AsistentComponent(props){
               </div>
               <div className="card-body">
                 <h5 className="font-weight-bold">Descuento: <span className="font-weight-normal">${state.sale.discount}</span></h5>
-                <button type="button" class="btn btn-sm btn-outline-danger" disabled = {state.sale.discount ? false : true} onClick={()=>{setDiscount(0)}}>                  
+                <button type="button" className="btn btn-sm btn-outline-danger" disabled = {state.sale.discount ? false : true} onClick={()=>{setDiscount(0)}}>                  
                   Eliminar descuento
                   <i className="fas fa-window-close ml-1"></i>
                 </button>
@@ -506,7 +486,7 @@ export default function AsistentComponent(props){
 
             <div className="card col-lg-8">
 
-              <div class="card-header border-primary">
+              <div className="card-header border-primary">
                 <h3 className="card-title">
                   <i className="fas fa-money-bill-alt mr-1"></i>  
                     Lista de abonos
@@ -549,14 +529,14 @@ export default function AsistentComponent(props){
 
         {/* Validacion 5 --- Opciones de pago del pedido*/}
         {state.listReady ? (
-          <div class="card col-lg-10 d-flex align-self-center border border-bottom-primary">
-            <div class="card-header border-primary">
+          <div className="card col-lg-10 d-flex align-self-center border border-bottom-primary">
+            <div className="card-header border-primary">
               <h3 className="card-title">
                 <i className="fas fa-money-bill mr-1"></i>
                   Opciones de pago
               </h3>
             </div>
-            <div class="card-body">
+            <div className="card-body">
               <div className="">
 
                 <button className="btn btn-success mr-4" onClick={()=>{

@@ -21,7 +21,6 @@ export default function useUsers() {
 
     if(ID){
       //Actualizamos
-      console.log("Actualizar usuario modificado", ID, data);
       const url = setUrl('users', ID);
       return await api(url, 'PUT',data);
     }else{

@@ -48,7 +48,8 @@ export default function Toolbar(){
                 <div className="p-0 card-body">
                 <ul className="nav nav-pills flex-column">
                     <li className="nav-item">
-                    <a                
+                    <button                
+                        href='#'
                         className={orderContext.panel === 'inbox' ? "nav-link active" : "nav-link"}
                         onClick={(e) => {
                             e.preventDefault();
@@ -60,7 +61,7 @@ export default function Toolbar(){
                         }}
                     >
                         <i className="mr-2 fas fa-clipboard-list"></i> Pedidos
-                    </a>
+                    </button>
                     </li>
 
                     {orderContext.panel === 'inbox' ? (

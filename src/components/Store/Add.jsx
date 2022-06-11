@@ -409,9 +409,10 @@ export default function Add(props) {
                     showIcon={false}
                     setBranchId={(target) => {
                       const { value } = target;
+                      console.log(value);
                       setState({ 
                         ...state, 
-                        branch_default: value,
+                        branch_default: parseInt(value),
                       })
                     }}
                   />
@@ -424,6 +425,7 @@ export default function Add(props) {
             <BranchesForm
                 branches = {state.data.branches}
                 storeItemID = {state.id}
+                defaultBranch = {state.branch_default}
               />
             </div>
           </div>

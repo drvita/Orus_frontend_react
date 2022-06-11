@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
-import { api, setUrl } from "../../../utils/url";
+import { api } from "../../../utils/url";
 
 export default function ReportPays({ filters, changeState }) {
   const { user, date_end, date_start } = filters;
@@ -23,7 +23,7 @@ export default function ReportPays({ filters, changeState }) {
     newFiltersPays.page = state.page;
     newFiltersPays.type = "methods";
 
-    const reportPaysUrl = setUrl("payments", null, newFiltersPays);
+    //const reportPaysUrl = setUrl("payments", null, newFiltersPays);
 
     const { data, message } = await api(
       `payments?date_start=${date_start}&date_end=${date_end}&itemsPage=12&page=1&type=methods`

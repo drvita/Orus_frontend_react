@@ -33,19 +33,15 @@ export default function EraseSaleBtnComponent(props) {
       })
 
       if( props.match.params.id){
-        history.push('/notas')
+        history.push('/notas');
       }else{
         return null
       }
-
     },
 
     handleEraseSale = () => {
-      helpers.confirm("¿Desea terminar esta venta y crear una nueva?", eraseSale);
+      helpers.confirm("¿Desea terminar esta venta? La venta actual no se guardara", eraseSale);
     };
-
-
-
 
   return (
     <button

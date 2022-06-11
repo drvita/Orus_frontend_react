@@ -102,7 +102,7 @@ export default function IndexSalesComponent(props) {
     }else{
       return null;
     }
-  },[]);
+  },[]);// eslint-disable-line react-hooks/exhaustive-deps
 
 
   return (

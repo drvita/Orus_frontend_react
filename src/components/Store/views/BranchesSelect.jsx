@@ -16,20 +16,18 @@ export default function BranchesSelect({ branch_default , showIcon = true, setBr
           </span>
         </div>
       )}
-
-
       <select
         className="custom-select text-uppercase"
         name="branch_id"
         value={branch_default}
         onChange={({ target }) => setBranchId(target)}
       >
-        <option value="0">-- Ninguna --</option>
-        {listBranches.map((branch) => (
-          <option value={branch.id} key={branch.id}>
-            {branch.data.name}
-          </option>
-        ))}
+        <option value="0">-- Ninguna --</option> 
+        {listBranches.map((branch)=>(
+           <option value={branch.id} key={branch.id}>
+           {branch.data.name}
+         </option> 
+        ))}       
       </select>
     </div>
   );

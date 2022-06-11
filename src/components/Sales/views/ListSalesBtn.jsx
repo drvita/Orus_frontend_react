@@ -22,9 +22,10 @@ export default function ListSalesBtn() {
     },
 
     handleSelectSale = (saleSelected) => {
-
       let pagado = 0;
+
       saleSelected.payments.forEach((pay) => (pagado = pay.total));
+
       setData(false);   
 
       sale.set({
@@ -40,6 +41,8 @@ export default function ListSalesBtn() {
         branch_id: saleSelected.branch.id,
         created_at: saleSelected.created_at,
       })
+
+      return pagado;
     };
     
   return (

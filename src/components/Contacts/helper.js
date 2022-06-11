@@ -1,5 +1,7 @@
 const patternEmail =
-  /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})$/i;
+  /^([a-zA-Z0-9_])+(([a-zA-Z0-9])+\.)+([a-zA-Z0-9]{2,4})$/i;
+
+  ///^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})$/i;
 
 /* const handleVerificationData = (data, showMsg = true) => {
   const { name, email, birthday, telnumbers, type } = data,

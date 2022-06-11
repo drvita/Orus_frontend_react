@@ -17,7 +17,6 @@ function SearchItemsComponent(props) {
       //items,
       meta,
       item = { producto: "" },
-      _getList,
       _setList,
       handleItemSelect: _handleItemSelect,
     } = props,

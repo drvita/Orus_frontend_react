@@ -26,7 +26,7 @@ export default function Code(props) {
         defaultValue={props.code}
 
         onChange={({target}) => {
-          const {name, value} = target;
+          const {value} = target;
           props.onChangeProductCode(value);
         }}
         

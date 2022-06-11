@@ -101,8 +101,7 @@ export default function Filters({ filters, changeState }) {
                       </option>
                     );
                   } else {
-                    return /* user.branch.id === branch_id && */ user
-                      .roles[0] !== "doctor" ? (
+                    return user.roles[0] !== "doctor" ? (
                       <option key={user.id} value={user.id}>
                         {user.name}
                       </option>

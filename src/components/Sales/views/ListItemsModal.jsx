@@ -11,10 +11,10 @@ function ListItemsModal({
   const [data, setData] = useState({
     item: null,
     cant: cantDefault,
-    precio: 0,
+    price: 0,
   });
 
-  const disabled = data.precio <= 0 ? true : false;
+  const disabled = data.price <= 0 ? true : false;
 
 
   //Functions
@@ -27,7 +27,7 @@ function ListItemsModal({
       e.preventDefault();
       setData({
         ...data,
-        precio: item.precio,
+        price: item.price,
         item,
       });
     },
@@ -37,7 +37,7 @@ function ListItemsModal({
         ...data,
         item: {
           ...data.item,
-          precio: data.precio,
+          price: data.price,
         },
       };
       
@@ -45,7 +45,7 @@ function ListItemsModal({
       setData({
         item: null,
         cant: 1,
-        precio: 0,
+        price: 0,
       });
 
       handleClose();
@@ -76,6 +76,7 @@ function ListItemsModal({
                 <>
                   <div className="text-uppercase mb-4">
                     {data.item.producto}
+                    {console.log(data)}
                   </div>
                   <div className="form-group row">
                     <label className="col-2 col-form-label">Cantidad</label>
@@ -94,20 +95,16 @@ function ListItemsModal({
                       <span className="col text-lg">{data.cant}</span>
                     )}
                     <label className="col-2 col-form-label">Precio</label>
-                    {!data.item.precio ? (
-                      <div className="col">
+                    <div className="col">
                         <input
                           type="number"
                           placeholder="Precio"
-                          name="precio"
+                          name="price"
                           className="form-control"
-                          defaultValue={data.precio}
+                          defaultValue={data.price}
                           onChange={({ target }) => handleChangeCant(target)}
                         />
                       </div>
-                    ) : (
-                      <span className="col text-lg">${data.precio}</span>
-                    )}
                   </div>
                 </>
               ) : (

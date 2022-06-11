@@ -62,9 +62,9 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
           id: data.data.id,
         })
         window.Swal.fire({
-          title: "Venta Guardada",
+          title: "Venta Guardada correctamente",
           text: `¿Quieres imprimir el ticket de la venta?`,
-          icon: "question",
+          icon: "success",
           showCancelButton: true,
           confirmButtonText: "Imprimir",
           cancelButtonText: "Cancelar",

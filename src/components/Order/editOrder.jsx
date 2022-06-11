@@ -213,7 +213,7 @@ export default function EditOrderComponent(props){
         console.error("Error al obtener los datos");
       }
     });
-  },[id])// eslint-disable-next-line
+  },[id])// eslint-disable-line react-hooks/exhaustive-deps
   
   return (
     <>

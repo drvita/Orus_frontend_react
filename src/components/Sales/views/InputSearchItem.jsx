@@ -90,6 +90,7 @@ function InputSearchItem({ messages, loading }) {
     },
 
     handleAddItem = (result) => {
+
       const found = sale.items.filter(
         (item) => item.store_items_id === result.store_items_id
       );
@@ -100,14 +101,23 @@ function InputSearchItem({ messages, loading }) {
 
       if (found.length) {
         const cantidad = parseInt(result.cant) + parseInt(found[0].cant),
-          item = {
-            ...found[0],
-            cant: cantidad,
-            subtotal: parseFloat(result.price) * cantidad,
-            inStorage: cantidad >= parseInt(result.cantInStore) ? true : false,
-            out: parseInt(result.cantInStore) - cantidad,
-          };
-        newItems.push(item);
+            item = {
+              ...found[0],
+              cant: cantidad,
+              subtotal: parseFloat(result.price) * cantidad,
+              inStorage: cantidad >= parseInt(result.cantInStore) ? true : false,
+              out: parseInt(result.cantInStore) - cantidad,
+            };
+            newItems.push(item);
+            window.Swal.fire({
+              title: "Producto agregado",
+              text: `Se agrego otro ${found[0].producto} a la lista`,
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonText: "Ok",
+              cancelButtonText: "Cancelar",
+              showLoaderOnConfirm: true,
+            })
       } else {
         newItems.push(result);
       }

@@ -18,7 +18,7 @@ export default function ListItemComponent(props){
   
   useEffect(()=>{
     validateList();
-  },[productCodes]);// eslint-disable-next-line
+  },[productCodes]);// eslint-disable-line react-hooks/exhaustive-deps
 
 
   const validateList = () => {
@@ -71,9 +71,9 @@ export default function ListItemComponent(props){
         );
   
         if (itemFound !== -1) {
-          const cantidad = items[itemFound].cant + item.cant,
-            precio = item.precio,
-            subtotal = items[itemFound].precio * cant;
+          //const cantidad = items[itemFound].cant + item.cant,
+          const precio = item.precio;
+          const subtotal = items[itemFound].precio * cant;
   
           if (items[itemFound].precio === precio) {
             items[itemFound].cant = cant;

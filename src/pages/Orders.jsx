@@ -33,7 +33,7 @@ export default function IndexOrderComponent(props){
             ...state,
             panel: id ? 'edit' : 'inbox',
         })
-    },[id])// eslint-disable-next-line
+    },[id])// eslint-disable-line react-hooks/exhaustive-deps
 
     return(
         <OrderContext.Provider value={{...state, set: setState}}>

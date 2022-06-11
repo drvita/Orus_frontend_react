@@ -11,6 +11,7 @@ export default function UpdateItemModal({
   });
   //Functions
   const handleChangeInput = ({ name, value }) => {
+      console.log("[DEBUG]:", name, value);
       setData({
         ...data,
         [name]: parseInt(value),

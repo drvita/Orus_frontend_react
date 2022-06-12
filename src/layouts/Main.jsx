@@ -8,6 +8,7 @@ export default function Main({ children }) {
   return (
     <div className="wrapper">
       <Navtop logOut={() => {}} data={data} page={() => {}} />
+      
       <Menu
         companyName={"company"}
         user={data}
@@ -15,6 +16,7 @@ export default function Main({ children }) {
         logOut={() => {}}
         active={"active"}
       />
+
       <div className="content-wrapper">
         <Breadcrumb />
         <div className="content">
@@ -25,6 +27,7 @@ export default function Main({ children }) {
           </div>
         </div>
       </div>
+
     </div>
   );
 }

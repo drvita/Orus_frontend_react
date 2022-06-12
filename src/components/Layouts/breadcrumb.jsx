@@ -10,6 +10,9 @@ import actions from "../../redux/config/actions";
 import loginActions from "../../redux/user/actions";
 
 export default function BreadcrumbComponent() {
+
+
+
   const { auth, setBranch } = useContext(AuthContext);
   const config = useContext(ConfigContext);
   const pathName = useLocation().pathname.split("/");
@@ -177,4 +180,6 @@ export default function BreadcrumbComponent() {
       <hr />
     </div>
   );
+
+  
 }

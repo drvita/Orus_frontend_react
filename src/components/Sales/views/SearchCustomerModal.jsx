@@ -102,8 +102,7 @@ function SearchCustomerModal({ handleClose: _close }) {
               name: customer.name ? customer.name : "Venta de mostrador",
             },
             contact_id: customer.id
-          });
-          _close();
+          }).then(() =>  _close());
         }
       } else {
         _close();

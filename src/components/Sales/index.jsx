@@ -47,28 +47,9 @@ export default function IndexSalesComponent(props) {
     branch_id: auth.branch.id,
   })
   
-  const [data, setData] = useState({
+ /*  const [data, setData] = useState({
     pagado: 0,
-  });
-
-
-
-  useEffect(() => {
-    let sum = 0,
-      pagado = 0;
-      state.items.forEach((item) => (sum += item.subtotal));
-      state.payments.forEach((pay) => (pagado += pay.total));
-    if (sum !== state.subtotal || data.pagado !== pagado) {
-      state.subtotal = sum;
-      state.total = sum - state.discount;
-      state.pagado = pagado;
-
-      setData({
-        pagado,
-      });
-    }
-
-  }, []);// eslint-disable-line react-hooks/exhaustive-deps
+  }); */
 
   useEffect(() => {
     dispatch(defaultActions.changeNamePage("punto de venta"));
@@ -80,7 +61,13 @@ export default function IndexSalesComponent(props) {
 
   }, []);// eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(()=>{
+  useEffect(() => {
+    let sum = 0,
+      pagado = 0;
+
+    state.items.forEach((item) => (sum += item.subtotal));
+    state.payments.forEach((pay) => (pagado += pay.total));
+
     if(props.match.params.id){
       hookSale.getSaleById(props.match.params.id).then((data)=>{
         if(data){
@@ -95,18 +82,28 @@ export default function IndexSalesComponent(props) {
             total: data.data.total,
             payments: data.data.payments, 
             branch_id:data.data.branch.id,
-            created_at: data.data.created_at,                                           
+            created_at: data.data.created_at,
+            pagado                                         
           })
         }
       })
     }else{
-      return null;
+      setState({
+        ...state,
+        pagado                                         
+      })
     }
   },[]);// eslint-disable-line react-hooks/exhaustive-deps
+  const handleSet = (obj) => {
+    return new Promise(done => {
+      setState(obj);
+      done();
+    });
+  }
 
 
   return (
-    <SaleContext.Provider value={{ ...state, set: setState }}>
+    <SaleContext.Provider value={{ ...state, set: handleSet }}>
       <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
         <div className="card-body pb-2 d-print-none">
           <nav className="row mb-2">
@@ -141,11 +138,11 @@ export default function IndexSalesComponent(props) {
         <div className="card-footer">
           <div className="row">
             <div className="col d-print-none">
-              <ShowTotal></ShowTotal>
+              <ShowTotal/>
             </div>
 
             <div className="col d-print-none">
-              <ShowToPay></ShowToPay>
+              <ShowToPay/>
             </div>
 
             <div className="col-6 text-right">

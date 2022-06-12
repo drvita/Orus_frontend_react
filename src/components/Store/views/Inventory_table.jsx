@@ -15,7 +15,7 @@ export default function InventoryTableView({ header, body, items }) {
           {body.map((row, i) => {
             const zero = row.props.children.type === "label" ? true : false;
             return (
-              <tr className={zero ? "table-secondary" : ""} key={i}>
+              <tr className={zero ? "table-secondary" : ""} key = {i}>
                 {row}
                 {header.map((h, i) => {
                   let grad = zero

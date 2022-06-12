@@ -101,7 +101,7 @@ function ListItemsModal({
                           placeholder="Precio"
                           name="price"
                           className="form-control"
-                          defaultValue={data.price}
+                          defaultValue={data.price.toString()}
                           onChange={({ target }) => handleChangeCant(target)}
                         />
                       </div>

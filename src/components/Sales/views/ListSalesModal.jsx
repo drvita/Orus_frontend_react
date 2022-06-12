@@ -148,12 +148,13 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select,  }) {
                             </tr>
                           ))}
                         </>
-                      ) : (                             
-                        <div className="overlay dark">
+                      ) : (  
+                        <tr className="overlay dark">
+                          <td className="overlay dark">
                           <i className="fas fa-2x fa-sync-alt fa-spin"></i>
-                          Cargando las ventas!!
-                        </div>
-
+                            Cargando las ventas!!
+                          </td>
+                        </tr>                                                                   
                       )}
                     </>
                   ) : (

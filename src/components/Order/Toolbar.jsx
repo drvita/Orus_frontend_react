@@ -50,7 +50,7 @@ export default function Toolbar(){
                     <li className="nav-item">
                     <button                
                         href='#'
-                        className={orderContext.panel === 'inbox' ? "nav-link active" : "nav-link"}
+                        className={orderContext.panel === 'inbox' ? "nav-link active border border-primary" : "nav-link"}
                         onClick={(e) => {
                             e.preventDefault();
                             orderContext.set({

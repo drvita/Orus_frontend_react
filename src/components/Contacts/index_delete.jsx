@@ -15,8 +15,6 @@ import { defaultActions } from "../../redux/default/";
 class IndexContactComponent extends Component {
   constructor(props) {
     super(props);
-    //Variables en localStorage
-    //let sdd = JSON.parse(localStorage.getItem("OrusContacts"));
     this.state = {
       load: false,
       contact: {},

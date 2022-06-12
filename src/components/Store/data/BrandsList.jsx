@@ -23,7 +23,7 @@ export default function BrandsList({
                 <i className="fas fa-thumbtack mr-1"></i>
                 {brand.name}
               </span>
-              {handleEdit || handleDelete}
+              
               <div>
                 {handleEdit && (
                   <span

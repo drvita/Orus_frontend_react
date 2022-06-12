@@ -69,8 +69,9 @@ export default function UserAddComponent(props){
         }
       },[id])
     }else{
-      console.error("ID NO ENCONTRADO");
+      return null
     }
+
   },[id]);// eslint-disable-line react-hooks/exhaustive-deps
 
   const send = !currentUser.load && currentUser.validUserName &&  currentUser.name.length && currentUser.validUserEmail ? false : true;

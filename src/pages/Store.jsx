@@ -24,6 +24,7 @@ const optionsDefault = {
 };
 
 export default function Store(props) {
+  
   const [state, setState] = useState({
     panel: "",
     options: optionsDefault,

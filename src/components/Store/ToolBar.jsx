@@ -1,6 +1,7 @@
 import { Store } from "../../context/StoreContext";
 //Components
-import CardMenu from "../../layouts/card_menu";
+import SideBar from "../../pages/partials/SideBar";
+
 import BrandsInput from "./Brands";
 import SuppliersInput from "./Suppliers";
 import { useHistory } from "react-router-dom";
@@ -38,7 +39,7 @@ export default function ToolBar() {
   };
 
   return (
-    <CardMenu title={context.panel === "inbox" ? "Menu y filtros" : "Menu"}>
+    <SideBar title={context.panel === "inbox" ? "Menu y filtros" : "Menu"}>
       <li className="nav-item">
         <a
           href="#item"
@@ -258,6 +259,6 @@ export default function ToolBar() {
           </li>
         </>
       )}
-    </CardMenu>
+    </SideBar>
   );
 }

@@ -1,94 +1,91 @@
 import { useState } from "react";
-import { api, getUrl } from "../../../redux/sagas/api";
+import useUsers from "../../../hooks/useUsers";
 
 export default function UserNameInputComponent(props) {
-  
+  const user = useUsers();
   const [state, setState] = useState({
     bgColor: "bg-blue",
     validate: "",
     text: "Debe de tener al menos 4 caracteres.",
     searchUser: false,
   });
+  const { onChange: _onChange, handleValidate: _handleValidate } = props;
 
-  //Vars
-  const { col, username, userId, onChange: _onChange } = props, { bgColor, validate, text, searchUser } = state;
-  //Functions
-  const handleChange = ({ name, value }) => {
-      _onChange({
-        name,
-        value: value.toLowerCase(),
+  const handleChange = ({ value }) => {
+    _onChange({
+      name: "username",
+      value: value.toLowerCase(),
+    });
+  };
+  const validUser = () => {
+    const regex = /^[\w]{4,16}$/,
+      userSearch = props.username.replace(/\s/g, "");
+
+    if (regex.test(userSearch)) {
+      //User valid, next search if exist
+      setState({
+        ...state,
+        searchUser: true,
       });
-    },
-    validUser = () => {
-      const regex = /^[\w]{4,16}$/,
-        userSearch = username.replace(/\s/g, "");
 
-      if (regex.test(userSearch)) {
-        //User valid, next search if exist
-        setState({
-          ...state,
-          searchUser: true,
-        });
-
-        handleSearchUser(userSearch, userId).then((response) => {
-          if (response) {
-            setState({
-              ...state,
-              bgColor: "bg-red",
-              validate: " border border-danger",
-              text: "El usuario ya esta registrado.",
-              searchUser: false,
-            });
-            _onChange({
-              name: "validUserName",
-              value: false,
-            });
-          } else {
-            setState({
-              ...state,
-              bgColor: "bg-blue",
-              validate: "",
-              text: "",
-              searchUser: false,
-            });
-            _onChange({
-              name: "validUserName",
-              value: true,
-            });
-          }
-        });
-      } else {
-
-        //User no valid
-        if (userSearch.length > 4) {
+      handleSearchUser(userSearch, props.userId, user).then((status) => {
+        if (status) {
           setState({
             ...state,
             bgColor: "bg-red",
             validate: " border border-danger",
-            text: "No tiene el formato de usuario",
+            text: "El usuario ya esta registrado.",
+            searchUser: false,
           });
-          _onChange({
+          _handleValidate({
             name: "validUserName",
             value: false,
           });
-        } else if (!userSearch.length) {
+        } else {
           setState({
             ...state,
-            bgColor: "bg-red",
-            validate: " border border-danger",
-            text: "Debe de tener de 4 a 16 caracteres alfanumericos.",
+            bgColor: "bg-blue",
+            validate: "",
+            text: "",
+            searchUser: false,
           });
-          _onChange({
+          _handleValidate({
             name: "validUserName",
-            value: false,
+            value: true,
           });
         }
+      });
+    } else {
+      //User no valid
+      if (userSearch.length > 4) {
+        setState({
+          ...state,
+          bgColor: "bg-red",
+          validate: " border border-danger",
+          text: "No tiene el formato de usuario",
+        });
+        _handleValidate({
+          name: "validUserName",
+          value: false,
+        });
+      } else if (!userSearch.length) {
+        setState({
+          ...state,
+          bgColor: "bg-red",
+          validate: " border border-danger",
+          text: "Debe de tener de 4 a 16 caracteres alfanumericos.",
+        });
+        _handleValidate({
+          name: "validUserName",
+          value: false,
+        });
       }
-    };
+    }
+  };
 
   return (
-    <div className={"col-" + col}>
-      {username.length ? (
+    <div className={"col-" + props.col}>
+      {props.username.length ? (
         <small>
           <label>Usuario</label>
         </small>
@@ -97,8 +94,8 @@ export default function UserNameInputComponent(props) {
       )}
       <div className="input-group">
         <div className="input-group-prepend">
-          <span className={"input-group-text " + bgColor}>
-            {searchUser ? (
+          <span className={"input-group-text " + state.bgColor}>
+            {state.searchUser ? (
               <i className="fas fa-spinner"></i>
             ) : (
               <i className="fas fa-user-check"></i>
@@ -107,12 +104,11 @@ export default function UserNameInputComponent(props) {
         </div>
         <input
           type="text"
-          className={"form-control" + validate}
+          className={"form-control" + state.validate}
           placeholder="Usuario"
-          name="username"
           autoComplete="off"
           autoFocus="autofocus"
-          defaultValue={username}
+          defaultValue={props.username}
           onChange={({ target }) => handleChange(target)}
           onBlur={validUser}
           required="required"
@@ -121,14 +117,13 @@ export default function UserNameInputComponent(props) {
           pattern="^[\w]{4,16}$"
         />
       </div>
-      {validate ? <small className="text-muted">{text}</small> : ""}
+      {state.validate ? <small className="text-muted">{state.text}</small> : ""}
     </div>
   );
 }
 
-const handleSearchUser = async (username, userId = null) => {
-  const url = getUrl("users", null, { username, userId, deleted: 0 }),
-    result = await api(url);
+const handleSearchUser = async (username, userId = null, user) => {
+  const result = await user.getListUsers({ username, userId, deleted: 0 });
 
   if (result.data && result.data.length) {
     const { username: user } = result.data[0];

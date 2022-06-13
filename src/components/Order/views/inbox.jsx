@@ -1,73 +1,65 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 
-//Components
 import Main from "../../../layouts/list_inbox";
-
-//Actions
 import helper from "../helpers";
-
-
-//Hooks
 import useOrder from "../../../hooks/useOrder";
-
-//Context
-import { OrderContext } from "../../../context/OderContext";
+import { Order } from "../../../context/OderContext";
 
 const InboxOrderComponent = (props) => {
-  const orderContext = useContext(OrderContext);
+  const orderContext = Order();
   const orderHook = useOrder();
-  const options = orderContext.options;
+  const options = orderContext?.options;
 
   const [pedidos, setPedidos] = useState({
     data: [],
-    meta:{},
+    meta: {},
     loading: false,
   });
 
-  const {
-    _saveOrder,
-  } = props;
+  const { _saveOrder } = props;
 
   const history = useHistory();
 
   const [orderSelected, setOrderSelected] = useState({ id: 0 });
 
-  const getList = ()=>{
+  const getList = () => {
+    if (!options) return null;
+
     setPedidos({
       ...pedidos,
       loading: true,
-    })
+    });
 
-    orderHook.getListOrders(options).then((data)=>{
-      if(data){
+    orderHook.getListOrders(options).then((data) => {
+      if (data) {
         setPedidos({
           data: data.data,
           meta: data.meta,
-        })
-      }else{
+        });
+      } else {
         console.error("Error al obtener la lista de pedidos");
       }
-    })
-  }
+    });
+  };
 
   const handleChangeOptions = (key, value) => {
-    orderContext.set({
+    orderContext?.set({
       ...orderContext,
-      options:{
+      options: {
         ...options,
         [key]: value,
-      }
+      },
     });
-  };  
+  };
 
   const handleSelectOrder = (e, order = { id: 0 }) => {
     if (e) e.preventDefault();
-    if(order.id !== 0){
-      history.push(`/pedidos/${order.id}`)
-    }else{  
+    if (order.id !== 0) {
+      history.push(`/pedidos/${order.id}`);
+    } else {
       history.push(`pedidos/${orderSelected.id}`);
     }
   };
@@ -77,17 +69,16 @@ const InboxOrderComponent = (props) => {
     setOrderSelected(pedido);
   };
 
-
   const deleteOrder = () => {
     window.Swal.fire({
-      title: '¿Estás seguro de eliminar la orden?',
-      icon: 'question',
+      title: "¿Estás seguro de eliminar la orden?",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Eliminar',
-    }).then(({dismiss})=>{
-      if(!dismiss){
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
         orderHook.deleteOrder(orderSelected.id);
 
         window.Swal.fire({
@@ -99,17 +90,17 @@ const InboxOrderComponent = (props) => {
 
         orderContext.set({
           ...orderContext,
-          options:{
+          options: {
             page: 1,
             orderby: "created_at",
             order: "desc",
             itemsPage: 10,
             status: 0,
             search: "",
-          }
-        })
+          },
+        });
       }
-    })
+    });
   };
 
   const handleStatus = () => {
@@ -127,7 +118,7 @@ const InboxOrderComponent = (props) => {
   useEffect(() => {
     getList();
     // eslint-disable-next-line
-  }, [options]);
+  }, []);
 
   return (
     <Main
@@ -137,7 +128,7 @@ const InboxOrderComponent = (props) => {
       meta={pedidos.meta}
       itemSelected={orderSelected.id}
       loading={pedidos.loading}
-      defaultSearch={options.search}
+      defaultSearch={options?.search}
       handlePagination={(page) => handleChangeOptions("page", page)}
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleEditItem={handleSelectOrder}
@@ -145,15 +136,15 @@ const InboxOrderComponent = (props) => {
       handleSync={() => {
         orderContext.set({
           ...orderContext,
-          options:{
+          options: {
             page: 1,
             orderby: "created_at",
             order: "desc",
             itemsPage: 10,
             status: 0,
             search: "",
-          }
-        })
+          },
+        });
       }}
       handleStatus={handleStatus}
     >
@@ -166,7 +157,7 @@ const InboxOrderComponent = (props) => {
             <th>Estado</th>
             <th>Nota</th>
             <th>
-              {options.orderby === "created_at" ? "Registrado" : "Modificado"}
+              {options?.orderby === "created_at" ? "Registrado" : "Modificado"}
             </th>
           </tr>
         </thead>
@@ -226,9 +217,7 @@ const InboxOrderComponent = (props) => {
                     {pedido.status === 1 ? (
                       <div>
                         <span className="mr-1 text-dark">
-                          {pedido.lab
-                            ? pedido.lab.nombre
-                            : "Sin asignar"}
+                          {pedido.lab ? pedido.lab.nombre : "Sin asignar"}
                         </span>
                         {pedido.lab ? "/ " + pedido.npedidolab : ""}
                       </div>
@@ -282,4 +271,4 @@ const InboxOrderComponent = (props) => {
   );
 };
 
-export default (InboxOrderComponent);
+export default InboxOrderComponent;

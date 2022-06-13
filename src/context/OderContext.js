@@ -2,4 +2,4 @@
 import { createContext, useContext } from "react";
 
 export const OrderContext = createContext(null);
-export const Store = () => useContext(OrderContext);
+export const Order = () => useContext(OrderContext);

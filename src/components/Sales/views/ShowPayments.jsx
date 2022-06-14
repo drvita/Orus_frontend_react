@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { saleActions } from "../../../redux/sales";
 import useSales from "../../../hooks/useSale";
 
 
@@ -13,7 +11,6 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
   });
 
   const [mainSale, setMainSale] = useState({})
-  const dispatch = useDispatch();
   const hookSale = useSales();
 
   //Functions
@@ -47,7 +44,6 @@ export default function ShowPaymentsComponent({ nota, orderId }) {
 
   useEffect(() => {
     return () => {
-      dispatch(saleActions.setSale());
     };
     // eslint-disable-next-line
   }, []);

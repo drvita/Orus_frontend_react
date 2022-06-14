@@ -1,13 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import moment from "moment";
 import Modal from "../../layouts/modal";
 import { AuthContext } from "../../context/AuthContext";
 import { ConfigContext } from "../../context/ConfigContext";
-import { useDispatch } from "react-redux";
-import actions from "../../redux/config/actions";
-import loginActions from "../../redux/user/actions";
 
 export default function BreadcrumbComponent() {
 
@@ -27,13 +24,7 @@ export default function BreadcrumbComponent() {
   });
 
   const branches = config.data?.filter((c) => c.name === "branches") ?? [];
-
-  const dispatch = useDispatch();
-
-  //Set Auth data and Branches to redux//
-  dispatch(loginActions.setLoggin(auth));
-  dispatch(actions.setBranches(branches));
-
+  
   // functions
   const handleChangeBranch = (e) => {
     e.preventDefault();

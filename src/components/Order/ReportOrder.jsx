@@ -39,6 +39,7 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
         page,
       });
     },
+    
     handleSaveOrder = (order) => {
       const _save = (payload) => dispatch(orderActions.saveOrder(payload));
 

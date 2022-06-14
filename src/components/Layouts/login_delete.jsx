@@ -1,8 +1,4 @@
 import React, { Component } from "react";
-// import { connect } from "react-redux";
-//Actions
-// import { defaultActions } from "../../redux/default/";
-// import { userActions } from "../../redux/user/";
 import { useContext } from "react";
 import helper from "../Users/helpers";
 

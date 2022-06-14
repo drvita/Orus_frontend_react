@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 //Components
 import Search from "../data/searchStore";
 //Actions
 import helper from "../helpers";
 
-//Current User
-import {useSelector} from 'react-redux';
+//Context
+import { AuthContext } from "../../../context/AuthContext";
 
 function AddItemModalComponent(props) {
 
-  //TODO: obtener current user del AuthConfig
-  const currentUser = useSelector((state)=> state.users.dataLoggin);
-
+  const authContex = useContext(AuthContext);
+  const currentUser = authContex.auth.branch.id;
 
   //Props and vars
   const {
@@ -95,7 +94,7 @@ function AddItemModalComponent(props) {
       item.inStorage = item.out >= item.cant ? true : false;
       item.out = item.out >= item.cant ? 0 : item.cant - item.out;
       item.subtotal = parseFloat(item.cant * item.precio);
-      item.branch_id = currentUser.branch.id;
+      item.branch_id = currentUser.id;
       _handleAddItem(item);
       close();
     };

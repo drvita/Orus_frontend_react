@@ -44,7 +44,6 @@ export default function InboxContact() {
   };
 
   useEffect(() => {
-    // console.log("[DEBUG] Inbox:", context.options, state);
     if (Object.keys(context.options).length) {
       handleLoadContacts();
     }

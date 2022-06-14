@@ -1,15 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import BranchsList from "./views/Branchs";
-import { useDispatch } from "react-redux";
-import { AuthContext } from "../../context/AuthContext";
+import BranchsList from '../components/Tools/views/Branchs';
+import { AuthContext } from "../context/AuthContext";
 
-
-// Actions
-import { defaultActions } from "../../redux/default/";
 
 export default function ToolsComponent(){
 
-  const dispatch = useDispatch();
   const { auth } = useContext(AuthContext);
 
   const varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
@@ -22,12 +17,7 @@ export default function ToolsComponent(){
     username: auth.username ? auth.username : "",
     password: "",
     category_list: [],
-  })
-
-
-  useEffect(()=>{
-    dispatch(defaultActions.changeNamePage("configuraciones"));
-  },[])// eslint-disable-line react-hooks/exhaustive-deps
+  });
 
   const clickSave = () => {
     let varLocalStorage = JSON.parse(localStorage.getItem("OrusSystem"));
@@ -57,7 +47,6 @@ export default function ToolsComponent(){
 
   return (
     <div className="row">
-
       <div className="col-12">
         <div className="card card-primary card-outline">
           <div className="card-body">

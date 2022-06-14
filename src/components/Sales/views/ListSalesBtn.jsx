@@ -24,6 +24,8 @@ export default function ListSalesBtn() {
     handleSelectSale = (saleSelected) => {
       let pagado = 0;
 
+      console.log("DEBUG", saleSelected);
+
       saleSelected.payments.forEach((pay) => (pagado = pay.total));
 
       setData(false);   

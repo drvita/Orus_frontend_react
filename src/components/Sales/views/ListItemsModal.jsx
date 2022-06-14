@@ -14,9 +14,8 @@ function ListItemsModal({
     price: 0,
   });
 
-  const disabled = data.price <= 0 ? true : false;
-
-
+  const disabled = data.price <= 0 || isNaN(data.price) ? true : false;
+  
   //Functions
   const handleClose = () => {
       if (_close) _close();
@@ -40,16 +39,26 @@ function ListItemsModal({
           price: data.price,
         },
       };
+
+      /* if(toSend.item.price === 0 || toSend.item.price === 'NaN'){
+        console.log("No enviar un 0 o un NAN");
+      } */
+
+      console.log(typeof toSend.item.price);
       
       _Select(toSend);
+
       setData({
         item: null,
         cant: 1,
         price: 0,
       });
 
+      console.log("ENTRANDO");
       handleClose();
     },
+
+
     handleChangeCant = ({ name, value }) => {
       setData({
         ...data,

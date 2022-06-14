@@ -62,6 +62,7 @@ export default function Store(props) {
       ...state,
       panel,
     });
+
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { configActions } from "../../../redux/config";
+import { useState, useContext } from "react";
+import { ConfigContext } from "../../../context/ConfigContext";
 import helper from "../helpers";
 
 export default function BranchsListComponent() {
-  const { list } = useSelector((state) => state.config),
-    dispatch = useDispatch();
+
   const [data, setData] = useState({
     showForm: false,
     id: 0,
@@ -13,11 +11,19 @@ export default function BranchsListComponent() {
     address: "",
     phone: "",
   });
+  
   const options = {
     page: 1,
     name: "branches",
     itemsPage: 10,
   };
+
+  const configContext = useContext(ConfigContext);
+
+  console.log(configContext);
+
+  const branches = configContext.data.filter((item)=>item.name === 'branches');
+  console.log(branches);
 
   //Actions
   const handleUpdateConfig = ({ id, values, data }) => {
@@ -31,6 +37,7 @@ export default function BranchsListComponent() {
         phone: data.phone?.toString().toLowerCase(),
       });
     },
+
     handleCancelForm = () =>
       setData({
         ...data,
@@ -40,24 +47,20 @@ export default function BranchsListComponent() {
         address: "",
         phone: "",
       }),
+
     handleNewBranch = () => setData({ ...data, showForm: true }),
+
     handleChangeValue = ({ name, value }) => {
       setData({
         ...data,
         [name]: value.toString().toLowerCase(),
       });
     },
+
     handleSendDataForm = (e) => {
       e.preventDefault();
-
-      if (helper.verifyData(data)) {
-        helper.saveConfig(data, options, dispatch);
-        handleCancelForm();
-      }
     };
-  useEffect(() => {
-    dispatch(configActions.getListConfig(options));
-  }, []);// eslint-disable-line react-hooks/exhaustive-deps
+
 
   return (
     <div className="card card-primary card-outline">
@@ -129,7 +132,7 @@ export default function BranchsListComponent() {
                 </tr>
               </thead>
               <tbody>
-                {list.map((branch) => (
+                {branches.map((branch) => (
                   branch.name !== 'bank' ? (
                     <tr key={branch.id}>
                     <td className="text-capitalize">{branch.data.name}</td>

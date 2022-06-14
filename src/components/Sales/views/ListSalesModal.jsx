@@ -61,9 +61,10 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select,  }) {
       if(search.length === 0){
         _sales.getSaleById(search).then((data)=>{
           if(data){
-            setSaleList(data.data)
+            console.log("Data", data);
+            setSaleList(data.data);
           }else{
-            console.error("Error al obtener la venta individual")
+            console.error("Error al obtener la venta individual");
           }
         })
 
@@ -72,7 +73,7 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select,  }) {
           if(data){
             setSaleList(data.data)
           }else{
-            console.error("Error al obtener la venta individual")
+            console.error("Error al obtener la venta individual");
           }
         })
       }

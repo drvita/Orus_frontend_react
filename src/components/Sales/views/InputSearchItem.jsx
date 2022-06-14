@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
 
-//Redux
-import { connect } from "react-redux";
-
 //Context
 import { Sale } from "../../../context/SaleContext";
 
@@ -15,7 +12,7 @@ import useProducts from '../../../hooks/useProducts';
 //Helper
 import helper from '../helpers';
 
-function InputSearchItem({ messages, loading }) {
+function InputSearchItem() {
 
   //State
   const [textSearch, setTextSearch] = useState("");
@@ -157,7 +154,7 @@ function InputSearchItem({ messages, loading }) {
       } else {
         setShowList(true);
       }
-    } else if (!list.length && messages.length) {
+    } /* else if (!list.length && messages.length) {
       messages.forEach((msg) => {
         const { type, text } = msg;
         window.Swal.fire({
@@ -167,7 +164,7 @@ function InputSearchItem({ messages, loading }) {
           timer: type !== "error" ? 1500 : 9000,
         });
       });
-    }
+    } */
 
   }, [list]);// eslint-disable-line react-hooks/exhaustive-deps
 
@@ -180,10 +177,7 @@ function InputSearchItem({ messages, loading }) {
         onKeyPress={({ key }) => handlePressEnter(key)}
         value={textSearch}
       />
-      {loading ? (
-        <i className="fas fa-2x fa-spinner fa-spin"></i>
-      ) : (
-        <button
+       <button
           type="button"
           className="btn btn-primary"
           onClick={searchItem}
@@ -191,7 +185,6 @@ function InputSearchItem({ messages, loading }) {
         >
           <i className="fas fa-barcode"></i>
         </button>
-      )}
 
       {showList && list.length ? (
         <ListModal
@@ -205,10 +198,4 @@ function InputSearchItem({ messages, loading }) {
   );
 }
 
-const mapStateToProps = ({ storeItem }) => {
-    return {
-      loading: storeItem.loading,
-      messages: storeItem.messages,
-    };
-  }
-export default connect(mapStateToProps)(InputSearchItem);
+export default InputSearchItem;

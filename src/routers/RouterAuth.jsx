@@ -2,13 +2,12 @@ import { Route } from "react-router-dom";
 import UserAdd from "../components/Users/add";
 import Store from "../pages/Store";
 import Contacts from "../pages/Contacts";
-import Tools from "../components/Tools/tools";
+import Tools from '../pages/Tools';
 import Exams from "../pages/Exams";
-import Sales from "../components/Sales/index";
+import Sales from "../pages/Sales";
 import Dashboard from "../pages/AuthDashboard";
 import Users from "../pages/Users";
 import Orders from "../pages/Orders";
-// import NotifyAllShow from "./components/Layouts/notifyAll";
 
 import ConfigProvider from "../context/ConfigContext";
 import Main from "../layouts/Main";

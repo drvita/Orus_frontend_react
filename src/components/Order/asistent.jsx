@@ -312,15 +312,26 @@ export default function AsistentComponent(props){
 
           {/* Validacion 1 --- Seleccion de cliente */}
           {!state.contact_id ? (
-            <div className="form-group d-print-none col-lg-12">
+            <div className="form-group d-print-none col-lg-12">              
               <SearchContact
                 title="cliente"
                 legend={ !state.data.id ? "Busque el paciente por nombre para crearun nuevo pedido" : null }
                 readOnly={state.exam_id !== null}
                 handleContactSelect = {handleContactSelect}
                 data = {state.data}
-              />      
-            </div>
+              />  
+              <div className="d-flex justify-content-end">
+              <button className="btn btn-secondary mt-2" onClick={()=>{
+                orderContext.set({
+                  ...orderContext,
+                  panel: 'inbox',
+                })
+              }}>
+                Salir
+                <i className="fas fa-ban ml-2"></i>                
+              </button>              
+              </div>    
+            </div>            
           ):(
             <div className="card col-lg-5 mr-5 border border-success">
               <div className="card-header">

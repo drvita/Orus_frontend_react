@@ -1,35 +1,32 @@
 import { useEffect, useState, useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
 //Components
-import InputSearchItem from "./views/InputSearchItem";
-import DiscountBtnComponent from "./views/DiscountBtn";
-import ListSalesBtn from "./views/ListSalesBtn";
-import PrintSaleComponent from "./views/Print_sale";
-import PaymentBtnComponent from "./views/PaymentBtn";
-import EraseBtn from "./views/EraseSaleBtn";
-import CustomerBtnComponent from "./views/CustomerBtn";
-import SalesDetailsTableComponent from "./views/SalesDetailsTable";
-import SaleDate from "./views/SaleDate";
-import ShowToPay from "./views/ShowToPay";
-import ShowTotal from "./views/ShowTotal";
-import {AuthContext} from '../../context/AuthContext';
+import InputSearchItem from '../components/Sales/views/InputSearchItem';
+
+import DiscountBtnComponent from "../components/Sales/views/DiscountBtn";
+
+import ListSalesBtn from "../components/Sales/views/ListSalesBtn";
+import PrintSaleComponent from "../components/Sales/views/Print_sale";
+import PaymentBtnComponent from "../components/Sales/views/PaymentBtn";
+import EraseBtn from "../components/Sales/views/EraseSaleBtn";
+import CustomerBtnComponent from "../components/Sales/views/CustomerBtn";
+import SalesDetailsTableComponent from "../components/Sales/views/SalesDetailsTable";
+import SaleDate from "../components/Sales/views/SaleDate";
+import ShowToPay from "../components/Sales/views/ShowToPay";
+import ShowTotal from "../components/Sales/views/ShowTotal";
+import { AuthContext } from "../context/AuthContext";
 
 //Context
-import { SaleContext } from "../../context/SaleContext";
-import saleHelper from './helpers';
-import useSales from "../../hooks/useSale";
+import {SaleContext} from '../context/SaleContext';
+import saleHelper from '../components/Sales/helpers';
+import useSales from '../hooks/useSale';
 
 //Actions
-import { defaultActions } from "../../redux/default/";
 
 export default function IndexSalesComponent(props) {
 
   const {auth} = useContext(AuthContext);
-  const { sales } = useSelector((state) => state);
-  const { loading } = sales;
   const hookSale = useSales();
-  const dispatch = useDispatch();
+
 
   const [state, setState] = useState({
     id: 0,
@@ -46,13 +43,9 @@ export default function IndexSalesComponent(props) {
     payments: [],
     branch_id: auth.branch.id,
   })
-  
- /*  const [data, setData] = useState({
-    pagado: 0,
-  }); */
+
 
   useEffect(() => {
-    dispatch(defaultActions.changeNamePage("punto de venta"));
 
     return () => {
       console.log("[Orus Systme] Cerrando venta");
@@ -154,11 +147,6 @@ export default function IndexSalesComponent(props) {
             </div>
           </div>
         </div>
-        {loading ? (
-          <div className="overlay dark">
-            <i className="fas fa-2x fa-sync-alt fa-spin"></i>
-          </div>
-        ) : null}
       </div>
     </SaleContext.Provider>
   );

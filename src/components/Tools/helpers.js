@@ -1,4 +1,4 @@
-import { configActions } from "../../redux/config";
+//import { configActions } from "../../redux/config";
 
 function saveConfig(data, options, dispatch) {
   window.Swal.fire({
@@ -14,7 +14,8 @@ function saveConfig(data, options, dispatch) {
     showLoaderOnConfirm: true,
   }).then(({ dismiss }) => {
     if (!dismiss) {
-      dispatch(
+      //TODO: Redu eliminado
+      /* dispatch(
         configActions.saveConfig({
           data: {
             name: "branches",
@@ -27,7 +28,7 @@ function saveConfig(data, options, dispatch) {
           id: data.id,
           options,
         })
-      );
+      ); */
     }
   });
 }
@@ -44,12 +45,13 @@ function deleteConfig(id, options, name, dispatch) {
     showLoaderOnConfirm: true,
   }).then(({ dismiss }) => {
     if (!dismiss) {
-      dispatch(
+      //TODO: Redu eliminado
+      /* dispatch(
         configActions.deleteConfig({
           id,
           options,
         })
-      );
+      ); */
     }
   });
 }

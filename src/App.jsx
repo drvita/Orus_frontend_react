@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { BrowserRouter } from "react-router-dom";
-import { Provider } from "react-redux";
+//import { Provider } from "react-redux";
 
-import store from "./redux/store";
+//import store from "./redux/store";
 import AuthProvider from "./context/AuthContext";
 import Router from "./routers/Router";
 import { useEffect } from "react";
@@ -22,11 +22,19 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <AuthProvider>       
+        <Router />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+
+  /* return (
+    <BrowserRouter>
       <AuthProvider>
         <Provider store={store}>
           <Router />
         </Provider>
       </AuthProvider>
     </BrowserRouter>
-  );
+  ); */
 }

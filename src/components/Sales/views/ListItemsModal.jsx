@@ -40,12 +40,6 @@ function ListItemsModal({
         },
       };
 
-      /* if(toSend.item.price === 0 || toSend.item.price === 'NaN'){
-        console.log("No enviar un 0 o un NAN");
-      } */
-
-      console.log(typeof toSend.item.price);
-      
       _Select(toSend);
 
       setData({
@@ -53,8 +47,6 @@ function ListItemsModal({
         cant: 1,
         price: 0,
       });
-
-      console.log("ENTRANDO");
       handleClose();
     },
 
@@ -84,8 +76,7 @@ function ListItemsModal({
               {data.item && data.item.id ? (
                 <>
                   <div className="text-uppercase mb-4">
-                    {data.item.producto}
-                    {console.log(data)}
+                    {data.item.producto}                  
                   </div>
                   <div className="form-group row">
                     <label className="col-2 col-form-label">Cantidad</label>

@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import useProducts from "../../../hooks/useProducts";
 
 //Actions
-import { storeActions } from "../../../redux/store/";
+//import { storeActions } from "../../../redux/store/";
 
 function SearchItemsComponent(props) {
 
@@ -14,7 +14,6 @@ function SearchItemsComponent(props) {
 
   // Props and vars
   const {
-      //items,
       meta,
       item = { producto: "" },
       _setList,
@@ -155,8 +154,8 @@ const mapStateToProps = ({ storeItem }) => {
     };
   },
   mapActionsToProps = {
-    _getList: storeActions.getListStore,
-    _setList: storeActions.setListStore,
+  /*   _getList: storeActions.getListStore,
+    _setList: storeActions.setListStore, */
   };
 
 export default connect(

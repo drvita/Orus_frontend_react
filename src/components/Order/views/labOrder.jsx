@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 //Actions
-import { contactActions } from "../../../redux/contact";
+//TODO: redux eliminado
+//import { contactActions } from "../../../redux/contact";
 
 export default function LabOrderComponent({
   status = false,
@@ -23,7 +25,7 @@ export default function LabOrderComponent({
   };
 
   useEffect(() => {
-    dispatch(contactActions.getListSuppliers(1));
+    //dispatch(contactActions.getListSuppliers(1));
     //eslint-disable-next-line
   }, []);
 

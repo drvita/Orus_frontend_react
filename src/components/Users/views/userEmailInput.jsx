@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { api, getUrl } from "../../../redux/sagas/api";
+import useUsers from "../../../hooks/useUsers";
+
+//Redux eliminado
+//import { api, getUrl } from "../../../redux/sagas/api";
 
 export default function UserEmailInputComponent(props) {
   const [state, setState] = useState({
@@ -8,6 +11,8 @@ export default function UserEmailInputComponent(props) {
     text: "No tiene el formato de un email",
     searchEmail: false,
   });
+
+  const user = useUsers();
 
   //Vars
   const { col, email, userId, onChange: _onChange } = props,
@@ -33,7 +38,7 @@ export default function UserEmailInputComponent(props) {
           searchUser: true,
         });
         
-        handleSearchUser(emailSearch, userId).then((response) => {
+        handleSearchUser(emailSearch, userId, user).then((response) => {
           if (response) {
             setState({
               bgColor: "bg-red",
@@ -122,7 +127,24 @@ export default function UserEmailInputComponent(props) {
   );
 }
 
-const handleSearchUser = async (email, userId) => {
+
+const handleSearchUser = async (username, userId = null, user) => {
+  const result = await user.getListUsers({ username, userId, deleted: 0 });
+
+  if (result.data && result.data.length) {
+    const { username: user } = result.data[0];
+
+    if (user.toLowerCase() === username) {
+      return true;
+    }
+  }
+  return false;
+};
+
+
+
+/* const handleSearchUser = async (email, userId = null, user) => {
+  const result = await user.getListUser
   const url = getUrl("users", null, { email, userId, deleted: 0 }),
     result = await api(url);
 
@@ -135,3 +157,4 @@ const handleSearchUser = async (email, userId) => {
   }
   return false;
 };
+ */

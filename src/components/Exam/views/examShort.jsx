@@ -3,7 +3,9 @@ import { connect } from "react-redux";
 import moment from "moment";
 //Views and actions
 import Graduacion from "./graduacionExam";
-import { examActions } from "../../../redux/exam";
+
+//TODO: redux eliminado
+//import { examActions } from "../../../redux/exam";
 
 const ExamCustomerComponent = (props) => {
   const {
@@ -154,7 +156,7 @@ const mapStateToProps = ({ exam }) => {
     };
   },
   mapActionsToProps = {
-    _saveExam: examActions.saveExam,
+    //_saveExam: examActions.saveExam,
   };
 
 export default connect(

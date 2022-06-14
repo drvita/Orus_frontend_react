@@ -6,7 +6,8 @@ import useStore from "../../hooks/useStore";
 
 //Components
 import ListInbox from "../../layouts/list_inbox";
-import { api, getUrl } from "../../redux/sagas/api";
+//import { api, getUrl } from "../../redux/sagas/api";
+import {api, setUrl} from '../../utils/url';
 
 export default function Inbox(props) {
   const context = Store();
@@ -115,7 +116,9 @@ export default function Inbox(props) {
       // _setLoading(true);
       const newOptions = { ...context.options, responseType: "csv" };
       console.log("[Orus Sytem] Start donwload csv");
-      const url = getUrl("store", null, newOptions);
+
+      const url = setUrl("store", null, newOptions);
+
       const data = await api(url);
       // _setLoading();
       if (data) {

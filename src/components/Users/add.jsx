@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import moment from "moment";
 import useUsers from "../../hooks/useUsers";
 import { Config } from "../../context/ConfigContext";
 import { useHistory } from "react-router-dom";
@@ -8,6 +7,9 @@ import { useHistory } from "react-router-dom";
 //Component
 import UserNameInput from "./views/userNameInput";
 import UserEmailInput from "./views/userEmailInput";
+import Metadata from "./Metadata";
+import Permissions from "./Permissions";
+import Activities from "../Activitys";
 
 const initialState = {
   id: 0,
@@ -24,6 +26,9 @@ const initialState = {
     load: false,
     validUserName: false,
     validUserEmail: false,
+    created_at: "",
+    updated_at: "",
+    activities: [],
   },
 };
 
@@ -45,6 +50,7 @@ export default function UserAddComponent(props) {
 
   function processData(data) {
     if (data) {
+      // console.log("[DEBUG] Activities:", data.activity);
       setCurrentUser({
         id: data.id,
         role: data.roles[0],
@@ -60,6 +66,9 @@ export default function UserAddComponent(props) {
           load: data.load ? data.load : false,
           validUserName: true,
           validUserEmail: true,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          activities: data.activity,
         },
       });
     }
@@ -153,12 +162,12 @@ export default function UserAddComponent(props) {
     }
   }, [id]);
 
-  useEffect(() => {
-    console.log("[DEBUG] send:", send);
-  }, [send]);
+  // useEffect(() => {
+  //   console.log("[DEBUG] activity:", currentUser.data.activities);
+  // }, [send]);
 
   return (
-    <div className="row" style={{height:'100vh'}}>
+    <div className="row" style={{ height: "100vh" }}>
       <div className={`col-${id ? 8 : 12}`}>
         <form className="card card-primary card-outline" autoComplete="off">
           <div className="card-header">
@@ -343,90 +352,14 @@ export default function UserAddComponent(props) {
           </div>
         </form>
 
-        <div className="card card-primary card-outline mt-4">
-          <div className="card-header">
-            <h5 className="card-title text-primary">Tipo y permisos</h5>
-          </div>
-          <div className="card-body">
-            <span className="badge badge-dark m-1">{currentUser.role}</span>
-            {currentUser.data?.permissions?.map((permission, i) => (
-              <span className="badge badge-primary m-1" key={i}>
-                {permission}
-              </span>
-            ))}
-          </div>
-        </div>
+        <Permissions data={currentUser} />
       </div>
-      {id ? (
+      {id && (
         <div className="col-4">
-          <div className="card card-primary card-outline">
-            <div className="card-header">
-              <h3 className="card-title text-primary">
-                <i className="fas fa-database mr-2"></i>
-                Metadata
-              </h3>
-            </div>
-            <div className="card-body">
-              {currentUser.session ? (
-                <ul className="list-group">
-                  <li className="list-group-item">
-                    <h6>Datos del usuario</h6>
-                    <div className="row">
-                      <div className="col">
-                        <span className="text-primary">Registrado</span>
-                        <p>{moment(currentUser.created_at).fromNow()}</p>
-                      </div>
-                      <div className="col">
-                        <span className="text-primary">
-                          Ultima actualizacion
-                        </span>
-                        <p>{moment(currentUser.updated_at).fromNow()}</p>
-                      </div>
-                    </div>
-                  </li>
-                  <li className="list-group-item">
-                    <h6>Actividad</h6>
-                    <div className="row">
-                      <div className="col">
-                        <span className="text-primary">IP</span>
-                        <p>{currentUser.session.ip_address}</p>
-                      </div>
-                      <div className="col">
-                        <span className="text-primary">Ultima actividad</span>
-                        <p>
-                          {moment(currentUser.session.last_activity).fromNow()}
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                  <li className="list-group-item">
-                    <span className="text-primary">Navegador y OS</span>
-                    <p>{currentUser.session.user_agent}</p>
-                  </li>
-                  <li className="list-group-item">
-                    <span className="text-primary">Token</span>
-                    <p>{currentUser.session.user_data}</p>
-                  </li>
-                </ul>
-              ) : (
-                <p>Usuario no ha registrado actividad.</p>
-              )}
-            </div>
-            {currentUser.session && (
-              <div className="card-footer text-right">
-                <button
-                  type="button"
-                  className="btn btn-default"
-                  onClick={() => this.handleCloseSession(id)}
-                >
-                  <i className="fas fa-sign-out-alt mr-1"></i>
-                  Cerrar session
-                </button>
-              </div>
-            )}
-          </div>
+          <Metadata data={currentUser} />
+          <Activities data={currentUser.data.activities} />
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

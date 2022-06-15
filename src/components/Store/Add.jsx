@@ -3,7 +3,6 @@ import { Link, useHistory } from "react-router-dom";
 
 //Context
 import { StoreContext } from "../../context/StoreContext";
-import { AuthContext } from "../../context/AuthContext";
 
 //Hooks
 import useStore from "../../hooks/useStore";
@@ -14,8 +13,8 @@ import Suppliers from "./Suppliers";
 import Brands from "./Brands";
 import Code from "./Code";
 import Activitys from "../Activitys";
-import BranchesSelect from '../../components/Store/views/BranchesSelect';
-import BranchesForm from '../../components/Store/views/BranchesForm';
+import BranchesSelect from "../../components/Store/views/BranchesSelect";
+import BranchesForm from "../../components/Store/views/BranchesForm";
 
 const initialState = {
   id: 0,
@@ -36,7 +35,7 @@ const initialState = {
     branches: [],
     codes: [],
     category_code: [],
-    activity:[],
+    activity: [],
   },
   loading: false,
 };
@@ -47,24 +46,28 @@ export default function Add(props) {
   const [state, setState] = useState(initialState);
   const _store = useStore();
   const { code, loading: LOADING } = state;
-  const authContext = useContext(AuthContext);
   const history = useHistory();
 
-  const idsCategory = state.data.category.code 
-                      ? state.data.category.code.filter((i) => i !== "") 
-                      : [];
+  const idsCategory = state.data.category.code
+    ? state.data.category.code.filter((i) => i !== "")
+    : [];
 
-  let readyToSave = false;  
+  let readyToSave = false;
   if (idsCategory.includes("1")) {
     readyToSave = state.category_id && state.code && state.name;
   } else {
-    readyToSave = state.category_id && state.code && state.name && state.supplier_id && state.brand_id;
+    readyToSave =
+      state.category_id &&
+      state.code &&
+      state.name &&
+      state.supplier_id &&
+      state.brand_id;
   }
 
   // Functions
-  const saveProduct = ()=>{
+  const saveProduct = () => {
     _store.saveItem(state).then((data) => {
-      if(data){
+      if (data) {
         window.Swal.fire({
           title: "Productos",
           text: "Producto guardado correctamente",
@@ -79,12 +82,12 @@ export default function Add(props) {
             setState(initialState);
             storeContext.set({
               ...storeContext,
-              panel: 'inbox',
-            })
-            history.push('/almacen');
+              panel: "inbox",
+            });
+            history.push("/almacen");
           }
         });
-      }else{
+      } else {
         window.Swal.fire({
           title: "Almacenamiento",
           text: "Error al guardar el producto",
@@ -94,12 +97,10 @@ export default function Add(props) {
           confirmButtonText: "Crear",
           cancelButtonText: "Cancelar",
           showLoaderOnConfirm: true,
-        })
+        });
       }
-    })
-  }
-
-
+    });
+  };
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
@@ -107,16 +108,16 @@ export default function Add(props) {
       setState({
         ...state,
         id: res.id ? res.id : 0,
-        name: res.name ? res.name : '',
+        name: res.name ? res.name : "",
         category_id: res.category?.id,
         supplier_id: res.supplier?.id,
         brand_id: res.brand?.id,
-        branch_default: res.branch_default ?? 0, 
-        code: res.code ? res.code : '',
+        branch_default: res.branch_default ?? 0,
+        code: res.code ? res.code : "",
         data: {
           ...state.data,
           category: res.category ? res.category : [],
-          inBranches: res.inBranches ? res.inBranches : '',
+          inBranches: res.inBranches ? res.inBranches : "",
           branches: res.branches ? res.branches : [],
           activity: res.activity ? res.activity : [],
         },
@@ -129,10 +130,10 @@ export default function Add(props) {
     if (id) {
       getItem();
     }
-  }, [id]);// eslint-disable-line react-hooks/exhaustive-deps
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="row" style={{height:'100vh'}}>
+    <div className="row" style={{ height: "100vh" }}>
       <div className="col">
         <div className="card card-primary card-outline">
           <div className="card-header">
@@ -154,7 +155,7 @@ export default function Add(props) {
                     handleChange={(id, code) => {
                       setState({
                         ...state,
-                        category_id: id,                    
+                        category_id: id,
                         data: {
                           ...state.data,
                           category_code: code,
@@ -266,14 +267,14 @@ export default function Add(props) {
                     )}
 
                     <Code
-                      code = {state.code} 
-                      id = {state.id}  
-                      onChangeProductCode = {(codeReceibed)=>{
+                      code={state.code}
+                      id={state.id}
+                      onChangeProductCode={(codeReceibed) => {
                         setState({
                           ...state,
-                          code: codeReceibed
-                        })
-                      }}                          
+                          code: codeReceibed,
+                        });
+                      }}
                     />
                   </div>
                   <div className="col">
@@ -292,11 +293,11 @@ export default function Add(props) {
                         placeholder="Codigo de barras"
                         name="codebar"
                         defaultValue={state.codebar}
-                        onChange={({target}) => {
+                        onChange={({ target }) => {
                           setState({
                             ...state,
                             codebar: target.value,
-                          })
+                          });
                         }}
                         autoComplete="off"
                         maxLength="100"
@@ -331,11 +332,11 @@ export default function Add(props) {
                         placeholder="Nombre"
                         name="name"
                         defaultValue={state.name}
-                        onChange={({target}) => {
+                        onChange={({ target }) => {
                           setState({
                             ...state,
                             name: target.value,
-                          })
+                          });
                         }}
                         maxLength="149"
                       />
@@ -363,8 +364,8 @@ export default function Add(props) {
                     onClick={() => {
                       storeContext.set({
                         ...storeContext,
-                        panel:'inbox',
-                      })
+                        panel: "inbox",
+                      });
                     }}
                   >
                     <i className="fas fa-ban mr-1"></i>
@@ -411,10 +412,10 @@ export default function Add(props) {
                     setBranchId={(target) => {
                       const { value } = target;
                       console.log(value);
-                      setState({ 
-                        ...state, 
+                      setState({
+                        ...state,
                         branch_default: parseInt(value),
-                      })
+                      });
                     }}
                   />
                 </div>
@@ -423,28 +424,21 @@ export default function Add(props) {
           </div>
           <div className="row">
             <div className="col">
-            <BranchesForm
-                branches = {state.data.branches}
-                storeItemID = {state.id}
-                defaultBranch = {state.branch_default}
+              <BranchesForm
+                branches={state.data.branches}
+                storeItemID={state.id}
+                defaultBranch={state.branch_default}
               />
             </div>
           </div>
         </div>
       ) : null}
 
-      {
-        state.data.activity.length ? (
-          <div className="col-lg-12">
-          <Activitys
-              data = {state.data.activity}
-            />
+      {state.data.activity.length ? (
+        <div className="col-lg-12">
+          <Activitys data={state.data.activity} />
         </div>
-        ): null
-      }
-      
-     
+      ) : null}
     </div>
   );
 }
-

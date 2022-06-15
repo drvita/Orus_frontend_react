@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useUsers from "../../../hooks/useUsers";
 
 export default function UserNameInputComponent(props) {
   const user = useUsers();
+  const mounted = useRef(true);
   const [state, setState] = useState({
     bgColor: "bg-blue",
     validate: "",
@@ -18,6 +19,8 @@ export default function UserNameInputComponent(props) {
     });
   };
   const validUser = () => {
+    if (!mounted.current) return;
+
     const regex = /^[\w]{4,16}$/,
       userSearch = props.username.replace(/\s/g, "");
 
@@ -29,6 +32,8 @@ export default function UserNameInputComponent(props) {
       });
 
       handleSearchUser(userSearch, props.userId, user).then((status) => {
+        if (!mounted.current) return;
+
         if (status) {
           setState({
             ...state,
@@ -82,6 +87,12 @@ export default function UserNameInputComponent(props) {
       }
     }
   };
+
+  useEffect(() => {
+    return () => {
+      mounted.current = false;
+    };
+  });
 
   return (
     <div className={"col-" + props.col}>

@@ -6,7 +6,7 @@ export default function BranchesSelect({ branch_default , showIcon = true, setBr
   
   const configContext = useContext(ConfigContext);
   const listBranches = configContext.data.filter((c) => c.name === "branches");
-
+  
   return (
     <div className="input-group mb-3">
       {showIcon && (

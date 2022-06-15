@@ -7,13 +7,14 @@ import useCategory from "../hooks/useCategory";
 import useStore from "../hooks/useStore";
 
 //Context
-import { ConfigContext } from "../context/ConfigContext";
+//import { ConfigContext } from "../context/ConfigContext";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Inventory(){
 
-  const configContext = useContext(ConfigContext);
-  const listBranches = configContext.data.filter((c) => c.name === "branches");
+  //const configContext = useContext(ConfigContext);
+
+  //const listBranches = configContext.data.filter((c) => c.name === "branches");
 
   const authContext = useContext(AuthContext);
   const currentBranch = authContext.auth.branch;
@@ -31,9 +32,11 @@ export default function Inventory(){
     price: 0,
   });
 
+
+
   const [globalData, setGlobalData] = useState({
     branchSelected: currentBranch ? currentBranch.id : 0,
-    productPrice: 0,
+    price: 0,
     productCategoryId: 0,
   });
 
@@ -66,7 +69,7 @@ export default function Inventory(){
 
   const disabled = state.items.length !== 0 ? false : true;
   const disablenBtnModal = globalData.branchSelected === 0 || 
-                           globalData.productPrice === 0  || 
+                           globalData.price === 0  || 
                            globalData.productCategoryId === 0 ? true : false;
 
   const handleModal = () => {
@@ -78,6 +81,7 @@ export default function Inventory(){
     hookStore.saveGlobalPrice(globalData).then((data)=>{
       handleModal();
       if(data){
+        console.log("Data de regreso:", data);
         window.Swal.fire({
           title: "Productos",
           text: "Precio asignado correctamente",
@@ -91,7 +95,7 @@ export default function Inventory(){
           if (!dismiss) {
             setGlobalData({
               branchSelected: currentBranch ? currentBranch.id : 0,
-              productPrice: 0,
+              price: 0,
               productCategoryId: 0,
             })
           }
@@ -111,7 +115,7 @@ export default function Inventory(){
           if (!dismiss) {
             setGlobalData({
               branchSelected: currentBranch ? currentBranch.id : 0,
-              productPrice: 0,
+              price: 0,
               productCategoryId: 0,
             })
           }
@@ -201,7 +205,10 @@ export default function Inventory(){
       if(data && data.data){
         setState({
           ...state, 
+          catid_1: 5,
+          meta: data.data[0].meta,
           catData_1: data.data[0].sons,
+          catData_2: data.data[0].sons[0].sons
         });
       }else{
         console.error("Error al descargar categorías");
@@ -219,17 +226,18 @@ export default function Inventory(){
   },[]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return(
-    <div className="row">
+    <div className="row" style={{height:'1000px'}}>
         <div className="col">
           <div className="card">
             <div className="card-header">
               <div className="row">
-                <div className="col">
+               {/*  <div className="col">
                   <select
                     className="custom-select"
                     name="catid_1"
                     value={state.catid_1}
                     onChange={handleClickCat}
+                    disabled = {true}
                   >
                     <option value="0">Seleccione un tipo</option>
                     {state.catData_1.map((cat) => {
@@ -240,9 +248,9 @@ export default function Inventory(){
                       );
                     })}
                   </select>
-                </div>
-                {state.catid_1 && state.catData_2.length ? (
-                  <div className="col">
+                </div> */}
+
+                <div className="col-lg-2">
                     <select
                       className="custom-select"
                       name="catid_2"
@@ -259,10 +267,9 @@ export default function Inventory(){
                       })}
                     </select>
                   </div>
-                ) : null}
 
                 {state.catid_2 && state.catData_3.length ? (
-                  <div className="col">
+                  <div className="col-lg-10">
                     <div
                       className="btn-group"
                       role="group"
@@ -291,10 +298,16 @@ export default function Inventory(){
                         );
                       })}
                     </div>
+                    <div className="">
+                      Total de productos: <label>{state.items.length}</label>
+                      <button disabled = {disabled} className="btn btn-success ml-5" onClick={handleModal}>Asignar Precio</button>                      
+                    </div>                    
                   </div>
                 ) : null}
               </div>
             </div>
+
+
             <div className="card-body">
               {state.catid_3 ? (
                 <React.Fragment>
@@ -312,10 +325,10 @@ export default function Inventory(){
                     <React.Fragment>
                       <div className="row mb-2">
                         <div className="col mt-2">
-                          Total de productos: <label>{state.items.length}</label>
+                          
                         </div>
                         <div className="col">
-                          <button disabled = {disabled} className="btn btn-success" onClick={handleModal}>Asignar Precio</button>
+                          
                         </div>
                         <div className="col-6">
                           <div className="row">
@@ -324,7 +337,7 @@ export default function Inventory(){
                       </div>
                       {
                         modal && <SetPriceModal 
-                          branches = {listBranches} 
+                          branch = {currentBranch} 
                           currentBranch = {currentBranch}
                           handleChange={(name, value) => {
                             setGlobalData({
@@ -354,10 +367,10 @@ export default function Inventory(){
                   </h4>
                   <hr />
                   <ul>
-                    {!state.catid_1 ? (
+                    {/* {!state.catid_1 ? (
                       <li>Selecciones primero el tipo de lente</li>
-                    ) : null}
-                    {!state.catid_2 ? <li>Despues el material</li> : null}
+                    ) : null} */}
+                    {!state.catid_2 ? <li>Seleccione el material</li> : null}
                     <li>Por ultimo el tratamiento</li>
                   </ul>
                 </div>

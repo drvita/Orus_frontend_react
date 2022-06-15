@@ -15,7 +15,7 @@ export default function ToolBar({ newOrEdit, handleNewOrEdit }) {
   const date = context.options?.date ? moment(context.options.date) : moment();
 
   return (
-    <div className="col-sm-12 col-md-2 d-print-none">
+    <div className="col-sm-12 col-md-2 d-print-none mb-5">
       <button
         className="btn bg-info btn-block mb-3"
         type="button"

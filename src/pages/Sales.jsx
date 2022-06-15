@@ -1,9 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 //Components
 import InputSearchItem from '../components/Sales/views/InputSearchItem';
-
 import DiscountBtnComponent from "../components/Sales/views/DiscountBtn";
-
 import ListSalesBtn from "../components/Sales/views/ListSalesBtn";
 import PrintSaleComponent from "../components/Sales/views/Print_sale";
 import PaymentBtnComponent from "../components/Sales/views/PaymentBtn";
@@ -13,14 +11,17 @@ import SalesDetailsTableComponent from "../components/Sales/views/SalesDetailsTa
 import SaleDate from "../components/Sales/views/SaleDate";
 import ShowToPay from "../components/Sales/views/ShowToPay";
 import ShowTotal from "../components/Sales/views/ShowTotal";
-import { AuthContext } from "../context/AuthContext";
+import saleHelper from '../components/Sales/helpers';
+//import InfoModal from "../components/Sales/views/InfoModal";
+import InfoButton from "../components/Sales/views/InfoButton";
 
 //Context
 import {SaleContext} from '../context/SaleContext';
-import saleHelper from '../components/Sales/helpers';
+import { AuthContext } from "../context/AuthContext";
+
+//Hook
 import useSales from '../hooks/useSale';
 
-//Actions
 
 export default function IndexSalesComponent(props) {
 
@@ -42,6 +43,7 @@ export default function IndexSalesComponent(props) {
     total: 0,
     payments: [],
     branch_id: auth.branch.id,
+    activitys: [],
   })
 
 
@@ -76,7 +78,8 @@ export default function IndexSalesComponent(props) {
             payments: data.data.payments, 
             branch_id:data.data.branch.id,
             created_at: data.data.created_at,
-            pagado                                         
+            activitys: data.data.activity,
+            pagado                                   
           })
         }
       })
@@ -97,7 +100,7 @@ export default function IndexSalesComponent(props) {
 
   return (
     <SaleContext.Provider value={{ ...state, set: handleSet }}>
-      <div className="card border border-gray mb-4" style={{ height: "36rem" }}>
+      <div className="card border border-gray mb-4" style={{ height:'81vh'  }}>
         <div className="card-body pb-2 d-print-none">
           <nav className="row mb-2">
             <div className="col">
@@ -109,14 +112,18 @@ export default function IndexSalesComponent(props) {
             </div>
 
             <div className="col-3">
-              <div className="card-tools text-right">      
-                <ListSalesBtn/>
+              <div className="card-tools d-flex justify-content-around">      
+
+                <ListSalesBtn/>                
 
                 <DiscountBtnComponent/>
 
                 <EraseBtn
                   {...props}
                 />
+
+                <InfoButton/>
+
               </div>
             </div>
           </nav>
@@ -126,7 +133,9 @@ export default function IndexSalesComponent(props) {
           >
             <SalesDetailsTableComponent/>
           </div>
+          
         </div>
+        
 
         <div className="card-footer">
           <div className="row">

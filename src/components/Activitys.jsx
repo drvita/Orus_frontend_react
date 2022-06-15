@@ -3,7 +3,7 @@ export default function Activitys(props) {
   return (
     <div className="card">
       <div className="card-body">
-        <h5 className="card-title text-muted text-bold w-100 mb-4">
+        <h5 className="card-title text-muted text-bold w-100 mb-4 text-left">
           <i className="fas fa-bars mr-1"></i>
           Actividad
         </h5>
@@ -12,7 +12,7 @@ export default function Activitys(props) {
           const { data, type } = ac;
 
           return (
-            <p className="card-text border-bottom" key={i}>
+            <p className="card-text border-bottom text-left" key={i}>
               <span
                 className={
                   type !== "deleted"

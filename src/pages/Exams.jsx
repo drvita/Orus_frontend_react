@@ -34,7 +34,7 @@ export default function Exams(props) {
 
   return (
     <ExamContext.Provider value={{ ...state, set: setState }}>
-      <div className="row">
+      <div className="row mb-5">
         <ToolBar
           newOrEdit={state.newOrEdit}
           handleNewOrEdit={() =>

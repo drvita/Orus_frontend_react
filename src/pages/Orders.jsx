@@ -36,7 +36,7 @@ export default function IndexOrderComponent(props) {
   return (
     <OrderContext.Provider value={{ ...state, set: setState }}>
       <div className="row">
-        <div className="col-sm-12 col-md-2">
+        <div className="col-sm-12 col-md-2" style={{height:'100vh'}}>
           <Toolbar />
         </div>
         <div className="col-sm-12 col-md-10">

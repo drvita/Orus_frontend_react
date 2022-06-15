@@ -158,7 +158,7 @@ export default function UserAddComponent(props) {
   }, [send]);
 
   return (
-    <div className="row">
+    <div className="row" style={{height:'100vh'}}>
       <div className={`col-${id ? 8 : 12}`}>
         <form className="card card-primary card-outline" autoComplete="off">
           <div className="card-header">

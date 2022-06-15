@@ -132,10 +132,13 @@ export default function useStore() {
   };
 
   const saveGlobalPrice = async (data) => {
+    console.log(data);
     const idCategory = data.productCategoryId;
-    const URL = setUrl(`store/setprice/${idCategory}`);
+    const URL = setUrl(`categories/setprice/${idCategory}`);
     const method = "POST";
+
     delete data.productCategoryId;
+    delete data.branchSelected;
 
     return await api(URL, method, data);
   };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import BranchsList from '../components/Tools/views/Branchs';
 import { AuthContext } from "../context/AuthContext";
 
@@ -46,7 +46,7 @@ export default function ToolsComponent(){
   };
 
   return (
-    <div className="row">
+    <div className="row" style={{height:'100vh'}}>
       <div className="col-12">
         <div className="card card-primary card-outline">
           <div className="card-body">

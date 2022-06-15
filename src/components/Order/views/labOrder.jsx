@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 //Actions
 //TODO: redux eliminado
@@ -11,8 +11,8 @@ export default function LabOrderComponent({
   npedidolab = "",
   handleChange: _handleChange,
 }) {
-  const { suppliers } = useSelector((state) => state.contact),
-    dispatch = useDispatch();
+  const { suppliers } = useSelector((state) => state.contact);
+    //dispatch = useDispatch();
   //Functions
   const changeInput = (e) => {
     e.preventDefault();

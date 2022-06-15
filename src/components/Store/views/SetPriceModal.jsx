@@ -1,4 +1,4 @@
-function SetPriceModal({currentBranch, handleSave: _handleSave ,handleClose: _close, branches, handleChange: _handleChange, disabled }) {
+function SetPriceModal({currentBranch, handleSave: _handleSave ,handleClose: _close, branch, handleChange: _handleChange, /* disabled */ }) {
   return (
     <div className="modal d-block" tabIndex="-1">
       <div className="modal-dialog" role="document">
@@ -12,24 +12,26 @@ function SetPriceModal({currentBranch, handleSave: _handleSave ,handleClose: _cl
 
           <div className="modal-body p-2">
               <div className="d-flex flex-column justify-content-start align-items-start">
-                  <label className="text-center">Sucrusales</label>
+                  <label className="text-center">Sucursal</label>
                   <select 
                     className="form-control" 
                     id=""
                     name="branchSelected"
-                    defaultValue={currentBranch.name}
-                    onChange={({target})=>{
+                    defaultValue={branch.name}
+                    disabled = {true}
+                    /* onChange={({target})=>{
                       const {name, value} = target;
                       _handleChange(name, value);
-                    }}>
-                    <option value={0}>-- Seleciona una sucursal --</option>
-                    {branches.map((branch)=>{
+                    }} */>
+                    {/* <option value={0}>-- Seleciona una sucursal --</option> */}
+                    <option value={branch.id}>{branch.name.toUpperCase()}</option>
+                    {/* {branch.map((branch)=>{
                       return(
                         <option key={branch.id} value={branch.id}>
                           {branch.data.name.toUpperCase()}
                         </option>
                       )
-                    })}
+                    })} */}
                   </select>
 
                   <br />
@@ -39,7 +41,7 @@ function SetPriceModal({currentBranch, handleSave: _handleSave ,handleClose: _cl
                     const {name, value} = target;
                     _handleChange(name, value);
 
-                  }} name = "productPrice" type="number" defaultValue={0} className="form-control" placeholder="Precio"/>
+                  }} name = "price" type="number" defaultValue={0} className="form-control" placeholder="Precio"/>
 
               </div>
           </div>
@@ -50,7 +52,7 @@ function SetPriceModal({currentBranch, handleSave: _handleSave ,handleClose: _cl
               Cancelar
             </button>
 
-            <button onClick={_handleSave} disabled={disabled} type="button" className="btn btn-success" >
+            <button onClick={_handleSave} disabled={false} type="button" className="btn btn-success" >
               Asignar
             </button>
           </div>

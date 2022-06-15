@@ -17,6 +17,7 @@ import Recomendaciones from "./views/RecomendationGlass";
 import ShowContact from "../Contacts/views/ShowCard";
 import SideBarRigth from "./views/SideBarRigth";
 import useExam from "../../hooks/useExam";
+import Activitys from "../Activitys";
 
 export default function Add(props) {
   const [state, setState] = useState({
@@ -34,7 +35,11 @@ export default function Add(props) {
       observaciones: false,
       recomendaciones: false,
     },
+    activitys:[],
   });
+
+
+
   const { id } = props.match.params;
   const _exams = useExam();
   const history = useHistory();
@@ -133,6 +138,7 @@ export default function Add(props) {
             observaciones: true,
             recomendaciones: true,
           },
+          activitys: res.activity ?? [],
         });
       });
     }
@@ -503,6 +509,16 @@ export default function Add(props) {
           presbicie={state.presbicie ?? ""}
         />
       )} */}
+
+      {
+        state.activitys.length ? (
+          <Activitys
+            data = {state.activitys}
+          />
+        ): null
+      }
+
+      
     </>
   );
 }

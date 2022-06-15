@@ -40,7 +40,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="content">
+    <div className="content" style={{height:'100vh'}}>
       <p className="h4 border-bottom mb-4">
         Bienvenido
         <span className="font-weight-bold mx-2 text-capitalize">

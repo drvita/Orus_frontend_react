@@ -29,7 +29,7 @@ const initialState = {
   price: 1,
   supplier_id: 0,
   category_id: 0,
-  branch_default: 12,
+  branch_default: 0,
   data: {
     category: { code: [] },
     categories: [],
@@ -103,6 +103,7 @@ export default function Add(props) {
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
+      console.log(res.branch_default);
       setState({
         ...state,
         id: res.id ? res.id : 0,
@@ -110,7 +111,7 @@ export default function Add(props) {
         category_id: res.category?.id,
         supplier_id: res.supplier?.id,
         brand_id: res.brand?.id,
-        branch_default: authContext.auth.branch.id ? authContext.auth.branch.id : '12', 
+        branch_default: res.branch_default ?? 0, 
         code: res.code ? res.code : '',
         data: {
           ...state.data,
@@ -131,7 +132,7 @@ export default function Add(props) {
   }, [id]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="row">
+    <div className="row" style={{height:'100vh'}}>
       <div className="col">
         <div className="card card-primary card-outline">
           <div className="card-header">
@@ -431,12 +432,18 @@ export default function Add(props) {
           </div>
         </div>
       ) : null}
+
+      {
+        state.data.activity.length ? (
+          <div className="col-lg-12">
+          <Activitys
+              data = {state.data.activity}
+            />
+        </div>
+        ): null
+      }
       
-      <div className="col-lg-12">
-        <Activitys
-            data = {state.data.activity}
-          />
-      </div>
+     
     </div>
   );
 }

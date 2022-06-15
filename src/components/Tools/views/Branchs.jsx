@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { ConfigContext } from "../../../context/ConfigContext";
-import helper from "../helpers";
+//import helper from "../helpers";
 
 export default function BranchsListComponent() {
 
@@ -12,11 +12,11 @@ export default function BranchsListComponent() {
     phone: "",
   });
   
-  const options = {
+/*   const options = {
     page: 1,
     name: "branches",
     itemsPage: 10,
-  };
+  }; */
 
   const configContext = useContext(ConfigContext);
 

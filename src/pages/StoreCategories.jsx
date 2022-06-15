@@ -68,7 +68,7 @@ export default function CategoriesStoreComponent(){
 
 
   return (
-    <div className="row">
+    <div className="row" style={{height:'100vh'}}>
       <div className="col-8">
         <nav>
           <ol className="breadcrumb">

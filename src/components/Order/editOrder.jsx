@@ -15,6 +15,7 @@ import Bicelacion from "./views/bicelacionOrder";
 import Items from "./views/listItemsOrder";
 import ExamModal from "./ExamModal";
 import ModalNota from "./ModalNota";
+import Activitys from "../Activitys";
 
 //Helper
 import helper from "./helpers";
@@ -94,6 +95,7 @@ export default function EditOrderComponent(props){
       updated: {},
       updated_at: null,
       sale:{},
+      activitys: [],
     });
 
     orderContext.set({
@@ -208,6 +210,7 @@ export default function EditOrderComponent(props){
           updated_at: dataReceibed.updated_at ?? null,
           sale: dataReceibed.sale ?? {},
           contact_id: dataReceibed.paciente.id,
+          activitys : dataReceibed.activity ?? [],
         })
       }else{
         console.error("Error al obtener los datos");
@@ -505,6 +508,11 @@ export default function EditOrderComponent(props){
 
         </>
       ) : null}
+
+      <Activitys
+        data = {state.activitys ?? []}
+      />
+
     </>
   );
 }

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function InventoryTableView({ header, body, items }) {
   
   return (
-    <div className="table-responsive">
+    <div className="table-responsive" style={{height:'100vh'}}>
       <table className="table table-sm table-bordered table-hover">
         <thead>
           <tr>
@@ -33,7 +33,7 @@ export default function InventoryTableView({ header, body, items }) {
                   return (
                     <td key={grad + i} className="text-center">
                       {items.length ? (
-                        items.map((item, index) => {
+                        items.map((item, index) => {                          
                           return grad === item.grad ? (
                             <>
                               {item.cant_total ? (
@@ -45,8 +45,7 @@ export default function InventoryTableView({ header, body, items }) {
                                       ? "badge badge-success"
                                       : "badge badge-danger"
                                   }
-                                >
-                        
+                                >                
                                   <Link
                                     to={"/almacen/" + item.id}
                                     className="text-light"

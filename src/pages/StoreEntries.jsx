@@ -212,7 +212,7 @@ export default function StoreEntries() {
   }, [state.items]);
 
   return (
-    <div className="row">
+    <div className="row" style={{height:'100vh'}}>
       <div className="col-12">
         <div className="card card-primary card-outline">
           <div className="card-header">

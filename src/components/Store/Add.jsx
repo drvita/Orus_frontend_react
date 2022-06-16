@@ -133,7 +133,7 @@ export default function Add(props) {
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="row" style={{ height: "100vh" }}>
+    <div className="row">
       <div className="col">
         <div className="card card-primary card-outline">
           <div className="card-header">

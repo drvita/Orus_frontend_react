@@ -34,7 +34,7 @@ export default function UsersComponent(props) {
 
   return (
     <UserContext.Provider value={{ ...state, set: setState }}>
-      <div className="row">
+      <div className="row" style={{minHeight: '100vh'}}>
         <div className="col-lg-2">
           <FiltersToolbar
             newOrEdit={state.newOrEdit}

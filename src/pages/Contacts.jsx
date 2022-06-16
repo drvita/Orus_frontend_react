@@ -30,7 +30,7 @@ export default function ContactsComponent(props) {
 
   return (
     <ContactContext.Provider value={{ ...state, set: setState }}>
-      <div className="row">
+      <div className="row" style={{minHeight: '100vh'}}>
         <ToolsBar
           newOrEdit={state.newOrEdit}
           handleNewOrEdit={() =>

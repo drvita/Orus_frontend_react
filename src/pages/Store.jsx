@@ -67,7 +67,7 @@ export default function Store(props) {
 
   return (
     <StoreContext.Provider value={{ ...state, set: setState }}>
-      <div className="row">
+      <div className="row" style={{minHeight: '100vh'}}>
         <div className="col-sm-12 col-md-2">
           <button
             className="btn bg-primary btn-block mb-3"

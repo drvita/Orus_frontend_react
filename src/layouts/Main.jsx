@@ -6,7 +6,7 @@ export default function Main({ children }) {
   const data = {};
 
   return (
-    <div className="wrapper" /* style={{height:'100vh'}} */>
+    <div className="wrapper">
       <Navtop logOut={() => {}} data={data} page={() => {}} />
       
       <Menu

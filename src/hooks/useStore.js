@@ -143,6 +143,17 @@ export default function useStore() {
     return await api(URL, method, data);
   };
 
+  const saveQantity = async (data)=>{
+    console.log(data);
+    const product_id = data.product_id;
+    //const branch_default = data.branch_default;
+    //const cantidad = data.cantidad;
+
+    const url = setUrl(`store/setcant/${product_id}`);
+    const method = 'POST';
+    return await api(url, method);
+  }
+
   // Brands functions -------------------------
   const getBrands = async (options) => {
     if (!options) return null;
@@ -214,5 +225,6 @@ export default function useStore() {
     getBrand,
     saveBrand,
     deleteBrand,
+    saveQantity,
   };
 }

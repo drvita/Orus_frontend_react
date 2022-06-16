@@ -100,7 +100,7 @@ export default function IndexSalesComponent(props) {
 
   return (
     <SaleContext.Provider value={{ ...state, set: handleSet }}>
-      <div className="card border border-gray mb-4" style={{ height:'81vh'  }}>
+      <div className="card border border-gray mb-4">
         <div className="card-body pb-2 d-print-none">
           <nav className="row mb-2">
             <div className="col">

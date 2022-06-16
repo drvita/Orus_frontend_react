@@ -7,14 +7,9 @@ import useCategory from "../hooks/useCategory";
 import useStore from "../hooks/useStore";
 
 //Context
-//import { ConfigContext } from "../context/ConfigContext";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Inventory(){
-
-  //const configContext = useContext(ConfigContext);
-
-  //const listBranches = configContext.data.filter((c) => c.name === "branches");
 
   const authContext = useContext(AuthContext);
   const currentBranch = authContext.auth.branch;
@@ -230,27 +225,10 @@ export default function Inventory(){
         <div className="col">
           <div className="card">
             <div className="card-header">
-              <div className="row">
-               {/*  <div className="col">
-                  <select
-                    className="custom-select"
-                    name="catid_1"
-                    value={state.catid_1}
-                    onChange={handleClickCat}
-                    disabled = {true}
-                  >
-                    <option value="0">Seleccione un tipo</option>
-                    {state.catData_1.map((cat) => {
-                      return (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div> */}
 
-                <div className="col-lg-2">
+              <div className="d-flex justify-content-around align-items-center">
+
+                <div className="col-lg-3">
                     <select
                       className="custom-select"
                       name="catid_2"
@@ -269,11 +247,12 @@ export default function Inventory(){
                   </div>
 
                 {state.catid_2 && state.catData_3.length ? (
-                  <div className="col-lg-10">
+                  <div className="col-lg-9 d-flex justify-content-around align-items-center">
                     <div
-                      className="btn-group"
+                      className="btn-group col-lg-8"
                       role="group"
                       aria-label="Basic example"
+                      style={{height:'3rem'}}
                     >
                       {state.catData_3.map((cat) => {
                         return (
@@ -284,7 +263,7 @@ export default function Inventory(){
                                 ? "btn btn-primary"
                                 : "btn btn-secondary"
                             }
-                            onClick={(e) => {
+                            onClick={(e) => {                      
                               getItems(cat.id);
                               setState({
                                 ...state,
@@ -298,9 +277,12 @@ export default function Inventory(){
                         );
                       })}
                     </div>
-                    <div className="">
-                      Total de productos: <label>{state.items.length}</label>
-                      <button disabled = {disabled} className="btn btn-success ml-5" onClick={handleModal}>Asignar Precio</button>                      
+                    <div className="col-lg-4 d-flex flex-column align-items-center justify-content-center">
+                      <p>Total de productos: {state.items.length}</p>
+                      <button disabled = {disabled} className="btn btn-success bg-success" onClick={handleModal}>                        
+                        Asignar Precio
+                        <i className="fas fa-money-bill ml-2"></i>
+                      </button>                                         
                     </div>                    
                   </div>
                 ) : null}
@@ -318,7 +300,7 @@ export default function Inventory(){
                         className="spinner-border text-primary ml-4"
                         role="status"
                       >
-                        <span className="sr-only">Loading...</span>
+                        <span className="sr-only">Cargando ...</span>
                       </div>
                     </div>
                   ) : (
@@ -349,6 +331,7 @@ export default function Inventory(){
                           handleClose={handleModal} 
                           disabled = {disablenBtnModal}
                           handleSave = {savePriceGlobal}
+                          categoryName = {`${state.catData_1[0].name} / ${state.catData_2[0].name} / ${state.catData_3[0].name}`}
                         />
                       }
 

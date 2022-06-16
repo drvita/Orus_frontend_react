@@ -1,7 +1,40 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import SetQantityModal from "./SetQantityModal";
+import useStore from "../../../hooks/useStore";
 
 export default function InventoryTableView({ header, body, items }) {
-  
+
+  const [state, setState] = useState({
+    item:{},
+    showModal: false,
+    newQantity: 0,
+  })
+
+  const hookStore = useStore();
+
+  const setQantity = (e)=>{
+    setState({
+      ...state,
+      newQantity: e.target.value,
+    })
+  }
+
+  const saveNewQantity = ()=>{
+    const data = {
+      product_id: state.item.id,
+      branch_default: state.item.branch_default,
+      cantidad: state.newQantity,
+    }
+    hookStore.saveQantity(data).then((data)=>{
+      if(data){
+        console.log("Data devuleta", data);
+      }else{
+        console.error("Error al cambiar la cantidad");
+      }
+    })
+  }
+
   return (
     <div className="table-responsive" style={{height:'100vh'}}>
       <table className="table table-sm table-bordered table-hover">
@@ -35,26 +68,27 @@ export default function InventoryTableView({ header, body, items }) {
                       {items.length ? (
                         items.map((item, index) => {                          
                           return grad === item.grad ? (
-                            <>
+                            <div key={index}>
                               {item.cant_total ? (
                                 <span
+                                  onClick={()=>{
+                                    setState({
+                                      ...state,
+                                      item: item,
+                                      showModal: true,
+                                    })                                                                        
+                                  }}
+                                  style={{cursor:"pointer"}}
                                   title = {item.grad}
                                   key={item.id + index}
-                                  className={
-                                    item.cant_total > 0
-                                      ? "badge badge-success"
-                                      : "badge badge-danger"
+                                  className={                        
+                                    item.cant > 0 ? "badge badge-success" : "badge badge-danger"
                                   }
-                                >                
-                                  <Link
-                                    to={"/almacen/" + item.id}
-                                    className="text-light"
-                                  >
-                                    {item.cant_total}
-                                  </Link>
+                                >   
+                                 {item.cant_total}                                  
                                 </span>
                               ) : null}
-                            </>
+                            </div>
                           ) : null;
                         })
                       ) : (
@@ -70,6 +104,20 @@ export default function InventoryTableView({ header, body, items }) {
           })}
         </tbody>
       </table>
+
+      {state.showModal ? (
+        <SetQantityModal
+         item = {state.item}
+         setCantidad = {setQantity}
+         saveQantity = {saveNewQantity}
+         newQantity = {state.newQantity}
+         handleClose = {()=>setState({
+          ...state,
+          showModal: false,
+         })}
+        />
+      ) : null}
+
     </div>
   );
 }

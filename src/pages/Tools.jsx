@@ -2,7 +2,6 @@ import { useState, useContext } from "react";
 import BranchsList from '../components/Tools/views/Branchs';
 import { AuthContext } from "../context/AuthContext";
 
-
 export default function ToolsComponent(){
 
   const { auth } = useContext(AuthContext);

@@ -6,7 +6,7 @@ export default function Main({ children }) {
   const data = {};
 
   return (
-    <div className="wrapper">
+    <div className="wrapper" >
       <Navtop logOut={() => {}} data={data} page={() => {}} />
       
       <Menu
@@ -21,7 +21,7 @@ export default function Main({ children }) {
         <Breadcrumb />
         <div className="content">
           <div className="container-fluid">
-            <div className="row">
+            <div className="row" style={{minHeight:'100vh'}}>
               <div className="col-lg-12">{children}</div>
             </div>
           </div>

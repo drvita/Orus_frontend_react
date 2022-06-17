@@ -10,6 +10,13 @@ export default function ListItemComponent(props){
     validList: true,
   });
 
+ /*  setState({
+    ...state,
+    itemNew: !state.itemNew,
+    code: "",
+    cant: 1,
+  }); */
+
   const { itemNew, code, cant } = state;
   const { items, session, status = true, noPrice, productCodes, showHideBtns, cancelListProducts } = props;
   const price = !noPrice;
@@ -107,7 +114,7 @@ export default function ListItemComponent(props){
                     : "btn btn-too btn-primary text-bold"
                 }
                 disabled={showHideBtns ? true : false}
-                onClick={(e) => {
+                onClick={(e) => {                
                   setState({
                     ...state,
                     itemNew: !state.itemNew,

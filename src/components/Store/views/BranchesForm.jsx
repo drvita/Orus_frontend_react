@@ -8,8 +8,6 @@ import BranchesFormInputs from "./BranchesFormInputs";
 
 export default function BranchesForm({ branches, storeItemID, defaultBranch }) {
 
-  //console.log("Default branchs receibed", defaultBranch, "-----", typeof defaultBranch);
-
   const configContext = useContext(ConfigContext);
   const configBranches = configContext.data.filter((c)=>c.name === 'branches');
 
@@ -18,8 +16,7 @@ export default function BranchesForm({ branches, storeItemID, defaultBranch }) {
 
       {defaultBranch === 0 ? 
         configBranches.map((branch) => {
-          const currentBranch = branches.filter((i)=> i.branch_id === branch.id )
-          //console.log(currentBranch[0]);
+          const currentBranch = branches.filter((i)=> i.branch_id === branch.id )          
           return (
             <div className="card" key={branch.id}>
               <div className="card-header">
@@ -40,8 +37,7 @@ export default function BranchesForm({ branches, storeItemID, defaultBranch }) {
       :
         configBranches.map((branch) => {
           
-          const currentBranch = branches.filter((i)=> i.branch_id === branch.id );
-          console.log(currentBranch);
+          const currentBranch = branches.filter((i)=> i.branch_id === branch.id );          
 
           if(branch.id === defaultBranch){
             return (

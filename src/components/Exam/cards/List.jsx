@@ -13,7 +13,6 @@ export default function List({ showBottons = false, exams = [] }) {
             allSelect={true}
             exams={exams}
             handleSelectedExam={(examSelect) => {
-              console.log("[DEBUG] examSelect", examSelect);
             }}
           />
         ) : (

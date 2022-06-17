@@ -3,25 +3,22 @@ import{ api, setUrl } from '../utils/url';
 export default function useSales(ctx){
 
     //Functions
-    const getSaleList = async () => {
+    const getSaleList = async (search) => {
         const salesFilters = {
             orderBy:'created_at',
             order:'desc',
-            itemsPage: 100
+            itemsPage: 100,            
         }
-        const url = setUrl('sales', null, salesFilters);
+        if(search){
+          salesFilters.search = search;
+        }
 
-        return await api(url)
+        const url = setUrl('sales', null, salesFilters);
+        return await api(url);
     };
 
     const getSaleById = async (id)=> {
-        /* const saleFilter = {
-            //orderBy:'created_at',
-            //order:'desc',
-            //itemsPage: 25, 
-            search: id,
-        } */
-        const url = setUrl('sales', id);
+        const url = setUrl('sales', id);        
         return await api(url)
     }
 

@@ -100,9 +100,9 @@ export default function IndexSalesComponent(props) {
 
   return (
     <SaleContext.Provider value={{ ...state, set: handleSet }}>
-      <div className="card border border-gray mb-4">
+      <div className="card border border-gray">
         <div className="card-body pb-2 d-print-none">
-          <nav className="row mb-2">
+          <nav className="row">
             <div className="col">
               <CustomerBtnComponent/>
             </div>
@@ -112,7 +112,7 @@ export default function IndexSalesComponent(props) {
             </div>
 
             <div className="col-3">
-              <div className="card-tools d-flex justify-content-around">      
+              <div className="card-tools d-flex justify-content-end mb-3">      
 
                 <ListSalesBtn/>                
 

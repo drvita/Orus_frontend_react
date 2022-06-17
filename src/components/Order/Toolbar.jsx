@@ -9,6 +9,7 @@ export default function Toolbar() {
 
   const handleSetSelectOptions = ({ target }) => {
     const { value, name } = target;
+    //if(name === 'status' || name === 'itemsPage'){}
     orderContext.set({
       ...orderContext,
       options: {
@@ -17,8 +18,6 @@ export default function Toolbar() {
       },
     });
   };
-
-  console.log("[DEBUG] orderContext.panel:", orderContext.panel);
 
   return (
     <div className="row">

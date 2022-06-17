@@ -191,7 +191,7 @@ export default function CategoryListComponent(props){
             </tr>
           </thead>
           <tbody>
-            {!load && category_raiz ? (
+            {category_raiz.length ? (
               <React.Fragment>
                 {category_raiz.map((cat) => {                  
                   return (
@@ -244,8 +244,9 @@ export default function CategoryListComponent(props){
             ) : (
               <tr>
                 <td colSpan="8" className="text-center">
+                  <span className="mr-3">Cargando categorias </span>
                   <div className="spinner-border text-primary" role="status">
-                    <span className="sr-only">Loading...</span>
+                    <span className="sr-only">Cargando ...</span>
                   </div>
                 </td>
               </tr>

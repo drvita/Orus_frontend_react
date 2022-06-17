@@ -118,7 +118,7 @@ const InboxOrderComponent = (props) => {
   useEffect(() => {
     getList();
     // eslint-disable-next-line
-  }, []);
+  }, [options]);
 
   return (
     <Main

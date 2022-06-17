@@ -187,9 +187,7 @@ export default function StoreEntries() {
     // MFPLAR-000075
     store
       .saveItemByList(items)
-      .then((res) => {
-        console.log("[DEBUG] Items save", items, res);
-
+      .then((res) => {        
         window.Swal.fire({
           title: "Almacen",
           text: "Productos almacenados con exito",
@@ -203,12 +201,11 @@ export default function StoreEntries() {
         });
       })
       .catch((err) =>
-        console.log("[DEBUG] Error when save items:", err.message)
+        console.log("Error when save items:", err.message)
       );
   };
 
   useEffect(() => {
-    // console.log("[DEBUG] Items", state.items);
   }, [state.items]);
 
   return (

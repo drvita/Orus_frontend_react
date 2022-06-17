@@ -104,8 +104,6 @@ export default function ReportOrderComponent({ handleChangePanel: panel }) {
     //eslint-disable-next-line
   }, [options]);
 
-  //console.log("[DEBUG] List", list);
-
   return (
     <div className="card">
       <div className="card-header">

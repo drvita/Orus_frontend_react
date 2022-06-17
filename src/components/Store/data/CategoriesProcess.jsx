@@ -82,8 +82,6 @@ export default function CategoriesProcess({
     }
   });
 
-  console.log("[DEBUG] Categories:", state.categories);
-
   return (
     <div>
       {inputCategory.map((list, index) => (

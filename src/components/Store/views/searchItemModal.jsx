@@ -19,6 +19,8 @@ function AddItemModalComponent(props) {
     handleAddItem: _handleAddItem,
     handleCloseModal: _handleCloseModal,
   } = props;
+
+  
   //States
   const [item, setItem] = useState({
       id: 0,

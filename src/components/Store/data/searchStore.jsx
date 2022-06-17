@@ -1,12 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { connect } from "react-redux";
+//import { connect } from "react-redux";
 
 //Hooks
 import useProducts from "../../../hooks/useProducts";
-
-//Actions
-//import { storeActions } from "../../../redux/store/";
 
 function SearchItemsComponent(props) {
 
@@ -14,23 +11,20 @@ function SearchItemsComponent(props) {
 
   // Props and vars
   const {
-      meta,
+      //meta,
       item = { producto: "" },
-      _setList,
+      //_setList,
       handleItemSelect: _handleItemSelect,
-    } = props,
-    perPage = 10;
+    } = props;
+
+    //perPage = 10;
 
 
 
   // States
   const [search, setSearch] = useState(item.producto),
-
-    [timer, setTimer] = useState(""),
-
-    [load, setLoad] = useState(false);
-
-
+  [timer, setTimer] = useState(""),
+  [load, setLoad] = useState(false);
   const [items, setItems] = useState([]);
 
   // Functions
@@ -53,7 +47,7 @@ function SearchItemsComponent(props) {
       if (timer) clearTimeout(timer);
       toTimer = setTimeout(() => {
         hookProducts.getProducts(search).then((data)=>{
-          if(data){
+          if(data){            
               setItems(data.data);
           }
           else{
@@ -65,14 +59,15 @@ function SearchItemsComponent(props) {
       }, 1000);
       setTimer(toTimer);
     }
+
     if (!search.length && items.length) {
       if (timer) clearTimeout(timer);
-      _setList({
+      /* _setList({
         result: {
           list: [],
           metaList: {},
         },
-      });
+      }); */
       setLoad(false);
     }
   }, [search]);
@@ -80,12 +75,12 @@ function SearchItemsComponent(props) {
 
   useEffect(() => {
     return () => {
-      _setList({
+      /* _setList({
         result: {
           list: [],
           metaList: {},
         },
-      });
+      }); */
     };
   }, []);
 
@@ -129,7 +124,7 @@ function SearchItemsComponent(props) {
               .map((product) => {
                 return getItemToShow(product, handleSelect);
               })}
-            {meta.total > perPage && (
+            {/* {meta.total > perPage && (
               <a
                 href="#more"
                 className="list-group-item text-center text-dark text-bold"
@@ -138,7 +133,7 @@ function SearchItemsComponent(props) {
                 <i className="fas fa-info-circle mr-1"></i>
                 Existen mas registros, sea más espesifico
               </a>
-            )}
+            )} */}
           </div>
         </div>
       ) : null}
@@ -146,7 +141,7 @@ function SearchItemsComponent(props) {
   );
 }
 
-const mapStateToProps = ({ storeItem }) => {
+/* const mapStateToProps = ({ storeItem }) => {
     return {
       items: storeItem.list,
       meta: storeItem.metaList,
@@ -154,14 +149,16 @@ const mapStateToProps = ({ storeItem }) => {
     };
   },
   mapActionsToProps = {
-  /*   _getList: storeActions.getListStore,
-    _setList: storeActions.setListStore, */
-  };
+    _getList: storeActions.getListStore,
+    _setList: storeActions.setListStore,
+  }; */
 
-export default connect(
+/* export default connect(
   mapStateToProps,
   mapActionsToProps
-)(SearchItemsComponent);
+)(SearchItemsComponent); */
+
+export default SearchItemsComponent;
 
 function getItemToShow(i, handleSelect) {
   if (i.cant !== i.cant_total) {

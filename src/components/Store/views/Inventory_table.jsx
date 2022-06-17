@@ -24,16 +24,41 @@ export default function InventoryTableView({ header, body, items }) {
     const data = {
       product_id: state.item.id,
       branch_default: state.item.branch_default,
-      cantidad: state.newQantity,
+      cant: state.newQantity,
     }
     hookStore.saveQantity(data).then((data)=>{
       if(data){
-        console.log("Data devuleta", data);
+        setState({
+          ...state,
+          showModal:false,
+        });
+        window.Swal.fire({
+          title: "Inventario",
+          text: "Cantidad asignada correctamente",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: "#007bff",
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        });
+
       }else{
-        console.error("Error al cambiar la cantidad");
+        window.Swal.fire({
+          title: "Inventario",
+          text: "Error al cambiar la cantidad",
+          icon: "error",
+          showCancelButton: false,
+          confirmButtonColor: "#007bff",
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        })
       }
     })
   }
+
+
 
   return (
     <div className="table-responsive" style={{height:'100vh'}}>

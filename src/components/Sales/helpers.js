@@ -48,7 +48,6 @@ const getSession = () => {
 
 
 const getForPay = (items, payments, discount) => {
-  //console.log(items);
 
   let pay = 0, total = 0;
 

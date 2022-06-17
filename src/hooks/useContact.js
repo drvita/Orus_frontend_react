@@ -6,6 +6,7 @@ export default function useContact() {
     if (!options) return null;
 
     const url = setUrl("contacts", null, options);
+    //type, bussiness
 
     return await api(url, "GET")
       .then((response) => {

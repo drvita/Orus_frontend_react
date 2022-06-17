@@ -34,7 +34,6 @@ export default function CardNewContact(props) {
   };
 
   useEffect(() => {
-    console.log("[DEBUG] New contact effec:", nameDefault);
     if (nameDefault) {
       setData({
         ...data,

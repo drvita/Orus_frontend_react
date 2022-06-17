@@ -198,7 +198,6 @@ export default class Cash extends Component {
       },
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
-        console.log("Entrada eliminada");
         window.Swal.fire({
           icon: "success",
           title: "Entrada eliminada con exito",
@@ -278,7 +277,6 @@ export default class Cash extends Component {
         let data = result.value;
 
         if (data.data) {
-          console.log("ATM almacenado");
           window.Swal.fire({
             icon: "success",
             title: "Movimiento almacenado con exito",

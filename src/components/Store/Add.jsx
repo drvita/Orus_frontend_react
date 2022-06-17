@@ -104,7 +104,6 @@ export default function Add(props) {
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
-      console.log(res.branch_default);
       setState({
         ...state,
         id: res.id ? res.id : 0,
@@ -410,8 +409,7 @@ export default function Add(props) {
                     branch_default={state.branch_default}
                     showIcon={false}
                     setBranchId={(target) => {
-                      const { value } = target;
-                      console.log(value);
+                      const { value } = target;                      
                       setState({
                         ...state,
                         branch_default: parseInt(value),

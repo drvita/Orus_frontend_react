@@ -49,8 +49,7 @@ export default function UserAddComponent(props) {
       : true;
 
   function processData(data) {
-    if (data) {
-      // console.log("[DEBUG] Activities:", data.activity);
+    if (data) {      
       setCurrentUser({
         id: data.id,
         role: data.roles[0],
@@ -161,10 +160,6 @@ export default function UserAddComponent(props) {
       });
     }
   }, [id]);
-
-  // useEffect(() => {
-  //   console.log("[DEBUG] activity:", currentUser.data.activities);
-  // }, [send]);
 
   return (
     <div className="row" style={{ height: "100vh" }}>

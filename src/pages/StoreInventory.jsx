@@ -76,7 +76,6 @@ export default function Inventory(){
     hookStore.saveGlobalPrice(globalData).then((data)=>{
       handleModal();
       if(data){
-        console.log("Data de regreso:", data);
         window.Swal.fire({
           title: "Productos",
           text: "Precio asignado correctamente",

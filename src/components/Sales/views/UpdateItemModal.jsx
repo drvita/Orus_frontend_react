@@ -10,8 +10,7 @@ export default function UpdateItemModal({
     price: item.price ?? 0,
   });
   //Functions
-  const handleChangeInput = ({ name, value }) => {
-      console.log("[DEBUG]:", name, value);
+  const handleChangeInput = ({ name, value }) => {      
       setData({
         ...data,
         [name]: parseInt(value),
@@ -29,8 +28,6 @@ export default function UpdateItemModal({
     handleKeyPress = (key) => {
       if (key === "Enter") handleUpdateItem();
     };
-
-  console.log("[DEBUG] Item:", item);
 
   return (
     <div className="modal d-block" tabIndex="-1">

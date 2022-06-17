@@ -9,7 +9,6 @@ import useSales from "../../../hooks/useSale";
 //Libraries
 import moment from "moment";
 
-
 function ListSalesModal({ handleClose: _close, handleSelect: _select,  }) {
 
   const _sales = useSales();
@@ -21,11 +20,11 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select,  }) {
   const sale = Sale();
 
 
-  const items = saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [] 
+  const items = saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [];
 
   const handleSelectSale = (e, saleSelected) => {
       if (e) e.preventDefault();
-
+      
       if(sale.items.length){
           window.Swal.fire({
           title: "Ventas",
@@ -49,44 +48,19 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select,  }) {
 
     handleChangeSearch = ({ value }) => {
       setSearch(value);
-    },
-    
-    handleSearchEnter = (key) => {
-      if (key === "Enter") {
-        searchInDB(search);
-      }
-    },
-
-    searchInDB = (search = "") => {
-      if(search.length === 0){
-        _sales.getSaleById(search).then((data)=>{
-          if(data){
-            console.log("Data", data);
-            setSaleList(data.data);
-          }else{
-            console.error("Error al obtener la venta individual");
-          }
-        })
-
-      }else{
-        _sales.getSaleById(search).then((data)=>{
-          if(data){
-            setSaleList(data.data)
-          }else{
-            console.error("Error al obtener la venta individual");
-          }
-        })
-      }
     };
 
   useEffect(() => {
-    _sales.getSaleList().then((data)=>{
+    _sales.getSaleList(search)
+    .then((data)=>{
       if(data){
         setSaleList(data.data)
       }else{
         console.error("Error al obtener las ventas");
       }
-    });
+    })
+    .catch((error) => console.log(error));
+  
   }, [search]);// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -107,12 +81,12 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select,  }) {
                   className="form-control"
                   placeholder="Buscar por folio o nombre"
                   onChange={({ target }) => handleChangeSearch(target)}
-                  onKeyPress={({ key }) => handleSearchEnter(key)}
+                  /* onKeyPress={({ key }) => handleSearchEnter(key)} */
                 />
                 <button
                   type="button"
                   className="btn btn-default ml-1"
-                  onClick={() => handleSearchEnter("Enter")}
+                  /* onClick={() => handleSearchEnter("Enter")} */
                 >
                   <i className="fas fa-search"></i>
                 </button>

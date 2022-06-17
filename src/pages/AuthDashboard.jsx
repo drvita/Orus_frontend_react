@@ -26,7 +26,7 @@ export default function Dashboard() {
     date_end: state.date_end,
     branch_id: state.branch_id,
   };
-
+  
   const changeAllState = (obj) => {
     if (typeof obj !== "object") {
       console.error("[Orus system] The filters data not is a object:", obj);

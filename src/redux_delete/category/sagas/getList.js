@@ -5,8 +5,7 @@ import { categoryActions } from "../index";
 export default function* handleGetList({ payload: options }) {
   try {
     const url = getUrl("categories", null, options),
-      result = yield call(api, url);
-    //console.log("[DEBUG] saga exams list:", result.data);
+      result = yield call(api, url);    
     yield put(
       categoryActions.setListCategories({
         result: {

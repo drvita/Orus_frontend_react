@@ -1,9 +1,5 @@
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-
-//Actions
-//TODO: redux eliminado
-//import { contactActions } from "../../../redux/contact";
+import { useState,useEffect } from "react";
+import useContact from "../../../hooks/useContact";
 
 export default function LabOrderComponent({
   status = false,
@@ -11,8 +7,27 @@ export default function LabOrderComponent({
   npedidolab = "",
   handleChange: _handleChange,
 }) {
-  const { suppliers } = useSelector((state) => state.contact);
-    //dispatch = useDispatch();
+
+  const optionsDefault = {
+    page: 1,
+    orderby: "created_at",
+    order: "desc",
+    itemsPage: 100,
+    type:1,
+    business:1
+  };
+  const [suppliers, setSuppliers] = useState([]);
+  const hookContacts =  useContact();
+
+  const getSuppliers = ()=>{
+    hookContacts.getContacts(optionsDefault).then((data)=>{
+      if(data){
+        setSuppliers(data.data);
+      }
+    })
+  }
+
+  
   //Functions
   const changeInput = (e) => {
     e.preventDefault();
@@ -25,6 +40,7 @@ export default function LabOrderComponent({
   };
 
   useEffect(() => {
+    getSuppliers();
     //dispatch(contactActions.getListSuppliers(1));
     //eslint-disable-next-line
   }, []);

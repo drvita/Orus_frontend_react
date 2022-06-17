@@ -11,7 +11,7 @@ export default function InfoButton(){
     return(
         <div>
             <button
-                className="btn btn-info"
+                className="btn btn-info ml-2"
                 title="Ver actividad"
                 disabled = {saleContext.id ? false : true}
                 onClick = {()=> setShowModal(true)}                

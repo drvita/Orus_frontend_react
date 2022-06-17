@@ -145,7 +145,6 @@ export default function EditOrderComponent(props){
     //Save
     hookOrder.saveOrder(data).then((data)=>{
       if(data){
-        console.log("[DEBUG]:", data);
       }else{
         console.error("Error al guardar la orden editada");
       }

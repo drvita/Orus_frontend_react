@@ -40,7 +40,6 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
       created_at: date,
       id,
       customer: client,
-      payments
     } = sale;
 
     const saldo = total - abonado;
@@ -48,41 +47,49 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     const { branch } = auth;
 
     const pagado  = sale.discount === 0 ? helpers.getPagado(sale.payments) : helpers.getPagado(sale.payments) + sale.discount; 
-    const paid = sale.total <= pagado ? true : false;
+    const paid = sale.payments.length && sale.total <= pagado ? true : false;
 
     let totalItems = 0;
 
   //Functions
   const handlePrintShow = () => {
-    const returnedSale = _saleHook.saveSale(sale);
-    returnedSale.then((data)=>{
-      if(data.data){
-        sale.set({
-          ...sale,
-          id: data.data.id,
-        })
-        window.Swal.fire({
-          title: "Venta Guardada correctamente",
-          text: `¿Quieres imprimir el ticket de la venta?`,
-          icon: "success",
-          showCancelButton: true,
-          confirmButtonText: "Imprimir",
-          cancelButtonText: "Cancelar",
-          showLoaderOnConfirm: true,
-        }).then(({ dismiss }) => {
-          if (!dismiss) {
-            setTimeout(showPrint, 1000);
-          }else{
-            helpers.confirm("Cerrar la venta actual", () => {
-              sale.set(initialSale);
-            });
-          }
-        });
-      }
-      else{
-        console.error("")
-      }
-    })
+
+    if(sale.id !== 0){
+      setTimeout(showPrint, 1000);
+    }else{
+      const returnedSale = _saleHook.saveSale(sale);
+
+      returnedSale.then((data)=>{
+        if(data.data){
+          sale.set({
+            ...sale,
+            id: data.data.id,
+          })
+          window.Swal.fire({
+            title: "Venta Guardada correctamente",
+            text: `¿Quieres imprimir el ticket de la venta?`,
+            icon: "success",
+            showCancelButton: true,
+            confirmButtonText: "Imprimir",
+            cancelButtonText: "Cancelar",
+            showLoaderOnConfirm: true,
+          }).then(({ dismiss }) => {
+            if (!dismiss) {
+              setTimeout(showPrint, 1000);
+            }else{
+              helpers.confirm("Cerrar la venta actual", () => {
+                sale.set(initialSale);
+              });
+            }
+          });
+        }
+        else{
+          console.error("")
+        }
+      })
+    }
+
+    
   };
 
   const showPrint = ()=>{
@@ -122,7 +129,7 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
     <>
       <button
         className={`btn btn-${btn} ml-2 d-print-none`}
-        disabled={!payments.length}
+        disabled={!paid}
         onClick={handlePrintShow}
       >
         <i className={text ? "fas fa-print mr-1" : "fas fa-print"}></i>

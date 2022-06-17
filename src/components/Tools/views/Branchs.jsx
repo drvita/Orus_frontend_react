@@ -20,10 +20,7 @@ export default function BranchsListComponent() {
 
   const configContext = useContext(ConfigContext);
 
-  console.log(configContext);
-
   const branches = configContext.data.filter((item)=>item.name === 'branches');
-  console.log(branches);
 
   //Actions
   const handleUpdateConfig = ({ id, values, data }) => {

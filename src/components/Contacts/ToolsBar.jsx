@@ -122,8 +122,7 @@ export default function ToolBarContact({
                 href="#back"
                 className="d-flex justify-content-between align-items-center"
                 onClick={(e) => {
-                  e.preventDefault();
-                  console.log("[DEBUG] Tool bar:", context.options?.page);
+                  e.preventDefault();                  
                   history.push("/contactos");
                 }}
               >

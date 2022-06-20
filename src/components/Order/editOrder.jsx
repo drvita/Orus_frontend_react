@@ -27,9 +27,9 @@ export default function EditOrderComponent(props){
       paciente: {},
       session: null,
       lab_id: 0,
-      npedidolab: "",
-      observaciones: "",
-      ncaja: 0,
+      lab_order: "",
+      bi_details: "",
+      bi_box: 0,
       items: [],
       exam: {},
       codes: {},
@@ -47,9 +47,9 @@ export default function EditOrderComponent(props){
     id,
     paciente,
     lab_id,
-    npedidolab,
-    ncaja,
-    observaciones,
+    lab_order,
+    bi_box,
+    bi_details,
     items,
     exam = {},
     status,
@@ -57,13 +57,10 @@ export default function EditOrderComponent(props){
   } = state;
 
 
-  
-
   const idurl = props.match.params;
   const hookOrder = useOrder();
   const authContext = useContext(AuthContext);
   const role = authContext.auth.roles;
-  const currentUser = authContext.auth;
   const history = useHistory();
   const orderContext = useContext(OrderContext);
 
@@ -82,9 +79,9 @@ export default function EditOrderComponent(props){
       contact_id:0,
       session: null,
       lab_id: 0,
-      npedidolab: "",
-      observaciones: "",
-      ncaja: 0,
+      lab_order: "", //npedidolab
+      bi_details: "", //observaciones
+      bi_box: 0, //ncaja
       nota:{},
       items: [],
       exam: {},
@@ -107,49 +104,80 @@ export default function EditOrderComponent(props){
   };
 
   const handleSave = () => {
-    const { npedidolab, ncaja, status, lab_id, observaciones, items, contact_id } = state;
-    const itemsToJson = items.map((item) => {
-        return {
-          ...item,
-          cant: item.cantidad,
-          price: item.precio,
-        };
-      });
+    const { id, lab_order, bi_box, status, lab_id, bi_details } = state;
+    if(status === 0){
+      return null
+    }
 
 
-    let data = {
-      npedidolab,
-      ncaja,
-      status,
-      observaciones,
-      items: itemsToJson,
-      branch_id: currentUser.branch.id,
-      contact_id
-    };
-
-
-    if (lab_id) data.lab_id = lab_id;
-    //Validity    
-    if (status === 1 && !lab_id && toString(npedidolab).length) {
+    if (status === 1 && !lab_id && toString(lab_order).length) {
       window.Swal.fire(
         "Verificación",
-        "Los campos de laboratorio estan vacios",
+        "Verifique los campos de laboratorio",
         "error"
       );
       return false;
+    }else if(status === 1){
+      saveFinalOrder({
+        id,
+        status,
+        lab_id,
+        lab_order,
+      })
     }
-    if (status === 2 && !ncaja) {
+
+    if (status === 2 && !bi_box) {
       window.Swal.fire("Verificación", "El numero de caja esta vacio", "error");
       return false;
+    }else if(status === 2){
+      saveFinalOrder({
+        id,
+        status,
+        bi_box,
+        bi_details,
+      })
     }
-    //Save
+
+
+    if(status >= 3){
+      saveFinalOrder({
+        id, 
+        status,
+      })
+    }
+  };
+
+
+  const saveFinalOrder = (data)=>{
     hookOrder.saveOrder(data).then((data)=>{
       if(data){
+        window.Swal.fire({
+          title: 'Estado guardado correctamente',
+          icon: 'success',
+          showCancelButton: false,
+          showConfirmButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Eliminar',
+        });
+        orderContext.set({
+          ...orderContext,
+          panel:'inbox',
+        });
+        history.push('/pedidos');
       }else{
-        console.error("Error al guardar la orden editada");
+        window.Swal.fire({
+          title: 'Error al actualizar el estado',
+          icon: 'error',
+          showCancelButton: false,
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Eliminar',
+        })
       }
     })
-  };
+  }
 
   const handleDeleteOrder = () => {
     window.Swal.fire({
@@ -173,7 +201,6 @@ export default function EditOrderComponent(props){
           ...orderContext,
           panel: 'inbox',
         })
-
       }
     })
   };
@@ -190,14 +217,15 @@ export default function EditOrderComponent(props){
     hookOrder.getOrder(idurl).then((data)=>{
       if(data){
         let dataReceibed = data.data;
+        console.log(dataReceibed);
         setState({
           id: dataReceibed.id ?? 0,
           paciente: dataReceibed.paciente ?? {},
           session: dataReceibed.session ?? null,
-          lab_id: dataReceibed.lab_id ?? 0,
-          npedidolab: dataReceibed.npedidolab ?? "",
-          observaciones: dataReceibed.observaciones ?? "",
-          ncaja: dataReceibed.ncaja ?? 0,
+          lab_id: dataReceibed.lab ? dataReceibed.lab.id : 0,
+          lab_order: dataReceibed.lab_order ?? "",
+          bi_details: dataReceibed.bi_details ?? "",
+          bi_box: dataReceibed.bi_box ?? 0,
           nota: dataReceibed.nota ?? {},
           items: dataReceibed.items ?? [],
           exam: dataReceibed.exam ?? {},
@@ -414,7 +442,7 @@ export default function EditOrderComponent(props){
                     {status === 1 ? (
                       <LabOrder
                         lab_id={lab_id}
-                        npedidolab={npedidolab}
+                        lab_order={lab_order}
                         status={status}
                         handleChange={handleChangeInput}
                       />
@@ -423,8 +451,8 @@ export default function EditOrderComponent(props){
 
                     {status === 2 ? (
                       <Bicelacion
-                        ncaja={ncaja}
-                        observaciones={observaciones}
+                        bi_box={bi_box}
+                        bi_details={bi_details}
                         status={status}
                         handleChange={handleChangeInput}
                       />

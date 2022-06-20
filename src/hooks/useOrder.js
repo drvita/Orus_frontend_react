@@ -14,7 +14,11 @@ export default function useOrder(){
 
     const saveOrder = async (data)=>{
         const method = data.id ? 'PUT' : 'POST';
-        const url = setUrl('orders');
+        if(data.status === 2 && !data.bi_details.length){
+            delete data.bi_details;
+        }    
+        const url = setUrl('orders', data.id);
+        delete data.id;
         return await api(url, method, data);
     }
     

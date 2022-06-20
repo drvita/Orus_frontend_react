@@ -1,7 +1,9 @@
+
+
 export default function BicelacionOrderComponent({
   status = false,
-  ncaja = "",
-  observaciones = "",
+  bi_box = "",
+  bi_details = "",
   handleChange: _handleChange,
 }) {
   const changeInput = (e) => {
@@ -23,9 +25,9 @@ export default function BicelacionOrderComponent({
             type="number"
             className={status > 2 ? "form-control disabled" : "form-control"}
             disabled={status > 2 ? true : false}
-            name="ncaja"
+            name="bi_box"
             min="1"
-            defaultValue={ncaja}
+            defaultValue={bi_box}
             onChange={changeInput}
           />
         </div>
@@ -34,10 +36,10 @@ export default function BicelacionOrderComponent({
         <div className="border border-warning rounded p-2">
           <label>Observaciones</label>
           <textarea
-            name="observaciones"
+            name="bi_details"
             className={status > 2 ? "form-control disabled" : "form-control"}
             disabled={status > 2 ? true : false}
-            defaultValue={observaciones}
+            defaultValue={bi_details}
             onChange={changeInput}
           ></textarea>
         </div>

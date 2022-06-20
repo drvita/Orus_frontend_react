@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SetQantityModal from "./SetQantityModal";
 import useStore from "../../../hooks/useStore";
@@ -26,8 +26,11 @@ export default function InventoryTableView({ header, body, items }) {
       branch_default: state.item.branch_default,
       cant: state.newQantity,
     }
+
+   /*  console.log(data);
+    console.log(state.newQantity); */
     hookStore.saveQantity(data).then((data)=>{
-      if(data){
+      if(data){        
         setState({
           ...state,
           showModal:false,
@@ -58,10 +61,15 @@ export default function InventoryTableView({ header, body, items }) {
     })
   }
 
+  useEffect(()=>{
+    console.log("Prueba de render");
+  },[]);
+
 
 
   return (
     <div className="table-responsive" style={{height:'100vh'}}>
+      -------
       <table className="table table-sm table-bordered table-hover">
         <thead>
           <tr>

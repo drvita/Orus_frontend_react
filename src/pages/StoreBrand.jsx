@@ -182,8 +182,8 @@ export default function BrandsComponent(){
   const { loading } = state;
 
   return (
-    <div className="row" style={{height:'100vh'}}>
-      <div className="col-12">
+    <div className="row" style={{minHeight:'100vh'}}>
+      <div className = {supplier ? "col-lg-6" : "col-lg-12"}>
         <div className="card card-primary card-outline">
           <h5 className="card-title mt-2 ml-2 text-bold">
             Marcas para productos

@@ -142,7 +142,7 @@ export default function useStore() {
     return await api(URL, method, data);
   };
 
-  const saveQantity = async (data)=>{    
+  const saveQantity = async (data)=>{   
     const product_id = data.product_id;
     const url = setUrl(`store/setcant/${product_id}`);
     const method = 'POST';

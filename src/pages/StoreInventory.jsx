@@ -135,6 +135,8 @@ export default function Inventory(){
     hookStore.getItems(filters).then((data)=>{
       if(data){
         const noGraduationData = data.data.filter((item) => item.grad !== '+000000' );
+
+        console.log("[DEBUG] Items api:", noGraduationData);
         setState({
           ...state, 
           items: noGraduationData ? noGraduationData : [],
@@ -316,8 +318,8 @@ export default function Inventory(){
                           </div>
                         </div>
                       </div>
-                      {
-                        modal && <SetPriceModal 
+
+                      {modal && <SetPriceModal 
                           branch = {currentBranch} 
                           currentBranch = {currentBranch}
                           handleChange={(name, value) => {
@@ -331,14 +333,15 @@ export default function Inventory(){
                           disabled = {disablenBtnModal}
                           handleSave = {savePriceGlobal}
                           categoryName = {`${state.catData_1[0].name} / ${state.catData_2[0].name} / ${state.catData_3[0].name}`}
-                        />
-                      }
+                        />}
 
                       <InventoryTableView
                         header={header}
                         body={body}
-                        items={state.items}
+                        itemsProp={state.items}
                       />
+
+
                     </React.Fragment>
                   )}
                 </React.Fragment>

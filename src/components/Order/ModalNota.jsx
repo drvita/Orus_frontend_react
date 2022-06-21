@@ -1,9 +1,20 @@
 import { useHistory } from "react-router-dom";
+import saleHelper from '../Sales/helpers';
 
 
 export default function ModalNota({ handleClose: _close, sale}) {
 
   const history =  useHistory();
+
+  console.log(sale);
+
+  const penddingToPay = () => {
+    //let pendding = saleHelper.getTotal(sale.total, sale.discount) - saleHelper.getPagado(sale.payments);
+    let pendding = saleHelper.getTotal(sale.subtotal, sale.descuento) - sale.payments; 
+    //- sale.payments;
+    return pendding;
+  }
+
 
   return (
       <div className="modal d-block">
@@ -32,9 +43,11 @@ export default function ModalNota({ handleClose: _close, sale}) {
                                                             
                         <div className='col-lg-6 d-flex flex-column justify-content-center align-items-center pt-4'>
                             <h6 className='font-weight-bold'>Abonado:<span className='text-success ml-2 font-weight-normal'>${sale.payments}</span></h6>
-                            <h6 className='font-weight-bold'>Por pagar:<span className='text-danger ml-2 font-weight-normal'>${sale.total - sale.payments - sale.descuento}</span></h6>
+                            {/* <h6 className='font-weight-bold'>Por pagar:<span className='text-danger ml-2 font-weight-normal'>${sale.total - sale.payments - sale.descuento}</span></h6> */}
+                            <h6 className='font-weight-bold'>Por pagar:<span className='text-danger ml-2 font-weight-normal'>${penddingToPay()}</span></h6>
                         </div>
                      </div>
+                     {penddingToPay() === 0 ? <h5 className="text-center bg-success p-1">$ Cuenta pagada</h5> : null}                     
                  </div>                
              ):(
                  <p>No hay un nota para mostrar!!</p>

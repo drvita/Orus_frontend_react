@@ -1,7 +1,30 @@
-function SetQantityModal({item, setCantidad, handleClose, saveQantity, newQantity}) {
+import { useState } from "react";
+import useStore from "../../../hooks/useStore";
+
+function SetQantityModal({item, handleClose, handleUpdateItems}) {
+
+  const [cantidad, setCantidad] = useState(0);
+  const hookStore = useStore();
+
+  const saveQantity = ()=>{
+
+    const data = {
+      product_id: item.id,
+      //branch_default: state.item.branch_default,
+      cant: cantidad,
+    };
+
+    hookStore.saveQantity(data).then((data)=>{
+      if(data){
+        handleClose(data.data);
+      }
+      else{
+        console.error("Error al guardar la cantidad");
+      }
+    })
+  };
 
     return (
-
         <div className="modal d-block" tabIndex="-1">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
@@ -23,7 +46,7 @@ function SetQantityModal({item, setCantidad, handleClose, saveQantity, newQantit
                         defaultValue={0} 
                         className="form-control" 
                         placeholder="Cantidad" 
-                        onChange={setCantidad}                        
+                        onChange={(e)=>setCantidad(e.target.value)}                        
                     />
                 </div>                        
             </div>
@@ -34,7 +57,7 @@ function SetQantityModal({item, setCantidad, handleClose, saveQantity, newQantit
                 Cancelar
               </button>
   
-              <button type="button" className="btn btn-success" disabled = { newQantity <= 0 || newQantity === '0' || !newQantity ? true : false} onClick={saveQantity}>
+              <button type="button" className="btn btn-success" disabled = { cantidad <= 0 || cantidad === '0' || !cantidad ? true : false} onClick={saveQantity}>
                 Asignar
               </button>
             </div>

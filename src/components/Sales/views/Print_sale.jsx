@@ -13,6 +13,7 @@ import helpers from '../helpers';
 import moment from "moment";
 
 export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {
+  
   const sale = Sale();
   const _saleHook = useSale();
   const {auth} = useContext(AuthContext);

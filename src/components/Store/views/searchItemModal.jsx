@@ -81,6 +81,7 @@ function AddItemModalComponent(props) {
 
 
     handleChangeItem = (key, value) => {
+      console.log(key, value);
       setItem({
         ...item,
         [key]: key === "descripcion" ? value : parseInt(value),
@@ -127,11 +128,11 @@ function AddItemModalComponent(props) {
                       type="number"
                       className="form-control"
                       placeholder="Cantidad"
-                      value={item.cant}
+                      defaultValue={item.cant}
                       min="0"
                       max="100"
                       onChange={({ target }) =>
-                        handleChangeItem("cantidad", target.value)
+                        handleChangeItem("cant", target.value)
                       }
                     />
                   </div>

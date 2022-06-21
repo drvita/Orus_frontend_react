@@ -19,6 +19,7 @@ import Items from "./views/listItemsOrder";
 import helper from "./helpers";
 import PaymentModal from "./views/PaymentModal";
 import DiscountModal from "./views/DiscountModal";
+import PrintSaleComponent from "./views/PrintSale";
 
 export default function AsistentComponent(props){
   const [state, setState] = useState({
@@ -40,9 +41,10 @@ export default function AsistentComponent(props){
       total:0,
       discount:0, 
       payments:[],
-    }
+    },
+    isSalePayed: false,
+    saleReturned:{},
   });
-
 
 
   const orderContext = useContext(OrderContext);
@@ -231,16 +233,20 @@ export default function AsistentComponent(props){
 
     orderHook.saveOrder(data).then((data)=>{
       if(data){
+        console.log(data.data);
         window.Swal.fire({
           icon: "success",
           title: "Pedido guardado correctamente",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 2500,
         });
-        orderContext.set({
-          ...orderContext,
-          panel: 'inbox',
+
+        setState({
+          ...state,
+          isSalePayed: true,
+          saleReturned: data.data,
         })
+
       }else{
         window.Swal.fire({
           icon: "danger",
@@ -556,7 +562,7 @@ export default function AsistentComponent(props){
                     showModal: true,
                   })
                 }}
-                disabled = {penddingToPay() === 0 ? true : false}
+                disabled = {penddingToPay() === 0 || state.isSalePayed  ? true : false}
                 >
                 <i className="fas fa-money-bill-alt mr-1"></i>
                   Abonar
@@ -587,11 +593,19 @@ export default function AsistentComponent(props){
                   Agregar otro producto
                 </button>
 
-                {state.sale.payments.length ? (
+                {state.sale.payments.length ? state.isSalePayed ? null : (
                   <button className="btn btn-warning ml-3" onClick={handleSave}>
-                    <i className="fas fa-save mr-2"></i>
+                    <i className= "fas fa-save mr-2"></i>                    
                     Guardar venta
                   </button>
+                ) : null}    
+
+
+
+                {state.isSalePayed ? (
+                  <PrintSaleComponent
+                    sale = {state.saleReturned}
+                  />
                 ) : null}                
 
               </div>

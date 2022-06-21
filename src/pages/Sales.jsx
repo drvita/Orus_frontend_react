@@ -12,7 +12,6 @@ import SaleDate from "../components/Sales/views/SaleDate";
 import ShowToPay from "../components/Sales/views/ShowToPay";
 import ShowTotal from "../components/Sales/views/ShowTotal";
 import saleHelper from '../components/Sales/helpers';
-//import InfoModal from "../components/Sales/views/InfoModal";
 import InfoButton from "../components/Sales/views/InfoButton";
 
 //Context

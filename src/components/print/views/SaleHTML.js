@@ -1,157 +1,171 @@
+import moment from "moment";
 export default function HTMLOrderPrint(sale, branch) {
-  const amount = sale.total - sale.payment;
+  console.log(sale, branch);
+  const amount = sale.sale.subtotal - sale.sale.payments;
+  console.log(amount);
+  
 
-  return `<div
-    class="w-100 fixed-top bg-white"
-    style={{minHeight:'100vh'}}
-  >
-    <div class="row">
-      <div class="col">
-        <div class="card m-0">
-          <div class="card-body">
-            <h4
-            class="text-right"
-              style={{ fontSize: 28, fontFamily: "sans-serif" }}
-            >
+  return `
+  <div class="bg-dark">
+    <div>
+      <div>
+        <div>
+
+          <div>
+
+            <h4 style="font-size: 28; font-family:sans-serif>
               <i>
-                ${sale.id ? "Pedido" : "Nota"}:
-                <strong>${sale.id}</strong>
+                ${sale.sale.id ? "Pedido" : "Nota"}:
+                <strong>
+                  ${sale.sale.id}
+                </strong>
               </i>
             </h4>
-            <h6
-            class="text-right mb-2"
-              style={{ fontSize: 18, fontFamily: "sans-serif" }}
-            >
-              <strong>{moment(${sale.date}).format("LL")}</strong>
+            
+
+            <h6 style="font-size: 18; font-family: sans-serif">
+              <strong>22/JUNIO/22</strong>
             </h6>
-            <h2
-            class="text-center"
-              style={{ fontSize: 54, fontFamily: "sans-serif" }}
-            >
+
+            <h2 style="font-size: 54; font-family: sans-serif">
               <center>
                 <strong>Óptica Madero</strong>
               </center>
             </h2>
+
             <h4
             class="text-center mb-4"
-              style={{ fontSize: 22, fontFamily: "sans-serif" }}
+              style="font-size: 22; font-family: sans-serif"
             >
               <em>
                 Julio Cesar Cardenas Martinez
                 <br />
-                <span class="text-capitalize">
+                <span>
                   sucursal: ${branch.name}
                 </span>
                 <br />
+                //Telefono de la sucursal
                 <span>Tel: ${branch.phone}</span>
                 <br />
-                <span class="text-capitalize">${branch.address}</span>
+                <span>${branch.address}</span>
               </em>
             </h4>
-            <h4
-            class="text-uppercase text-center mb-1"
-              style={{ fontSize: 20, fontFamily: "sans-serif" }}
-            >
-              ${sale.customer?.name ? sale.customer.name : "Venta de mostrador"}
+            <h4 style="font-size: 20; font-family: sans-serif; text-align: center">
+              ${sale.paciente?.name ? sale.paciente.name : "Venta de mostrador"}
               <br />
               <strong>
-                <em style={{ fontSize: 24 }}>
-                  {client && client.telefonos
-                    ? sale.customer.telefonos.t_movil
-                      ? sale.customer.telefonos.t_movil
-                      : sale.customer.telefonos.t_casa
-                      ? sale.customer.telefonos.t_casa
-                      : sale.customer.telefonos.t_oficina
+                <em style="font-size: 24">
+                  ${sale.paciente && sale.paciente.phones.lenght
+                    ? sale.paciente.phones.t_movil
+                      ? sale.paciente.phones.t_movil
+                      : sale.paciente.phones.t_casa
+                      ? sale.paciente.phones.t_casa
+                      : sale.paciente.phones.t_oficina
                     : "--"}
                 </em>
               </strong>
             </h4>
           </div>
+
+
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col text-center">
-        <h2 style={{ fontSize: 36, fontFamily: "sans-serif" }}>
+
+
+
+    <div>
+      <div>
+        <h2 style= "font-size: 36; font-family:sans-serif">
           <strong>Pedido</strong>
         </h2>
       </div>
     </div>
-    <div class="row">
-      <div class="col">
-        <table class="table">
-          <thead>
-            <tr>
-              <th style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+
+
+
+    <div>
+      <div>
+
+        <table class="table" style = "width:100%;">
+
+
+          <thead style = "display:flex; justify-content: space-around">
+            <tr style = "width:100%; display:flex; justify-content: space-around">
+              <th style= "font-size: 26; font-family: sans-serif">
                 Cant
               </th>
-              <th style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+              <th style= "font-size: 26; font-family: sans-serif">
                 Descripcion
               </th>
-              <th style={{ fontSize: 26, fontFamily: "sans-serif" }}>
+              <th style= "font-size: 26; font-family: sans-serif">
                 Total
               </th>
             </tr>
           </thead>
+          
           <tbody>
-            ${sale.items?.map((item, index) => {
-              const total = parseFloat(item.cant * item.price);
+          ${sale.items.map((item, index) => {
+            return (
+              `
+              <tr key=${index} style = "display:flex; justify-content:space-around">
+                <td style = "font-size: 22; font-family: sans-serif">
+                  ${item.cant}
+                </td>
+                <td style = "font-size: 22; font-family: sans-serif">
+                  ${item.name}
+                </td>
+                <td
+                  class="text-right"
+                  style = "font-size: 22; font-family: sans-serif"
+                >                    
+                  ${item.cant * item.price}
+                </td>
+              </tr>
+              `
+            );
+          })}
+        </tbody>
 
-              return (
-                <tr key={index} class="text-capitalize">
-                  <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
-                    {item.cant}
-                  </td>
-                  <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
-                    {item.name}
-                  </td>
-                  <td
-                    class="text-right"
-                    style={{ fontSize: 24, fontFamily: "sans-serif" }}
-                  >
-                    {total}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td class="text-right" colSpan="3">
-                ${
-                  sale.descuento ? (
-                    <>
-                      <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                        Subtotal: <label>$ {sale.subtotal}</label>
-                      </h4>
-                      <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                        Descuento: <label>$ {sale.descuento}</label>
-                      </h4>
-                    </>
-                  ) : null
-                }
-                <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                  Total: <label>$ ${sale.total}</label>
-                </h4>
-                {payments ? (
-                  <>
-                    <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                      Abonado: <label>$ ${sale.payment}</label>
+
+          <tfoot style="display:flex; align-self:flex-end">
+            <tr style = "width:100%; display:flex; justify-content: flex-end">
+              <td style="width:100%">
+                ${sale.sale.descuento !== 0 ? (
+                  `<div style = "width:100%">
+                    <h4 style= "font-size: 20; font-family: sans-serif; text-align: right">
+                      Subtotal: <label>${sale.sale.subtotal}</label>
                     </h4>
-                    ${
-                      amount ? (
-                        <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Saldo: <label>$ ${amount}</label>
-                        </h4>
+                    <h4 style= "font-size: 20; font-family: sans-serif; text-align: right">
+                      Descuento: <label>${sale.sale.descuento}</label>
+                    </h4>
+                  </div>`                    
+                  ) : `<span></span>` 
+                }
+                <h4 style= "font-size:20; width:100%; font-family: sans-serif; text-align: right">
+                  Total: <label>$ ${sale.sale.total}</label>
+                </h4>
+
+                ${sale.sale.payments ? (
+                  `
+                  <div style = "width:100%;">
+                    <h4 style= "font-size: 20; font-family: sans-serif; text-align: right">
+                      Abonado: <label>$ ${sale.sale.payments}</label>
+                    </h4>
+                    ${amount ? (
+                      `<h4 style= "font-size: 20; font-family: sans-serif; text-align: right">
+                        Saldo: <label>$ ${amount}</label>
+                      </h4>`                                              
                       ) : (
-                        <div class="text-center d-block w-100 my-3">
-                          <h3 class="text-muted text-bold">
+                        `<div style="text-align:center; width: 100%">
+                          <h3 style="font-weight:bold">
                             ::: Cuenta Pagada :::
                           </h3>
-                        </div>
+                        </div>`                                                
                       )
                     }
-                  </>
+                  </div>
+                  `                  
                 ) : null}
               </td>
             </tr>
@@ -160,7 +174,7 @@ export default function HTMLOrderPrint(sale, branch) {
       </div>
     </div>
     <div class="text-justify text-lg">
-      <ul class="d-block" style={{ fontFamily: "sans-serif" }}>
+      <ul class="d-block" style="font-family:sans-serif">
         <li>
           Armazones usados, viejos y/o resecos son responsabilidad del
           cliente
@@ -170,5 +184,10 @@ export default function HTMLOrderPrint(sale, branch) {
         </li>
       </ul>
     </div>
-  </div>`;
+    <div style = "position: absolute; width:80%; height: 12%; display:flex; justify-content: flex-end; align-items: center">
+      <button style="width:25%; background-color: #3DC225; border:none; margin-right:3%; padding: 3%"; border-radius:5px; color:#FFFFFF; font-size:5%">Imprimir</button>
+      <button style="width:25%; background-color: #DF1717; border:none; padding: 3%"; border-radius:5px; color:#FFFFFF; font-size:5%">Cancelar</button>
+    </div>
+  </div>
+  `;
 }

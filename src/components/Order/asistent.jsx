@@ -226,31 +226,23 @@ export default function AsistentComponent(props) {
 
     if (exam_id) data.exam_id = parseInt(exam_id);
 
-    orderHook.saveOrder(data).then((data) => {
-      if (data) {
-        console.log(data.data);
-        window.Swal.fire({
-          icon: "success",
-          title: "Pedido guardado correctamente",
-          showConfirmButton: false,
-          timer: 2500,
-        });
+    console.log(sale.payments.length);
 
-        setState({
-          ...state,
-          isSalePayed: true,
-          saleReturned: data.data,
-          print: true,
-        });
-      } else {
-        window.Swal.fire({
-          icon: "danger",
-          title: "Error al guardar el pedido",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-    });
+    {!sale.payments.length ? (
+      window.Swal.fire({
+        icon: "question",
+        title: "¿Desea guardar el pedido sin ningun abono?",
+        showConfirmButton: true,
+        confirmButtonText:'Guardar',
+        showCancelButton:true,
+        cancelButttonText:'Cancelar'
+      }).then(({ dismiss }) => {
+        if (!dismiss) {
+          console.log("Guardado sin abonos");
+          executeHook(data);
+        }
+      })
+    ) : executeHook(data)}
   };
 
   const handleChangeInput = (key, value) => {
@@ -293,6 +285,40 @@ export default function AsistentComponent(props) {
     const { _getCategory } = this.props;
     _getCategory({ id: cat_id });
   };
+
+  const executeHook = (data)=>{
+    orderHook.saveOrder(data).then((data) => {
+      if (data) {
+        console.log("Data devuelta al guardar pedido",data.data);
+        window.Swal.fire({
+          icon: "success",
+          title: "Pedido guardado correctamente",
+          showConfirmButton: false,
+          timer: 2500,
+        }).then(({ dismiss }) => {
+          if (dismiss) {
+            setState({
+              ...state,
+              isSalePayed: true,
+              saleReturned: data.data,
+              print: true,
+            });
+          }
+        });
+      } else {
+        window.Swal.fire({
+          icon: "danger",
+          title: "Error al guardar el pedido",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  }
+
+
+
+
 
   return (
     <div className="mainAssitentComponent">
@@ -659,18 +685,6 @@ export default function AsistentComponent(props) {
                   Aplicar un descuento
                 </button>
 
-                <button
-                  className="btn btn-secondary mr-4"
-                  disabled={
-                    state.sale.payments.length || state.sale.discount
-                      ? true
-                      : false
-                  }
-                  onClick={handleSave}
-                >
-                  <i className="fas fa-ban mr-1"></i>
-                  Sin abono inicial
-                </button>
 
                 <button
                   className="btn btn btn-outline-info"
@@ -690,17 +704,15 @@ export default function AsistentComponent(props) {
                   Agregar otro producto
                 </button>
 
-                {state.sale.payments.length ? (
-                  state.isSalePayed ? null : (
-                    <button
-                      className="btn btn-warning ml-3"
-                      onClick={handleSave}
-                    >
-                      <i className="fas fa-save mr-2"></i>
-                      Guardar venta
-                    </button>
-                  )
-                ) : null}
+                <button
+                  className="btn btn-warning ml-3"
+                  onClick={handleSave}
+                >
+                    <i className="fas fa-save mr-2"></i>
+                    Guardar venta
+                </button>
+
+
               </div>
             </div>
           </div>

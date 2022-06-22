@@ -36,15 +36,13 @@ export default function PrintSaleComponent(props) {
 
 function getPage(data) {
   const card = HTMLOrderPrint(data ?? {}, {});
-  const body = `<div class="mx-auto" style="width:300px">${card}</div>`;
+  const body = `<div class="mx-auto" style="width:380px, background-color:red">${card}</div>`;
 
   return `<html>
         <head>
-            <title>Print order</title>
-            <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
-            <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+            <title>Pedido # ${data.id}</title>            
         </head>
-        <body>
+        <body style="display:flex; justify-content: center; align-items:center">
             ${body}
         </body>
     </html>`;

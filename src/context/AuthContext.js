@@ -93,6 +93,7 @@ export default function useUser({ children }) {
         })
         .catch((err) => console.error("[Server] When close session:", err));
     },
+
     getCurrentUser = async () => {
       return await api("user")
         .then((data) => data.data)
@@ -107,10 +108,8 @@ export default function useUser({ children }) {
 
               history.push("/login");
             }
-
             return;
           }
-
           console.log("[Orus System] Responses:", err);
         });
     },

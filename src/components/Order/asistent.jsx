@@ -202,7 +202,7 @@ export default function AsistentComponent(props) {
         title: "Verificacion",
         text: "No hay productos para procesar en un pedido",
         icon: "warning",
-        timer:3000
+        timer: 3000,
       });
       return false;
     }
@@ -298,17 +298,15 @@ export default function AsistentComponent(props) {
   };
 
   const executeHook = (data) => {
-    console.log("Data a enviar", data);
     orderHook.saveOrder(data).then(({ data }) => {
       if (data) {
-        console.log("Data devuela despues de guardar:", data);
         window.Swal.fire({
           icon: "success",
           title: "Pedido guardado correctamente",
           showConfirmButton: false,
           timer: 3000,
-        }).then(({dismiss})=>{
-          if(dismiss){
+        }).then(({ dismiss }) => {
+          if (dismiss) {
             setState({
               ...state,
               id: data.id,
@@ -322,14 +320,13 @@ export default function AsistentComponent(props) {
               print: true,
             });
           }
-        })
-        
+        });
       } else {
         window.Swal.fire({
           icon: "danger",
           title: "Error al guardar el pedido",
           showConfirmButton: true,
-          timer:3000
+          timer: 3000,
         });
       }
     });
@@ -341,9 +338,7 @@ export default function AsistentComponent(props) {
     });
   };
 
-  useEffect(() => {
-
-  }, [state]);
+  useEffect(() => {}, [state]);
 
   return (
     <div className="mainAssitentComponent">
@@ -703,7 +698,11 @@ export default function AsistentComponent(props) {
                       showModal: true,
                     });
                   }}
-                  disabled={penddingToPay() === 0 || state.id || !state.listReady ? true : false}
+                  disabled={
+                    penddingToPay() === 0 || state.id || !state.listReady
+                      ? true
+                      : false
+                  }
                 >
                   <i className="fas fa-money-bill-alt mr-1"></i>
                   Abonar
@@ -711,7 +710,13 @@ export default function AsistentComponent(props) {
 
                 <button
                   className="btn btn-primary mr-4"
-                  disabled = {state.listReady ? state.sale.discount || state.id ? true : false : true}
+                  disabled={
+                    state.listReady
+                      ? state.sale.discount || state.id
+                        ? true
+                        : false
+                      : true
+                  }
                   //disabled={state.sale.discount ? true : false}
                   onClick={() => {
                     setState({
@@ -727,7 +732,10 @@ export default function AsistentComponent(props) {
                 <button
                   className="btn btn btn-outline-info"
                   disabled={
-                    state.sale.payments.length || state.sale.discount || !state.listReady || state.id
+                    state.sale.payments.length ||
+                    state.sale.discount ||
+                    !state.listReady ||
+                    state.id
                       ? true
                       : false
                   }

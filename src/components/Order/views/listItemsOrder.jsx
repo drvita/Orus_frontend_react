@@ -21,8 +21,6 @@ export default function ListItemComponent(props) {
   } = props;
   const price = !noPrice;
 
-  console.log(items.length);
-
   let total = 0;
 
   useEffect(() => {
@@ -36,12 +34,11 @@ export default function ListItemComponent(props) {
       );
 
       //let finalValid = valid === true && productCodes.length >= 2 ? true : false;
-      
+
       setState({
         ...state,
         validList: valid,
       });
-      
     } else {
       return null;
     }
@@ -295,7 +292,8 @@ export default function ListItemComponent(props) {
             <div className="d-flex justify-content-center">
               <p className="bg-warning w-50 text-center">
                 <i className="fas fa-info-circle mr-1"></i>
-                Debe agregar al menos 2 productos a la lista y al menos 1 con categoria Monofocal o Armazon!
+                Debe agregar al menos 2 productos a la lista y al menos 1 con
+                categoria Monofocal o Armazon!
               </p>
             </div>
           ) : null}
@@ -305,8 +303,10 @@ export default function ListItemComponent(props) {
               <button
                 className="btn btn-secondary mr-3"
                 onClick={cancelListProducts}
-                disabled={items.length === 1 || items.length === 0  ? true : false}
-              >                
+                disabled={
+                  items.length === 1 || items.length === 0 ? true : false
+                }
+              >
                 Limpiar
               </button>
               <button

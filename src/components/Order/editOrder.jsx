@@ -75,7 +75,6 @@ export default function EditOrderComponent(props) {
   const telefonos = Object.values(paciente.phones ?? {}).filter((tel) => tel);
 
   const handleClose = (e) => {
-    
     orderContext.set({
       ...orderContext,
       panel: "inbox",
@@ -193,7 +192,6 @@ export default function EditOrderComponent(props) {
   useEffect(() => {
     hookOrder.getOrder(idurl).then(({ data }) => {
       if (data) {
-        // console.log("[DEBUG] data:", data);
         setState({
           id: data.id ?? 0,
           paciente: data.paciente ?? {},
@@ -298,7 +296,7 @@ export default function EditOrderComponent(props) {
               </div>
 
               <div className="col-lg-6 d-flex flex-column justify-content-center align-items-center">
-                <div className="w-75 d-flex flex-column justify-content-center align-items-center">                  
+                <div className="w-75 d-flex flex-column justify-content-center align-items-center">
                   <div className="btn-group">
                     {state.nota && !state.nota.id ? (
                       <button
@@ -311,7 +309,7 @@ export default function EditOrderComponent(props) {
                       </button>
                     ) : null}
 
-                   {/*  {paciente.telefonos && paciente.telefonos.t_movil ? (
+                    {/*  {paciente.telefonos && paciente.telefonos.t_movil ? (
                       <a
                         href={
                           "https://wa.me/52" +
@@ -421,7 +419,6 @@ export default function EditOrderComponent(props) {
                   <i className="mr-1 fas fa-save ml-2"></i>
                 </button>
               </div>
-              
             </div>
 
             {/*------------------ COMPONENTE DE PEDIDO ------------------*/}

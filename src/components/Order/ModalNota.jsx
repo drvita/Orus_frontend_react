@@ -4,15 +4,16 @@ import saleHelper from '../Sales/helpers';
 
 export default function ModalNota({ handleClose: _close, sale}) {
 
+
   const history =  useHistory();
 
-  console.log(sale);
-
   const penddingToPay = () => {
-    //let pendding = saleHelper.getTotal(sale.total, sale.discount) - saleHelper.getPagado(sale.payments);
-    let pendding = saleHelper.getTotal(sale.subtotal, sale.descuento) - sale.payments; 
-    //- sale.payments;
+    let pendding = saleHelper.getTotal(sale.subtotal, sale.descuento) - saleHelper.getPagado(sale.payments);
     return pendding;
+  }
+
+  const getPagado = ()=>{
+    return saleHelper.getPagado(sale.payments);
   }
 
 
@@ -29,7 +30,7 @@ export default function ModalNota({ handleClose: _close, sale}) {
           </div>
 
           <div className="modal-body p-2">
-             {sale.id ? (                 
+          {sale.id ? (                 
                  <div>
                      <div className='ml-3 font-weight-bold'>
                          <h5 className='border-bottom pb-1 mb-2'>Resumen de la venta <span className='badge badge-success'>#{sale.id}</span></h5>
@@ -42,8 +43,7 @@ export default function ModalNota({ handleClose: _close, sale}) {
                         </div>
                                                             
                         <div className='col-lg-6 d-flex flex-column justify-content-center align-items-center pt-4'>
-                            <h6 className='font-weight-bold'>Abonado:<span className='text-success ml-2 font-weight-normal'>${sale.payments}</span></h6>
-                            {/* <h6 className='font-weight-bold'>Por pagar:<span className='text-danger ml-2 font-weight-normal'>${sale.total - sale.payments - sale.descuento}</span></h6> */}
+                            <h6 className='font-weight-bold'>Abonado:<span className='text-success ml-2 font-weight-normal'>${getPagado()}</span></h6>                          
                             <h6 className='font-weight-bold'>Por pagar:<span className='text-danger ml-2 font-weight-normal'>${penddingToPay()}</span></h6>
                         </div>
                      </div>
@@ -51,7 +51,7 @@ export default function ModalNota({ handleClose: _close, sale}) {
                  </div>                
              ):(
                  <p>No hay un nota para mostrar!!</p>
-             )}
+             )}           
           </div>
 
           <div className="modal-footer">                

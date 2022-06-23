@@ -172,6 +172,7 @@ export default function InboxExams() {
             title: "Error",
             text: "Lo sentimos no existe un examen seleccionado",
             icon: "error",
+            timer:3000,
           });
         }
       }}

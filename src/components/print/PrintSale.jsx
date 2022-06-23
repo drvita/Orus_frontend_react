@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
 import HTMLOrderPrint from "./views/SaleHTML";
-
 import { Auth } from "../../context/AuthContext";
 
 export default function PrintSaleComponent(props) {
@@ -31,7 +30,19 @@ export default function PrintSaleComponent(props) {
     };
   }, []);
 
-  return <div className="load">Loading...</div>;
+  return <div className="load" style={{
+    position:'absolute',
+    width:'100%',
+    height:'100%',
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor: 'rgba(0,0,0,.5)',
+    }}>      
+      <h1 style={{color:'white', marginBottom:'5%'}}>IMPRESION EN CURSO</h1>
+      <i className="fas fa-print fa-6x"></i>      
+  </div>;
 }
 
 function getPage(data, branch) {

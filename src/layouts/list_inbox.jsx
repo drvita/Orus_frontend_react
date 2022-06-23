@@ -53,7 +53,7 @@ const ListInbox = (props) => {
                 onChange={({ target }) => {
                   const { value } = target;
                   setSearch(value);
-                }}
+                }}                                
                 onKeyPress={(e) => {
                   const { key } = e;
                   if (key === "Enter") {
@@ -95,7 +95,7 @@ const ListInbox = (props) => {
           <div className="mailbox-controls">
             <div className="btn-group">
               {props.handleDeleteItem ? (
-
+                
                 <button
                   type="button"
                   className="btn btn-default btn-sm text-danger"

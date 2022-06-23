@@ -124,6 +124,7 @@ export default function InboxContact() {
             title: "Error",
             text: "Lo sentimos no existe un contacto seleccionado",
             icon: "error",
+            timer: 3000,
           });
         }
       }}
@@ -135,6 +136,7 @@ export default function InboxContact() {
             title: "Error",
             text: "Lo sentimos no existe un contacto seleccionado",
             icon: "error",
+            timer:3000
           });
         }
       }}

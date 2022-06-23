@@ -69,6 +69,7 @@ const getSubTotal = (items) => {
 };
 
 const getTotal = (subtotal, discount) => {
+  console.log(subtotal - discount);
   return subtotal - discount;
 };
 
@@ -76,7 +77,6 @@ const getPagado = (payments = []) => {
   if (!payments || !payments.length) {
     return 0;
   }
-
   return payments.reduce((b, p) => b + p.total, 0);
 };
 

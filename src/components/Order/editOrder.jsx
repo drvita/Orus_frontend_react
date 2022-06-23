@@ -75,29 +75,7 @@ export default function EditOrderComponent(props) {
   const telefonos = Object.values(paciente.phones ?? {}).filter((tel) => tel);
 
   const handleClose = (e) => {
-    // setState({
-    //   id: 0,
-    //   paciente: {},
-    //   contact_id: 0,
-    //   session: null,
-    //   lab_id: 0,
-    //   lab_order: "", //npedidolab
-    //   bi_details: "", //observaciones
-    //   bi_box: 0, //ncaja
-    //   nota: {},
-    //   items: [],
-    //   sale: {},
-    //   exam: {},
-    //   codes: {},
-    //   status: 0,
-    //   created: {},
-    //   created_at: null,
-    //   updated: {},
-    //   updated_at: null,
-    //   sale: {},
-    //   activitys: [],
-    // });
-
+    
     orderContext.set({
       ...orderContext,
       panel: "inbox",
@@ -159,6 +137,7 @@ export default function EditOrderComponent(props) {
           confirmButtonColor: "#3085d6",
           cancelButtonColor: "#d33",
           confirmButtonText: "Eliminar",
+          timer: 3000,
         });
         orderContext.set({
           ...orderContext,
@@ -193,7 +172,7 @@ export default function EditOrderComponent(props) {
           icon: "success",
           title: "Orden eliminada correctamente",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 3000,
         });
 
         orderContext.set({
@@ -319,10 +298,7 @@ export default function EditOrderComponent(props) {
               </div>
 
               <div className="col-lg-6 d-flex flex-column justify-content-center align-items-center">
-                <div className="w-75 d-flex flex-column justify-content-center align-items-center">
-                  <h6 className="w-100 d-block font-weight-bold text-center">
-                    Acciones
-                  </h6>
+                <div className="w-75 d-flex flex-column justify-content-center align-items-center">                  
                   <div className="btn-group">
                     {state.nota && !state.nota.id ? (
                       <button
@@ -335,7 +311,7 @@ export default function EditOrderComponent(props) {
                       </button>
                     ) : null}
 
-                    {paciente.telefonos && paciente.telefonos.t_movil ? (
+                   {/*  {paciente.telefonos && paciente.telefonos.t_movil ? (
                       <a
                         href={
                           "https://wa.me/52" +
@@ -348,9 +324,9 @@ export default function EditOrderComponent(props) {
                       >
                         <i className="fas fa-mobile-alt"></i>
                       </a>
-                    ) : null}
+                    ) : null} */}
 
-                    {paciente.email && (
+                    {/* {paciente.email && (
                       <a
                         href={"mailto:" + paciente.email}
                         className="btn btn-default btn-sm"
@@ -360,7 +336,7 @@ export default function EditOrderComponent(props) {
                       >
                         <i className="fas fa-at"></i>
                       </a>
-                    )}
+                    )} */}
                   </div>
                 </div>
 
@@ -376,6 +352,7 @@ export default function EditOrderComponent(props) {
                         : "Sin examen asignado"}
                       <i className="fas fa-eye ml-1"></i>
                     </button>
+
                     <button
                       className="btn btn-primary mr-1"
                       onClick={() => setShowModalNota(true)}
@@ -383,6 +360,7 @@ export default function EditOrderComponent(props) {
                       Ver Nota
                       <i className="fas fa-money-bill ml-1"></i>
                     </button>
+
                     <button
                       className="btn btn-secondary"
                       onClick={() => setState({ ...state, print: true })}
@@ -396,7 +374,7 @@ export default function EditOrderComponent(props) {
             </div>
           </div>
 
-          <div className="row mt-4 mb-2">
+          <div className="row mt-4 mb-4">
             <div className="col-lg-4 col-md-6 col-sm-12 d-print-none">
               {/* ------------------SELECCION DE ESTATUS ------------------ */}
               <h6 className="w-100 d-block font-weight-bold">Estado</h6>
@@ -428,6 +406,22 @@ export default function EditOrderComponent(props) {
                   </div>
                 ) : null}
               </div>
+
+              <div className="mt-3 d-flex justify-content-center">
+                <button
+                  className="btn btn-secondary mr-2"
+                  onClick={(e) => handleClose(e)}
+                >
+                  Cerrar
+                  <i className="mr-1 fas fa-door-open ml-2"></i>
+                </button>
+
+                <button className="btn btn-warning" onClick={handleSave}>
+                  Guardar
+                  <i className="mr-1 fas fa-save ml-2"></i>
+                </button>
+              </div>
+              
             </div>
 
             {/*------------------ COMPONENTE DE PEDIDO ------------------*/}
@@ -498,25 +492,6 @@ export default function EditOrderComponent(props) {
                   ) : null}
                 </div>
               }
-            </div>
-          </div>
-
-          {/* ------------------ BOTONES INFERIORES ------------------ */}
-
-          <div className="btn-group col-lg-12 d-flex justify-content-end p-0">
-            <div className="mt-3">
-              <button
-                className="btn btn-secondary mr-2"
-                onClick={(e) => handleClose(e)}
-              >
-                Cerrar
-                <i className="mr-1 fas fa-ban ml-2"></i>
-              </button>
-
-              <button className="btn btn-warning" onClick={handleSave}>
-                Guardar
-                <i className="mr-1 fas fa-save ml-2"></i>
-              </button>
             </div>
           </div>
 

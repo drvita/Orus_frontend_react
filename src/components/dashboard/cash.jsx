@@ -191,7 +191,7 @@ export default class Cash extends Component {
               window.Swal.fire(
                 "Fallo de conexion",
                 "Verifique la conexion al servidor",
-                "error"
+                "error",
               );
             });
         }
@@ -202,7 +202,7 @@ export default class Cash extends Component {
           icon: "success",
           title: "Entrada eliminada con exito",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 3000,
         }).then((res) => this.getAtms());
       } else if (result && !result.dismiss) {
         console.log("Orus res: ", result);
@@ -281,7 +281,7 @@ export default class Cash extends Component {
             icon: "success",
             title: "Movimiento almacenado con exito",
             showConfirmButton: false,
-            timer: 1500,
+            timer: 3000,
           }).then((res) => this.getAtms());
         } else {
           window.Swal.fire("Error", "al almacenar el movimiento", "error");
@@ -312,6 +312,7 @@ export default class Cash extends Component {
             title: "Error!",
             text: "Ups!\n Hubo un error, intentelo mas tarde",
             icon: "error",
+            timer:3000,
           });
         }
         return res.json();

@@ -137,7 +137,6 @@ export default function HTMLOrderPrint(sale, branch) {
         </li>
       </ul>
     </div>
-
   </div>
   `;
 }

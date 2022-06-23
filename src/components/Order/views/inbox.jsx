@@ -85,7 +85,7 @@ const InboxOrderComponent = (props) => {
           icon: "success",
           title: "Orden eliminada correctamente",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 3000,
         });
 
         orderContext.set({

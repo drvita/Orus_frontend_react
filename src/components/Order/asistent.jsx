@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+/* eslint-disable no-lone-blocks */
+import React, { useState, useContext, useEffect } from "react";
 import moment from "moment";
 
 //Context
@@ -22,6 +23,7 @@ import PrintSaleComponent from "../print/PrintSale";
 
 export default function AsistentComponent(props) {
   const [state, setState] = useState({
+    id: 0,
     contact_id: 0,
     exam_id: null,
     items: [],
@@ -41,8 +43,6 @@ export default function AsistentComponent(props) {
       discount: 0,
       payments: [],
     },
-    isSalePayed: false,
-    saleReturned: {},
     print: false,
   });
 
@@ -187,7 +187,7 @@ export default function AsistentComponent(props) {
 
       return {
         cant: item.cant,
-        price: item.precio,
+        price: item.price,
         subtotal: item.subtotal,
         inStorage: item.inStorage,
         session: session,
@@ -226,23 +226,22 @@ export default function AsistentComponent(props) {
 
     if (exam_id) data.exam_id = parseInt(exam_id);
 
-    console.log(sale.payments.length);
-
-    {!sale.payments.length ? (
+    if (!data.sale.payments?.length) {
       window.Swal.fire({
         icon: "question",
         title: "¿Desea guardar el pedido sin ningun abono?",
         showConfirmButton: true,
-        confirmButtonText:'Guardar',
-        showCancelButton:true,
-        cancelButttonText:'Cancelar'
+        confirmButtonText: "Guardar",
+        showCancelButton: true,
+        cancelButttonText: "Cancelar",
       }).then(({ dismiss }) => {
         if (!dismiss) {
-          console.log("Guardado sin abonos");
           executeHook(data);
         }
-      })
-    ) : executeHook(data)}
+      });
+    } else {
+      executeHook(data);
+    }
   };
 
   const handleChangeInput = (key, value) => {
@@ -286,39 +285,48 @@ export default function AsistentComponent(props) {
     _getCategory({ id: cat_id });
   };
 
-  const executeHook = (data)=>{
-    orderHook.saveOrder(data).then((data) => {
+  const executeHook = (data) => {
+    orderHook.saveOrder(data).then(({ data }) => {
       if (data) {
-        console.log("Data devuelta al guardar pedido",data.data);
+        console.log("[DEBUG] data:", data);
+        setState({
+          ...state,
+          id: data.id,
+          sale: {
+            ...state.sale,
+            ...data.sale,
+            payments: state.sale.payments,
+            paid: data.sale.paid,
+            paciente: data.paciente,
+          },
+          print: true,
+        });
+
         window.Swal.fire({
           icon: "success",
           title: "Pedido guardado correctamente",
           showConfirmButton: false,
-          timer: 2500,
-        }).then(({ dismiss }) => {
-          if (dismiss) {
-            setState({
-              ...state,
-              isSalePayed: true,
-              saleReturned: data.data,
-              print: true,
-            });
-          }
+          timer: 3000,
         });
       } else {
         window.Swal.fire({
           icon: "danger",
           title: "Error al guardar el pedido",
-          showConfirmButton: false,
-          timer: 1500,
+          showConfirmButton: true,
         });
       }
     });
-  }
+  };
+  const handleCloseAssitent = () => {
+    orderContext.set({
+      ...orderContext,
+      panel: "inbox",
+    });
+  };
 
-
-
-
+  useEffect(() => {
+    // console.log("[DEBUG] Sale items:", payment);
+  }, [state]);
 
   return (
     <div className="mainAssitentComponent">
@@ -345,20 +353,6 @@ export default function AsistentComponent(props) {
                 handleContactSelect={handleContactSelect}
                 data={state.data}
               />
-              <div className="d-flex justify-content-end">
-                <button
-                  className="btn btn-secondary mt-2"
-                  onClick={() => {
-                    orderContext.set({
-                      ...orderContext,
-                      panel: "inbox",
-                    });
-                  }}
-                >
-                  Salir
-                  <i className="fas fa-ban ml-2"></i>
-                </button>
-              </div>
             </div>
           ) : (
             <div className="card col-lg-5 mr-5 border border-success">
@@ -581,26 +575,25 @@ export default function AsistentComponent(props) {
 
               <div className="card-body">
                 {state.sale.payments.length ? (
-                  <div>
-                    <div className="col-lg-12">
-                      {state.sale.payments.map((payment, index) => (
-                        <div
-                          className="d-flex justify-content-around align-items-center font-weight-bold mb-2"
-                          id={payment.id}
-                          key={index}
-                        >
-                          <p className="m-0">
-                            <span className="text-success"></span>
-                            {index + 1}
-                          </p>
-                          <p className="m-0">
-                            <span className="text-success">Abono </span>
-                            {payment.metodoname}
-                          </p>
-                          <p className="m-0">
-                            {moment(Date.now()).format("MMMM DD YYYY")}
-                          </p>
-                          <p className="m-0 text-primary">${payment.total}</p>
+                  <div className="col-lg-12">
+                    {state.sale.payments.map((payment, index) => (
+                      <div className="row" id={payment.id} key={index}>
+                        <div className="col-1">{index + 1}</div>
+                        <div className="col-6 text-uppercase font-weight-bold">
+                          <h6
+                            className={
+                              payment.metodoname === "efectivo"
+                                ? "text-success"
+                                : "text-dark"
+                            }
+                          >
+                            {payment.metodoname}{" "}
+                          </h6>
+                        </div>
+                        <div className="col-3 text-right">
+                          <h6>${payment.total}</h6>
+                        </div>
+                        <div className="col-2 text-right">
                           <button
                             className="btn btn-sm btn-muted"
                             id={payment.id}
@@ -611,8 +604,8 @@ export default function AsistentComponent(props) {
                             <i className="fas fa-trash"></i>
                           </button>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <p className="text-center bg-warning">
@@ -638,91 +631,6 @@ export default function AsistentComponent(props) {
               </div>
             </div>
           </div>
-        )}
-
-        {/* Validacion 5 --- Opciones de pago del pedido*/}
-        {state.listReady && (
-          <div className="card col-lg-10 d-flex align-self-center border border-bottom-primary">
-            <div className="card-header border-primary">
-              <h3 className="card-title">
-                <i className="fas fa-money-bill mr-1"></i>
-                Opciones de pago
-              </h3>
-            </div>
-            <div className="card-body">
-              <div className="">
-                <button
-                  className="btn btn-success mr-4"
-                  onClick={() => {
-                    setState({
-                      ...state,
-                      showModal: true,
-                    });
-                  }}
-                  disabled={
-                    penddingToPay() === 0 || state.isSalePayed ? true : false
-                  }
-                >
-                  <i className="fas fa-money-bill-alt mr-1"></i>
-                  Abonar
-                </button>
-
-                <button
-                  className="btn btn-primary mr-4"
-                  disabled={
-                    state.sale.payments.length || state.sale.discount
-                      ? true
-                      : false
-                  }
-                  onClick={() => {
-                    setState({
-                      ...state,
-                      discountModal: true,
-                    });
-                  }}
-                >
-                  <i className="fas fa-percent mr-1"></i>
-                  Aplicar un descuento
-                </button>
-
-
-                <button
-                  className="btn btn btn-outline-info"
-                  disabled={
-                    state.sale.payments.length || state.sale.discount
-                      ? true
-                      : false
-                  }
-                  onClick={() => {
-                    setState({
-                      ...state,
-                      listReady: false,
-                    });
-                  }}
-                >
-                  <i className="fas fa-plus mr-1"></i>
-                  Agregar otro producto
-                </button>
-
-                <button
-                  className="btn btn-warning ml-3"
-                  onClick={handleSave}
-                >
-                    <i className="fas fa-save mr-2"></i>
-                    Guardar venta
-                </button>
-
-
-              </div>
-            </div>
-          </div>
-        )}
-
-        {state.print && (
-          <PrintSaleComponent
-            data={state.saleReturned}
-            setPrint={() => setState({ ...state, print: false })}
-          />
         )}
 
         {/* Payment Modal validation */}
@@ -754,6 +662,109 @@ export default function AsistentComponent(props) {
             setDiscountProp={setDiscount}
           />
         ) : null}
+
+        {state.print && (
+          <PrintSaleComponent
+            data={{
+              ...state.sale,
+              items: state.items,
+              order_id: state.id,
+            }}
+            setPrint={() => setState({ ...state, print: false })}
+          />
+        )}
+
+        <div className="card col-lg-10 d-flex align-self-center border border-bottom-primary">
+          <div className="card-body text-right">
+            {Boolean(state.items.length) && (
+              <>
+                <button
+                  className="btn btn-success mr-4"
+                  onClick={() => {
+                    setState({
+                      ...state,
+                      showModal: true,
+                    });
+                  }}
+                  disabled={penddingToPay() === 0 || state.id ? true : false}
+                >
+                  <i className="fas fa-money-bill-alt mr-1"></i>
+                  Abonar
+                </button>
+
+                <button
+                  className="btn btn-primary mr-4"
+                  disabled={state.sale.discount ? true : false}
+                  onClick={() => {
+                    setState({
+                      ...state,
+                      discountModal: true,
+                    });
+                  }}
+                >
+                  <i className="fas fa-percent mr-1"></i>
+                  Aplicar un descuento
+                </button>
+
+                <button
+                  className="btn btn btn-outline-info"
+                  disabled={
+                    state.sale.payments.length || state.sale.discount
+                      ? true
+                      : false
+                  }
+                  onClick={() => {
+                    setState({
+                      ...state,
+                      listReady: false,
+                    });
+                  }}
+                >
+                  <i className="fas fa-plus mr-1"></i>
+                  Agregar otro producto
+                </button>
+              </>
+            )}
+
+            <button
+              className="btn btn-warning ml-3"
+              disabled={!state.items.length ? true : false}
+              onClick={handleSave}
+            >
+              <i className="fas fa-save mr-2"></i>
+              Guardar
+            </button>
+
+            <button
+              className="btn btn-secondary ml-3"
+              onClick={() => {
+                if (state.contact_id && !state.id) {
+                  window.Swal.fire({
+                    icon: "question",
+                    title: "¿Realmente desea cerrar esta venta sin GUARDAR?",
+                    showConfirmButton: true,
+                    confirmButtonText: "Sí",
+                    showCancelButton: true,
+                    cancelButttonText: "Cancelar",
+                  }).then(({ dismiss }) => {
+                    if (!dismiss) {
+                      handleCloseAssitent();
+                    }
+                  });
+                } else {
+                  handleCloseAssitent();
+                }
+              }}
+            >
+              <i
+                className={
+                  state.id ? "fas fa-door-open mr-2" : "fas fa-ban mr-2"
+                }
+              ></i>
+              {state.id ? "Cerrar" : "Cancelar"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

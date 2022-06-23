@@ -1,5 +1,5 @@
 const verifyItem = (item) => {
-  if (item.cantidad <= 0) {
+  if (item.cant <= 0) {
     window.Swal.fire({
       title: "Verificacion",
       text: "La cantidad debe de ser un valor valido",
@@ -15,7 +15,7 @@ const verifyItem = (item) => {
     });
     return false;
   }
-  if (!item.precio) {
+  if (!item.price) {
     window.Swal.fire({
       title: "Verificacion",
       text: "El precio no es valido",

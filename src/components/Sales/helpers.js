@@ -13,7 +13,6 @@ const confirm = (text, _make) => {
   });
 };
 
-
 const getMethodName = (status) => {
   switch (status) {
     case 1:
@@ -46,44 +45,40 @@ const getSession = () => {
   );
 };
 
+const getForPay = (items, payments, discount = 0) => {
+  if (!items || !Array.isArray(items) || !items.length) {
+    return 0;
+  }
 
-const getForPay = (items, payments, discount) => {
+  if (!Array.isArray(payments)) {
+    payments = [];
+  }
 
-  let pay = 0, total = 0;
+  const paid = payments.reduce((b, p) => b + p.total, 0);
+  const total = items.reduce((b, p) => b + p.subtotal, 0);
 
-  payments.forEach((payment)=>{
-    pay += payment.total;
-  })
+  return total - paid - discount;
+};
 
-  items.forEach((item)=>{
-    total += item.subtotal;
-  })
-  
-  return total - pay - discount;
-}
+const getSubTotal = (items) => {
+  if (!items || !items.length) {
+    return 0;
+  }
 
-const getSubTotal = (items)=> {
-  let subTotal = 0;
-  items.forEach((item)=>{
-    subTotal += item.subtotal;
-  }) 
+  return items.reduce((b, p) => b + p.subtotal, 0);
+};
 
-  return subTotal;
-}
-
-
-const getTotal = (subtotal, discount)=> {
+const getTotal = (subtotal, discount) => {
   return subtotal - discount;
-}
-
+};
 
 const getPagado = (payments = []) => {
-  let pagado = 0;
-  payments.forEach((payment)=>{
-    pagado += payment.total;
-  })
-  return pagado;
-}
+  if (!payments || !payments.length) {
+    return 0;
+  }
+
+  return payments.reduce((b, p) => b + p.total, 0);
+};
 
 const toExport = {
   confirm,

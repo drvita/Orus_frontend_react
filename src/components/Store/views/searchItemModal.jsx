@@ -8,7 +8,6 @@ import helper from "../helpers";
 import { AuthContext } from "../../../context/AuthContext";
 
 function AddItemModalComponent(props) {
-
   const authContex = useContext(AuthContext);
   const currentUser = authContex.auth.branch.id;
 
@@ -20,13 +19,12 @@ function AddItemModalComponent(props) {
     handleCloseModal: _handleCloseModal,
   } = props;
 
-  
   //States
   const [item, setItem] = useState({
       id: 0,
-      producto: codeDefault,
+      name: codeDefault,
       cant: cantDefault,
-      precio: 0,
+      price: 0,
       out: 0,
       inStorage: 0,
       subtotal: 0,
@@ -34,17 +32,14 @@ function AddItemModalComponent(props) {
       descripcion: "",
       category: 0,
     }),
-
     [showDesc, setShowDesc] = useState(false);
-
-
 
   //Functions
   const _reset = () => {
       setItem({
         id: 0,
-        producto: "",
-        precio: 0,
+        name: "",
+        price: 0,
         out: 0,
         cant: 1,
         inStorage: 0,
@@ -54,21 +49,16 @@ function AddItemModalComponent(props) {
         category: 0,
       });
     },
-
-
-
     close = () => {
       _reset();
       _handleCloseModal();
     },
-
     hanleChangeDataItem = (data) => {
       setItem({
         ...item,
         id: 0,
         name: data.name.toLowerCase(),
-        //producto: data.name.toLowerCase(),
-        precio: parseFloat(data.price),
+        price: parseFloat(data.price),
         out: data.cantidades,
         cant: 1,
         inStorage: 0,
@@ -78,17 +68,12 @@ function AddItemModalComponent(props) {
         category: data.category ? data.category : 0,
       });
     },
-
-
     handleChangeItem = (key, value) => {
-      console.log(key, value);
       setItem({
         ...item,
         [key]: key === "descripcion" ? value : parseInt(value),
       });
     },
-
-
     hanldeSendBack = () => {
       const verify = helper.verifyItem(item);
 
@@ -96,7 +81,7 @@ function AddItemModalComponent(props) {
 
       item.inStorage = item.out >= item.cant ? true : false;
       item.out = item.out >= item.cant ? 0 : item.cant - item.out;
-      item.subtotal = parseFloat(item.cant * item.precio);
+      item.subtotal = parseFloat(item.cant * item.price);
       item.branch_id = currentUser.id;
       _handleAddItem(item);
       close();
@@ -143,9 +128,9 @@ function AddItemModalComponent(props) {
                       className="form-control text-right"
                       placeholder="Precio"
                       min="0"
-                      value={item.precio}
+                      value={item.price ?? ""}
                       onChange={({ target }) =>
-                        handleChangeItem("precio", target.value)
+                        handleChangeItem("price", target.value)
                       }
                     />
                   </div>
@@ -189,9 +174,7 @@ function AddItemModalComponent(props) {
                 type="button"
                 className="btn btn-primary btn-sm text-bold"
                 disabled={
-                  item.store_items_id && item.cant && item.precio
-                    ? false
-                    : true
+                  item.store_items_id && item.cant && item.price ? false : true
                 }
                 onClick={() => hanldeSendBack()}
               >

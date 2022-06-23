@@ -9,39 +9,41 @@ import { OrderContext } from "../../context/OderContext";
 //Hooks
 import useOrder from "../../hooks/useOrder";
 
-//Components  
+//Components
 import LabOrder from "./views/labOrder";
 import Bicelacion from "./views/bicelacionOrder";
 import Items from "./views/listItemsOrder";
 import ExamModal from "./ExamModal";
 import ModalNota from "./ModalNota";
 import Activitys from "../Activitys";
+import PrintSaleComponent from "../print/PrintSale";
 
 //Helper
 import helper from "./helpers";
 
-export default function EditOrderComponent(props){
-
+export default function EditOrderComponent(props) {
   const [state, setState] = useState({
-      id: 0,
-      paciente: {},
-      session: null,
-      lab_id: 0,
-      lab_order: "",
-      bi_details: "",
-      bi_box: 0,
-      items: [],
-      exam: {},
-      codes: {},
-      status: 0,
-      created: {},
-      created_at: null,
-      updated: {},
-      updated_at: null,
+    id: 0,
+    paciente: {},
+    session: null,
+    lab_id: 0,
+    lab_order: "",
+    bi_details: "",
+    bi_box: 0,
+    items: [],
+    sale: {},
+    exam: {},
+    codes: {},
+    status: 0,
+    created: {},
+    created_at: null,
+    updated: {},
+    updated_at: null,
+    print: false,
   });
 
   const [showModal, setShowModal] = useState(false);
-  const [showModalNota, setShowModalNota] =  useState(false);
+  const [showModalNota, setShowModalNota] = useState(false);
 
   const {
     id,
@@ -56,7 +58,6 @@ export default function EditOrderComponent(props){
     created_at,
   } = state;
 
-
   const idurl = props.match.params;
   const hookOrder = useOrder();
   const authContext = useContext(AuthContext);
@@ -64,40 +65,42 @@ export default function EditOrderComponent(props){
   const history = useHistory();
   const orderContext = useContext(OrderContext);
 
-
   const { loading: LOADING } = props;
 
-  const fNacimiento = new Date(paciente.f_nacimiento ?? "") < new Date() ? moment(paciente.f_nacimiento) : null;
+  const fNacimiento =
+    new Date(paciente.f_nacimiento ?? "") < new Date()
+      ? moment(paciente.f_nacimiento)
+      : null;
 
-  const telefonos = Object.values(paciente.phones ?? {}).filter((tel) => tel !== "");
-  
-  
+  const telefonos = Object.values(paciente.phones ?? {}).filter((tel) => tel);
+
   const handleClose = (e) => {
-    setState({
-      id: 0,
-      paciente: {},
-      contact_id:0,
-      session: null,
-      lab_id: 0,
-      lab_order: "", //npedidolab
-      bi_details: "", //observaciones
-      bi_box: 0, //ncaja
-      nota:{},
-      items: [],
-      exam: {},
-      codes: {},
-      status: 0,
-      created: {},
-      created_at: null,
-      updated: {},
-      updated_at: null,
-      sale:{},
-      activitys: [],
-    });
+    // setState({
+    //   id: 0,
+    //   paciente: {},
+    //   contact_id: 0,
+    //   session: null,
+    //   lab_id: 0,
+    //   lab_order: "", //npedidolab
+    //   bi_details: "", //observaciones
+    //   bi_box: 0, //ncaja
+    //   nota: {},
+    //   items: [],
+    //   sale: {},
+    //   exam: {},
+    //   codes: {},
+    //   status: 0,
+    //   created: {},
+    //   created_at: null,
+    //   updated: {},
+    //   updated_at: null,
+    //   sale: {},
+    //   activitys: [],
+    // });
 
     orderContext.set({
       ...orderContext,
-      panel:'inbox',
+      panel: "inbox",
     });
 
     history.push("/pedidos");
@@ -105,10 +108,9 @@ export default function EditOrderComponent(props){
 
   const handleSave = () => {
     const { id, lab_order, bi_box, status, lab_id, bi_details } = state;
-    if(status === 0){
-      return null
+    if (status === 0) {
+      return null;
     }
-
 
     if (status === 1 && !lab_id && toString(lab_order).length) {
       window.Swal.fire(
@@ -117,78 +119,75 @@ export default function EditOrderComponent(props){
         "error"
       );
       return false;
-    }else if(status === 1){
+    } else if (status === 1) {
       saveFinalOrder({
         id,
         status,
         lab_id,
         lab_order,
-      })
+      });
     }
 
     if (status === 2 && !bi_box) {
       window.Swal.fire("Verificación", "El numero de caja esta vacio", "error");
       return false;
-    }else if(status === 2){
+    } else if (status === 2) {
       saveFinalOrder({
         id,
         status,
         bi_box,
         bi_details,
-      })
+      });
     }
 
-
-    if(status >= 3){
+    if (status >= 3) {
       saveFinalOrder({
-        id, 
+        id,
         status,
-      })
+      });
     }
   };
 
-
-  const saveFinalOrder = (data)=>{
-    hookOrder.saveOrder(data).then((data)=>{
-      if(data){
+  const saveFinalOrder = (data) => {
+    hookOrder.saveOrder(data).then((data) => {
+      if (data) {
         window.Swal.fire({
-          title: 'Estado guardado correctamente',
-          icon: 'success',
+          title: "Estado guardado correctamente",
+          icon: "success",
           showCancelButton: false,
           showConfirmButton: false,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Eliminar',
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Eliminar",
         });
         orderContext.set({
           ...orderContext,
-          panel:'inbox',
+          panel: "inbox",
         });
-        history.push('/pedidos');
-      }else{
+        history.push("/pedidos");
+      } else {
         window.Swal.fire({
-          title: 'Error al actualizar el estado',
-          icon: 'error',
+          title: "Error al actualizar el estado",
+          icon: "error",
           showCancelButton: false,
-          showCancelButton: false,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Eliminar',
-        })
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Eliminar",
+        });
       }
-    })
-  }
+    });
+  };
 
   const handleDeleteOrder = () => {
     window.Swal.fire({
-      title: '¿Estás seguro de eliminar la orden?',
-      icon: 'question',
+      title: "¿Estás seguro de eliminar la orden?",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Eliminar',
-    }).then(({dismiss})=>{
-      if(!dismiss){
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
         hookOrder.deleteOrder(id);
         window.Swal.fire({
           icon: "success",
@@ -199,58 +198,57 @@ export default function EditOrderComponent(props){
 
         orderContext.set({
           ...orderContext,
-          panel: 'inbox',
-        })
+          panel: "inbox",
+        });
       }
-    })
+    });
   };
-
 
   const handleChangeInput = (key, value) => {
     setState({
       ...state,
-      [key]: value
-    })
+      [key]: value,
+    });
   };
 
-  useEffect(()=>{
-    hookOrder.getOrder(idurl).then((data)=>{
-      if(data){
-        let dataReceibed = data.data;
-        console.log(dataReceibed);
+  useEffect(() => {
+    hookOrder.getOrder(idurl).then(({ data }) => {
+      if (data) {
+        // console.log("[DEBUG] data:", data);
         setState({
-          id: dataReceibed.id ?? 0,
-          paciente: dataReceibed.paciente ?? {},
-          session: dataReceibed.session ?? null,
-          lab_id: dataReceibed.lab ? dataReceibed.lab.id : 0,
-          lab_order: dataReceibed.lab_order ?? "",
-          bi_details: dataReceibed.bi_details ?? "",
-          bi_box: dataReceibed.bi_box ?? 0,
-          nota: dataReceibed.nota ?? {},
-          items: dataReceibed.items ?? [],
-          exam: dataReceibed.exam ?? {},
-          codes: dataReceibed.codes ?? {},
-          status: dataReceibed.status ?? 0,
-          created: dataReceibed.created ?? {},
-          created_at: dataReceibed.created_at ?? null,
-          updated: dataReceibed.updated ?? {},
-          updated_at: dataReceibed.updated_at ?? null,
-          sale: dataReceibed.sale ?? {},
-          contact_id: dataReceibed.paciente.id,
-          activitys : dataReceibed.activity ?? [],
-        })
-      }else{
+          id: data.id ?? 0,
+          paciente: data.paciente ?? {},
+          session: data.session ?? null,
+          lab_id: data.lab ? data.lab.id : 0,
+          lab_order: data.lab_order ?? "",
+          bi_details: data.bi_details ?? "",
+          bi_box: data.bi_box ?? 0,
+          items: data.items ?? [],
+          exam: data.exam ?? {},
+          codes: data.codes ?? {},
+          status: data.status ?? 0,
+          created: data.created ?? {},
+          created_at: data.created_at ?? null,
+          updated: data.updated ?? {},
+          updated_at: data.updated_at ?? null,
+          sale: {
+            ...(data.sale ?? {}),
+            paciente: data.paciente,
+          },
+          contact_id: data.paciente.id,
+          activitys: data.activity ?? [],
+        });
+      } else {
         console.error("Error al obtener los datos");
       }
     });
-  },[id])// eslint-disable-line react-hooks/exhaustive-deps
-  
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <>
-      { state ? (
+      {state ? (
         <>
           <div className="card card-warning card-outline d-print-none">
-
             <div className="card-header">
               <h3 className="card-title w-100">
                 <i className="mr-1 fas fa-clipboard-list"></i>
@@ -259,134 +257,147 @@ export default function EditOrderComponent(props){
                   #{id}
                 </span>
                 <span className="float-right mailbox-read-time mt-1 text-dark">
-                    Pedido registrado {moment(created_at).fromNow()}
+                  Pedido registrado {moment(created_at).fromNow()}
                 </span>
               </h3>
             </div>
 
             <div className="p-0 card-body d-flex p-3">
-
               <div className="pl-3 col-lg-6">
                 {/* Nombre del paciente */}
                 <h6 className="d-flex mb-2">
                   <i className="mr-2 fas fa-user"></i>
-                  <span className="text-capitalize m-0 text-secondary">{paciente.name}</span>                
+                  <span className="text-capitalize m-0 text-secondary">
+                    {paciente.name}
+                  </span>
                 </h6>
                 {/* Email del paciente */}
                 {paciente.email ? (
                   <h6 className="mb-2">
                     <i className="mr-2 fas fa-envelope"></i>
                     <span className="text-muted">{paciente.email}</span>
-                  </h6>                  
-                ):(
+                  </h6>
+                ) : (
                   <h6 className="mb-2">
                     <i className="mr-2 fas fa-envelope"></i>
                     <span className="text-muted">Email no registrado</span>
-                  </h6>                  
+                  </h6>
                 )}
                 {/* Teléfono del paciente */}
-                  {telefonos.length ? (
-                    <h6 className="mb-2">
-                      <i className="mr-1 fas fa-phone"></i>
-                      <span className="mx-1 text-muted">
+                {telefonos.length ? (
+                  <h6 className="mb-2">
+                    <i className="mr-1 fas fa-phone"></i>
+                    <span className="mx-1 text-muted">
                       {telefonos.map((tel, index) =>
                         index ? `, ${tel}` : `${tel}`
                       )}
                     </span>
-                    </h6>                  
-                  ):(
-                    <h6 className="mb-2">
-                       <i className="mr-1 fas fa-phone"></i>
-                      <span className="text-muted">Telefonos no registrado</span>
-                    </h6>                
-                  )}
+                  </h6>
+                ) : (
+                  <h6 className="mb-2">
+                    <i className="mr-1 fas fa-phone"></i>
+                    <span className="text-muted">Telefonos no registrado</span>
+                  </h6>
+                )}
 
-                  
                 {/*Fecha de nacimiento del paciente*/}
-                {role === "admin" ? (                    
-                    <span className="mailbox-read-time">
-                      Fecha de nacimiento:{" "}
-                      {fNacimiento ? (
-                        <>
-                          {fNacimiento.format("LL")}
-                          <label className="ml-1">
-                            ({moment().diff(fNacimiento, "years")} años)
-                          </label>
-                        </>
-                      ) : (
-                        "NO REGISTRADO"
-                      )}
-                    </span>
-                  ) : null}
+                {role === "admin" ? (
+                  <span className="mailbox-read-time">
+                    Fecha de nacimiento:{" "}
+                    {fNacimiento ? (
+                      <>
+                        {fNacimiento.format("LL")}
+                        <label className="ml-1">
+                          ({moment().diff(fNacimiento, "years")} años)
+                        </label>
+                      </>
+                    ) : (
+                      "NO REGISTRADO"
+                    )}
+                  </span>
+                ) : null}
               </div>
 
               <div className="col-lg-6 d-flex flex-column justify-content-center align-items-center">
-
                 <div className="w-75 d-flex flex-column justify-content-center align-items-center">
-                  <h6 className="w-100 d-block font-weight-bold text-center">Acciones</h6>            
-                  <div className="btn-group">  
-                  {state.nota && !state.nota.id ? (
-                        <button
-                          type="button"
-                          className="btn btn-default btn-sm"
-                          title="Eliminar"
-                          onClick={handleDeleteOrder}
-                        >
-                          <i className="far fa-trash-alt"></i>
-                        </button>
-                      ) : null}
+                  <h6 className="w-100 d-block font-weight-bold text-center">
+                    Acciones
+                  </h6>
+                  <div className="btn-group">
+                    {state.nota && !state.nota.id ? (
+                      <button
+                        type="button"
+                        className="btn btn-default btn-sm"
+                        title="Eliminar"
+                        onClick={handleDeleteOrder}
+                      >
+                        <i className="far fa-trash-alt"></i>
+                      </button>
+                    ) : null}
 
-                      {paciente.telefonos && paciente.telefonos.t_movil ? (
-                        <a
-                          href={
-                            "https://wa.me/52" +
-                            paciente.telefonos.t_movil.replace(" ", "")
-                          }
-                          className="btn btn-default btn-sm"
-                          title="Abrir WhatsApp"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <i className="fas fa-mobile-alt"></i>
-                        </a>
-                      ) : null}
+                    {paciente.telefonos && paciente.telefonos.t_movil ? (
+                      <a
+                        href={
+                          "https://wa.me/52" +
+                          paciente.telefonos.t_movil.replace(" ", "")
+                        }
+                        className="btn btn-default btn-sm"
+                        title="Abrir WhatsApp"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <i className="fas fa-mobile-alt"></i>
+                      </a>
+                    ) : null}
 
-
-                      {paciente.email && (
-                        <a
-                          href={"mailto:" + paciente.email}
-                          className="btn btn-default btn-sm"
-                          title="Enviar e-mail"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <i className="fas fa-at"></i>
-                        </a>
-                      )}
+                    {paciente.email && (
+                      <a
+                        href={"mailto:" + paciente.email}
+                        className="btn btn-default btn-sm"
+                        title="Enviar e-mail"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <i className="fas fa-at"></i>
+                      </a>
+                    )}
                   </div>
                 </div>
 
-
-                <div className="w-75 d-flex flex-column justify-content-center align-items-center">                      
+                <div className="w-75 d-flex flex-column justify-content-center align-items-center">
                   <div className="mt-3 ">
-                    <button className="btn btn-info mr-2" onClick={() => setShowModal(true)} disabled = {Object.keys(exam).length ? false : true}>
-                      {Object.keys(exam).length ? "Ver examen" : "Sin examen asignado"}                      
-                      <i className="fas fa-eye ml-2"></i>
-                    </button>  
-                    <button className="btn btn-primary" onClick={() => setShowModalNota(true)}>
+                    <button
+                      className="btn btn-info mr-1"
+                      onClick={() => setShowModal(true)}
+                      disabled={Object.keys(exam).length ? false : true}
+                    >
+                      {Object.keys(exam).length
+                        ? "Ver examen"
+                        : "Sin examen asignado"}
+                      <i className="fas fa-eye ml-1"></i>
+                    </button>
+                    <button
+                      className="btn btn-primary mr-1"
+                      onClick={() => setShowModalNota(true)}
+                    >
                       Ver Nota
-                      <i className="fas fa-money-bill ml-2"></i>
-                    </button>  
-                  </div>                  
-                </div>                
+                      <i className="fas fa-money-bill ml-1"></i>
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setState({ ...state, print: true })}
+                    >
+                      Imprimir
+                      <i className="fas fa-print ml-1"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>   
+            </div>
           </div>
 
-
-
           <div className="row mt-4 mb-2">
-            <div className="col-lg-4 col-md-6 col-sm-12 d-print-none">              
+            <div className="col-lg-4 col-md-6 col-sm-12 d-print-none">
               {/* ------------------SELECCION DE ESTATUS ------------------ */}
               <h6 className="w-100 d-block font-weight-bold">Estado</h6>
               <div className="card mt-2">
@@ -395,7 +406,11 @@ export default function EditOrderComponent(props){
                     <button
                       key={index}
                       type="button"
-                      className={ status === index ? "btn btn-primary btn-sm text-capitalize text-bold" : "btn btn-default btn-sm text-capitalize"}
+                      className={
+                        status === index
+                          ? "btn btn-primary btn-sm text-capitalize text-bold"
+                          : "btn btn-default btn-sm text-capitalize"
+                      }
                       onClick={(e) => {
                         setState({
                           ...state,
@@ -415,185 +430,126 @@ export default function EditOrderComponent(props){
               </div>
             </div>
 
-
             {/*------------------ COMPONENTE DE PEDIDO ------------------*/}
             <div className="col">
+              {
+                <div className="card h-100 m-0">
+                  <div className="card-header d-print-none">
+                    <h5 className="card-title w-100 d-block mb-2 text-capitalize text-bold">
+                      <i className="fas fa-shield-alt mr-1"></i>
+                      {helper.handleStatusString(status)}
+                    </h5>
+                  </div>
 
-             { <div className="card h-100 m-0">
+                  <div className="card-body p-0">
+                    <div className="p-0 mailbox-read-message m-0">
+                      {status === 0 ? <Items items={items} /> : null}
 
-                <div className="card-header d-print-none">
-                  <h5 className="card-title w-100 d-block mb-2 text-capitalize text-bold">
-                    <i className="fas fa-shield-alt mr-1"></i>
-                    {helper.handleStatusString(status)}
-                  </h5>
-                </div>
+                      {status === 1 ? (
+                        <LabOrder
+                          lab_id={lab_id}
+                          lab_order={lab_order}
+                          status={status}
+                          handleChange={handleChangeInput}
+                        />
+                      ) : null}
 
-                <div className="card-body p-0">
-                  <div className="p-0 mailbox-read-message m-0">
+                      {status === 2 ? (
+                        <Bicelacion
+                          bi_box={bi_box}
+                          bi_details={bi_details}
+                          status={status}
+                          handleChange={handleChangeInput}
+                        />
+                      ) : null}
 
-
-                    {status === 0 ? (
-                      <Items
-                      items={items}                                                                                   
-                    />                 
-                    ) : null}
-
-
-                    {status === 1 ? (
-                      <LabOrder
-                        lab_id={lab_id}
-                        lab_order={lab_order}
-                        status={status}
-                        handleChange={handleChangeInput}
-                      />
-                    ) : null}
-
-
-                    {status === 2 ? (
-                      <Bicelacion
-                        bi_box={bi_box}
-                        bi_details={bi_details}
-                        status={status}
-                        handleChange={handleChangeInput}
-                      />
-                    ) : null}
-
-
-                    {status >= 3 ? (
-                      <div className="px-2">
-                        <div className="my-2 border rounded card border-warning d-print-none">
-                          <div className="card-body">
-                            <h5 className="card-title">
-                              Estado de la entrega
-                            </h5>
-                            <div className="ml-1 icheck-success d-inline">
-                              <input
-                                type="checkbox"
-                                checked={status === 3 ? false : true}
-                                id="checkboxSuccess1"
-                                onChange={(e) =>
-                                  handleChangeInput(
-                                    "status",
-                                    status === 3 ? 4 : 3
-                                  )
-                                }
-                              />
-                              <label htmlFor="checkboxSuccess1"></label>
+                      {status >= 3 ? (
+                        <div className="px-2">
+                          <div className="my-2 border rounded card border-warning d-print-none">
+                            <div className="card-body">
+                              <h5 className="card-title">
+                                Estado de la entrega
+                              </h5>
+                              <div className="ml-1 icheck-success d-inline">
+                                <input
+                                  type="checkbox"
+                                  checked={status === 3 ? false : true}
+                                  id="checkboxSuccess1"
+                                  onChange={(e) =>
+                                    handleChangeInput(
+                                      "status",
+                                      status === 3 ? 4 : 3
+                                    )
+                                  }
+                                />
+                                <label htmlFor="checkboxSuccess1"></label>
+                              </div>
                             </div>
                           </div>
-                        </div>                  
-                      </div>
-                    ) : null}
-
-
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
+
+                  {LOADING ? (
+                    <div className="overlay dark d-print-none">
+                      <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+                    </div>
+                  ) : null}
                 </div>
-
-                {LOADING ? (
-                  <div className="overlay dark d-print-none">
-                    <i className="fas fa-2x fa-sync-alt fa-spin"></i>
-                  </div>
-                ) : null}
-              </div>}              
+              }
             </div>
           </div>
 
           {/* ------------------ BOTONES INFERIORES ------------------ */}
 
-          <div className="btn-group col-lg-12 d-flex justify-content-end p-0">             
-
+          <div className="btn-group col-lg-12 d-flex justify-content-end p-0">
             <div className="mt-3">
-              <button className="btn btn-secondary mr-2"  onClick={(e) => handleClose(e)}>
+              <button
+                className="btn btn-secondary mr-2"
+                onClick={(e) => handleClose(e)}
+              >
                 Cerrar
                 <i className="mr-1 fas fa-ban ml-2"></i>
               </button>
 
-              <button className="btn btn-warning"  onClick={handleSave}>
+              <button className="btn btn-warning" onClick={handleSave}>
                 Guardar
                 <i className="mr-1 fas fa-save ml-2"></i>
               </button>
             </div>
-
           </div>
 
           {/* MODAL VALIDATION EXAM */}
           {showModal ? (
             <ExamModal
-              handleClose = {()=> setShowModal(false)}          
-              exam = {state.exam}              
+              handleClose={() => setShowModal(false)}
+              exam={state.exam}
             />
-          ): null}
+          ) : null}
 
-
-           {/* MODAL VALIDATION NOTA*/}
+          {/* MODAL VALIDATION NOTA*/}
           {showModalNota ? (
             <ModalNota
-              handleClose={()=>setShowModalNota(false)}
-              sale = {state.sale}
-            />          
-          ):null}
-
+              handleClose={() => setShowModalNota(false)}
+              sale={state.sale}
+            />
+          ) : null}
         </>
       ) : null}
 
-      <Activitys
-        data = {state.activitys ?? []}
-      />
+      {state.print && (
+        <PrintSaleComponent
+          data={{
+            ...state.sale,
+            items: state.items,
+            order_id: state.id,
+          }}
+          setPrint={() => setState({ ...state, print: false })}
+        />
+      )}
 
+      <Activitys data={state.activitys ?? []} />
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

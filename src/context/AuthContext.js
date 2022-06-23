@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { api, setUrl } from "../utils/url";
 
 export const AuthContext = createContext(null);
+export const Auth = () => useContext(AuthContext);
 
 export default function useUser({ children }) {
   const history = useHistory();
@@ -93,7 +94,6 @@ export default function useUser({ children }) {
         })
         .catch((err) => console.error("[Server] When close session:", err));
     },
-
     getCurrentUser = async () => {
       return await api("user")
         .then((data) => data.data)

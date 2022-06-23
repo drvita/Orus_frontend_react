@@ -6,54 +6,49 @@ import { useState, useEffect } from "react";
 import useProducts from "../../../hooks/useProducts";
 
 function SearchItemsComponent(props) {
-
   const hookProducts = useProducts();
 
   // Props and vars
   const {
-      //meta,
-      item = { producto: "" },
-      //_setList,
-      handleItemSelect: _handleItemSelect,
-    } = props;
+    //meta,
+    item = { name: "" },
+    //_setList,
+    handleItemSelect: _handleItemSelect,
+  } = props;
 
-    //perPage = 10;
-
-
+  //perPage = 10;
 
   // States
-  const [search, setSearch] = useState(item.producto),
-  [timer, setTimer] = useState(""),
-  [load, setLoad] = useState(false);
+  const [search, setSearch] = useState(item.name),
+    [timer, setTimer] = useState(""),
+    [load, setLoad] = useState(false);
   const [items, setItems] = useState([]);
 
   // Functions
   const handleChangeSearch = ({ target }) => {
-      const { value } = target;
-      setSearch(value.toLowerCase());
-      setLoad(true);
-    };
-
+    const { value } = target;
+    setSearch(value.toLowerCase());
+    setLoad(true);
+  };
 
   const handleSelect = (item) => {
-      _handleItemSelect(item);
-      setSearch(item.name.toUpperCase());
-      setItems([]);
-    };
+    _handleItemSelect(item);
+    setSearch(item.name.toUpperCase());
+    setItems([]);
+  };
 
   useEffect(() => {
     let toTimer = null;
     if (search.length > 2 && !item.store_items_id) {
       if (timer) clearTimeout(timer);
       toTimer = setTimeout(() => {
-        hookProducts.getProducts(search).then((data)=>{
-          if(data){            
-              setItems(data.data);
-          }
-          else{
+        hookProducts.getProducts(search).then((data) => {
+          if (data) {
+            setItems(data.data);
+          } else {
             console.error("Error al obtener la lista de productos");
           }
-        })
+        });
         setTimer("");
         setLoad(false);
       }, 1000);
@@ -71,7 +66,6 @@ function SearchItemsComponent(props) {
       setLoad(false);
     }
   }, [search]);
-
 
   useEffect(() => {
     return () => {

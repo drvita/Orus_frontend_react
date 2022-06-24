@@ -43,7 +43,7 @@ export default function ShowContactComponent(props) {
                     onClick={() => {
                       window.Swal.fire({
                         title: "Contactos",
-                        text: `¿Esta seguro de cambiar de xd ${props.title}?`,
+                        text: `¿Esta seguro de cambiar de ${props.title}?`,
                         icon: "question",
                         showCancelButton: true,
                         // confirmButtonColor: "#d33",

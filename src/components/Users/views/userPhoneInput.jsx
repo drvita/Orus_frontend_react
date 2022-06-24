@@ -1,19 +1,19 @@
 import { useState } from "react";
 import useUsers from "../../../hooks/useUsers";
 
-export default function UserEmailInputComponent(props) {
+export default function UserPhoneInputComponent(props) {
   const [state, setState] = useState({
     bgColor: "bg-blue",
     validate: "",
-    text: "No tiene el formato de un email",
-    searchEmail: false,
+    text: "No tiene el formato de un teléfono",
+    phone:''
   });
 
   const user = useUsers();
 
   //Vars
-  const { col, email, userId, onChange: _onChange } = props,
-    { bgColor, validate, text, searchEmail } = state;
+  const { col, phone, userId, onChange: _onChange } = props;
+  const { bgColor, validate, text, searchEmail } = state;
 
   //Functions
   const handleChange = ({ name, value }) => {
@@ -23,19 +23,24 @@ export default function UserEmailInputComponent(props) {
       });
     },
 
-    validEmail = () => {
-      const regex =
-          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-        emailSearch = email.replace(/\s/g, "");
+    validPhone = () => {
+    const regex = /^\d{10}$/gim;
 
-      if (regex.test(emailSearch)) {
+      if (regex.test(phone)) {
         //User valid, next search if exist
         setState({
           ...state,
-          searchUser: true,
+          phone: phone,          
         });
+
+        setState({
+            ...state,
+            bgColor: "bg-success",
+            validate: " border border-success",
+            text: "Telefono correcto",
+          });
         
-        handleSearchUser(emailSearch, userId, user).then((response) => {
+        /* handleSearchUser(emailSearch, userId, user).then((response) => {
           if (response) {
             setState({
               bgColor: "bg-red",
@@ -59,10 +64,12 @@ export default function UserEmailInputComponent(props) {
               value: true,
             });
           }
-        });
+        }); */
+
+
       } else {
         //User no valid
-        if (emailSearch.length > 8) {
+        if (phone.length > 10) {
           setState({
             ...state,
             bgColor: "bg-red",
@@ -73,12 +80,12 @@ export default function UserEmailInputComponent(props) {
             name: "validUserEmail",
             value: false,
           });
-        } else if (!emailSearch.length) {
+        } else if (!phone.length) {
           setState({
             ...state,
             bgColor: "bg-red",
             validate: " border border-danger",
-            text: "Escriba un email valido",
+            text: "Escriba un telefono valido",
           });
           _onChange({
             name: "validUserEmail",
@@ -90,9 +97,9 @@ export default function UserEmailInputComponent(props) {
 
   return (
     <div className={"col-" + col}>
-      {email.length ? (
+      {phone.length ? (
         <small>
-          <label>Email</label>
+          <label>Telefono</label>
         </small>
       ) : (
         <br />
@@ -103,20 +110,18 @@ export default function UserEmailInputComponent(props) {
             {searchEmail ? (
               <i className="fas fa-spinner"></i>
             ) : (
-              <i className="fas fa-at"></i>
+              <i className="fas fa-phone"></i>
             )}
           </span>
         </div>
         <input
-          type="email"
+          type="text"
           className={"form-control" + validate}
-          placeholder="email"
-          name="email"
+          placeholder="Teléfono"
+          name="phone"
           autoComplete="off"
-          defaultValue={email}
+          defaultValue={""}
           onChange={({ target }) => handleChange(target)}
-          onBlur={validEmail}
-          required="required"
         />
       </div>
       {validate ? <small className="text-muted">{text}</small> : ""}
@@ -125,7 +130,7 @@ export default function UserEmailInputComponent(props) {
 }
 
 
-const handleSearchUser = async (username, userId = null, user) => {
+/* const handleSearchUser = async (username, userId = null, user) => {
   const result = await user.getListUsers({ username, userId, deleted: 0 });
 
   if (result.data && result.data.length) {
@@ -136,7 +141,7 @@ const handleSearchUser = async (username, userId = null, user) => {
     }
   }
   return false;
-};
+}; */
 
 
 

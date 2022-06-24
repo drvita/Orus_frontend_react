@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import DatePicker, { registerLocale } from "react-datepicker";
 import moment from "moment";
+import useContact from "../../../hooks/useContact";
+import { OrderContext } from "../../../context/OderContext";
 
 import helper from "../helper";
 
@@ -18,19 +20,54 @@ export default function CardNewContact(props) {
     gender: "male",
   });
 
+  const hookContact = useContact();
+  const orderContext = useContext(OrderContext);
+
   const handleValidForm = (showMsg = false) => {
     const verify = helper.handleVerificationData(data, showMsg);
     return verify.result;
   };
+
   const handleSave = () => {
     const valid = handleValidForm(true),
       body = {
         ...data,
-        telnumbers: JSON.stringify(data.telnumbers),
+        telnumbers: { t_movil: data.phone },
+        //telnumbers: [data.phone],
+        type:0,
+        business: 0,
       };
     if (!valid) return false;
 
-    helper.saveContact(title, body, _save);
+    console.log(body);
+    hookContact.saveContact(body).then((res)=>{
+      if(res){
+        window.Swal.fire({
+          icon: "success",
+          title: "Usuario guardado correctamente",
+          showConfirmButton: false,
+          showCancelButton: false,
+          timer: 3000,
+        }).then(({dissmiss})=>{
+          if(!dissmiss){
+            orderContext.set({
+              ...orderContext,
+              panel: 'inbox',
+            })
+          }
+        })
+      }else{
+        window.Swal.fire({
+          icon: "errror",
+          title: "Error al guardar el usuario",
+          showConfirmButton: false,
+          showCancelButton: false,
+          timer: 3000,
+        })
+      }
+    })
+    //helper.saveContact(title, body, _save);
+
   };
 
   useEffect(() => {
@@ -205,7 +242,6 @@ export default function CardNewContact(props) {
                 type="button"
                 className="btn btn-primary"
                 onClick={handleSave}
-                disabled={true}
               >
                 <i className="fas fa-save"></i>
                 Guardar

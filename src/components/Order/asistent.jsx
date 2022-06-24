@@ -8,18 +8,21 @@ import { OrderContext } from "../../context/OderContext";
 //Hooks
 import useOrder from "../../hooks/useOrder";
 import useExam from "../../hooks/useExam";
+import useUsers from "../../hooks/useUsers";
 
 //Helpers
 import generalHelper from "../../utils/helpers";
 import saleHelper from "../../components/Sales/helpers";
+import helper from "./helpers";
 
 //Components
 import SearchContact from "../Contacts/views/ShowCard";
 import Items from "./views/listItemsOrder";
-import helper from "./helpers";
 import PaymentModal from "./views/PaymentModal";
 import DiscountModal from "./views/DiscountModal";
 import PrintSaleComponent from "../print/PrintSale";
+import UserEmailInputComponent from './views/userEmailInput'
+import UserPhoneInputComponent from "./views/userPhoneInput";
 
 export default function AsistentComponent(props) {
   const [state, setState] = useState({
@@ -44,16 +47,68 @@ export default function AsistentComponent(props) {
       payments: [],
     },
     print: false,
+    editClient: false,
+    phone:'',
+    email:'',
+    validEmailPhone:{
+      phone:'',
+      email:'',
+    }    
   });
 
   const orderContext = useContext(OrderContext);
   const orderHook = useOrder();
   const examHook = useExam();
+  const userHook = useUsers();
   const productCodes = [];
   state.items.forEach((item) =>
     productCodes.push(item.category.code.codeCategory[0])
   );
   const { exam } = state;
+
+  const getDisabledPhoneEmail = ()=>{
+
+    if(state.data.phones.cell === "" && !state.data.email){
+      return state.validEmailPhone.phone && state.validEmailPhone.email ? false : true
+    }
+      if(state.data.phones.cell === "")
+      {
+        return state.validEmailPhone.phone ? false : true
+      }else{
+        return state.validEmailPhone.email ? false : true
+      }
+  }
+
+
+  const savePhoneEmail = ()=>{
+    if(state.phone && state.email){
+      const data = {
+        phone: state.phone,
+        email: state.email,
+      }
+      executeHookEmailPhone(data);
+    }
+    else if(state.phone && !state.email){
+      const data = state.phone;
+      executeHookEmailPhone(data);
+    }
+    else if(!state.phone && state.email){
+      const data = state.email;
+      executeHookEmailPhone(data);
+    }
+  }
+
+
+  const executeHookEmailPhone = (data)=>{
+    userHook.saveUser(data, state.data.id).then((res)=>{
+      if(res){
+        console.log("Guardado correctamente", res);
+      }else{
+        console.error("Error al guardar los datos");
+      }
+    })
+  }
+
 
   const changeTotal = (total, status) => {
     setState({
@@ -176,6 +231,19 @@ export default function AsistentComponent(props) {
       }
     });
   };
+
+  const catchInputs = (name,isValid, value)=>{
+    if(value){
+      setState({
+        ...state,
+        validEmailPhone:{
+          ...state.validEmailPhone,
+          [name]: isValid,
+        },
+        [name]: value,
+      })
+    }
+  }
 
   const handleSave = (e) => {
     let categories_wrong = 0;
@@ -301,7 +369,6 @@ export default function AsistentComponent(props) {
     console.log("Data a enviar", data);
     orderHook.saveOrder(data).then(({ data }) => {
       if (data) {
-        console.log("Data devuela despues de guardar:", data);
         window.Swal.fire({
           icon: "success",
           title: "Pedido guardado correctamente",
@@ -386,17 +453,65 @@ export default function AsistentComponent(props) {
                   <i className="fas fa-user-circle mr-1"></i>
                   {state.data.name.toUpperCase()}
                 </p>
-                <p className="card-text">
-                  <i className="fas fa-at mr-1"></i>
-                  {state.data.email ?? "Email no registrado"}
-                </p>
-                <p className="card-text">
-                  <i className="fas fa-phone-alt mr-1"></i>
-                  {state.data.phones.cell === ""
-                    ? `Telefono no registrado`
-                    : state.data.phones.cell}
-                </p>
-                <button
+
+                {/* ------------------------------------------------ */}
+
+                {state.editClient ? 
+                  <div>
+                    <div>
+                    {
+                      state.data.phones.cell === "" && !state.data.email ?     
+                      <div>
+                        <UserPhoneInputComponent 
+                          phone={""} 
+                          col={12}
+                          onChange = {catchInputs}
+                        /> 
+                        <UserEmailInputComponent 
+                          email={""} 
+                          userId={state.data.id ? state.data.id : ""}
+                          col={12}
+                          onChange={catchInputs}/>
+                      </div> : 
+                        state.data.phones.cell === "" ? 
+                          <UserPhoneInputComponent 
+                            phone={""}
+                            col={12}
+                            onChange={catchInputs}
+                          />
+                            : 
+                          <UserEmailInputComponent 
+                            email={""} 
+                            userId={state.data.id ? state.data.id : ""}
+                            col={12}
+                            onChange={catchInputs}
+                          />
+                      }                     
+                    </div>
+                    <div className="d-flex justify-content-end mt-3">
+                      <button className="btn btn-secondary mr-3" onClick={()=>setState({...state,editClient:false})}>Cancelar</button>
+                      <button className="btn btn-success" disabled={getDisabledPhoneEmail()} onClick={savePhoneEmail}> Guardar</button>
+                    </div>                    
+                  </div>                 
+                 : (
+                  <div className="mb-3">
+                    <p className="card-text">
+                      <i className="fas fa-at mr-1"></i>
+                      {state.data.email ?? "Email no registrado"}
+                    </p>
+
+                    <p className="card-text">
+                      <i className="fas fa-phone-alt mr-1"></i>
+                      {state.data.phones.cell === ""
+                        ? `Telefono no registrado`
+                        : state.data.phones.cell}
+                    </p>
+                  </div>                  
+                )}
+
+                <div>
+                {state.editClient ? null : (
+                  <button
                   className="btn btn-primary"
                   disabled={state.exam_id ? true : false}
                   onClick={() => {
@@ -414,8 +529,23 @@ export default function AsistentComponent(props) {
                     });
                   }}
                 >
-                  Cambiar
+                  Cambiar cliente
                 </button>
+                )}                
+
+                {state.data.phones.cell === "" || !state.data.email ? (
+                  state.editClient ? null :
+                  <button className="btn btn-info ml-3"  
+                    disabled={state.exam_id ? true : false}
+                    onClick={()=>setState({
+                      ...state,
+                      editClient:true
+                    })}>
+                    <i className="fa fa-plus mr-2"></i>
+                    Agregar telefono o correo
+                  </button>
+                ) : null}
+                </div>                
               </div>
             </div>
           )}
@@ -500,6 +630,7 @@ export default function AsistentComponent(props) {
                   <button
                     className="btn btn-primary mt-2"
                     onClick={handleNewExam}
+                    disabled={state.editClient}
                   >
                     Nuevo examen
                   </button>
@@ -517,7 +648,7 @@ export default function AsistentComponent(props) {
               </div>
               <div className="card-body">
                 <p>*No tiene ningun examen asignado</p>
-                <button className="btn btn-primary" onClick={handleNewExam}>
+                <button className="btn btn-primary" onClick={handleNewExam} disabled={state.editClient}>
                   Nuevo examen
                 </button>
               </div>

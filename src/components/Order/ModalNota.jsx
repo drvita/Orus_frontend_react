@@ -16,7 +16,7 @@ export default function ModalNota({ handleClose: _close, sale}) {
     return saleHelper.getPagado(sale.payments);
   }
 
-
+  
   return (
       <div className="modal d-block">
       <div className="modal-dialog" role="document">

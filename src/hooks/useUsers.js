@@ -25,6 +25,7 @@ export default function useUsers() {
       return await api(url, 'PUT',data);
     }else{
       //Creamos uno nuevo
+
       const url = setUrl('users');
       return await api(url, "POST", data);
     }

@@ -1,3 +1,5 @@
+import useUser from "../../context/AuthContext";
+
 const handleStatusString = (status) => {
   switch (status) {
     case 0:
@@ -14,6 +16,7 @@ const handleStatusString = (status) => {
       return "garantia";
   }
 };
+
 const getStatusType = [
   "procesando",
   "laboratorio",
@@ -21,6 +24,7 @@ const getStatusType = [
   "terminado",
   "entregado",
 ];
+
 const handleDeleteOrder = (order, options, _delete) => {
   if (order.id) {
     if (order.estado) {
@@ -116,6 +120,7 @@ const getDataTemporary = (field) => {
     // localStorage.setItem("OrusSystem", JSON.stringify(data));
     if (fn) fn();
   },
+
   getDataOneItem = (id) => {
     const local = getDataTemporary(),
       data = local.orders.filter((item) => item.id === id);

@@ -105,7 +105,7 @@ export default function AddContact(props) {
       type: contact.type,
       business: contact.business,
       birthday: contact.birthday.format("YYYY/MM/DD"),
-      telnumbers: {
+      phones: {
         notices: contact.phone_notices,
         cell: contact.phone_cell,
         office: contact.phone_office,

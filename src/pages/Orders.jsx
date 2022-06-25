@@ -13,7 +13,7 @@ const initialOptions = {
   orderby: "created_at",
   order: "desc",
   itemsPage: 25,
-  status: 0,
+  status: "",
   search: "",
 };
 

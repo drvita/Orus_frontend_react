@@ -1,19 +1,15 @@
 /* eslint-disable no-lone-blocks */
 import React, { useState, useContext, useEffect } from "react";
-import moment from "moment";
 
 //Context
 import { OrderContext } from "../../context/OderContext";
 
 //Hooks
 import useOrder from "../../hooks/useOrder";
-import useExam from "../../hooks/useExam";
-import useUsers from "../../hooks/useUsers";
 
 //Helpers
 import generalHelper from "../../utils/helpers";
 import saleHelper from "../../components/Sales/helpers";
-import helper from "./helpers";
 
 //Components
 import SearchContact from "../Contacts/views/ShowCard";
@@ -21,22 +17,22 @@ import Items from "./views/listItemsOrder";
 import PaymentModal from "./views/PaymentModal";
 import DiscountModal from "./views/DiscountModal";
 import PrintSaleComponent from "../print/PrintSale";
-import UserEmailInputComponent from './views/userEmailInput'
-import UserPhoneInputComponent from "./views/userPhoneInput";
+import CardCustomer from "./views/Asistent_card_customer";
+import CardExam from "./views/Asistent_card_exam";
 
 export default function AsistentComponent(props) {
   const [state, setState] = useState({
     id: 0,
     contact_id: 0,
-    exam_id: null,
-    items: [],
-    codes: {},
+    contact: {},
+    exam_id: 0,
     exam: {},
     examsList: [],
     examEdit: false,
+    items: [],
+    codes: {},
     load: true,
     LOADING: false,
-    data: {},
     session: generalHelper.getSession(),
     listReady: false,
     showModal: false,
@@ -47,69 +43,21 @@ export default function AsistentComponent(props) {
       payments: [],
     },
     print: false,
-    editClient: false,
-    phone:'',
-    email:'',
-    validEmailPhone:{
-      phone:'',
-      email:'',
-    }    
+    editCustomer: false,
+    phone: "",
+    email: "",
+    validEmailPhone: {
+      phone: "",
+      email: "",
+    },
   });
-
   const orderContext = useContext(OrderContext);
   const orderHook = useOrder();
-  const examHook = useExam();
-  const userHook = useUsers();
+
   const productCodes = [];
   state.items.forEach((item) =>
     productCodes.push(item.category.code.codeCategory[0])
   );
-  const { exam } = state;
-
-  const getDisabledPhoneEmail = ()=>{
-
-    if(state.data.phones.cell === "" && !state.data.email){
-      return state.validEmailPhone.phone && state.validEmailPhone.email ? false : true
-    }
-      if(state.data.phones.cell === "")
-      {
-        return state.validEmailPhone.phone ? false : true
-      }else{
-        return state.validEmailPhone.email ? false : true
-      }
-  }
-
-
-  const savePhoneEmail = ()=>{
-    if(state.phone && state.email){
-      const data = {
-        phone: state.phone,
-        email: state.email,
-      }
-      executeHookEmailPhone(data);
-    }
-    else if(state.phone && !state.email){
-      const data = state.phone;
-      executeHookEmailPhone(data);
-    }
-    else if(!state.phone && state.email){
-      const data = state.email;
-      executeHookEmailPhone(data);
-    }
-  }
-
-
-  const executeHookEmailPhone = (data)=>{
-    userHook.saveUser(data, state.data.id).then((res)=>{
-      if(res){
-        console.log("Guardado correctamente", res);
-      }else{
-        console.error("Error al guardar los datos");
-      }
-    })
-  }
-
-
   const changeTotal = (total, status) => {
     setState({
       ...state,
@@ -120,14 +68,12 @@ export default function AsistentComponent(props) {
       },
     });
   };
-
   const penddingToPay = () => {
     let pendding =
       saleHelper.getTotal(state.sale.total, state.sale.discount) -
       saleHelper.getPagado(state.sale.payments);
     return pendding;
   };
-
   const deletePayment = (e, id) => {
     e.preventDefault();
     let filteredPayments = state.sale.payments.filter(
@@ -141,7 +87,6 @@ export default function AsistentComponent(props) {
       },
     });
   };
-
   const setDiscount = (discount) => {
     setState({
       ...state,
@@ -152,7 +97,6 @@ export default function AsistentComponent(props) {
       discountModal: false,
     });
   };
-
   const setPayments = (payments) => {
     setState({
       ...state,
@@ -163,88 +107,16 @@ export default function AsistentComponent(props) {
       },
     });
   };
-
   const handleContactSelect = (contact) => {
-    if (contact.id === 0) {
-      setState({
-        contact_id: 0,
-        items: [],
-        codes: {},
-        exam_id: null,
-        exam: {},
-        examEdit: false,
-        examsList: [],
-        load: true,
-        LOADING: false,
-        data: {},
-        session: generalHelper.getSession(),
-      });
-    } else {
-      const data = helper.getDataOneItem(contact.id);
+    if (contact.id) {
       setState({
         ...state,
         contact_id: contact.id ?? 0,
         examsList: contact.exams.length ? contact.exams : [],
-        items: data.items ?? [],
-        data: contact ? contact : {},
+        contact,
       });
     }
   };
-
-  const handleNewExam = () => {
-    let dataNewExam = {
-      contact_id: state.data.id,
-      name: state.data.name,
-    };
-
-    examHook.saveExam(dataNewExam).then((data) => {
-      if (data) {
-        let exam = {
-          id: data.id,
-          status: data.status,
-          created_at: data.created_at,
-        };
-
-        let updatedList = state.examsList;
-        updatedList.push(exam);
-
-        setState({
-          ...state,
-          exam_id: data.id,
-          exam: exam,
-          examsList: updatedList,
-        });
-
-        window.Swal.fire({
-          icon: "success",
-          title: "Examen Creado correctamente",
-          showConfirmButton: false,
-          timer: 3000,
-        });
-      } else {
-        window.Swal.fire({
-          icon: "error",
-          title: "Error al crear el examen",
-          showConfirmButton: false,
-          timer: 3000,
-        });
-      }
-    });
-  };
-
-  const catchInputs = (name,isValid, value)=>{
-    if(value){
-      setState({
-        ...state,
-        validEmailPhone:{
-          ...state.validEmailPhone,
-          [name]: isValid,
-        },
-        [name]: value,
-      })
-    }
-  }
-
   const handleSave = (e) => {
     let categories_wrong = 0;
 
@@ -394,7 +266,6 @@ export default function AsistentComponent(props) {
           icon: "danger",
           title: "Error al guardar el pedido",
           showConfirmButton: true,
-          timer: 3000,
         });
       }
     });
@@ -406,7 +277,9 @@ export default function AsistentComponent(props) {
     });
   };
 
-  useEffect(() => {}, [state]);
+  useEffect(() => {
+    // console.log("[DEBUG] State:", state);
+  }, [state]);
 
   return (
     <div className="mainAssitentComponent">
@@ -421,234 +294,53 @@ export default function AsistentComponent(props) {
         <div className="card-body d-flex justify-content-center col-lg-12">
           {/* Validacion 1 --- Seleccion de cliente */}
           {!state.contact_id ? (
-            <div className="form-group d-print-none col-lg-12">
+            <div className="form-group col-lg-6">
               <SearchContact
-                title="cliente"
+                title="Paciente"
                 legend={
-                  !state.data.id
+                  !state.contact_id
                     ? "Busque el paciente por nombre para crearun nuevo pedido"
                     : null
                 }
-                readOnly={state.exam_id !== null}
                 handleContactSelect={handleContactSelect}
-                data={state.data}
+                data={state.contact}
               />
             </div>
           ) : (
-            <div className="card col-lg-5 mr-5 border border-success">
-              <div className="card-header">
-                <h3 className="card-title">
-                  <i className="fas fa-user-alt mr-1"></i>
-                  Cliente seleccionado
-                  <i className="ml-5 fas fa-check mr-1"></i>
-                </h3>
-              </div>
-              <div className="card-body">
-                <p className="badge badge-success">{`# ID ${state.contact_id}`}</p>
-                <p className="card-text">
-                  <i className="fas fa-user-circle mr-1"></i>
-                  {state.data.name.toUpperCase()}
-                </p>
-
-                {/* ------------------------------------------------ */}
-
-                {state.editClient ? 
-                  <div>
-                    <div>
-                    {
-                      state.data.phones.cell === "" && !state.data.email ?     
-                      <div>
-                        <UserPhoneInputComponent 
-                          phone={""} 
-                          col={12}
-                          onChange = {catchInputs}
-                        /> 
-                        <UserEmailInputComponent 
-                          email={""} 
-                          userId={state.data.id ? state.data.id : ""}
-                          col={12}
-                          onChange={catchInputs}/>
-                      </div> : 
-                        state.data.phones.cell === "" ? 
-                          <UserPhoneInputComponent 
-                            phone={""}
-                            col={12}
-                            onChange={catchInputs}
-                          />
-                            : 
-                          <UserEmailInputComponent 
-                            email={""} 
-                            userId={state.data.id ? state.data.id : ""}
-                            col={12}
-                            onChange={catchInputs}
-                          />
-                      }                     
-                    </div>
-                    <div className="d-flex justify-content-end mt-3">
-                      <button className="btn btn-secondary mr-3" onClick={()=>setState({...state,editClient:false})}>Cancelar</button>
-                      <button className="btn btn-success" disabled={getDisabledPhoneEmail()} onClick={savePhoneEmail}> Guardar</button>
-                    </div>                    
-                  </div>                 
-                 : (
-                  <div className="mb-3">
-                    <p className="card-text">
-                      <i className="fas fa-at mr-1"></i>
-                      {state.data.email ?? "Email no registrado"}
-                    </p>
-
-                    <p className="card-text">
-                      <i className="fas fa-phone-alt mr-1"></i>
-                      {state.data.phones.cell === ""
-                        ? `Telefono no registrado`
-                        : state.data.phones.cell}
-                    </p>
-                  </div>                  
-                )}
-
-                <div>
-                {state.editClient ? null : (
-                  <button
-                  className="btn btn-primary"
-                  disabled={state.exam_id ? true : false}
-                  onClick={() => {
-                    setState({
-                      session: generalHelper.getSession(),
-                      contact_id: 0,
-                      items: [],
-                      codes: {},
-                      exam_id: null,
-                      exam: {},
-                      examEdit: false,
-                      load: true,
-                      LOADING: false,
-                      data: {},
-                    });
-                  }}
-                >
-                  Cambiar cliente
-                </button>
-                )}                
-
-                {state.data.phones.cell === "" || !state.data.email ? (
-                  state.editClient ? null :
-                  <button className="btn btn-info ml-3"  
-                    disabled={state.exam_id ? true : false}
-                    onClick={()=>setState({
-                      ...state,
-                      editClient:true
-                    })}>
-                    <i className="fa fa-plus mr-2"></i>
-                    Agregar telefono o correo
-                  </button>
-                ) : null}
-                </div>                
-              </div>
-            </div>
+            <CardCustomer
+              data={state.contact}
+              handleRemoveCustomer={() => {
+                setState({
+                  session: generalHelper.getSession(),
+                  contact_id: 0,
+                  contact: {},
+                  items: [],
+                  exam_id: 0,
+                  exam: {},
+                });
+              }}
+              handleUpdateContact={(contact) =>
+                setState({ ...state, contact, editCustomer: false })
+              }
+              handleEditor={(status) =>
+                setState({ ...state, editCustomer: status })
+              }
+              disabled={Boolean(state.exam_id)}
+            />
           )}
 
           {/* Validacion 2 --- Seleccion de examen o creacion de uno nuevo */}
-          {!state.contact_id ? null : state.examsList.length ? (
-            state.exam_id ? (
-              <div className="card col-lg-5 border border-success">
-                <div className="card-header">
-                  <h3 className="card-title">
-                    <i className="fas fa-notes-medical mr-1"></i>
-                    Examen Seleccionado
-                    <i className="ml-5 fas fa-check mr-1"></i>
-                  </h3>
-                </div>
-                <div className="card-body">
-                  <p className="card-text">
-                    <span className="badge badge-success mr-3 mb-2">{`# ${exam.id}`}</span>
-                  </p>
-                  <p className="font-weight-bold">
-                    Creado:{" "}
-                    <span className="font-weight-normal">
-                      {moment(exam.created_at).fromNow()}
-                    </span>
-                  </p>
-                  <p className="font-weight-bold">
-                    Fecha:{" "}
-                    <span className="font-weight-normal">
-                      {exam.created_at}
-                    </span>
-                  </p>
-                  <p className="font-weight-bold">
-                    Estatus:{" "}
-                    <span className="font-weight-normal">{exam.status}</span>
-                  </p>
-                  <button
-                    className="btn btn-primary"
-                    disabled={state.items.length ? true : false}
-                    onClick={() => {
-                      setState({
-                        ...state,
-                        exam_id: null,
-                        exam: {},
-                      });
-                    }}
-                  >
-                    Cambiar
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="card col-lg-5 border border-warning">
-                <div className="card-header">
-                  <h3 className="card-title">
-                    <i className="fas fa-user-alt mr-1"></i>
-                    Lista de Examenes
-                    <i className="fas fa-exclamation-circle ml-5"></i>
-                  </h3>
-                </div>
-                <div className="card-body">
-                  <p className="text-secondary">
-                    *Seleciona un examen o crea uno nuevo para continuar
-                  </p>
-                  {state.examsList.map((exam, index) => (
-                    <div
-                      className="border-bottom mb-1 cursor-pointer"
-                      key={index}
-                      onClick={() => {
-                        setState({
-                          ...state,
-                          exam: exam,
-                          exam_id: exam.id,
-                        });
-                      }}
-                    >
-                      <p className="card-text">
-                        <span className="badge badge-warning mr-3 mb-2">{`# ${exam.id}`}</span>
-                        {moment(exam.created_at).fromNow()}
-                      </p>
-                    </div>
-                  ))}
-                  <button
-                    className="btn btn-primary mt-2"
-                    onClick={handleNewExam}
-                    disabled={state.editClient}
-                  >
-                    Nuevo examen
-                  </button>
-                </div>
-              </div>
-            )
-          ) : (
-            <div className="card col-lg-5 border border-warning">
-              <div className="card-header">
-                <h3 className="card-title">
-                  <i className="fas fa-user-alt mr-1"></i>
-                  Lista de Examenes
-                  <i className="fas fa-exclamation-circle ml-5"></i>
-                </h3>
-              </div>
-              <div className="card-body">
-                <p>*No tiene ningun examen asignado</p>
-                <button className="btn btn-primary" onClick={handleNewExam} disabled={state.editClient}>
-                  Nuevo examen
-                </button>
-              </div>
-            </div>
+          {Boolean(state.contact_id) && (
+            <CardExam
+              data={state.exam}
+              customer={state.contact}
+              editCustomer={state.editCustomer}
+              disabled={Boolean(state.items.length)}
+              handleSelect={(exam) =>
+                setState({ ...state, exam_id: exam.id, exam })
+              }
+              hanldeRemove={() => setState({ ...state, exam_id: 0, exam: {} })}
+            />
           )}
         </div>
 
@@ -885,15 +577,6 @@ export default function AsistentComponent(props) {
             )}
 
             <button
-              className="btn btn-warning ml-3"
-              disabled={!state.items.length || state.id ? true : false}
-              onClick={handleSave}
-            >
-              <i className="fas fa-save mr-2"></i>
-              Guardar
-            </button>
-
-            <button
               className="btn btn-secondary ml-3"
               onClick={() => {
                 if (state.contact_id && !state.id) {
@@ -920,6 +603,15 @@ export default function AsistentComponent(props) {
                 }
               ></i>
               {state.id ? "Cerrar" : "Cancelar"}
+            </button>
+
+            <button
+              className="btn btn-warning ml-3"
+              disabled={!state.items.length || state.id ? true : false}
+              onClick={handleSave}
+            >
+              <i className="fas fa-save mr-2"></i>
+              Guardar
             </button>
           </div>
         </div>

@@ -85,7 +85,7 @@ export default function ShowCardSearch(props) {
     <>
       <input
         type="text"
-        className="form-control text-capitalize"
+        className="form-control text-uppercase"
         defaultValue={state.search}
         onChange={({ target }) => {
           setState({
@@ -131,6 +131,14 @@ export default function ShowCardSearch(props) {
               newName: "",
             });
           }}
+          handleResult={(contact) => {
+            setState({
+              ...state,
+              new: false,
+              newName: "",
+            });
+            props.handleSelectContact(contact);
+          }}
         />
       )}
 
@@ -141,8 +149,8 @@ export default function ShowCardSearch(props) {
             text={state.search}
             meta={state.meta}
             title={props.title}
-            left="6.6rem"
-            maxWidth="24rem"
+            left="6rem"
+            maxWidth="28rem"
             handleNew={(e) => {
               setState({
                 ...state,

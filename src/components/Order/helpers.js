@@ -1,5 +1,3 @@
-import useUser from "../../context/AuthContext";
-
 const handleStatusString = (status) => {
   switch (status) {
     case 0:
@@ -7,13 +5,48 @@ const handleStatusString = (status) => {
     case 1:
       return "laboratorio";
     case 2:
-      return "bicelacion"; 
+      return "bicelacion";
     case 3:
       return "terminado";
     case 4:
       return "entregado";
     default:
       return "garantia";
+  }
+};
+const getBadgeStatus = (status) => {
+  switch (status) {
+    case 0:
+      return (
+        <span className="badge badge-light mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+    case 1:
+    case 2:
+      return (
+        <span className="badge badge-primary mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+    case 3:
+      return (
+        <span className="badge badge-info mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+    case 4:
+      return (
+        <span className="badge badge-secondary mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+    default:
+      return (
+        <span className="badge badge-dark mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
   }
 };
 
@@ -99,8 +132,6 @@ const getDataTemporary = (field) => {
 
     return field ? data.orders : data;
   },
-
-
   addDataTemporary = (data) => {
     const local = getDataTemporary();
     let localToSave = {
@@ -120,18 +151,17 @@ const getDataTemporary = (field) => {
     // localStorage.setItem("OrusSystem", JSON.stringify(data));
     if (fn) fn();
   },
-
   getDataOneItem = (id) => {
     const local = getDataTemporary(),
       data = local.orders.filter((item) => item.id === id);
-      if(data){
-
-      }
+    if (data) {
+    }
     return data[0] ?? {};
   };
 
 const toExport = {
   handleStatusString,
+  getBadgeStatus,
   handleDeleteOrder,
   handleSaveOrder,
   getDataTemporary,

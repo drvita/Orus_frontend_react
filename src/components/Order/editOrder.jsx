@@ -40,6 +40,7 @@ export default function EditOrderComponent(props) {
     updated: {},
     updated_at: null,
     print: false,
+    statusInitial: 0,
   });
 
   const [showModal, setShowModal] = useState(false);
@@ -214,6 +215,7 @@ export default function EditOrderComponent(props) {
           },
           contact_id: data.paciente.id,
           activitys: data.activity ?? [],
+          statusInitial: data.status ?? 0,
         });
       } else {
         console.error("Error al obtener los datos");
@@ -414,7 +416,11 @@ export default function EditOrderComponent(props) {
                   <i className="mr-1 fas fa-door-open ml-2"></i>
                 </button>
 
-                <button className="btn btn-warning" onClick={handleSave}>
+                <button
+                  className="btn btn-warning"
+                  disabled={Boolean(state.status === state.statusInitial)}
+                  onClick={handleSave}
+                >
                   Guardar
                   <i className="mr-1 fas fa-save ml-2"></i>
                 </button>

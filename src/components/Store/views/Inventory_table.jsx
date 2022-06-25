@@ -1,24 +1,23 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SetQantityModal from "./SetQantityModal";
 
 export default function InventoryTableView({ header, body, itemsProp }) {
-
   const [state, setState] = useState({
-    item:{},
+    item: {},
     showModal: false,
     items: [],
-  })
+  });
 
   //const [items, setItems] = useState(itemsProp);
 
-
-  const handleUpdateItems = (newItem)=>{
+  const handleUpdateItems = (newItem) => {
     console.log(newItem);
-    const items = [...state.items]
-    
+    const items = [...state.items];
+
     items.forEach((item) => {
-      if(item.id === newItem.id){
+      if (item.id === newItem.id) {
         item.cant = newItem.cant;
       }
     });
@@ -26,55 +25,23 @@ export default function InventoryTableView({ header, body, itemsProp }) {
     setState({
       ...state,
       items: items,
-      showModal:false,
-    })
-  }
-  
+      showModal: false,
+    });
+  };
 
-
-
-   
-        
-       /*  window.Swal.fire({
-          title: "Inventario",
-          text: "Cantidad asignada correctamente",
-          icon: "success",
-          showCancelButton: false,
-          confirmButtonColor: "#007bff",
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancelar",
-          showLoaderOnConfirm: true,
-        });
-
-      }else{
-        window.Swal.fire({
-          title: "Inventario",
-          text: "Error al cambiar la cantidad",
-          icon: "error",
-          showCancelButton: false,
-          confirmButtonColor: "#007bff",
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancelar",
-          showLoaderOnConfirm: true,
-        }) */
- 
-
-  useEffect(()=>{
-    //window.open('', 'example', 'width=300,height=300');
-
-   setState({
+  useEffect(() => {
+    setState({
       ...state,
       items: itemsProp,
     });
-  },[]);
+  }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("RENDER");
-  },[state.items]);
-  
+  }, [state.items]);
 
   return (
-    <div className="table-responsive" style={{height:'100vh'}}>
+    <div className="table-responsive" style={{ height: "100vh" }}>
       <table className="table table-sm table-bordered table-hover">
         <thead>
           <tr>
@@ -86,7 +53,7 @@ export default function InventoryTableView({ header, body, itemsProp }) {
           {body.map((row, i) => {
             const zero = row.props.children.type === "label" ? true : false;
             return (
-              <tr className={zero ? "table-secondary" : ""} key = {i}>
+              <tr className={zero ? "table-secondary" : ""} key={i}>
                 {row}
                 {header.map((h, i) => {
                   let grad = zero
@@ -104,26 +71,28 @@ export default function InventoryTableView({ header, body, itemsProp }) {
                   return (
                     <td key={grad + i} className="text-center">
                       {state.items.length ? (
-                        state.items.map((item, index) => {                          
+                        state.items.map((item, index) => {
                           return grad === item.grad ? (
                             <div key={index}>
                               {item.cant_total ? (
                                 <span
-                                  onClick={()=>{
+                                  onClick={() => {
                                     setState({
                                       ...state,
                                       item: item,
                                       showModal: true,
-                                    })                                                                        
+                                    });
                                   }}
-                                  style={{cursor:"pointer"}}
-                                  title = {item.grad}
+                                  style={{ cursor: "pointer" }}
+                                  title={item.grad}
                                   key={item.id + index}
-                                  className={                        
-                                    item.cant > 0 ? "badge badge-success" : "badge badge-danger"
+                                  className={
+                                    item.cant > 0
+                                      ? "badge badge-success"
+                                      : "badge badge-danger"
                                   }
-                                >   
-                                 {item.cant}                                  
+                                >
+                                  {item.cant}
                                 </span>
                               ) : null}
                             </div>
@@ -144,12 +113,8 @@ export default function InventoryTableView({ header, body, itemsProp }) {
       </table>
 
       {state.showModal ? (
-        <SetQantityModal
-         item = {state.item}
-         handleClose = {handleUpdateItems}
-        />
+        <SetQantityModal item={state.item} handleClose={handleUpdateItems} />
       ) : null}
-
     </div>
   );
 }

@@ -163,7 +163,7 @@ const InboxOrderComponent = (props) => {
         </thead>
         <tbody>
           {pedidos.data.length ? (
-            pedidos.data.map((pedido) => {
+            pedidos.data.map((pedido, i) => {
               return (
                 <tr key={pedido.id}>
                   <td>
@@ -207,13 +207,7 @@ const InboxOrderComponent = (props) => {
                     </a>
                   </td>
                   <td className="mailbox-subject">
-                    <span
-                      className={`badge badge-${
-                        pedido.status < 3 ? "primary" : "secondary"
-                      } mr-2 text-uppercase`}
-                    >
-                      {helper.handleStatusString(pedido.status)}
-                    </span>
+                    {helper.getBadgeStatus(pedido.status)}
                     {pedido.status === 1 ? (
                       <div>
                         <span className="mr-1 text-dark">

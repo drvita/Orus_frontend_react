@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import DatePicker, { registerLocale } from "react-datepicker";
 import moment from "moment";
 import useContact from "../../../hooks/useContact";
-import { OrderContext } from "../../../context/OderContext";
 
 import helper from "../helper";
 
@@ -11,17 +10,16 @@ import es from "date-fns/locale/es";
 registerLocale("es", es);
 
 export default function CardNewContact(props) {
-  const { title = "contacto", nameDefault, messages = [], _save } = props;
+  const { title = "contacto", nameDefault, messages = [] } = props;
   const [data, setData] = useState({
     name: "",
     phone: "",
     birthday: moment(),
     email: "",
-    gender: "male",
+    gender: "female",
   });
 
   const hookContact = useContact();
-  const orderContext = useContext(OrderContext);
 
   const handleValidForm = (showMsg = false) => {
     const verify = helper.handleVerificationData(data, showMsg);
@@ -32,42 +30,35 @@ export default function CardNewContact(props) {
     const valid = handleValidForm(true),
       body = {
         ...data,
-        telnumbers: { t_movil: data.phone },
-        //telnumbers: [data.phone],
-        type:0,
+        phones: { cell: data.phone },
+        type: 0,
         business: 0,
       };
     if (!valid) return false;
 
-    console.log(body);
-    hookContact.saveContact(body).then((res)=>{
-      if(res){
+    hookContact.saveContact(body).then((data) => {
+      if (data?.id) {
         window.Swal.fire({
           icon: "success",
           title: "Usuario guardado correctamente",
           showConfirmButton: false,
           showCancelButton: false,
           timer: 3000,
-        }).then(({dissmiss})=>{
-          if(!dissmiss){
-            orderContext.set({
-              ...orderContext,
-              panel: 'inbox',
-            })
+        }).then(({ dissmiss }) => {
+          if (!dissmiss) {
+            props.handleResult(data);
           }
-        })
-      }else{
+        });
+      } else {
         window.Swal.fire({
           icon: "errror",
           title: "Error al guardar el usuario",
           showConfirmButton: false,
           showCancelButton: false,
           timer: 3000,
-        })
+        });
       }
-    })
-    //helper.saveContact(title, body, _save);
-
+    });
   };
 
   useEffect(() => {
@@ -85,7 +76,7 @@ export default function CardNewContact(props) {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title text-primary text-bold">
-              <i className="fas fa-plus mr-1"></i>
+              <i className="fas fa-plus mr-2"></i>
               Crear nuevo {title}
             </h5>
             <button

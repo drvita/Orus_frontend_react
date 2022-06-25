@@ -1,5 +1,4 @@
 import { useState } from "react";
-import useUsers from "../../../hooks/useUsers";
 
 export default function UserEmailInputComponent(props) {
   const [state, setState] = useState({
@@ -8,38 +7,37 @@ export default function UserEmailInputComponent(props) {
     text: "No tiene el formato de un email",
     searchEmail: false,
   });
-  const user = useUsers();
 
-  const { col, email, userId, onChange: _onChange } = props;
+  const { col, email, handleValidData: _handleValidData } = props;
   const { bgColor, validate, text, searchEmail } = state;
 
-const validEmail = (target) => {
-      const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-      const emailSearch = target.value.replace(/\s/g, "");
-      
-      if (regex.test(emailSearch)) {
-        setState({
-          ...state,
-          bgColor: "bg-primary",
-          validate: " border border-primary",
-          text: "",
-        });
+  const validEmail = (target) => {
+    const regex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    const emailSearch = target.value.replace(/\s/g, "");
 
-        _onChange("email", true, emailSearch);
+    if (regex.test(emailSearch)) {
+      setState({
+        ...state,
+        bgColor: "bg-primary",
+        validate: " border border-primary",
+        text: "",
+      });
 
-        //TODO: Validar que el correo no exista
-        //handleSearchUser(emailSearch, userId, user);
+      _handleValidData("email", true, emailSearch);
 
-      } else {
-        setState({
-          ...state,
-          bgColor: "bg-red",
-          validate: " border border-danger",
-          text: "No tiene el formato de un email valido",
-        });
-        _onChange("email", false);
-      }
-    };
+      //TODO: Validar que el correo no exista
+      //handleSearchUser(emailSearch, userId, user);
+    } else {
+      setState({
+        ...state,
+        bgColor: "bg-red",
+        validate: " border border-danger",
+        text: "No tiene el formato de un email valido",
+      });
+      _handleValidData("email", false);
+    }
+  };
 
   return (
     <div className={"col-" + col}>
@@ -66,8 +64,14 @@ const validEmail = (target) => {
           placeholder="email"
           name="email"
           autoComplete="off"
-          defaultValue={email}
-          onChange={({ target }) => validEmail(target)}
+          value={email}
+          onChange={({ target }) => props.onChange(target.value)}
+          onBlur={({ target }) => validEmail(target)}
+          onKeyPress={({ key, target }) => {
+            if (key === "Enter") {
+              validEmail(target);
+            }
+          }}
           required="required"
         />
       </div>
@@ -75,12 +79,3 @@ const validEmail = (target) => {
     </div>
   );
 }
-
-
-const handleSearchUser = async (username, userId = null, user) => {
-  const result = await user.getListUsers({ username, userId, deleted: 0 });
-  if (result.data && result.data.length) {
-    const { username: user } = result.data[0];
-  }
-  return false;
-};

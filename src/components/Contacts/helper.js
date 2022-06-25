@@ -1,12 +1,11 @@
-//const patternEmail = /^([a-zA-Z0-9_])+(([a-zA-Z0-9])+\.)+([a-zA-Z0-9]{2,4})$/i;
-import useContact from "../../hooks/useContact";
-
-  const patternEmail = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})$/i;
+/* eslint-disable no-useless-escape */
+const patternEmail =
+  /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})$/i;
 
 const handleVerificationData = (data, showMsg = true) => {
-  console.log(data);
-  const { name, email, birthday, phone, telnumbers, type } = data,
-    patternName = /^[A-ZÁÉÍÓÚñáéíóúÑ]+\s[A-ZÁÉÍÓÚñáéíóúÑ]{2,}(\s?[A-ZÁÉÍÓÚñáéíóúÑ]+){1,}/gim,
+  const { name, email, birthday, phone, type } = data,
+    patternName =
+      /^[A-ZÁÉÍÓÚñáéíóúÑ]+\s[A-ZÁÉÍÓÚñáéíóúÑ]{2,}(\s?[A-ZÁÉÍÓÚñáéíóúÑ]+){1,}/gim,
     patternPhone = /^\d{10}$/gim;
 
   if (!type && !patternName.test(name)) {
@@ -37,19 +36,7 @@ const handleVerificationData = (data, showMsg = true) => {
     };
   }
 
-  //const tel = Object.values(telnumbers);
-  //let telefonoVerify = true;
-  /* tel.every((num) => {
-    if (patternPhone.test(num)) {
-      telefonoVerify = false;
-      return false;
-    }
-    return true;
-  }); */
-
-  console.log(phone);
   let telefonoVerify = patternPhone.test(phone);
-  console.log(telefonoVerify);
 
   if (!type && !telefonoVerify) {
     if (showMsg) {
@@ -90,8 +77,6 @@ const handleVerificationData = (data, showMsg = true) => {
   };
 };
 
-
-
 const saveContact = (title = "contacto", data, _save, id = null) => {
   window.Swal.fire({
     title: "Almacenamiento",
@@ -113,8 +98,6 @@ const saveContact = (title = "contacto", data, _save, id = null) => {
   });
 };
 
-
-
 const changeDataInput = (input, data, _setData) => {
   const { name, value } = input;
   let val = value;
@@ -132,8 +115,6 @@ const changeDataInput = (input, data, _setData) => {
   });
 };
 
-
-
 const dataPrimary = {
   name: "",
   telnumbers: { t_casa: "", t_oficina: "", t_movil: "" },
@@ -143,8 +124,6 @@ const dataPrimary = {
   business: 0,
   gender: "female",
 };
-
-
 
 const handleGetDataObject = (key, value, verification) => {
   switch (key) {
@@ -185,19 +164,19 @@ const handleGetDataObject = (key, value, verification) => {
         [key]: value,
       };
   }
-}; 
-
-const toExportActions = {
-  isEmail: function (email) {
-    return email ? patternEmail.test(email) : false;
-  },
 };
 
-export default {
-  handleVerificationData,
-  saveContact,
+function isEmail(email) {
+  return email ? patternEmail.test(email) : false;
 }
 
+const toExport = {
+  handleVerificationData,
+  saveContact,
+  changeDataInput,
+  handleGetDataObject,
+  dataPrimary,
+  isEmail,
+};
 
-
-//export default toExportActions;
+export default toExport;

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import useUsers from "../../../hooks/useUsers";
 
 export default function UserPhoneInputComponent(props) {
   const [state, setState] = useState({
@@ -8,44 +7,41 @@ export default function UserPhoneInputComponent(props) {
     text: "No tiene el formato de un teléfono",
   });
 
-  const user = useUsers();
-
-  const { col, phone, userId, onChange: _onChange } = props;
+  const { col, phone, handleValidData: _handleValidData } = props;
   const { bgColor, validate, text, searchEmail } = state;
-  
+
   const validPhone = (phone) => {
     const regex = /^\d{10}$/gim;
 
-      if (regex.test(phone)) {
+    if (regex.test(phone)) {
+      setState({
+        ...state,
+        bgColor: "bg-primary",
+        validate: " border border-primary",
+        text: "",
+      });
+      _handleValidData("phone", true, phone);
+    } else {
+      //User no valid
+      if (phone.length !== 10) {
         setState({
-            ...state,
-            bgColor: "bg-primary",
-            validate: " border border-primary",
-            text: "",
-          });
-          _onChange("phone", true, phone)
-          
-      } else {
-        //User no valid
-        if (phone.length !== 10) {
-          setState({
-            ...state,
-            bgColor: "bg-red",
-            validate: " border border-danger",
-            text: "No tiene el formato de un email valido",
-          });
-          _onChange("phone",false);
-        } else if (!phone.length) {
-          setState({
-            ...state,
-            bgColor: "bg-red",
-            validate: " border border-danger",
-            text: "Escriba un telefono valido",
-          });
-          _onChange("phone",false);
-        }
+          ...state,
+          bgColor: "bg-red",
+          validate: " border border-danger",
+          text: "No tiene el formato de un email valido",
+        });
+        _handleValidData("phone", false);
+      } else if (!phone.length) {
+        setState({
+          ...state,
+          bgColor: "bg-red",
+          validate: " border border-danger",
+          text: "Escriba un telefono valido",
+        });
+        _handleValidData("phone", false);
       }
-    };
+    }
+  };
 
   return (
     <div className={"col-" + col}>
@@ -72,8 +68,23 @@ export default function UserPhoneInputComponent(props) {
           placeholder="Teléfono"
           name="phone"
           autoComplete="off"
-          defaultValue={""}
-          onChange={({ target }) => validPhone(target.value)}
+          value={props.phone}
+          maxLength="10"
+          onChange={({ target }) => {
+            const parse = parseInt(target.value);
+
+            if (!isNaN(parse)) {
+              props.onChange(parse.toString());
+            } else if (!target.value.length) {
+              props.onChange("");
+            }
+          }}
+          onBlur={({ target }) => validPhone(target.value)}
+          onKeyPress={({ key, target }) => {
+            if (key === "Enter") {
+              validPhone(target.value);
+            }
+          }}
         />
       </div>
       {validate ? <small className="text-muted">{text}</small> : ""}

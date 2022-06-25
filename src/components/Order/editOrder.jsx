@@ -12,7 +12,7 @@ import useOrder from "../../hooks/useOrder";
 //Components
 import LabOrder from "./views/labOrder";
 import Bicelacion from "./views/bicelacionOrder";
-import Items from "./views/listItemsOrder";
+import Items from "./views/ItemsOrder";
 import ExamModal from "./ExamModal";
 import ModalNota from "./ModalNota";
 import Activitys from "../Activitys";
@@ -310,33 +310,6 @@ export default function EditOrderComponent(props) {
                         <i className="far fa-trash-alt"></i>
                       </button>
                     ) : null}
-
-                    {/*  {paciente.telefonos && paciente.telefonos.t_movil ? (
-                      <a
-                        href={
-                          "https://wa.me/52" +
-                          paciente.telefonos.t_movil.replace(" ", "")
-                        }
-                        className="btn btn-default btn-sm"
-                        title="Abrir WhatsApp"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <i className="fas fa-mobile-alt"></i>
-                      </a>
-                    ) : null} */}
-
-                    {/* {paciente.email && (
-                      <a
-                        href={"mailto:" + paciente.email}
-                        className="btn btn-default btn-sm"
-                        title="Enviar e-mail"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <i className="fas fa-at"></i>
-                      </a>
-                    )} */}
                   </div>
                 </div>
 
@@ -440,7 +413,7 @@ export default function EditOrderComponent(props) {
 
                   <div className="card-body p-0">
                     <div className="p-0 mailbox-read-message m-0">
-                      {status === 0 ? <Items items={items} /> : null}
+                      {!Boolean(status) && <Items items={items} />}
 
                       {status === 1 ? (
                         <LabOrder

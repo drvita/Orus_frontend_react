@@ -4,11 +4,16 @@ import { useState, useContext } from "react";
 import { ConfigContext } from "../../../context/ConfigContext";
 
 //Helpers
-import helpers from '../../Sales/helpers';
+import helpers from "../../Sales/helpers";
 
-function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _handleSetPayments }) {
-    const config = useContext(ConfigContext);
-    const listBanks = config.data;
+function PaymentModal({
+  forPaid,
+  handleClose: _close,
+  sale,
+  handleSetPayments: _handleSetPayments,
+}) {
+  const config = useContext(ConfigContext);
+  const listBanks = config.data;
 
   //States
   const [data, setData] = useState({
@@ -18,12 +23,11 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
     total: 0,
     bank_id: null,
     details: null,
-    auth: null,
+    auth: "",
   });
 
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
-
       let val = value;
 
       if (type === "number" || type === "select-one") val = parseFloat(value);
@@ -33,13 +37,7 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
         [name]: val,
       });
     },
-
     handleSetPayment = () => {
-
-      const payments = [...sale.payments];
-
-      let pagado = 0;
-
       if (!data.total) {
         window.Swal.fire({
           icon: "warning",
@@ -55,32 +53,30 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
         data.metodopago !== 4 &&
         data.metodopago !== 0
       ) {
-
         if (!data.bank_id) {
           window.Swal.fire({
             icon: "warning",
             title: "Seleccione un banco",
             showConfirmButton: false,
-            timer: 1500,
+            timer: 3000,
           });
           return false;
         }
 
-
-        if (data.auth.toString()?.length < 4) {
+        if (data.auth?.length < 4) {
           window.Swal.fire({
             icon: "warning",
             title: "Espesifique los ultimos 4 numeros de la tarjeta",
             showConfirmButton: false,
-            timer: 1500,
+            timer: 3000,
           });
           return false;
-        }else if(data.auth.toString()?.length > 4){
+        } else if (data.auth?.length > 4) {
           window.Swal.fire({
             icon: "warning",
             title: "Espesifique solamente 4 numeros",
             showConfirmButton: false,
-            timer: 1500,
+            timer: 3000,
           });
           return false;
         }
@@ -98,18 +94,13 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
         }
       }
 
-      payments.push({
+      _handleSetPayments({
         ...data,
-        id:`new${Date.now().toString()}`,
+        id: `new${Date.now().toString()}`,
         metodoname: helpers.getMethodName(data.metodopago),
         total: forPaid < data.total ? forPaid : data.total,
       });
-
-      payments.forEach((pay) => (pagado += pay.total));
-
-      _handleSetPayments(payments);
     },
-
     handleSubmitForm = (e) => {
       e.preventDefault();
       handleSetPayment();
@@ -178,11 +169,11 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
                         >
                           <option value="">--Seleccione un banco--</option>
                           {listBanks.map((bank) => {
-                            return bank.name === 'bank' ? (
+                            return bank.name === "bank" ? (
                               <option key={bank.id} value={bank.id}>
                                 {bank.data}
                               </option>
-                            ): null;
+                            ) : null;
                           })}
                         </select>
                       </>
@@ -209,7 +200,6 @@ function PaymentModal({forPaid, handleClose: _close, sale, handleSetPayments: _h
                         : "N. Autorización"}
                     </label>
                     <input
-                       type="number"
                       name="auth"
                       className="form-control"
                       onChange={({ target }) => handleChangeInput(target)}

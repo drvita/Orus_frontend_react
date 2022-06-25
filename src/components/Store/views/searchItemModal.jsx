@@ -9,7 +9,7 @@ import { AuthContext } from "../../../context/AuthContext";
 
 function AddItemModalComponent(props) {
   const authContex = useContext(AuthContext);
-  const currentUser = authContex.auth.branch.id;
+  const currentUser = authContex.auth;
 
   //Props and vars
   const {
@@ -46,7 +46,7 @@ function AddItemModalComponent(props) {
         subtotal: 0,
         store_items_id: 0,
         descripcion: "",
-        category: 0,
+        category: {},
       });
     },
     close = () => {
@@ -56,16 +56,16 @@ function AddItemModalComponent(props) {
     hanleChangeDataItem = (data) => {
       setItem({
         ...item,
+        store_items_id: data.id,
         id: 0,
         name: data.name.toLowerCase(),
         price: parseFloat(data.price),
-        out: data.cantidades,
+        out: data.cant_total,
         cant: 1,
         inStorage: 0,
-        subtotal: 0,
-        store_items_id: data.id,
+        subtotal: data.price,
         descripcion: "",
-        category: data.category ? data.category : 0,
+        category: data.category,
       });
     },
     handleChangeItem = (key, value) => {
@@ -82,9 +82,8 @@ function AddItemModalComponent(props) {
       item.inStorage = item.out >= item.cant ? true : false;
       item.out = item.out >= item.cant ? 0 : item.cant - item.out;
       item.subtotal = parseFloat(item.cant * item.price);
-      item.branch_id = currentUser.id;
+      item.branch_id = currentUser.branch.id;
       _handleAddItem(item);
-      close();
     };
 
   return (

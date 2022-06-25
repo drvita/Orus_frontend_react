@@ -97,6 +97,7 @@ export default function FormExamSmall({ data, handleEdit: _handleEdit }) {
           <button
             className="btn btn-warning"
             onClick={() => console.log("[DEBUG] Save the exam")}
+            disabled={true}
           >
             <i className="fas fa-save mr-2"></i>
             Guardar

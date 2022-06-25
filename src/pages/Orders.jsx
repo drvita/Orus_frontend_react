@@ -4,7 +4,7 @@ import { OrderContext } from "../context/OderContext";
 
 //Components
 import Inbox from "../components/Order/views/inbox";
-import Asistent from "../components/Order/asistent";
+import Asistent from "../components/Order/Asistent";
 import AddOrder from "../components/Order/editOrder";
 import Toolbar from "../components//Order/Toolbar.jsx";
 

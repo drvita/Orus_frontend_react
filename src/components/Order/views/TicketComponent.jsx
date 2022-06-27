@@ -1,152 +1,29 @@
-import {useEffect, useContext} from 'react';
+import { useEffect } from "react";
 
-//Context
-import { AuthContext } from "../../../context/AuthContext";
-import { Sale } from '../../../context/SaleContext';
+export default function TicketComponent({sale, myComponent}){
 
-//Hooks
-import useSale from '../../../hooks/useSale';
 
-//Helpers
-import helpers from '../helpers';
-
-import moment from "moment";
-
-export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {
-  
-  const sale = Sale();
-  const _saleHook = useSale();
-  const {auth} = useContext(AuthContext);
-
-  const initialSale = {
-    id: 0,
-    customer: {
-      id: 0,
-      name: "venta de mostrador",
-    },
-    contact_id: 2,
-    items: [],
-    session: helpers.getSession(),
-    discount: 0,
-    subtotal: 0,
-    total: 0,
-    payments: [],
-    branch_id: auth.branch.id,
-  }
-
-  const {
-      items,
-      discount,
-      total = 0,
-      created_at: date,
-      id,
-      customer: client,
-    } = sale;
-
-    const saldo = total - abonado;
-
-    const { branch } = auth;
-
-    const pagado  = helpers.getPagado(sale.payments) + sale.discount; 
-    const paid = sale.total <= pagado ? true : false;
-        
-    let totalItems = 0;
-
-    const _saveSale = ()=>{
-      const returnedSale = _saleHook.saveSale(sale);
-      returnedSale.then((data)=>{
-        if(data.data){
-          sale.set({
-            ...sale,
-            id: data.data.id,
-          })
-          window.Swal.fire({
-            title: "Venta Guardada correctamente",
-            text: `¿Quieres imprimir el ticket de la venta?`,
-            icon: "success",
-            showCancelButton: true,
-            confirmButtonText: "Imprimir",
-            cancelButtonText: "Cancelar",
-            showLoaderOnConfirm: true,
-          }).then(({ dismiss }) => {
-            if (!dismiss) {
-              setTimeout(showPrint, 1000);
-            }else{
-              helpers.confirm("Cerrar la venta actual", () => {                
-                sale.set(initialSale);
-              });
-            }
-          });
-        }
-        else{
-          console.error("")
-        }
-      })
-    }
-
-  //Functions
-  const handlePrintShow = () => {
-    if(sale.id){                  
-      setTimeout(showPrint, 1000);
-    }
-    else{
-      return null
-    }
-  };
-
-  const showPrint = ()=>{
-    const path = window.location.pathname;
-    if (path !== "/notas") {
-      return false;
-    }
-    window.print();
     
-  }
-
-  const handleClose = () => {
-    sale.set(initialSale);
-  };
-
-   useEffect(()=>{
-    console.log("Venta cargada", sale);
-    if(paid){ 
-      if(sale.id){
-        if(sale.order){          
-          _saveSale();
-        }
-        return null;
-      }else{
-        _saveSale();
-      }
-    }else{
-      return null;
-    } 
-
-  },[paid]);// eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(()=>{
-    window.addEventListener("afterprint", ()=>{handleClose()});
-    return ()=>{
-      window.removeEventListener("afterprint", ()=>{handleClose()});
+    const handlePrint = ()=>{
+        const ticket = window.open("", "","width=600,height=100");
+        ticket.document.write(
+            getHTML()
+        );
     }
-  },[])// eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <>
-      <button
-        className={`btn btn-${btn} ml-2 d-print-none`}
-        disabled={sale.order ? false : !paid}
-        onClick={handlePrintShow}
-      >
-        <i className={text ? "fas fa-print mr-1" : "fas fa-print"}></i>
-        {text}
-      </button>
+    
+    useEffect(()=>{
+        handlePrint();
+    });
 
-      <div
-        className="d-none d-print-block fixed-top bg-white"
-        style={{ maxWidth: 380 }}
-        id={"print_sale_" + id}
-      >
+    return(
+        <></>
+    )
+}
+
+function getHTML(sale){
+    return `
+   
         <div className="row">
           <div className="col">
             <div className="card m-0">
@@ -156,8 +33,8 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
                   style={{ fontSize: 28, fontFamily: "sans-serif" }}
                 >
                   <i>
-                    {order ? "Pedido" : "Nota"}:{" "}
-                    <strong>{order ? order : id}</strong>
+                    ${sale.id ? "Pedido" : "Nota"}
+                    <strong>${sale.id}</strong>
                   </i>
                 </h4>
                 <h6
@@ -238,16 +115,15 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
                 </tr>
               </thead>
               <tbody>
-                {items.map((item, index) => {
+                {sale.items.map((item, index) => {
                   const total = parseFloat(item.cant * item.price);
-                  totalItems += total;  
                   return (
                     <tr key={index} className="text-capitalize">
                       <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
                         {item.cant}
                       </td>
                       <td style={{ fontSize: 22, fontFamily: "sans-serif" }}>
-                        {item.producto}
+                        {item.name}
                       </td>
                       <td
                         className="text-right"
@@ -262,23 +138,23 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
               <tfoot>
                 <tr>
                   <td className="text-right" colSpan="3">
-                    {discount ? (
+                    {descuento ? (
                       <>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Subtotal: <label>$ {totalItems}</label>
+                          Subtotal: <label>$ {subtotal}</label>
                         </h4>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Descuento: <label>$ {discount}</label>
+                          Descuento: <label>$ {descuento}</label>
                         </h4>
                       </>
                     ) : null}
                     <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
                       Total: <label>$ {total}</label>
                     </h4>
-                    {abonado ? (
+                    {payments ? (
                       <>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Abonado: <label>$ {abonado}</label>
+                          Abonado: <label>$ {payments}</label>
                         </h4>
                         {saldo ? (
                           <h4
@@ -312,7 +188,5 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
             </li>
           </ul>
         </div>
-      </div>
-    </>
-  );
+    `
 }

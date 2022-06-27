@@ -22,6 +22,8 @@ export default function ListSalesBtn() {
     },
 
     handleSelectSale = (saleSelected) => {
+      console.log("Venta seleccionada", saleSelected);
+
       let pagado = 0;
       
       saleSelected.payments.forEach((pay) => (pagado = pay.total));
@@ -41,6 +43,7 @@ export default function ListSalesBtn() {
         branch_id: saleSelected.branch.id,
         created_at: saleSelected.created_at,
         activitys: saleSelected.activity,
+        order: saleSelected.order ?? 0,
       })
 
       return pagado;

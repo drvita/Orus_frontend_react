@@ -11,7 +11,7 @@ export default function CardDiscount({
     discount: null,
     toPaid: 0,
   });
-
+  
   const setDiscount = () => {
     const isNumeric = /^[0-9]+$/gms;
     const isPercen = /^[0-9]{2,3}%$/gms;
@@ -27,9 +27,10 @@ export default function CardDiscount({
 
     if (state.discount.match(isNumeric)) {
       value = parseInt(state.discount);
+      value = value > data.total ? data.total : parseInt(state.discount);
     } else if (state.discount.match(isPercen)) {
       const percent = parseInt(state.discount.replace("%", "")) / 100;
-      value = parseInt(data.total * percent);
+      value = percent >= 1 ? data.total : parseInt(data.total * percent);
     }
 
     _handleSetDiscount("sale", {

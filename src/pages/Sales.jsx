@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import InputSearchItem from '../components/Sales/views/InputSearchItem';
 import DiscountBtnComponent from "../components/Sales/views/DiscountBtn";
 import ListSalesBtn from "../components/Sales/views/ListSalesBtn";
-import PrintSaleComponent from "../components/Sales/views/Print_sale";
+import PrintSaleComponent from '../components/print/PrintSale';
 import PaymentBtnComponent from "../components/Sales/views/PaymentBtn";
 import EraseBtn from "../components/Sales/views/EraseSaleBtn";
 import CustomerBtnComponent from "../components/Sales/views/CustomerBtn";
@@ -21,18 +21,20 @@ import { AuthContext } from "../context/AuthContext";
 //Hook
 import useSales from '../hooks/useSale';
 
+//Helpers
+import helpers from '../components/Sales/helpers';
 
 export default function IndexSalesComponent(props) {
 
   const {auth} = useContext(AuthContext);
   const hookSale = useSales();
-
-
-  const [state, setState] = useState({
+  const initialState = {
     id: 0,
+    order:0,
     customer: {
       id: 0,
       name: "venta de mostrador",
+      phones:{},
     },
     contact_id: 2,
     items: [],
@@ -43,31 +45,39 @@ export default function IndexSalesComponent(props) {
     payments: [],
     branch_id: auth.branch.id,
     activitys: [],
-  })
+    print: false,
+    isPayed: false,
+  }
 
+
+  const [state, setState] = useState(initialState);
+
+  const pagado  = helpers.getPagado(state.payments) + state.discount;
+  const paid = state.total <= pagado ? true : false;
+  const disabled = (state.order) ? false : (!paid || !state.items.length) ? true : false;
+  useEffect(() => {
+    const total = state.items?.reduce((back, item) => item.total + back, 0);
+    const payments = state.payments?.reduce((back, item) => item.total + back, 0);
+    
+    setState({
+      ...state,
+      isPayed: Boolean(total - state.discount - payments)
+    });
+  }, [state.items, state.payments, state.discount]);
 
   useEffect(() => {
-
-    return () => {
-      console.log("[Orus Systme] Cerrando venta");
-      localStorage.setItem("OrusSales", "{}");
-    };
-
-  }, []);// eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    let sum = 0,
-      pagado = 0;
-
+    let sum = 0;
+    let pagado = 0;
     state.items.forEach((item) => (sum += item.subtotal));
     state.payments.forEach((pay) => (pagado += pay.total));
-
     if(props.match.params.id){
       hookSale.getSaleById(props.match.params.id).then((data)=>{
         if(data){
+          console.log(data.data);
           setState({
             ...state,
             id: data.data.id,
+            order: data.data.order,
             contact_id: data.data.customer.id,
             items: data.data.items,
             session: data.data.session,
@@ -77,18 +87,22 @@ export default function IndexSalesComponent(props) {
             payments: data.data.payments, 
             branch_id:data.data.branch.id,
             created_at: data.data.created_at,
-            activitys: data.data.activity,
-            pagado                                   
+            activitys: data.data.activity,            
+            customer:data.data.customer,  
+            pagado,                
           })
         }
       })
     }else{
+      console.log("Entrando al ELSE");
       setState({
         ...state,
         pagado                                         
-      })
+      }) 
     }
   },[]);// eslint-disable-line react-hooks/exhaustive-deps
+
+
   const handleSet = (obj) => {
     return new Promise(done => {
       setState(obj);
@@ -96,6 +110,43 @@ export default function IndexSalesComponent(props) {
     });
   }
 
+  const saveSale = ()=>{
+    console.log("Save sale Function");
+    const returnedSale = hookSale.saveSale(state);
+
+      returnedSale.then((data)=>{
+        if(data.data){
+          setState({
+            ...state,
+            id: data.data.id,
+          })
+          window.Swal.fire({
+            title: "Venta Guardada correctamente",
+            text: `¿Quieres imprimir el ticket de la venta?`,
+            icon: "success",
+            showCancelButton: true,
+            confirmButtonText: "Imprimir",
+            cancelButtonText: "Cancelar",
+            showLoaderOnConfirm: true,
+          }).then(({ dismiss }) => {
+            if (!dismiss) {
+              //Change print state
+              setState({
+                ...state,
+                print: true,
+              })
+            }else{
+              helpers.confirm("Cerrar la venta actual", () => {                 
+                setState(initialState);                                          
+              });
+            }
+          });
+        }
+        else{
+          console.error("")
+        }
+      })
+  };
 
   return (
     <SaleContext.Provider value={{ ...state, set: handleSet }}>
@@ -151,7 +202,23 @@ export default function IndexSalesComponent(props) {
 
               <PaymentBtnComponent/>
 
-              <PrintSaleComponent/>
+             <button
+                className="btn btn-primary ml-3"                
+                disabled = {disabled}
+                onClick={() => setState({ ...state, print: !state.print })}
+              >
+                <i className="fas fa-print mr-2"></i>
+                Imprimir
+              </button>
+
+
+              {state.print && (
+                <PrintSaleComponent                          
+                  data = {state}
+                  setPrint={() => setState({ ...state, print: false })}                  
+                />
+              )}
+
             </div>
           </div>
         </div>

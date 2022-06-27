@@ -78,13 +78,11 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                   type="text"
                   className="form-control"
                   placeholder="Buscar por folio o nombre"
-                  onChange={({ target }) => handleChangeSearch(target)}
-                  /* onKeyPress={({ key }) => handleSearchEnter(key)} */
+                  onChange={({ target }) => handleChangeSearch(target)}              
                 />
                 <button
                   type="button"
-                  className="btn btn-default ml-1"
-                  /* onClick={() => handleSearchEnter("Enter")} */
+                  className="btn btn-default ml-1"                  
                 >
                   <i className="fas fa-search"></i>
                 </button>

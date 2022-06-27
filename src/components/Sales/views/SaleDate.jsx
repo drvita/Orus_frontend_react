@@ -12,10 +12,10 @@ export default function CustomerBtnComponent() {
             <span className="mx-1">
             {moment(sale.created_at).format("L")}
             </span>
-            {sale.pedido ? (
+            {sale.order ? (
             <>
                 <label className="mx-1">Pedido:</label>
-                <span className="mx-1">{sale.pedido}</span>
+                <span className="mx-1">{sale.order}</span>
             </>
             ) : null}
         </div>

@@ -118,6 +118,7 @@ export default function AsistentComponent(props) {
     }
   };
   const handleChangeInput = (key, value) => {
+    console.log(key, value);
     if (key === "exam") {
       if (value.category_id) {
         handleGetCategories(value.category_id);
@@ -166,6 +167,8 @@ export default function AsistentComponent(props) {
     const { _getCategory } = this.props;
     _getCategory({ id: cat_id });
   };
+
+
   const executeHook = (data) => {
     orderHook.saveOrder(data).then(({ data }) => {
       if (data) {
@@ -184,7 +187,7 @@ export default function AsistentComponent(props) {
                 ...data.sale,
                 payments: data.sale.payments,
                 paid: data.sale.paid,
-                paciente: data.paciente,
+                customer: data.paciente,
               },
               print: true,
             });

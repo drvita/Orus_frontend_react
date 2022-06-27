@@ -4,7 +4,7 @@ moment.locale("es");
 
 export default function HTMLOrderPrint(sale, branch) {
   const amount = sale.total - sale.paid;
-  const phone = Object.values(sale.paciente.phones).reduce(
+  const phone = Object.values(sale.customer.phones ?? {}).reduce(
     (current, phone) => (phone ? phone : current),
     "--"
   );
@@ -39,7 +39,7 @@ export default function HTMLOrderPrint(sale, branch) {
     </div>
 
     <h4 style="font-size: 22; font-family: sans-serif; text-align: center; text-transform: uppercase;">
-      ${sale.paciente?.name ? sale.paciente.name : "Venta de mostrador"}
+      ${sale.customer?.name ? sale.customer.name : "Venta de mostrador"}
       <br />
       <strong>
         <em style="font-size: 18">

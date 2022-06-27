@@ -16,11 +16,8 @@ function SearchCustomerModal({ handleClose: _close }) {
   });
 
   const [customers, setCustomers ] = useState([]);
-
   const sale = Sale();
-
   const { auth } = useContext(AuthContext);
-
   const  _contacts  = useContact();
 
   //Functions
@@ -63,7 +60,6 @@ function SearchCustomerModal({ handleClose: _close }) {
     },
     handleClickCustomer = (e, customer) => {
       e.preventDefault();
-      
       if (sale.customer.id !== customer.id) {
         if (![0, 2].includes(sale.customer.id)) {
           window.Swal.fire({  
@@ -75,12 +71,13 @@ function SearchCustomerModal({ handleClose: _close }) {
             cancelButtonText: "Cancelar",
             showLoaderOnConfirm: true,
           }).then(({ dismiss }) => {
-            if (!dismiss) {                          
+            if (!dismiss) {                         
               sale.set({
                 id: 0,
                 customer: {
                   id:customer.id,
                   name: customer.name,
+                  phones: customer.phones ?? {},
                 },
                 contact_id: customer.id,
                 items: [],
@@ -100,6 +97,7 @@ function SearchCustomerModal({ handleClose: _close }) {
             customer:{
               id: customer.id,
               name: customer.name ? customer.name : "Venta de mostrador",
+              phones: customer.phones ?? {},
             },
             contact_id: customer.id
           }).then(() =>  _close());

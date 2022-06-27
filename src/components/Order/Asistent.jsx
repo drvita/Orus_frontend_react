@@ -168,7 +168,6 @@ export default function AsistentComponent(props) {
     _getCategory({ id: cat_id });
   };
 
-
   const executeHook = (data) => {
     orderHook.saveOrder(data).then(({ data }) => {
       if (data) {
@@ -315,7 +314,8 @@ export default function AsistentComponent(props) {
                 );
 
                 if (state.id) return true;
-                if (!amount) return false;
+                if (amount) return true;
+
                 return !Boolean(
                   state.sale.total - state.sale.discount - amount
                 );

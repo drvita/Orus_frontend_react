@@ -11,7 +11,7 @@ export default function CardDiscount({
     discount: null,
     toPaid: 0,
   });
-  
+
   const setDiscount = () => {
     const isNumeric = /^[0-9]+$/gms;
     const isPercen = /^[0-9]{2,3}%$/gms;
@@ -88,10 +88,20 @@ export default function CardDiscount({
           ) : (
             <>
               <h5 className="font-weight-bold">
-                Descuento:
-                <span className="font-weight-normal ml-2">
-                  $ {data.discount?.toFixed(2)}
-                </span>
+                {disabled ? (
+                  <span className="text-danger text-sm">
+                    <i className="fas fa-info-circle mr-2"></i>
+                    Para aplicar un <strong>descuento</strong>, elimine primero
+                    los abonos.
+                  </span>
+                ) : (
+                  <>
+                    Descuento:
+                    <span className="font-weight-normal ml-2">
+                      $ {data.discount?.toFixed(2)}
+                    </span>
+                  </>
+                )}
               </h5>
 
               <div className="btn-group">

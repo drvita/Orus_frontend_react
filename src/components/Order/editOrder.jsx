@@ -69,8 +69,8 @@ export default function EditOrderComponent(props) {
   const { loading: LOADING } = props;
 
   const fNacimiento =
-    new Date(paciente.f_nacimiento ?? "") < new Date()
-      ? moment(paciente.f_nacimiento)
+    new Date(paciente.birthday ?? "") < new Date()
+      ? moment(paciente.birthday)
       : null;
 
   const telefonos = Object.values(paciente.phones ?? {}).filter((tel) => tel);
@@ -211,7 +211,7 @@ export default function EditOrderComponent(props) {
           updated_at: data.updated_at ?? null,
           sale: {
             ...(data.sale ?? {}),
-            paciente: data.paciente,
+            customer: data.paciente,
           },
           contact_id: data.paciente.id,
           activitys: data.activity ?? [],
@@ -267,9 +267,7 @@ export default function EditOrderComponent(props) {
                   <h6 className="mb-2">
                     <i className="mr-1 fas fa-phone"></i>
                     <span className="mx-1 text-muted">
-                      {telefonos.map((tel, index) =>
-                        index ? `, ${tel}` : `${tel}`
-                      )}
+                      {telefonos.join(" ")}
                     </span>
                   </h6>
                 ) : (

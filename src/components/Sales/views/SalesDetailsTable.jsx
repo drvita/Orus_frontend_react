@@ -21,6 +21,8 @@ export default function SalesDetailsTableComponent() {
   const { auth } = useContext(AuthContext);
   const {roles} = auth;
 
+  //console.log(sale.id ? console.log("Esta venta ya tiene un ID"): console.log("Esto es una venta nueva"));
+
    const [data, setData] = useState({
       showUpdateItem: false,
       showPaymentDetails: false,
@@ -166,7 +168,7 @@ export default function SalesDetailsTableComponent() {
           {sale.items && sale.items.length ? (
             <>
               {sale.items.map((item, index) => {
-                const disabled = (sale.subtotal && paid) || sale.payments.length || sale.discount;
+                const disabled = (sale.subtotal && paid) || sale.payments.length || sale.discount;                
                 const diffDay = moment(Date.now()).diff(moment(sale.created_at),"days");
                 if (!item.store_items_id) return null;
                 return (
@@ -233,8 +235,11 @@ export default function SalesDetailsTableComponent() {
           {sale.payments.length ? (
             <>
               {sale.payments.map((pay, index) => {
-                const diffPay = moment(Date.now()).diff(moment(pay.created_at),"days");
-                  const disabled = (roles === 'admin') ? false : (roles === 'ventas') ? diffPay === 0 ? false: true : false; 
+                //const diffPay = moment(Date.now()).diff(moment(pay.created_at),"days");
+                const disabled = (sale.id && !sale.order) ? true : (sale.id && sale.order) ? sale.isPayed ? true: false : false
+                //const disabled = sale.id || (sale.id && sale.order && sale.isPayed) ? true : false;
+                //const disabled = (sale.id) || (sale.id && sale.order && sale.isPayed) ? true : sale.id && sale.order && sale.isPayed ? false : true;
+                //const disabled = (roles === 'admin') ? false : (roles === 'ventas') ? diffPay === 0 ? false: true : false; //ok
                 return (
                   <tr key={index}>
                     {handleDeleteBtn(handleDeletePayment, pay, disabled)}               
@@ -267,6 +272,18 @@ export default function SalesDetailsTableComponent() {
               })}
             </>
           ) : null}
+
+          {/* {sale.thereNews ? (
+             <tr className="table-info">
+             <td colSpan="2">
+               <span className=" w-full d-block text-uppercase text-center text-bold">
+                 <i className="fas fa-info-circle mr-1 text-primary"></i>
+                 Para guardar los cambios presione el boton ¡Imprimir!
+               </span>
+             </td>
+           </tr>        
+          ): null} */}
+
           {paid && sale.subtotal ? (
             <tr className="table-info">
               <td colSpan="2">
@@ -277,14 +294,17 @@ export default function SalesDetailsTableComponent() {
               </td>
             </tr>
           ) : null}
+
         </tbody>
       </table>
+
       {data.showPaymentDetails && (
         <PaymentDetails
           handleClose={handleClosePaymentDetails}
           payment={data.payment}
         />
       )}
+
       {data.showUpdateItem && (
         <UpdateItemModal
           item={data.item}
@@ -292,6 +312,9 @@ export default function SalesDetailsTableComponent() {
           close={handleCloseUpdateItem}
         />
       )}
+
+      
+
     </>
   );
 }

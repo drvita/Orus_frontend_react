@@ -30,6 +30,7 @@ export default function EraseSaleBtnComponent(props) {
         total: 0,
         payments: [],
         branch_id: auth.branch.id,
+        isPayed: false,
       })
 
       if( props.match.params.id){

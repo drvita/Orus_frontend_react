@@ -44,6 +44,8 @@ export default function ListSalesBtn() {
         created_at: saleSelected.created_at,
         activitys: saleSelected.activity,
         order: saleSelected.order ?? 0,
+        thereNews: false,
+        load: true,
       })
 
       return pagado;

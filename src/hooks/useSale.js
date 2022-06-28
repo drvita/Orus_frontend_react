@@ -24,6 +24,7 @@ export default function useSales(ctx){
 
 
     const saveSale = async (sale) => {
+      console.log("Data recibida", sale);
         sale.payments.forEach(payment => {
           if(typeof payment.id === "string"){
             payment.id = 0;
@@ -39,12 +40,11 @@ export default function useSales(ctx){
         delete data.created_at
         delete data.customer
 
-
-
         try {
           const { id } = sale,
             url = setUrl("sales", id),
             method = id ? "PUT" : "POST";
+            console.log("Método HTTP:", method);
             return await api(url, method, data)
         } catch (e) {
           console.error(

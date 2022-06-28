@@ -31,8 +31,11 @@ export default function PrintSaleComponent(props) {
   }, []);
 
   return <div className="load" style={{
-    position:'absolute',
+    position:'fixed',
+    zIndex:'5',
     width:'100%',
+    top:0,
+    left:0,
     height:'100%',
     display:'flex',
     flexDirection:'column',

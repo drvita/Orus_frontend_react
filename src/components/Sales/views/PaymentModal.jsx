@@ -22,6 +22,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
     bank_id: null,
     details: null,
     auth: null,
+    forPaid: forPaid,
   });
 
   //Functions
@@ -251,7 +252,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
               type="button"
               className="btn btn-primary"
               onClick={() => handleSetPayment()}
-              disabled={!data.total}
+              disabled={!data.total || data.total>data.forPaid}
             >
               <i className="fas fa-money-bill mr-1"></i>
               Abonar

@@ -47,39 +47,56 @@ export default function IndexSalesComponent(props) {
     activitys: [],
     print: false,
     isPayed: false,
+    thereNews: false,
+    load: false,
   };
 
   const [state, setState] = useState(initialState);
 
-  const pagado = helpers.getPagado(state.payments) + state.discount;
-  const paid = state.total <= pagado ? true : false;
-  const disabled = state.order
+  //const pagado = helpers.getPagado(state.payments) + state.discount;
+  //const paid = state.total <= pagado ? true : false;
+  /* const disabled = state.order
     ? false
     : !paid || !state.items.length
     ? true
-    : false;
+    : false; */
+
   useEffect(() => {
-    const total = state.items?.reduce((back, item) => item.total + back, 0);
-    const payments = state.payments?.reduce(
-      (back, item) => item.total + back,
-      0
-    );
+    const total = state.items?.reduce((back, item) => item.price + back, 0);
+    const payments = state.payments?.reduce((back, item) => item.total + back,0);
+    let payed = total === 0 && payments === 0 ? false : Boolean(!(total - state.discount - payments));
+    let thereNews = true;
+
+    if(!state.items.length){
+      payed = false;
+    }
+
+    if(state.load){
+      thereNews = false;
+    }
 
     setState({
       ...state,
-      isPayed: Boolean(total - state.discount - payments),
+      isPayed: payed,
+      thereNews: thereNews,
+      load: false,
     });
   }, [state.items, state.payments, state.discount]);
 
+  useEffect(()=>{
+    if(state.isPayed){
+      if(!state.id && !state.order){
+        //Guarda venta normal
+        saveSale();
+      }      
+    }
+  },[state.isPayed]);
+
+
   useEffect(() => {
-    let sum = 0;
-    let pagado = 0;
-    state.items.forEach((item) => (sum += item.subtotal));
-    state.payments.forEach((pay) => (pagado += pay.total));
     if (props.match.params.id) {
       hookSale.getSaleById(props.match.params.id).then((data) => {
         if (data) {
-          console.log(data.data);
           setState({
             ...state,
             id: data.data.id,
@@ -95,15 +112,10 @@ export default function IndexSalesComponent(props) {
             created_at: data.data.created_at,
             activitys: data.data.activity,
             customer: data.data.customer,
-            pagado,
+            thereNews: false,
+            load: true,
           });
         }
-      });
-    } else {
-      console.log("Entrando al ELSE");
-      setState({
-        ...state,
-        pagado,
       });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -115,42 +127,103 @@ export default function IndexSalesComponent(props) {
     });
   };
 
-  // const saveSale = () => {
-  //   console.log("Save sale Function");
-  //   const returnedSale = hookSale.saveSale(state);
+  /* useEffect(()=>{
+    console.log("Validando");
+    if(state.isPayed && state.id && !state.order){
+      console.log("Venta normal pagada");
+      saveSale();
+    }
 
-  //   returnedSale.then((data) => {
-  //     if (data.data) {
-  //       setState({
-  //         ...state,
-  //         id: data.data.id,
-  //       });
-  //       window.Swal.fire({
-  //         title: "Venta Guardada correctamente",
-  //         text: `¿Quieres imprimir el ticket de la venta?`,
-  //         icon: "success",
-  //         showCancelButton: true,
-  //         confirmButtonText: "Imprimir",
-  //         cancelButtonText: "Cancelar",
-  //         showLoaderOnConfirm: true,
-  //       }).then(({ dismiss }) => {
-  //         if (!dismiss) {
-  //           //Change print state
-  //           setState({
-  //             ...state,
-  //             print: true,
-  //           });
-  //         } else {
-  //           helpers.confirm("Cerrar la venta actual", () => {
-  //             setState(initialState);
-  //           });
-  //         }
-  //       });
-  //     } else {
-  //       console.error("");
-  //     }
-  //   });
-  // };
+    else if(state.isPayed && state.id && state.order){
+      console.log("Pedido pagado");
+      return null
+    }
+
+    else if(state.id && state.order){
+      console.log("Esto es un pedido");
+      if(state.isPayed){
+        saveSale();
+      }else{        
+        console.log("Pedido no pagado");
+        return null;
+      }
+    }
+    else{
+      if(!state.isPayed) return null
+      saveSale();
+    }
+  },[state.isPayed]) */
+
+ const saveSale = () => {
+  if(state.id && state.order){
+    console.log("Guardando pedido");
+    const returnedSale = hookSale.saveSale(state);
+    returnedSale.then((data)=>{
+      if(data.data){
+        console.log("Data devuelta:", data.data)
+        console.log("[DEBUG] Pedido guardado correctamente");
+        setState({
+          ...state,
+          id: data.data.id,
+          thereNews: false,
+        });
+      }
+    })
+    return null;
+  }
+
+    console.log("Guardando venta normal");
+   const returnedSale = hookSale.saveSale(state);
+   returnedSale.then((data) => {    
+     if (data.data) {
+      console.log("Data devuelta:", data.data)
+       setState({
+         ...state,
+         id: data.data.id,
+       });
+       window.Swal.fire({
+         title: "Venta Guardada correctamente",
+         text: `¿Quieres imprimir el ticket de la venta?`,
+         icon: "success",
+         showCancelButton: true,
+         confirmButtonText: "Imprimir",
+         cancelButtonText: "Cancelar",
+         showLoaderOnConfirm: true,
+       }).then(({ dismiss }) => {
+         if (!dismiss) {
+           //Change print state
+           setState({
+             ...state,
+             print: true,
+           });
+         } else {
+           helpers.confirm("Cerrar la venta actual", () => {
+             setState(initialState);
+           });
+         }
+       });
+     } else {
+       console.error("");
+     }
+   });
+ };
+
+ const validateSale = ()=>{
+  if(state.id && state.order && state.thereNews){
+    saveSale();
+  }
+
+  setState({...state, print: true});
+
+ /*  if(state.id && state.order && state.thereNews){
+    saveSale();
+  } */
+
+ /*  if(state.id && state.order && !state.thereNews){
+    setState({...state, print: true});
+  }
+   */
+ }
 
   return (
     <SaleContext.Provider value={{ ...state, set: handleSet }}>
@@ -179,7 +252,7 @@ export default function IndexSalesComponent(props) {
           </nav>
           <div
             className="overflow-auto text-right p-0 border border-gray"
-            style={{ height: "27rem" }}
+            style={{minHeight:'65vh'}}
           >
             <SalesDetailsTableComponent />
           </div>
@@ -201,9 +274,9 @@ export default function IndexSalesComponent(props) {
               <PaymentBtnComponent />
 
               <button
-                className="btn btn-primary ml-3"
-                disabled={disabled}
-                onClick={() => setState({ ...state, print: !state.print })}
+                className="btn btn-primary ml-3"                
+                onClick={() => validateSale()}
+                disabled = {!state.items.length}
               >
                 <i className="fas fa-print mr-2"></i>
                 Imprimir

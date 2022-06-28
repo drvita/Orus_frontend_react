@@ -212,7 +212,7 @@ export default function AsistentComponent(props) {
   }, []);
 
   return (
-    <div className="mainAssitentComponent">
+    <div className="mainAssitentComponent ">
       <div className="card card-warning card-outline col-lg-12">
         <div className="card-header">
           <h3 className="card-title">
@@ -307,7 +307,7 @@ export default function AsistentComponent(props) {
               data={state.sale ?? {}}
               handleSetDiscount={handleChangeInput}
               disabled={(() => {
-                const amount = state.sale.payments.reduce(
+                const amount = state.sale.payments?.reduce(
                   (back, pay) => pay.total + back,
                   0
                 );

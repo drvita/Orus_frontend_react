@@ -3,6 +3,7 @@ import "moment/locale/es";
 moment.locale("es");
 
 export default function HTMLOrderPrint(sale, branch) {
+  //console.log(sale);
   const amount = sale.total - sale.paid;
   const phone = Object.values(sale.customer.phones ?? {}).reduce(
     (current, phone) => (phone ? phone : current),

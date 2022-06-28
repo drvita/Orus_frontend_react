@@ -118,7 +118,6 @@ export default function AsistentComponent(props) {
     }
   };
   const handleChangeInput = (key, value) => {
-    console.log(key, value);
     if (key === "exam") {
       if (value.category_id) {
         handleGetCategories(value.category_id);

@@ -14,7 +14,7 @@ export default function CardDiscount({
 
   const setDiscount = () => {
     const isNumeric = /^[0-9]+$/gms;
-    const isPercen = /^[0-9]{2,3}%$/gms;
+    const isPercen = /^[0-9]{1,3}%$/gms;
     let value = 0;
 
     if (!state.discount) {
@@ -88,7 +88,7 @@ export default function CardDiscount({
           ) : (
             <>
               <h5 className="font-weight-bold">
-                {disabled ? (
+                {disabled && !state.discount ? (
                   <span className="text-danger text-sm">
                     <i className="fas fa-info-circle mr-2"></i>
                     Para aplicar un <strong>descuento</strong>, elimine primero

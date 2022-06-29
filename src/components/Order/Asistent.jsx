@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-lone-blocks */
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 //Context
 import { OrderContext } from "../../context/OderContext";
 //Hooks
@@ -206,11 +206,7 @@ export default function AsistentComponent(props) {
       panel: "inbox",
     });
   };
-
-  useEffect(() => {
-    // console.log("[DEBUG] State:", state.sale);
-  }, []);
-
+  
   return (
     <div className="mainAssitentComponent ">
       <div className="card card-warning card-outline col-lg-12">

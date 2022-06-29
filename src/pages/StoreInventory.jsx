@@ -135,8 +135,6 @@ export default function Inventory(){
     hookStore.getItems(filters).then((data)=>{
       if(data){
         const noGraduationData = data.data.filter((item) => item.grad !== '+000000' );
-
-        console.log("[DEBUG] Items api:", noGraduationData);
         setState({
           ...state, 
           items: noGraduationData ? noGraduationData : [],

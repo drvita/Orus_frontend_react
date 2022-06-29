@@ -3,13 +3,25 @@ import "moment/locale/es";
 moment.locale("es");
 
 export default function HTMLOrderPrint(sale, branch) {
-  // console.log("[DEBUG] Data sale:", sale);
-  const amount = sale.total - sale.paid;
+  let amount = sale.total - sale.paid;
+  let abonos = 0;
   const phone = Object.values(sale.customer?.phones ?? {}).reduce(
     (current, phone) => (phone ? phone : current),
     "--"
   );
 
+  if(!sale.paid){
+    if(sale.discount === sale.subtotal){
+      amount = 0;
+    }
+    abonos = sale.payments.reduce((back, item) => item.total + back,0);
+    amount = sale.total - abonos - sale.discount;
+  }
+
+  if(sale.discount ===  sale.subtotal){
+    amount = 0;
+  }
+  
   return `
   <div style="width:100%; padding: 0px; margin: 0px;">
     <h6 style="font-size: 14; font-family:sans-serif; text-align: right; margin: 0px">
@@ -75,7 +87,7 @@ export default function HTMLOrderPrint(sale, branch) {
               ${item.cant}
             </td>
             <td style="font-size: 14; font-family: sans-serif">
-              ${item.name}
+              ${item.name ?? item.producto}
             </td>
             <td style="font-size: 16; font-family: sans-serif; text-align:right;">                    
               $ ${item.cant * item.price}
@@ -88,13 +100,13 @@ export default function HTMLOrderPrint(sale, branch) {
         <tr>
           <td colspan="3">
             ${
-              sale.descuento !== 0
+              sale.descuento !== 0 || sale.discount !== 0
                 ? `<div style = "width:100%">
                   <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px; margin-top:12px">
                     Subtotal: <label>${sale.subtotal ?? 0}</label>
                   </h4>
                   <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px;">
-                    Descuento: <label>${sale.descuento ?? 0}</label>
+                    Descuento: <label>${sale.descuento ?? sale.discount}</label>
                   </h4>
                 </div>
                 <h4 style= "font-size:18; width:100%; font-family: sans-serif; text-align: right; margin:0px;">
@@ -108,7 +120,7 @@ export default function HTMLOrderPrint(sale, branch) {
 
             <div style = "width:100%;">
               <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px;">
-                Abonado: <label>$ ${sale.paid ?? 0}</label>
+                Abonado: <label>$ ${sale.paid ?? abonos}</label>
               </h4>
               ${
                 amount
@@ -117,7 +129,7 @@ export default function HTMLOrderPrint(sale, branch) {
                     </h4>`
                   : `<div style="text-align:center; width: 100%">
                      <h3 style="font-weight:bold">
-                      ::: Cuenta Pagada :::
+                      ::: Cuenta Pagada :::                      
                     </h3>
                   </div>`
               }
@@ -140,11 +152,5 @@ export default function HTMLOrderPrint(sale, branch) {
     </div>
   </div>
   `;
-}
+};
 
-/**
- * <div style = "position: absolute; width:80%; height: 12%; display:flex; justify-content: flex-end; align-items: center">
-      <button style="width:25%; background-color: #3DC225; border:none; margin-right:3%; padding: 3%"; border-radius:5px; color:#FFFFFF; font-size:5%">Imprimir</button>
-      <button style="width:25%; background-color: #DF1717; border:none; padding: 3%"; border-radius:5px; color:#FFFFFF; font-size:5%">Cancelar</button>
-    </div>
- */

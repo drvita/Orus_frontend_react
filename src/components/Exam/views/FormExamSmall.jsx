@@ -16,7 +16,6 @@ export default function FormExamSmall({ data, handleEdit: _handleEdit }) {
   };
 
   useEffect(() => {
-    console.log("[DEBUG] Load exam:", data);
     setState({
       ...state,
       adicion_media_od: data.adicion_media_od,
@@ -96,7 +95,6 @@ export default function FormExamSmall({ data, handleEdit: _handleEdit }) {
           </button>
           <button
             className="btn btn-warning"
-            onClick={() => console.log("[DEBUG] Save the exam")}
             disabled={true}
           >
             <i className="fas fa-save mr-2"></i>

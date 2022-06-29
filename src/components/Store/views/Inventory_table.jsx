@@ -10,10 +10,7 @@ export default function InventoryTableView({ header, body, itemsProp }) {
     items: [],
   });
 
-  //const [items, setItems] = useState(itemsProp);
-
   const handleUpdateItems = (newItem) => {
-    console.log(newItem);
     const items = [...state.items];
 
     items.forEach((item) => {
@@ -35,10 +32,6 @@ export default function InventoryTableView({ header, body, itemsProp }) {
       items: itemsProp,
     });
   }, []);
-
-  useEffect(() => {
-    console.log("RENDER");
-  }, [state.items]);
 
   return (
     <div className="table-responsive" style={{ height: "100vh" }}>

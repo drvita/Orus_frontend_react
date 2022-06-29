@@ -31,7 +31,6 @@ export default function DiscountBtnComponent() {
           });
 
         } else if (discount.match(isPercen)) {
-
           const percent = parseInt(discount.replace("%", "")) / 100,
           value = parseInt(sum * percent);
           sale.set({

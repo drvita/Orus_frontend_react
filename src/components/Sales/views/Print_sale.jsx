@@ -108,7 +108,6 @@ export default function PrintSaleComponent({ payed: abonado = 0, order, text, bt
   };
 
    useEffect(()=>{
-    console.log("Venta cargada", sale);
     if(paid){ 
       if(sale.id){
         if(sale.order){          

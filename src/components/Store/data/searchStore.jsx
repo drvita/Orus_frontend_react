@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-//import { connect } from "react-redux";
 
 //Hooks
 import useProducts from "../../../hooks/useProducts";
@@ -10,19 +9,15 @@ function SearchItemsComponent(props) {
 
   // Props and vars
   const {
-    //meta,
     item = { name: "" },
-    //_setList,
     handleItemSelect: _handleItemSelect,
   } = props;
 
-  //perPage = 10;
-
   // States
   const [search, setSearch] = useState(item.name),
-    [timer, setTimer] = useState(""),
-    [load, setLoad] = useState(false);
-  const [items, setItems] = useState([]);
+  [timer, setTimer] = useState(""),
+  [load, setLoad] = useState(false),
+  [items, setItems] = useState([]);
 
   // Functions
   const handleChangeSearch = ({ target }) => {
@@ -57,38 +52,25 @@ function SearchItemsComponent(props) {
 
     if (!search.length && items.length) {
       if (timer) clearTimeout(timer);
-      /* _setList({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      }); */
       setLoad(false);
     }
-  }, [search]);
 
-  useEffect(() => {
-    return () => {
-      /* _setList({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      }); */
-    };
-  }, []);
+    if(!search){
+      setItems([]);
+    }
+  }, [search]);
 
   return (
     <>
       <label>
         Producto
         {load ? (
-          <small
+          <span
             className="position-absolute text-primary ml-2"
             style={{ zIndex: "101", top: "0" }}
           >
             Buscando...
-          </small>
+          </span>
         ) : null}
       </label>
       <input

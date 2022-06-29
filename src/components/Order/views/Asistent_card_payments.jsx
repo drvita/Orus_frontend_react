@@ -8,19 +8,21 @@ export default function CardOrderPayments({
   disabled,
   handleSetPayments: _handleSetPayments,
 }) {
+
+  console.log(data);
   const [state, setState] = useState({
     showModal: false,
     amount: 0,
     toPaid: 0,
   });
   const handleToPaid = () => {
-    const amount = data.payments.reduce((back, pay) => pay.total + back, 0);
-    const toPaid = data.total - data.discount - amount;
+    const amount = data.payments?.reduce((back, pay) => pay.total + back, 0);
+    const toPaid = data.total - data.discount - (amount ?? 0);
 
     setState({
       ...state,
       toPaid,
-      amount,
+      amount: amount ?? 0,
     });
   };
 
@@ -39,7 +41,7 @@ export default function CardOrderPayments({
         </div>
 
         <div className="card-body">
-          {data.payments.length ? (
+          {data.payments?.length ? (
             <div className="col-lg-12">
               {data.payments.map((payment, index) => (
                 <div className="row" id={payment.id} key={index}>

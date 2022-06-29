@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import moment from "moment";
-import { useEffect } from "react";
 
 export default function CardShowExam({
   data,
@@ -8,10 +7,8 @@ export default function CardShowExam({
   handleRemove: _handleRemove,
   handleEdit: _handleEdit,
 }) {
-  useEffect(() => {
-    // console.log("[DEBUG] Load exam:", data);
-  }, []);
 
+ 
   return (
     <>
       <p className="card-text">

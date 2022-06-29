@@ -21,8 +21,6 @@ export default function SalesDetailsTableComponent() {
   const { auth } = useContext(AuthContext);
   const {roles} = auth;
 
-  //console.log(sale.id ? console.log("Esta venta ya tiene un ID"): console.log("Esto es una venta nueva"));
-
    const [data, setData] = useState({
       showUpdateItem: false,
       showPaymentDetails: false,
@@ -127,39 +125,6 @@ export default function SalesDetailsTableComponent() {
       });
     };
 
-     
-  /* const handlePrintShow = () => {
-    _saleHook.saveSale(sale);
-    window.addEventListener("afterprint", handlePrint);
-    window.print();
-  }; */
-
-
- /*  const handlePrint = () => {
-    const path = window.location.pathname;
-
-    if (path !== "/notas") {
-      return false;
-    }
-
-    helpers.confirm("Cerrar la venta actual", () => {
-      sale.set({
-        id: 0,
-      customer: {
-        id: 0,
-        name: "venta de mostrador",
-      },
-      contact_id: 2,
-      items: [],
-      session: helpers.getSession(),
-      discount: 0,
-      subtotal: 0,
-      total: 0,
-      payments: [],
-      })
-    });
-  }; */
-
 
   return (
     <>
@@ -249,11 +214,7 @@ export default function SalesDetailsTableComponent() {
                         className=" w-full d-block text-uppercase"
                         onClick={(e) => handleShowPaymentDetails(e, pay)}
                       >
-                        <span
-                          className={
-                            pay.id ? "text-success" : "text-warning text-bold"
-                          }
-                        >
+                        <span className = "text-success">
                           Abono
                         </span>
                         <span className="ml-1 text-muted">
@@ -273,16 +234,16 @@ export default function SalesDetailsTableComponent() {
             </>
           ) : null}
 
-          {/* {sale.thereNews ? (
+          {sale.thereNews ? (
              <tr className="table-info">
              <td colSpan="2">
                <span className=" w-full d-block text-uppercase text-center text-bold">
                  <i className="fas fa-info-circle mr-1 text-primary"></i>
-                 Para guardar los cambios presione el boton ¡Imprimir!
+                 {sale.thereNews && sale.isPayed ? "Venta pagada, presiona ¡Imprimir! para guardar los cambios " : "Para guardar los cambios presione el boton ¡Imprimir!"}                                  
                </span>
              </td>
            </tr>        
-          ): null} */}
+          ): null}
 
           {paid && sale.subtotal ? (
             <tr className="table-info">

@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useContext } from "react";
+
 //Components
 import InputSearchItem from "../components/Sales/views/InputSearchItem";
 import DiscountBtnComponent from "../components/Sales/views/DiscountBtn";
@@ -53,13 +54,13 @@ export default function IndexSalesComponent(props) {
 
   const [state, setState] = useState(initialState);
 
-  //const pagado = helpers.getPagado(state.payments) + state.discount;
-  //const paid = state.total <= pagado ? true : false;
-  /* const disabled = state.order
+  const pagado = helpers.getPagado(state.payments) + state.discount;
+  const paid = state.total <= pagado ? true : false;
+  const disabled = state.order
     ? false
     : !paid || !state.items.length
     ? true
-    : false; */
+    : false;
 
   useEffect(() => {
     const total = state.items?.reduce((back, item) => item.price + back, 0);
@@ -127,41 +128,11 @@ export default function IndexSalesComponent(props) {
     });
   };
 
-  /* useEffect(()=>{
-    console.log("Validando");
-    if(state.isPayed && state.id && !state.order){
-      console.log("Venta normal pagada");
-      saveSale();
-    }
-
-    else if(state.isPayed && state.id && state.order){
-      console.log("Pedido pagado");
-      return null
-    }
-
-    else if(state.id && state.order){
-      console.log("Esto es un pedido");
-      if(state.isPayed){
-        saveSale();
-      }else{        
-        console.log("Pedido no pagado");
-        return null;
-      }
-    }
-    else{
-      if(!state.isPayed) return null
-      saveSale();
-    }
-  },[state.isPayed]) */
-
  const saveSale = () => {
   if(state.id && state.order){
-    console.log("Guardando pedido");
     const returnedSale = hookSale.saveSale(state);
     returnedSale.then((data)=>{
-      if(data.data){
-        console.log("Data devuelta:", data.data)
-        console.log("[DEBUG] Pedido guardado correctamente");
+      if(data.data){        
         setState({
           ...state,
           id: data.data.id,
@@ -172,15 +143,9 @@ export default function IndexSalesComponent(props) {
     return null;
   }
 
-    console.log("Guardando venta normal");
    const returnedSale = hookSale.saveSale(state);
    returnedSale.then((data) => {    
      if (data.data) {
-      console.log("Data devuelta:", data.data)
-       setState({
-         ...state,
-         id: data.data.id,
-       });
        window.Swal.fire({
          title: "Venta Guardada correctamente",
          text: `¿Quieres imprimir el ticket de la venta?`,
@@ -189,11 +154,13 @@ export default function IndexSalesComponent(props) {
          confirmButtonText: "Imprimir",
          cancelButtonText: "Cancelar",
          showLoaderOnConfirm: true,
-       }).then(({ dismiss }) => {
+       })
+       .then(({ dismiss }) => {
          if (!dismiss) {
-           //Change print state
+           //Change print state and set ID returned
            setState({
              ...state,
+             id: data.data.id,
              print: true,
            });
          } else {
@@ -201,9 +168,9 @@ export default function IndexSalesComponent(props) {
              setState(initialState);
            });
          }
-       });
+       });  
      } else {
-       console.error("");
+       console.error("Error al guardar la venta");
      }
    });
  };
@@ -214,15 +181,6 @@ export default function IndexSalesComponent(props) {
   }
 
   setState({...state, print: true});
-
- /*  if(state.id && state.order && state.thereNews){
-    saveSale();
-  } */
-
- /*  if(state.id && state.order && !state.thereNews){
-    setState({...state, print: true});
-  }
-   */
  }
 
   return (
@@ -276,7 +234,7 @@ export default function IndexSalesComponent(props) {
               <button
                 className="btn btn-primary ml-3"                
                 onClick={() => validateSale()}
-                disabled = {!state.items.length}
+                disabled = {disabled}
               >
                 <i className="fas fa-print mr-2"></i>
                 Imprimir

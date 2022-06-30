@@ -62,12 +62,14 @@ export default function ShowCardSearch(props) {
 
   useEffect(() => {
     let toTimer = null;
-    if (state.search.length > 5) {
+    if (state.search.length >= 3) {
       if (state.timer) clearTimeout(state.timer);
       toTimer = setTimeout(() => handleSearch(), 2000);
       setState({
         ...state,
         timer: toTimer,
+        contacts: [],
+        meta: {},
       });
     } else if (!state.search.length) {
       if (state.timer) clearTimeout(state.timer);

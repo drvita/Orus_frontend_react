@@ -169,8 +169,27 @@ export default function CardCustomer({
 
               <button
                 className="btn btn-secondary mr-1"
-                onClick={() => setState({ ...state, edit: false })}
-                disabled={!state.validToSave}
+                onClick={() => {
+                  const phonesArray = Object.values(data.phones ?? {});
+                  const phones = phonesArray.filter((ph) => ph);
+
+                  setState({
+                    ...state,
+                    edit: false,
+                    phone: phones[0],
+                    email: data.email,
+                  });
+                }}
+                disabled={(() => {
+                  const phonesArray = Object.values(data.phones ?? {});
+                  const phones = phonesArray.filter((ph) => ph);
+
+                  if (!phones.length) return true;
+                  if (!data.email) return true;
+                  if (!state.validToSave) return true;
+
+                  return false;
+                })()}
               >
                 <i className="fas fa-ban mr-2"></i>
                 Cancelar
@@ -195,6 +214,7 @@ export default function CardCustomer({
             <p className="card-text">
               <i className="fas fa-phone-alt mr-1"></i>
               {state.phone ? state.phone : `Telefono no registrado`}
+              {/* {Object.values(data.phones ?? {}).filter((ph) => ph)[0] ?? "--"} */}
             </p>
           </div>
         )}

@@ -8,16 +8,21 @@ export default function CardOrderPayments({
   disabled,
   handleSetPayments: _handleSetPayments,
 }) {
-
-  console.log(data);
   const [state, setState] = useState({
     showModal: false,
     amount: 0,
     toPaid: 0,
   });
+
   const handleToPaid = () => {
     const amount = data.payments?.reduce((back, pay) => pay.total + back, 0);
     const toPaid = data.total - data.discount - (amount ?? 0);
+
+    console.log(data.total);
+    console.log(data.discount);
+    console.log(amount);
+
+    console.log(data.total - data.discount - amount);
 
     setState({
       ...state,

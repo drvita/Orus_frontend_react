@@ -39,6 +39,9 @@ export default function AsistentComponent(props) {
   const orderContext = useContext(OrderContext);
   const orderHook = useOrder();
 
+
+  console.log(state.sale);
+
   const handleSave = (e) => {
     let categories_wrong = 0;
 
@@ -170,6 +173,8 @@ export default function AsistentComponent(props) {
   const executeHook = (data) => {
     orderHook.saveOrder(data).then(({ data }) => {
       if (data) {
+        console.log("DATA SALE:", data.sale);
+        console.log("STATE SALE:", state.sale);
         window.Swal.fire({
           icon: "success",
           title: "Pedido guardado correctamente",
@@ -180,9 +185,11 @@ export default function AsistentComponent(props) {
             setState({
               ...state,
               id: data.id,
-              sale: {
-                ...state.sale,
-                ...data.sale,
+              sale: {           
+                id: data.sale.id,                
+                total: data.sale.total,
+                subtotal: data.sale.subtotal,
+                discount: data.sale.descuento,
                 payments: data.sale.payments,
                 paid: data.sale.paid,
                 customer: data.paciente,

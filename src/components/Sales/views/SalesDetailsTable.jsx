@@ -136,6 +136,7 @@ export default function SalesDetailsTableComponent() {
                 const disabled = (sale.subtotal && paid) || sale.payments.length || sale.discount;                
                 const diffDay = moment(Date.now()).diff(moment(sale.created_at),"days");
                 if (!item.store_items_id) return null;
+
                 return (
                   <tr key={index}>
                     {handleDeleteBtn(handleDeleteItem, item, disabled)}
@@ -234,12 +235,12 @@ export default function SalesDetailsTableComponent() {
             </>
           ) : null}
 
-          {sale.thereNews ? (
+          {sale.thereNews && sale.order ? (
              <tr className="table-info">
              <td colSpan="2">
                <span className=" w-full d-block text-uppercase text-center text-bold">
                  <i className="fas fa-info-circle mr-1 text-primary"></i>
-                 {sale.thereNews && sale.isPayed ? "Venta pagada, presiona ¡Imprimir! para guardar los cambios " : "Para guardar los cambios presione el boton ¡Imprimir!"}                                  
+                  Para guardar los cambios presione el boton ¡Imprimir!       
                </span>
              </td>
            </tr>        

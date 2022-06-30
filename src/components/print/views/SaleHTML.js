@@ -1,27 +1,21 @@
 import moment from "moment";
 import "moment/locale/es";
+import helpers from '../../Sales/helpers';
 moment.locale("es");
 
 export default function HTMLOrderPrint(sale, branch) {
-  let amount = sale.total - sale.paid;
-  let abonos = 0;
+
+  console.log("Sale recibida:", sale);
+
+  const paid = helpers.getPagado(sale.payments);
+  let amount = sale.total - paid;
+
+
   const phone = Object.values(sale.customer?.phones ?? {}).reduce(
     (current, phone) => (phone ? phone : current),
     "--"
   );
 
-  if(!sale.paid){
-    if(sale.discount === sale.subtotal){
-      amount = 0;
-    }
-    abonos = sale.payments.reduce((back, item) => item.total + back,0);
-    amount = sale.total - abonos - sale.discount;
-  }
-
-  if(sale.discount ===  sale.subtotal){
-    amount = 0;
-  }
-  
   return `
   <div style="width:100%; padding: 0px; margin: 0px;">
     <h6 style="font-size: 14; font-family:sans-serif; text-align: right; margin: 0px">
@@ -100,13 +94,13 @@ export default function HTMLOrderPrint(sale, branch) {
         <tr>
           <td colspan="3">
             ${
-              sale.descuento !== 0 || sale.discount !== 0
+              sale.discount !== 0
                 ? `<div style = "width:100%">
                   <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px; margin-top:12px">
                     Subtotal: <label>${sale.subtotal ?? 0}</label>
                   </h4>
                   <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px;">
-                    Descuento: <label>${sale.descuento ?? sale.discount}</label>
+                    Descuento: <label>${sale.discount}</label>
                   </h4>
                 </div>
                 <h4 style= "font-size:18; width:100%; font-family: sans-serif; text-align: right; margin:0px;">
@@ -120,7 +114,7 @@ export default function HTMLOrderPrint(sale, branch) {
 
             <div style = "width:100%;">
               <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px;">
-                Abonado: <label>$ ${sale.paid ?? abonos}</label>
+                Abonado: <label>$ ${paid}</label>
               </h4>
               ${
                 amount

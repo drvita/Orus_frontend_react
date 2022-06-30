@@ -8,7 +8,7 @@ export default function ModalNota({ handleClose: _close, sale}) {
   const history =  useHistory();
 
   const penddingToPay = () => {
-    let pendding = saleHelper.getTotal(sale.subtotal, sale.descuento) - saleHelper.getPagado(sale.payments);
+    let pendding = saleHelper.getTotal(sale.subtotal, sale.discount) - saleHelper.getPagado(sale.payments);
     return pendding;
   }
 
@@ -37,7 +37,7 @@ export default function ModalNota({ handleClose: _close, sale}) {
                      </div>
                      <div className="d-flex pl-2">                     
                         <div className='col-lg-7'>                                        
-                            <h6>Descuento:<span className='text-secondary ml-2 font-weight-normal'>${sale.descuento}</span></h6>
+                            <h6>Descuento:<span className='text-secondary ml-2 font-weight-normal'>${sale.discount}</span></h6>
                             <h6>Subtotal:<span className="text-secondary mb-3 ml-2 font-weight-normal">${sale.subtotal}</span></h6>
                             <h5 className="font-weight-bold">Total:<span className="text-info ml-2 font-weight-normal">${sale.total}</span></h5>  
                         </div>

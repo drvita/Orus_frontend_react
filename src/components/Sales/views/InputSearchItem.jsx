@@ -24,8 +24,6 @@ function InputSearchItem() {
   const { session } = sale;
   const hookProducts = useProducts();
 
-  //const { getProducts, productList: list } = useProducts();
-
   //Functions
   const handleChangeTextSearch = ({ value }) => {
       setTextSearch(value);
@@ -63,6 +61,7 @@ function InputSearchItem() {
     },
 
     makeItem = (data) => {
+      //console.log("Make item data:", data);
       return {
         id: 0,
         cant: data.cant,
@@ -87,7 +86,6 @@ function InputSearchItem() {
     },
 
     handleAddItem = (result) => {
-
       const found = sale.items.filter(
         (item) => item.store_items_id === result.store_items_id
       );
@@ -120,6 +118,8 @@ function InputSearchItem() {
       }
 
       let subtotal = helper.getSubTotal(newItems);
+
+      console.log("Nuevos items:", newItems);
 
       sale.set({
         ...sale,
@@ -154,17 +154,7 @@ function InputSearchItem() {
       } else {
         setShowList(true);
       }
-    } /* else if (!list.length && messages.length) {
-      messages.forEach((msg) => {
-        const { type, text } = msg;
-        window.Swal.fire({
-          icon: type,
-          title: text,
-          showConfirmButton: type !== "error" ? false : true,
-          timer: type !== "error" ? 1500 : 9000,
-        });
-      });
-    } */
+    };
 
   }, [list]);// eslint-disable-line react-hooks/exhaustive-deps
 

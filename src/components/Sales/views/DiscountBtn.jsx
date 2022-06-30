@@ -25,9 +25,18 @@ export default function DiscountBtnComponent() {
 
         if (discount.match(isNumeric)) {
           const value = parseInt(discount);
+
+
+          
+          console.log("test total:", helper.getTotal(sale.subtotal, sale.discount));
+          console.log("test subtotal:",sale.subtotal);
+          console.log("test discount:",sale.discount);
+
+
           sale.set({
             ...sale,
             discount: value,
+            total: sale.subtotal - discount,
           });
 
         } else if (discount.match(isPercen)) {
@@ -35,7 +44,8 @@ export default function DiscountBtnComponent() {
           value = parseInt(sum * percent);
           sale.set({
             ...sale,
-            discount: value,            
+            discount: value,  
+            total: sale.subtotal - discount,          
           })          
         }
       }

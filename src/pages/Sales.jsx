@@ -81,18 +81,19 @@ export default function IndexSalesComponent(props) {
       isPayed: payed,
       thereNews: thereNews,
       load: false,
-    });
+    });    
+
   }, [state.items, state.payments, state.discount]);
 
   useEffect(()=>{
-    if(state.isPayed){
+   if(state.isPayed){
       if(!state.id && !state.order){
         //Guarda venta normal
+        console.log("[DEBUG] Items in effect for payed:", state.items);    
         saveSale();
       }      
     }
   },[state.isPayed]);
-
 
   useEffect(() => {
     if (props.match.params.id) {
@@ -122,61 +123,109 @@ export default function IndexSalesComponent(props) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSet = (obj) => {
+    console.log("[DEBUG] object set:", obj)
     return new Promise((done) => {
       setState(obj);
       done();
     });
   };
 
- const saveSale = () => {
-  if(state.id && state.order){
-    const returnedSale = hookSale.saveSale(state);
-    returnedSale.then((data)=>{
-      if(data.data){        
-        setState({
-          ...state,
-          id: data.data.id,
-          thereNews: false,
-        });
-      }
-    })
-    return null;
+  const cleanData = ()=>{
+    //Validate data
+    const data = Object.assign({} , state);
+    console.log("[DEBUG] Items clean:", data);
+
+    delete data.customer
+    if(!data.payments.length){
+      delete data.payments
+    }
+
+    if(data.payments.length){
+      data.payments.forEach((payment)=>{
+        delete payment.details;
+        delete payment.id;
+        delete payment.forPaid;        
+        if(payment.metodopago === 1){              
+          delete payment.auth;
+          delete payment.bank_id;            
+        }
+        if(payment.metodopago === 4){
+          delete payment.bank_id;    
+        }
+        if(typeof payment.id === "string"){
+          payment.id = 0;
+        }
+      });
+    }
+
+    if(data.items.length){
+      data.items.forEach((item)=>{
+        delete item.inStorage;
+        delete item.producto;
+        delete item.subtotal;
+        delete item.cantInStore;
+        delete item.out;
+      });
+    }
+
+    
+    return data;
   }
 
-   const returnedSale = hookSale.saveSale(state);
-   returnedSale.then((data) => {    
-     if (data.data) {
-       window.Swal.fire({
-         title: "Venta Guardada correctamente",
-         text: `¿Quieres imprimir el ticket de la venta?`,
-         icon: "success",
-         showCancelButton: true,
-         confirmButtonText: "Imprimir",
-         cancelButtonText: "Cancelar",
-         showLoaderOnConfirm: true,
-       })
-       .then(({ dismiss }) => {
-         if (!dismiss) {
-           //Change print state and set ID returned
-           setState({
-             ...state,
-             id: data.data.id,
-             print: true,
-           });
-         } else {
-           helpers.confirm("Cerrar la venta actual", () => {
-             setState(initialState);
-           });
-         }
-       });  
-     } else {
-       console.error("Error al guardar la venta");
-     }
-   });
+ const saveSale = () => {
+  // if(state.id && state.order){
+  //   const returnedSale = hookSale.saveSale(cleanData());
+  //   returnedSale.then((data)=>{
+  //     if(data.data){        
+  //       setState({
+  //         ...state,
+  //         id: data.data.id,
+  //         thereNews: false,
+  //       });
+  //     }
+  //   })
+  //   return null;
+  // }
+  
+  const data = cleanData();
+  console.log("[DEBUG] Items result:", data, state);
+  //  const returnedSale = hookSale.saveSale(cleanData());
+  //  returnedSale.then((data) => {    
+  //    if (data.data) {
+  //     console.log("Venta devuelta:", data.data.items);
+  //      window.Swal.fire({
+  //        title: "Venta Guardada correctamente",
+  //        text: `¿Quieres imprimir el ticket de la venta?`,
+  //        icon: "success",
+  //        showCancelButton: true,
+  //        confirmButtonText: "Imprimir",
+  //        cancelButtonText: "Cancelar",
+  //        showLoaderOnConfirm: true,
+  //      })
+  //      .then(({ dismiss }) => {     
+  //       //console.log("TEST STATE:", state);     
+  //        if (!dismiss) {          
+  //          //Change print state and set ID returned
+  //          setState({
+  //            ...state,
+  //            id: data.data.id,             
+  //            print: true,
+  //          });           
+  //        } else {
+  //          helpers.confirm("Cerrar la venta actual", () => {
+  //            setState(initialState);
+  //          });
+  //        }
+  //      });  
+  //    } else {
+  //      console.error("Error al guardar la venta");
+  //    }
+  //  });
  };
 
  const validateSale = ()=>{
   if(state.id && state.order && state.thereNews){
+    console.log("[DEBUG] Items valid sale:", state.items); 
     saveSale();
   }
 

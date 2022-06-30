@@ -49,7 +49,6 @@ export default function IndexSalesComponent(props) {
     print: false,
     isPayed: false,
     thereNews: false,
-    load: false,
   };
 
   const [state, setState] = useState(initialState);
@@ -62,38 +61,107 @@ export default function IndexSalesComponent(props) {
     ? true
     : false;
 
-  useEffect(() => {
-    const total = state.items?.reduce((back, item) => item.price + back, 0);
-    const payments = state.payments?.reduce((back, item) => item.total + back,0);
-    let payed = total === 0 && payments === 0 ? false : Boolean(!(total - state.discount - payments));
-    let thereNews = true;
-
-    if(!state.items.length){
-      payed = false;
+  const handleSet = (obj) => {
+    return new Promise((done) => {
+      setState(obj);
+      done();
+    });
+  };
+  const saveSale = () => {
+    if (state.id && state.order) {
+      const returnedSale = hookSale.saveSale(state);
+      returnedSale.then((data) => {
+        if (data.data) {
+          setState({
+            ...state,
+            id: data.data.id,
+            thereNews: false,
+          });
+        }
+      });
+      return null;
     }
 
-    if(state.load){
+    const returnedSale = hookSale.saveSale(state);
+    returnedSale.then((data) => {
+      if (data.data) {
+        window.Swal.fire({
+          title: "Venta Guardada correctamente",
+          text: `¿Quieres imprimir el ticket de la venta?`,
+          icon: "success",
+          showCancelButton: true,
+          confirmButtonText: "Imprimir",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        }).then(({ dismiss }) => {
+          if (!dismiss) {
+            //Change print state and set ID returned
+            setState({
+              ...state,
+              id: data.data.id,
+              print: true,
+            });
+          } else {
+            helpers.confirm("Cerrar la venta actual", () => {
+              setState(initialState);
+            });
+          }
+        });
+      } else {
+        console.error("Error al guardar la venta");
+      }
+    });
+  };
+  const validateSale = () => {
+    if (state.id && state.order && state.thereNews) {
+      saveSale();
+    }
+
+    setState({ ...state, print: true });
+  };
+
+  useEffect(() => {
+    const total = state.items?.reduce((back, item) => item.price + back, 0);
+    const payments = state.payments?.reduce(
+      (back, item) => item.total + back,
+      0
+    );
+    let payed = Boolean(!(total - state.discount - payments));
+    let thereNews = state.id ? false : true;
+
+    if (!total && !payments) {
       thereNews = false;
+      payed = false;
     }
 
     setState({
       ...state,
       isPayed: payed,
-      thereNews: thereNews,
+      thereNews,
       load: false,
     });    
 
   }, [state.items, state.payments, state.discount]);
 
+<<<<<<< HEAD
   useEffect(()=>{
    if(state.isPayed){
       if(!state.id && !state.order){
+=======
+  useEffect(() => {
+    if (state.isPayed) {
+      if (!state.id && !state.order) {
+>>>>>>> d99f9904c49fd5e115da6b7f72ba7896a8c41fcd
         //Guarda venta normal
         console.log("[DEBUG] Items in effect for payed:", state.items);    
         saveSale();
-      }      
+      }
     }
+<<<<<<< HEAD
   },[state.isPayed]);
+=======
+  }, [state.isPayed]);
+>>>>>>> d99f9904c49fd5e115da6b7f72ba7896a8c41fcd
 
   useEffect(() => {
     if (props.match.params.id) {
@@ -115,11 +183,11 @@ export default function IndexSalesComponent(props) {
             activitys: data.data.activity,
             customer: data.data.customer,
             thereNews: false,
-            load: true,
           });
         }
       });
     }
+<<<<<<< HEAD
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSet = (obj) => {
@@ -231,6 +299,9 @@ export default function IndexSalesComponent(props) {
 
   setState({...state, print: true});
  }
+=======
+  }, []);
+>>>>>>> d99f9904c49fd5e115da6b7f72ba7896a8c41fcd
 
   return (
     <SaleContext.Provider value={{ ...state, set: handleSet }}>
@@ -259,7 +330,7 @@ export default function IndexSalesComponent(props) {
           </nav>
           <div
             className="overflow-auto text-right p-0 border border-gray"
-            style={{minHeight:'65vh'}}
+            style={{ minHeight: "65vh" }}
           >
             <SalesDetailsTableComponent />
           </div>
@@ -281,9 +352,9 @@ export default function IndexSalesComponent(props) {
               <PaymentBtnComponent />
 
               <button
-                className="btn btn-primary ml-3"                
+                className="btn btn-primary ml-3"
                 onClick={() => validateSale()}
-                disabled = {disabled}
+                disabled={disabled}
               >
                 <i className="fas fa-print mr-2"></i>
                 Imprimir

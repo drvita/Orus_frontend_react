@@ -1,13 +1,12 @@
 import { useState } from "react";
 
 //Context
-import { Sale } from '../../../context/SaleContext';
+import { Sale } from "../../../context/SaleContext";
 
 //Components
 import ListSalesModal from "./ListSalesModal";
 
 export default function ListSalesBtn() {
-
   const sale = Sale();
   const [data, setData] = useState(false);
   const disabled = sale.items.length ? true : false;
@@ -16,16 +15,14 @@ export default function ListSalesBtn() {
   const handleShowListSales = () => {
       setData(true);
     },
-    
     handleCloseListSales = () => {
       setData(false);
     },
-
     handleSelectSale = (saleSelected) => {
       let pagado = 0;
       saleSelected.payments.forEach((pay) => (pagado = pay.total));
-      setData(false);   
-      
+      setData(false);
+
       sale.set({
         id: saleSelected.id,
         contact_id: saleSelected.customer.id,
@@ -41,28 +38,26 @@ export default function ListSalesBtn() {
         activitys: saleSelected.activity,
         order: saleSelected.order ?? 0,
         thereNews: false,
-        load: true,
-      })
+      });
 
       return pagado;
     };
-    
+
   return (
     <>
       <button
         className="btn btn-primary mr-1"
         title="Cargar una venta"
         onClick={handleShowListSales}
-        disabled={ disabled }
+        disabled={disabled}
       >
         <i className="fas fa-list"></i>
       </button>
 
-
       {data && (
         <ListSalesModal
           handleClose={handleCloseListSales}
-          handleSelect={handleSelectSale}      
+          handleSelect={handleSelectSale}
         />
       )}
     </>

@@ -7,20 +7,19 @@ import { Sale } from "../../../context/SaleContext";
 import ListModal from "./ListItemsModal";
 
 //Hooks
-import useProducts from '../../../hooks/useProducts';
+import useProducts from "../../../hooks/useProducts";
 
 //Helper
-import helper from '../helpers';
+import helper from "../helpers";
 
 function InputSearchItem() {
-
   //State
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(1);
   const [list, setList] = useState([]);
 
-  const  sale = Sale();
+  const sale = Sale();
   const { session } = sale;
   const hookProducts = useProducts();
 
@@ -28,13 +27,11 @@ function InputSearchItem() {
   const handleChangeTextSearch = ({ value }) => {
       setTextSearch(value);
     },
-
     handlePressEnter = (key) => {
       if (key === "Enter") {
         searchItem();
       }
     },
-
     searchItem = () => {
       if (textSearch.length > 2) {
         const codes = textSearch.split("*");
@@ -45,21 +42,19 @@ function InputSearchItem() {
           setCantDefault(parseInt(codes[0]));
         }
 
-        hookProducts.getProducts(search).then((data)=>{
-          if(data){
+        hookProducts.getProducts(search).then((data) => {
+          if (data) {
             setList(data.data);
-          }else{
-            console.error("Error al buscar el producto")
+          } else {
+            console.error("Error al buscar el producto");
           }
-        })
+        });
         setTextSearch("");
       }
     },
-
     handleCloseModal = () => {
       setShowList(false);
     },
-
     makeItem = (data) => {
       //console.log("Make item data:", data);
       return {
@@ -78,13 +73,11 @@ function InputSearchItem() {
         category: data.item.categoria ? data.item.categoria.id : 0,
       };
     },
-
     handleSelectItem = (data) => {
       const item = makeItem(data);
       handleAddItem(item);
       setCantDefault(1);
     },
-
     handleAddItem = (result) => {
       const found = sale.items.filter(
         (item) => item.store_items_id === result.store_items_id
@@ -96,37 +89,35 @@ function InputSearchItem() {
 
       if (found.length) {
         const cantidad = parseInt(result.cant) + parseInt(found[0].cant),
-            item = {
-              ...found[0],
-              cant: cantidad,
-              subtotal: parseFloat(result.price) * cantidad,
-              inStorage: cantidad >= parseInt(result.cantInStore) ? true : false,
-              out: parseInt(result.cantInStore) - cantidad,
-            };
-            newItems.push(item);
-            window.Swal.fire({
-              title: "Producto agregado",
-              text: `Se agrego otro ${found[0].producto} a la lista`,
-              icon: "success",
-              showCancelButton: false,
-              confirmButtonText: "Ok",
-              cancelButtonText: "Cancelar",
-              showLoaderOnConfirm: true,
-            })
+          item = {
+            ...found[0],
+            cant: cantidad,
+            subtotal: parseFloat(result.price) * cantidad,
+            inStorage: cantidad >= parseInt(result.cantInStore) ? true : false,
+            out: parseInt(result.cantInStore) - cantidad,
+          };
+        newItems.push(item);
+        window.Swal.fire({
+          title: "Producto agregado",
+          text: `Se agrego otro ${found[0].producto} a la lista`,
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonText: "Ok",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        });
       } else {
         newItems.push(result);
       }
 
       let subtotal = helper.getSubTotal(newItems);
 
-      console.log("Nuevos items:", newItems);
-
       sale.set({
         ...sale,
         items: newItems,
         total: helper.getTotal(subtotal, sale.discount),
         subtotal: subtotal,
-      })
+      });
     };
 
   useEffect(() => {
@@ -137,7 +128,7 @@ function InputSearchItem() {
           cant: cantDefault ? cantDefault : 1,
         });
 
-        if(item.price <= 0){
+        if (item.price <= 0) {
           window.Swal.fire({
             title: "Verificar",
             text: `El item que intentas agregar tiene un precio de $0, revisa el precio en el almacen`,
@@ -146,17 +137,16 @@ function InputSearchItem() {
             confirmButtonText: "Ok",
             cancelButtonText: "Cancelar",
             showLoaderOnConfirm: true,
-          })
-        }else{
+          });
+        } else {
           handleAddItem(item);
           setCantDefault(1);
         }
       } else {
         setShowList(true);
       }
-    };
-
-  }, [list]);// eslint-disable-line react-hooks/exhaustive-deps
+    }
+  }, [list]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="btn-group text-center d-print-none">
@@ -167,14 +157,14 @@ function InputSearchItem() {
         onKeyPress={({ key }) => handlePressEnter(key)}
         value={textSearch}
       />
-       <button
-          type="button"
-          className="btn btn-primary"
-          onClick={searchItem}
-          disabled={textSearch.length > 2 ? false : true}
-        >
-          <i className="fas fa-barcode"></i>
-        </button>
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={searchItem}
+        disabled={textSearch.length > 2 ? false : true}
+      >
+        <i className="fas fa-barcode"></i>
+      </button>
 
       {showList && list.length ? (
         <ListModal

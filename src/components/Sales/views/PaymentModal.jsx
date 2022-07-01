@@ -1,17 +1,16 @@
 import { useState, useContext } from "react";
 //Context
 import { ConfigContext } from "../../../context/ConfigContext";
-import { Sale } from '../../../context/SaleContext';
+import { Sale } from "../../../context/SaleContext";
 
 //Helpers
 import helpers from "../helpers";
 
-function PaymentModal({forPaid, handleClose: _close }) {
+function PaymentModal({ forPaid, handleClose: _close }) {
+  const config = useContext(ConfigContext);
+  const listBanks = config.data;
 
-    const config = useContext(ConfigContext);
-    const listBanks = config.data;
-    
-    const sale = Sale();
+  const sale = Sale();
 
   //States
   const [data, setData] = useState({
@@ -70,7 +69,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
             timer: 1500,
           });
           return false;
-        }else if(data.auth?.length > 4){
+        } else if (data.auth?.length > 4) {
           window.Swal.fire({
             icon: "warning",
             title: "Espesifique solamente 4 numeros",
@@ -95,7 +94,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
 
       payments.push({
         ...data,
-        id:`new${Date.now().toString()}`,
+        id: `new${Date.now().toString()}`,
         metodoname: helpers.getMethodName(data.metodopago),
         total: forPaid < data.total ? forPaid : data.total,
       });
@@ -107,8 +106,8 @@ function PaymentModal({forPaid, handleClose: _close }) {
       sale.set({
         ...sale,
         payments: payments,
-      })
-      
+        thereNews: true,
+      });
     },
     handleSubmitForm = (e) => {
       e.preventDefault();
@@ -178,11 +177,11 @@ function PaymentModal({forPaid, handleClose: _close }) {
                         >
                           <option value="">--Seleccione un banco--</option>
                           {listBanks.map((bank) => {
-                            return bank.name === 'bank' ? (
+                            return bank.name === "bank" ? (
                               <option key={bank.id} value={bank.id}>
                                 {bank.data}
                               </option>
-                            ): null;
+                            ) : null;
                           })}
                         </select>
                       </>
@@ -209,7 +208,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
                         : "N. Autorización"}
                     </label>
                     <input
-                       type="number"
+                      type="text"
                       name="auth"
                       className="form-control"
                       onChange={({ target }) => handleChangeInput(target)}
@@ -252,7 +251,7 @@ function PaymentModal({forPaid, handleClose: _close }) {
               type="button"
               className="btn btn-primary"
               onClick={() => handleSetPayment()}
-              disabled={!data.total || data.total>data.forPaid}
+              disabled={!data.total || data.total > data.forPaid}
             >
               <i className="fas fa-money-bill mr-1"></i>
               Abonar

@@ -1,19 +1,14 @@
 import moment from "moment";
 import "moment/locale/es";
-import helpers from '../../Sales/helpers';
+import helpers from "../../Sales/helpers";
 moment.locale("es");
 
 export default function HTMLOrderPrint(sale, branch) {
-
-  console.log("Sale recibida:", sale);
-
   const paid = helpers.getPagado(sale.payments);
   let amount = sale.total - paid;
 
-
-  const phone = Object.values(sale.customer?.phones ?? {}).reduce(
-    (current, phone) => (phone ? phone : current),
-    "--"
+  const phone = Object.values(sale.customer?.phones ?? {}).filter(
+    (phone) => phone
   );
 
   return `
@@ -50,7 +45,7 @@ export default function HTMLOrderPrint(sale, branch) {
       <br />
       <strong>
         <em style="font-size: 18">
-          ${phone}
+          ${phone.length ? phone : "--"}
         </em>
       </strong>
     </h4>
@@ -146,5 +141,4 @@ export default function HTMLOrderPrint(sale, branch) {
     </div>
   </div>
   `;
-};
-
+}

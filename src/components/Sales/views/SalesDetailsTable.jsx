@@ -231,22 +231,18 @@ export default function SalesDetailsTableComponent() {
             </>
           ) : null}
 
-<<<<<<< HEAD
           {sale.thereNews && sale.order ? (
-             <tr className="table-info">
-             <td colSpan="2">
-               <span className=" w-full d-block text-uppercase text-center text-bold">
-                 <i className="fas fa-info-circle mr-1 text-primary"></i>
-                  Para guardar los cambios presione el boton ¡Imprimir!       
-               </span>
-             </td>
-           </tr>        
-          ): null}
+            <tr className="table-info">
+              <td colSpan="2">
+                <span className=" w-full d-block text-uppercase text-center text-bold">
+                  <i className="fas fa-info-circle mr-1 text-primary"></i>
+                  Para guardar los cambios presione el boton ¡Imprimir!
+                </span>
+              </td>
+            </tr>
+          ) : null}
 
           {paid && sale.subtotal ? (
-=======
-          {Boolean(sale.thereNews && sale.payments?.length) ? (
->>>>>>> d99f9904c49fd5e115da6b7f72ba7896a8c41fcd
             <tr className="table-info">
               <td colSpan="2">
                 <span className=" w-full d-block text-uppercase text-center text-bold">

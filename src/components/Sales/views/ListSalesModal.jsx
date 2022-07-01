@@ -52,7 +52,7 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
     _sales
       .getSaleList(search)
       .then((data) => {
-        if (data) {
+        if (data) {          
           setSaleList(data.data);
         } else {
           console.error("Error al obtener las ventas");

@@ -240,24 +240,13 @@ export default function SalesDetailsTableComponent() {
                 </span>
               </td>
             </tr>
-          ) : null}
-
-          {paid && sale.subtotal ? (
-            <tr className="table-info">
-              <td colSpan="2">
-                <span className=" w-full d-block text-uppercase text-center text-bold">
-                  <i className="fas fa-info-circle mr-1 text-primary"></i>
-                  Para guardar los cambios presione el boton ¡Imprimir!
-                </span>
-              </td>
-            </tr>
           ) : (
             Boolean(paid && sale.subtotal) && (
               <tr className="table-info">
                 <td colSpan="2">
                   <span className=" w-full d-block text-uppercase text-center text-bold">
                     <i className="fas fa-info-circle mr-1 text-primary"></i>
-                    Cuenta pagada
+                    Cuenta pagada!
                   </span>
                 </td>
               </tr>

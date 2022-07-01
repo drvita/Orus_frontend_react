@@ -46,8 +46,6 @@ export default function EditOrderComponent(props) {
   const [showModal, setShowModal] = useState(false);
   const [showModalNota, setShowModalNota] = useState(false);
 
-  console.log(state.sale);
-
   const {
     id,
     paciente,
@@ -195,7 +193,6 @@ export default function EditOrderComponent(props) {
   useEffect(() => {
     hookOrder.getOrder(idurl).then(({ data }) => {
       if (data) {
-        console.log(data);
         setState({
           id: data.id ?? 0,
           paciente: data.paciente ?? {},

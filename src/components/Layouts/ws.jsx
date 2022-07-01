@@ -26,12 +26,7 @@ export default class Ws {
       };
       this.ws.onmessage = (e) => {
         const msgServer = JSON.parse(e.data);
-        if (msgServer.idUser !== this.idUser) {
-          console.log(
-            "[Orus WS] Accion de usuario:",
-            msgServer.msg.action,
-            msgServer.username
-          );
+        if (msgServer.idUser !== this.idUser) {          
           if (props.actions && props.actions.length) {
             props.actions.forEach((a) => {
               if (msgServer.msg.action === a.si) {

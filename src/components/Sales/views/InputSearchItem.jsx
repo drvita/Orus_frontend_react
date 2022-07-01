@@ -56,7 +56,6 @@ function InputSearchItem() {
       setShowList(false);
     },
     makeItem = (data) => {
-      //console.log("Make item data:", data);
       return {
         id: 0,
         cant: data.cant,

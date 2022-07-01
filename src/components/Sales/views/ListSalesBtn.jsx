@@ -22,7 +22,7 @@ export default function ListSalesBtn() {
       let pagado = 0;
       saleSelected.payments.forEach((pay) => (pagado = pay.total));
       setData(false);
-
+      
       sale.set({
         id: saleSelected.id,
         contact_id: saleSelected.customer.id,

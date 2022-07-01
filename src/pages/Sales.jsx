@@ -77,12 +77,14 @@ export default function IndexSalesComponent(props) {
       done();
     });
   };
+
   const setDataToSend = () => {
     const data = {
       id: state.id,
       contact_id: state.contact_id,
       discount: state.discount,
       items: [],
+      payments: [],
     };
 
     if (!state.id) {
@@ -98,7 +100,6 @@ export default function IndexSalesComponent(props) {
     );
 
     if (state.payments.length) {
-      data.payments = [];
       state.payments.forEach((payment) => {
         const pay = {
           metodopago: payment.metodopago,
@@ -115,15 +116,15 @@ export default function IndexSalesComponent(props) {
         data.payments.push(pay);
       });
     }
-
     return data;
   };
+
   const saveSale = () => {
     const returnedSale = hookSale.saveSale(setDataToSend());
 
     returnedSale.then(({ data }) => {
-      if (data) {
-        if (state.id && state.order) {
+      if (data) {          
+        if (state.id && state.order) {          
           setState({
             ...state,
             id: data.id,
@@ -160,23 +161,25 @@ export default function IndexSalesComponent(props) {
     });
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     const total = state.items?.reduce(
-      (back, item) => item.cant * item.price + back,
-      0
-    );
-    const payments = state.payments?.reduce(
-      (back, item) => item.total + back,
-      0
-    );
+      (back, item) => item.cant * item.price + back, 0);
+    const payments = state.payments?.reduce((back, item) => item.total + back, 0);
     let payed = Boolean(!(total - state.discount - payments));
     let thereNews = state.id ? false : true;
 
     if (!total && !payments) {
       thereNews = false;
       payed = false;
-    } else if (state.thereNews) {
+
+    } 
+
+    else if (state.thereNews) {
       thereNews = true;
+    }
+
+    if(state.thereNews === false && state.load === false){      
+      thereNews = true
     }
 
     setState({
@@ -185,7 +188,9 @@ export default function IndexSalesComponent(props) {
       thereNews,
       load: false,
     });
+
   }, [state.items, state.payments, state.discount]);
+
   useEffect(() => {
     if (state.isPayed) {
       if (!state.id && !state.order) {
@@ -193,6 +198,7 @@ export default function IndexSalesComponent(props) {
       }
     }
   }, [state.isPayed]);
+
   useEffect(() => {
     if (props.match.params.id) {
       hookSale.getSaleById(props.match.params.id).then((data) => {

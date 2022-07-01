@@ -16,13 +16,7 @@ export default function CardOrderPayments({
 
   const handleToPaid = () => {
     const amount = data.payments?.reduce((back, pay) => pay.total + back, 0);
-    const toPaid = data.total - data.discount - (amount ?? 0);
-
-    console.log(data.total);
-    console.log(data.discount);
-    console.log(amount);
-
-    console.log(data.total - data.discount - amount);
+    const toPaid = (data.subtotal ? data.subtotal: data.total) - (amount ?? 0) - data.discount;
 
     setState({
       ...state,
@@ -84,6 +78,7 @@ export default function CardOrderPayments({
                           payments,
                         });
                       }}
+                      disabled={!Boolean(state.toPaid) || disabled}
                     >
                       <i className="fas fa-trash"></i>
                     </button>

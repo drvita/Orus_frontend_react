@@ -107,7 +107,7 @@ export default function InboxContact() {
                   handleLoadContacts();
                 })
                 .catch((err) => {
-                  console.log(
+                  console.error(
                     "[Orus System] Catch when delete contact:",
                     err.message
                   );

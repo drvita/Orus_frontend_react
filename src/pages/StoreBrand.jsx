@@ -133,7 +133,6 @@ export default function BrandsComponent(){
       showLoaderOnConfirm: true
     }).then(({ dismiss }) => {
       if (!dismiss) {
-        console.log("[Orus Suystem] Enviando datos para eliminar marca", id);
         storeHook.deleteBrand(id).then((data)=>{
           if(data === true){
             window.Swal.fire({

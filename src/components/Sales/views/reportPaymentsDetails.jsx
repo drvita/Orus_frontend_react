@@ -76,7 +76,7 @@ export default function ReportPaymentsDetails({ filters }) {
                 </td>
               </tr>
             ) : state.payments.length ? (
-              state.payments.map((pay) => {
+              state.payments.map((pay) => {    
                 return (
                   <tr
                     key={pay.id}
@@ -85,7 +85,7 @@ export default function ReportPaymentsDetails({ filters }) {
                     <th className="text-uppercase">{pay.metodoname}</th>
                     <td className="text-capitalize">
                       {pay.sale && pay.sale.customer
-                        ? pay.sale.customer.nombre
+                        ? pay.sale.customer.name
                         : "--"}
                     </td>
                     <td>

@@ -205,7 +205,6 @@ export default class Cash extends Component {
           timer: 3000,
         }).then((res) => this.getAtms());
       } else if (result && !result.dismiss) {
-        console.log("Orus res: ", result);
         window.Swal.fire(
           "Error",
           "Se perdio la conexion con el servidor",

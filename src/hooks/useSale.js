@@ -14,7 +14,7 @@ export default function useSales(ctx) {
 
     const url = setUrl("sales", null, salesFilters);
     return await api(url);
-  };
+  }; 
 
   const getSaleById = async (id) => {
     const url = setUrl("sales", id);
@@ -26,7 +26,7 @@ export default function useSales(ctx) {
       const { id } = sale,
         url = setUrl("sales", id),
         method = id ? "PUT" : "POST";
-
+        
       return await api(url, method, sale);
     } catch (e) {
       console.error(

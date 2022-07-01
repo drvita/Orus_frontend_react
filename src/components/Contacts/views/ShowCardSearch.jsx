@@ -41,7 +41,7 @@ export default function ShowCardSearch(props) {
         } else {
           const messages = Object.values(res.errors);
 
-          console.log("[Orus System] Message of server:", res.errors);
+          console.error("[Orus System] Message of server:", res.errors);
           window.Swal.fire({
             title: "Contactos",
             text: messages[0],

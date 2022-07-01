@@ -98,7 +98,7 @@ export default function Add(props) {
           } else if (res.hasOwnProperty("errors")) {
             const messages = Object.values(res.errors);
 
-            console.log("[Orus System] Message of server:", res.errors);
+            console.error("[Orus System] Message of server:", res.errors);
             window.Swal.fire({
               title: "Consultorio",
               text: messages[0],

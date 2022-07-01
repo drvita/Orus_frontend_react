@@ -201,7 +201,7 @@ export default function StoreEntries() {
         });
       })
       .catch((err) =>
-        console.log("Error when save items:", err.message)
+        console.error("Error when save items:", err.message)
       );
   };
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useContact from "../../../hooks/useContact";
 
 export default function UserEmailInputComponent(props) {
   const [state, setState] = useState({
@@ -10,6 +11,31 @@ export default function UserEmailInputComponent(props) {
 
   const { col, email, handleValidData: _handleValidData } = props;
   const { bgColor, validate, text, searchEmail } = state;
+
+  const contactHook = useContact();
+
+  const handleSearchUser = (email)=>{
+    contactHook.getContacts({email}).then((data)=>{
+      if(data){
+        if(data.data.length){
+          setState({
+            ...state,
+            bgColor: "bg-warning",
+            validate: "border border-warning",
+            text: `El email ${email} ya está registrado`,
+          });
+  
+          _handleValidData("email", false, email);
+        }else{         
+          _handleValidData("email", true, email);          
+        }    
+       
+      }else{
+        console.log("Error al obtener la data de los contactos");
+      }   
+    })
+  };
+
 
   const validEmail = (target) => {
     const regex =
@@ -23,11 +49,12 @@ export default function UserEmailInputComponent(props) {
         validate: " border border-primary",
         text: "",
       });
+      
+      handleSearchUser(emailSearch);
 
-      _handleValidData("email", true, emailSearch);
+      //console.log("Email valido:", emailSearch);
 
-      //TODO: Validar que el correo no exista
-      //handleSearchUser(emailSearch, userId, user);
+      //_handleValidData("email", true, emailSearch);
     } else {
       setState({
         ...state,

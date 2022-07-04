@@ -61,7 +61,7 @@ export default function CardCustomer({
           contactData
         );
         window.Swal.fire({
-          icon: "Error",
+          icon: "error",
           title: "Error al almacenar cambios del paciente",
           showConfirmButton: true,
         });
@@ -144,7 +144,7 @@ export default function CardCustomer({
                     email: value,
                   });
                 }}
-                handleValidData={(...dto) => {
+                handleValidData={(...dto) => {                  
                   let valid = dto[1];
                   if (!state.phone) valid = false;
 

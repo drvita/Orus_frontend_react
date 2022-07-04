@@ -80,7 +80,7 @@ export default function useUser({ children }) {
         .catch((err) => {
           return {
             status: false,
-            message: "Error en el servidor: " + err.message,
+            message: "Error en el servidor: " + err?.message,
           };
         });
     },
@@ -98,7 +98,7 @@ export default function useUser({ children }) {
       return await api("user")
         .then((data) => data.data)
         .catch((err) => {
-          if (err.message === "Unauthenticated.") {
+          if (err?.message === "Unauthenticated.") {
             if (history.location?.pathname !== "/login") {
               setUser(initialSession);
               sessionStorage.setItem(
@@ -146,12 +146,13 @@ export default function useUser({ children }) {
     },
     setBranch = async (branch) => {
       const url = setUrl("users", user.idUser);
+
       const update = {
         branch_id: branch,
         name: user.name,
         username: user.username,
       };
-
+      
       return await api(url, "PUT", update).then((result) => {
         if (result.data && !result.message) return true;
         else return false;

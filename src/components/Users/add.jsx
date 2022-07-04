@@ -82,6 +82,7 @@ export default function UserAddComponent(props) {
       },
     });
   };
+
   const catchInputs = ({ name, value, type }) => {
     if (type === "text") {
       value = value
@@ -95,6 +96,7 @@ export default function UserAddComponent(props) {
       [name]: value,
     });
   };
+
   const handleSave = () => {
     const { id, name, username, role, password, email, branch_id } =
       currentUser;

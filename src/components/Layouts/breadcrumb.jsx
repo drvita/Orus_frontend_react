@@ -8,8 +8,6 @@ import { ConfigContext } from "../../context/ConfigContext";
 
 export default function BreadcrumbComponent() {
 
-
-
   const { auth, setBranch } = useContext(AuthContext);
   const config = useContext(ConfigContext);
   const pathName = useLocation().pathname.split("/");
@@ -58,8 +56,10 @@ export default function BreadcrumbComponent() {
       showLoaderOnConfirm: true,
     }).then(({ dismiss }) => {
       if (!dismiss) {
-        setBranch(branch_id).then((res) => {
+        setBranch(branch_id)        
+        .then((res) => {
           if (res) {
+            console.log("Respuesta cambio de sucursal:", res);                      
             window.location.reload();
           } else {
             window.Swal.fire({
@@ -70,7 +70,13 @@ export default function BreadcrumbComponent() {
               position: "top center",
             });
           }
-        });
+        })
+
+        .catch((error)=>{
+          if(error){
+            console.log("Error al cambiar la sucursal:", error);
+          }
+        })
       }
     });
   };

@@ -92,10 +92,10 @@ export default function HTMLOrderPrint(sale, branch) {
               sale.discount !== 0
                 ? `<div style = "width:100%">
                   <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px; margin-top:12px">
-                    Subtotal: <label>${sale.subtotal ?? 0}</label>
+                    Subtotal: <label>$ ${sale.subtotal ?? 0}</label>
                   </h4>
                   <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px;">
-                    Descuento: <label>${sale.discount}</label>
+                    Descuento: <label>$ ${sale.discount}</label>
                   </h4>
                 </div>
                 <h4 style= "font-size:18; width:100%; font-family: sans-serif; text-align: right; margin:0px;">
@@ -105,8 +105,7 @@ export default function HTMLOrderPrint(sale, branch) {
                   Total: <label>$ ${sale.total ?? 0}</label>
                 </h4>`
             }
-            
-
+                      
             <div style = "width:100%;">
               <h4 style= "font-size: 18; font-family: sans-serif; text-align: right; margin:0px;">
                 Abonado: <label>$ ${paid}</label>

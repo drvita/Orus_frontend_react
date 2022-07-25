@@ -21,8 +21,6 @@ export default function Messenger({ table, idRow }) {
       table,
       idRow,
     };
-
-    console.log("[DEBUG] options:", options);
     hookMessenger.getMessages(options).then((data) => {
       if (data.data) {
         setState({
@@ -49,15 +47,34 @@ export default function Messenger({ table, idRow }) {
       message: state.message,
     };
 
-    hookMessenger.sendMessenger(bodyRequest).then((data) => {
-      if (data) {
+    setState({
+      ...state,
+      load: true,
+    });
+
+    hookMessenger
+      .sendMessenger(bodyRequest)
+      .then((data) => {
+        if (data) {
+          setState({
+            ...state,
+            messages: [data.data, ...state.messages],
+            message: "",
+            load: false,
+          });
+        } else {
+          setState({
+            ...state,
+            load: false,
+          });
+        }
+      })
+      .catch((error) => {
         setState({
           ...state,
-          messages: [data.data, ...state.messages],
-          message: "",
+          load: false,
         });
-      }
-    });
+      });
   };
 
   useEffect(() => {
@@ -160,13 +177,18 @@ export default function Messenger({ table, idRow }) {
             className="form-control"
             value={state.message}
             onChange={handleMessege}
+            onKeyPress={({ key }) => {
+              if (key === "Enter") {
+                sendMessenger();
+              }
+            }}
           />
           <span className="input-group-append">
             <button
               type="button"
               className="btn btn-primary"
               onClick={sendMessenger}
-              disabled={state.message.length > 5 ? false : true}
+              disabled={state.message.length > 1 ? false : true}
             >
               Enviar
             </button>

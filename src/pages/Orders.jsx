@@ -31,9 +31,7 @@ export default function IndexOrderComponent(props) {
       ...state,
       panel: id ? "edit" : "inbox",
     });
-  }, [id]);
-
-  console.log(state.order);
+  }, [id]); 
 
   return (
     <OrderContext.Provider value={{ ...state, set: setState }}>

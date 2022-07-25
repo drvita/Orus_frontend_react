@@ -41,15 +41,17 @@ export default function Messenger({ table, idRow }) {
   };
 
   const sendMessenger = () => {
+    const message = state.message;
     const bodyRequest = {
       table: table,
       idRow: idRow,
-      message: state.message,
+      message: message,
     };
 
     setState({
       ...state,
       load: true,
+      message: "",
     });
 
     hookMessenger
@@ -66,6 +68,7 @@ export default function Messenger({ table, idRow }) {
           setState({
             ...state,
             load: false,
+            message,
           });
         }
       })
@@ -73,6 +76,7 @@ export default function Messenger({ table, idRow }) {
         setState({
           ...state,
           load: false,
+          message,
         });
       });
   };

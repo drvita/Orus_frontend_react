@@ -2,10 +2,14 @@ import { useContext } from "react";
 //Context
 import { OrderContext } from "../../context/OderContext";
 import SideBar from "../../pages/partials/SideBar";
+import Messenger from "../Layouts/Messenger";
+import { useParams } from "react-router-dom";
 
 export default function Toolbar() {
   const orderContext = useContext(OrderContext);
   const options = orderContext.options;
+
+  const {id} = useParams();
 
   const handleSetSelectOptions = ({ target }) => {
     const { value, name } = target;
@@ -109,8 +113,17 @@ export default function Toolbar() {
                 </li>
               </>
             ) : null}
+
           </SideBar>
         )}
+
+        {orderContext.panel === 'edit' ? (
+          <Messenger table="orders" idRow={id}/>
+        ): null}
+
+
+
+
       </div>
     </div>
   );

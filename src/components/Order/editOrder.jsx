@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory} from "react-router-dom";
 import moment from "moment";
 
 //Context
@@ -357,7 +357,7 @@ export default function EditOrderComponent(props) {
               {/* ------------------SELECCION DE ESTATUS ------------------ */}
               <h6 className="w-100 d-block font-weight-bold">Estado</h6>
               <div className="card mt-2">
-                <div className="btn-group-vertical">
+                <div className="btn-group-vertical bg-success">
                   {helper.getStatusType.map((type, index) => (
                     <button
                       key={index}

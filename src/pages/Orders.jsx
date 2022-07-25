@@ -33,11 +33,13 @@ export default function IndexOrderComponent(props) {
     });
   }, [id]);
 
+  console.log(state.order);
+
   return (
     <OrderContext.Provider value={{ ...state, set: setState }}>
       <div className="row" style={{ minHeight: "100vh" }}>
         <div className="col-sm-12 col-md-2">
-          <Toolbar />
+          <Toolbar/>
         </div>
         <div className="col-sm-12 col-md-10">
           {state.panel === "inbox" && <Inbox />}

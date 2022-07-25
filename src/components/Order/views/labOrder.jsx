@@ -87,6 +87,7 @@ export default function LabOrderComponent({
             className={status > 1 ? "form-control disabled" : "form-control"}
             disabled={status > 1 ? true : false}
             name="lab_order"
+            maxlength="50"
             defaultValue={lab_order}
             onChange={changeInput}
           />

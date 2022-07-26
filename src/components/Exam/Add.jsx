@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-
-
 //Componentes
 import Generales from "./views/GeneralesExam";
 import Interrogatorios from "./views/interrogatoriosExam";
@@ -20,6 +18,8 @@ import useExam from "../../hooks/useExam";
 import Activitys from "../Activitys";
 
 export default function Add(props) {
+
+
   const [state, setState] = useState({
     ...getDataDefault(),
     loading: false,
@@ -38,8 +38,7 @@ export default function Add(props) {
     activitys:[],
   });
 
-
-
+  
   const { id } = props.match.params;
   const _exams = useExam();
   const history = useHistory();
@@ -55,9 +54,12 @@ export default function Add(props) {
     });
   };
   const handleSave = () => {
+
     const data = {
       ...state,
     };
+
+
     const { contact } = data;
     delete data.loading;
     delete data.panel;
@@ -119,7 +121,7 @@ export default function Add(props) {
         ...state,
         loading: false,
       });
-      _exams.getExam(id).then((res) => {
+      _exams.getExam(id).then((res) => {        
         res.category_ii = res.category_ii?.id;
         res.category_id = res.category_id?.id;
 
@@ -167,11 +169,13 @@ export default function Add(props) {
               legend="Busque el paciente por nombre para crear un nuevo examen"
               left="6.5rem"
               data={state.contact}
+              age = {state.age}
               handleContactSelect={(doc) => {
                 setState({
                   ...state,
                   contact: doc,
                   contact_id: doc.id,
+                  age:doc.age
                 });
               }}
             />
@@ -485,30 +489,6 @@ export default function Add(props) {
           </div>
         </div>
       </div>
-      {/* {state.contact?.id && (
-        <PrintExam
-          esferaod={state.esferaod ?? ""}
-          esferaoi={state.esferaoi ?? ""}
-          cilindrod={state.cilindrod ?? ""}
-          cilindroi={state.cilindroi ?? ""}
-          ejeod={state.ejeod ?? ""}
-          ejeoi={state.ejeoi ?? ""}
-          adiciond={state.adiciond ?? ""}
-          adicioni={state.adicioni ?? ""}
-          adicion_media_od={state.adicion_media_od ?? ""}
-          adicion_media_oi={state.adicion_media_oi ?? ""}
-          dpod={state.dpod ?? ""}
-          dpoi={state.dpoi ?? ""}
-          alturaod={state.alturaod ?? ""}
-          alturaoi={state.alturaoi ?? ""}
-          lcmarca={state.lcmarca ?? ""}
-          lcgod={state.lcgod ?? ""}
-          lcgoi={state.lcgoi ?? ""}
-          diagnostico={state.diagnostico ?? ""}
-          paciente={state.contact ?? ""}
-          presbicie={state.presbicie ?? ""}
-        />
-      )} */}
 
       {
         state.activitys.length ? (
@@ -523,10 +503,10 @@ export default function Add(props) {
   );
 }
 
-function getDataDefault(data = {}) {
+function getDataDefault(data = {}) {  
   return {
     id: data.id ?? 0,
-    age: data.customer?.age ?? 0,
+    age: data.age ? data.age : 0,
     keratometriaoi: data.keratometriaoi ?? "",
     keratometriaod: data.keratometriaod ?? "",
     pantalleooi: data.pantalleooi ?? "",

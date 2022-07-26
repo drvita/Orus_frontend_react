@@ -58,9 +58,9 @@ export default function ListItemComponent(props) {
     });
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     const items = props.items.filter((item) =>
-      ["1", "2"].includes(item.category?.code?.codeCategory[0])
+      ["lentes", "armazones", "lentes de contacto"].includes(item.category?.code?.codeNameCategory[0])
     );
     const total = props.items.reduce(
       (sub, item) => item.cant * item.price + sub,
@@ -250,7 +250,7 @@ export default function ListItemComponent(props) {
             <p className="bg-warning w-75 text-center text-md p-2">
               <i className="fas fa-info mr-2"></i>
               Debe agregar al menos <strong>1</strong> producto a la lista con
-              categoria <strong>lente</strong> o <strong>armazon</strong>.
+              categoria <strong>lentes</strong> o <strong>armazones</strong>.
             </p>
           </div>
         )}

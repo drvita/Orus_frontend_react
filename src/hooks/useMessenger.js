@@ -10,7 +10,6 @@ export default function useMessenger() {
   const sendMessenger = async (bodyRequest) => {
     if (bodyRequest) {
       const url = setUrl("messengers");
-
       return await api(url, "POST", bodyRequest);
     }
   };

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 //Context
 import { OrderContext } from "../../context/OderContext";
 import SideBar from "../../pages/partials/SideBar";
@@ -9,7 +9,7 @@ export default function Toolbar() {
   const orderContext = useContext(OrderContext);
   const options = orderContext.options;
 
-  const {id} = useParams();
+  const { id } = useParams();
 
   const handleSetSelectOptions = ({ target }) => {
     const { value, name } = target;
@@ -22,6 +22,10 @@ export default function Toolbar() {
       },
     });
   };
+
+  useEffect(() => {
+    console.log("[DEBUG] id:", id);
+  });
 
   return (
     <div className="row">
@@ -113,17 +117,12 @@ export default function Toolbar() {
                 </li>
               </>
             ) : null}
-
           </SideBar>
         )}
 
-        {orderContext.panel === 'edit' ? (
-          <Messenger table="orders" idRow={id}/>
-        ): null}
-
-
-
-
+        {orderContext.panel === "edit" && (
+          <Messenger table="orders" idRow={id} />
+        )}
       </div>
     </div>
   );

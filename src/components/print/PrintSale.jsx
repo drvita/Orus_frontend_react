@@ -58,7 +58,7 @@ function getPage(data, branch) {
               data.order_id ? "Pedido #" + data.order_id : "Venta #" + data.id
             }</title>            
         </head>
-        <body style="display:flex; justify-content: center; align-items:center">
+        <body style="display:flex; justify-content: center; align-items:start">
             ${body}
         </body>
     </html>`;

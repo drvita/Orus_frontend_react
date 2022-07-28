@@ -9,10 +9,10 @@ import { ConfigContext } from "../../context/ConfigContext";
 import useUsers from "../../hooks/useUsers";
 
 export default function Filters({ filters, changeState }) {
-  const { user, branch_id, date_end, date_start } = filters;
+  const { user_id, branch_id, date_end, date_start } = filters;
   const [state, setState] = useState({
-    branch_id: branch_id,
-    user: user,
+    branch_id,
+    user_id,
     date_start,
     date_end,
     userData: [],
@@ -24,11 +24,11 @@ export default function Filters({ filters, changeState }) {
 
   // Functions
   const sendDataFilter = () => {
-    const { user, branch_id, date_end, date_start } = state;
+    const { user_id, branch_id, date_end, date_start } = state;
 
     changeState({
       branch_id,
-      user,
+      user_id,
       date_start,
       date_end,
     });
@@ -47,9 +47,11 @@ export default function Filters({ filters, changeState }) {
     });
     usersHook.getListUsers({ branch_id: state.branch_id }).then(({ data }) => {
       if (data) {
+        const users = data.filter((u) => u.role !== "doctor");
+
         setState({
           ...state,
-          userData: data,
+          userData: users,
           load: false,
         });
       } else {
@@ -101,26 +103,18 @@ export default function Filters({ filters, changeState }) {
             <div className="col-lg-12">
               <select
                 className="form-control text-capitalize"
-                defaultValue={user}
+                defaultValue={state.user_id}
                 onChange={({ target }) =>
-                  setState({ ...state, user: target.value })
+                  setState({ ...state, user_id: target.value })
                 }
               >
                 <option value="">{state.load ? "Cargando..." : "Todos"}</option>
                 {state.userData.map((user) => {
-                  if (!branch_id) {
-                    return (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    );
-                  } else {
-                    return user.roles[0] !== "doctor" ? (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ) : null;
-                  }
+                  return (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  );
                 })}
               </select>
             </div>

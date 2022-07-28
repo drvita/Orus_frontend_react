@@ -11,7 +11,7 @@ import { AuthContext } from "../context/AuthContext";
 export default function Dashboard() {
   const { auth } = useContext(AuthContext);
   const [state, setState] = useState({
-    user: 0,
+    user_id: 0,
     date_start: moment().startOf("week").format("YYYY-MM-DD"),
     date_end: moment().format("YYYY-MM-DD"),
     branch_id: auth.branch.id,

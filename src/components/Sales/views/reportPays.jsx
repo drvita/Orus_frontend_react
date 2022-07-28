@@ -22,8 +22,8 @@ export default function ReportPays({ filters, changeState, auth }) {
       ...filters,
       itemsPage: 20,
       type: "methods",
-      user_id: filters.user,
     };
+
     const url = setUrl("payments", null, newFiltersPays);
     const { data, message } = await api(url);
 

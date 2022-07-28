@@ -10,23 +10,14 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function Dashboard() {
   const { auth } = useContext(AuthContext);
-
   const [state, setState] = useState({
     user: 0,
     date_start: moment().startOf("week").format("YYYY-MM-DD"),
     date_end: moment().format("YYYY-MM-DD"),
     branch_id: auth.branch.id,
     ventas: 0,
-    filterData: {},
   });
-
-  const filtersState = {
-    user: state.user,
-    date_start: state.date_start,
-    date_end: state.date_end,
-    branch_id: state.branch_id,
-  };
-  
+  // Function
   const changeAllState = (obj) => {
     if (typeof obj !== "object") {
       console.log("[Orus system] The filters data not is a object:", obj);
@@ -40,7 +31,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="content" style={{minHeight:'100vh'}}>
+    <div className="content" style={{ minHeight: "100vh" }}>
       <p className="h4 border-bottom mb-4">
         Bienvenido
         <span className="font-weight-bold mx-2 text-capitalize">
@@ -53,7 +44,7 @@ export default function Dashboard() {
         <div className="col col-md-12 col-lg-12">
           <div className="row">
             <div className="col-lg-12 col-md-12">
-              <Filters filters={filtersState} changeState={changeAllState} />
+              <Filters filters={state} changeState={changeAllState} />
             </div>
           </div>
         </div>
@@ -68,20 +59,21 @@ export default function Dashboard() {
           </div>
           <div className="row">
             <div className="col-lg-12 col-md-12">
-              <ReportPays filters={filtersState} changeState={changeAllState} />
+              <ReportPays
+                filters={state}
+                changeState={changeAllState}
+                auth={auth}
+              />
             </div>
           </div>
         </div>
         <div className="col-lg-8 col-md-12">
           <div className="row">
             <div className="col-lg-4 col-md-12">
-              <ReportBank filters={filtersState} changeState={changeAllState} />
+              <ReportBank filters={state} changeState={changeAllState} />
             </div>
             <div className="col-lg-8 col-md-12">
-              <PaymentsDetails
-                filters={filtersState}
-                changeState={changeAllState}
-              />
+              <PaymentsDetails filters={state} changeState={changeAllState} />
             </div>
           </div>
         </div>

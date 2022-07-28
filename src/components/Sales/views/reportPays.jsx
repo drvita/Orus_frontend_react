@@ -1,34 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
-import { api } from "../../../utils/url";
+import { api, setUrl } from "../../../utils/url";
 
-export default function ReportPays({ filters, changeState }) {
-  const { user, date_end, date_start } = filters;
-
+export default function ReportPays({ filters, changeState, auth }) {
   const [state, setState] = useState({
-    rol: user.roles,
+    rol: auth.roles,
     total: 0,
     efectivo: 0,
-    page: 1,
     char: null,
+    load: false,
   });
 
   const getSaleDay = async () => {
+    setState({
+      ...state,
+      load: true,
+    });
+
     const newFiltersPays = {
       ...filters,
+      itemsPage: 20,
+      type: "methods",
+      user_id: filters.user,
     };
+    const url = setUrl("payments", null, newFiltersPays);
+    const { data, message } = await api(url);
 
-    newFiltersPays.itemsPage = 12;
-    newFiltersPays.page = state.page;
-    newFiltersPays.type = "methods";
-
-    //const reportPaysUrl = setUrl("payments", null, newFiltersPays);
-
-    const { data, message } = await api(
-      `payments?date_start=${date_start}&date_end=${date_end}&itemsPage=12&page=1&type=methods`
-    );
-
+    console.log("[Orus System] Creating char");
     if (data) {
       var donutChartCanvas = window.$("#donutChart").get(0).getContext("2d"),
         donutOptions = {
@@ -49,7 +48,6 @@ export default function ReportPays({ filters, changeState }) {
             labels.push(mp.method);
             values.push(mp.total.toFixed(2));
             if (mp.method === "efectivo") {
-              changeState("ventas", mp.total);
               efectivo = mp.total;
             }
             total += mp.total;
@@ -64,11 +62,16 @@ export default function ReportPays({ filters, changeState }) {
           ...state,
           total,
           efectivo,
+          load: false,
         });
       } else {
         console.error("[ORUS] Error al cargar la venta del dia", data.message);
         labels = ["No hay datos"];
         values = [100];
+        setState({
+          ...state,
+          load: false,
+        });
       }
       donutData = {
         labels: labels,
@@ -99,6 +102,10 @@ export default function ReportPays({ filters, changeState }) {
         icon: "error",
         confirmButtonText: "Ok",
       });
+      setState({
+        ...state,
+        load: false,
+      });
 
       return message;
     }
@@ -106,13 +113,17 @@ export default function ReportPays({ filters, changeState }) {
 
   useEffect(() => {
     getSaleDay();
-  }, [filters]);
+  }, [filters.user, filters.date_start, filters.date_end, filters.branch_id]);
+
+  useEffect(() => {
+    changeState({ ventas: state.efectivo });
+  }, [state.efectivo]);
 
   return (
     <div className="card card-success card-outline">
       <div className="card-header">
         <h3 className="card-title text-success">
-          {state.rol
+          {state.roles !== "admin"
             ? "Mis ventas del dia por metodo de pago"
             : "Ventas del dia por metodo de pago"}
         </h3>
@@ -120,15 +131,20 @@ export default function ReportPays({ filters, changeState }) {
       <div className="card-body">
         <canvas id="donutChart"></canvas>
         <p>
-          {!state.rol ? (
+          {state.roles === "admin" && (
             <React.Fragment>
               Venta: <strong>{dollarUS.format(state.total)}</strong>
               <br />
             </React.Fragment>
-          ) : null}
+          )}
           Efectivo: <strong>{dollarUS.format(state.efectivo)}</strong>
         </p>
       </div>
+      {state.load && (
+        <div className="overlay dark">
+          <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+        </div>
+      )}
     </div>
   );
 }

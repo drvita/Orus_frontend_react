@@ -14,13 +14,15 @@ export default function ReportPaymentsDetails({ filters }) {
   const getSaleDay = async () => {
     const paymentsFilters = {
       ...filters,
+      itemsPage: 12,
+      page: state.page,
     };
-
-    paymentsFilters.itemsPage = 12;
-    paymentsFilters.page = state.page;
+    setState({
+      ...state,
+      load: true,
+    });
 
     const paymentsUrl = setUrl("payments", null, paymentsFilters);
-
     const { data, message, meta } = await api(paymentsUrl);
 
     if (data) {
@@ -43,7 +45,13 @@ export default function ReportPaymentsDetails({ filters }) {
 
   useEffect(() => {
     getSaleDay();
-  }, [filters, state.page]);
+  }, [
+    filters.user,
+    filters.date_start,
+    filters.date_end,
+    filters.branch_id,
+    state.page,
+  ]);
 
   return (
     <div className="card card-success card-outline">
@@ -61,22 +69,8 @@ export default function ReportPaymentsDetails({ filters }) {
             </tr>
           </thead>
           <tbody>
-            {state.load ? (
-              <tr>
-                <td colSpan="4" className="text-center p-4">
-                  <div
-                    className="spinner-border text-primary mr-4"
-                    role="status"
-                  >
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                  <span className="font-weight-light font-italic">
-                    Espere cargando datos de pagos
-                  </span>
-                </td>
-              </tr>
-            ) : state.payments.length ? (
-              state.payments.map((pay) => {    
+            {state.payments.length ? (
+              state.payments.map((pay) => {
                 return (
                   <tr
                     key={pay.id}
@@ -114,7 +108,8 @@ export default function ReportPaymentsDetails({ filters }) {
           </tbody>
         </table>
       </div>
-      {state.meta.total ? (
+
+      {Boolean(state.meta.total) && (
         <div className="card-footer">
           {state.meta.current_page === 1 ? (
             <a href="#next" onClick={(e) => e.preventDefault()}>
@@ -154,7 +149,13 @@ export default function ReportPaymentsDetails({ filters }) {
             </a>
           )}
         </div>
-      ) : null}
+      )}
+
+      {state.load && (
+        <div className="overlay dark">
+          <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+        </div>
+      )}
     </div>
   );
 }

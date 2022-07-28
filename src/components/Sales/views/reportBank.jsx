@@ -14,14 +14,15 @@ export default function ReportBank({ filters }) {
   const getSaleDay = async () => {
     const bankFilters = {
       ...filters,
+      itemsPage: 12,
+      type: "banks",
     };
-
-    bankFilters.itemsPage = 12;
-    bankFilters.page = state.page;
-    bankFilters.type = "banks";
+    setState({
+      ...state,
+      load: true,
+    });
 
     const bankUrls = setUrl("payments", null, bankFilters);
-
     const { data, message } = await api(bankUrls);
 
     if (data) {
@@ -42,7 +43,7 @@ export default function ReportBank({ filters }) {
 
   useEffect(() => {
     getSaleDay();
-  }, [filters]);
+  }, [filters.user, filters.date_start, filters.date_end, filters.branch_id]);
 
   return (
     <div className="card card-success card-outline">
@@ -52,42 +53,36 @@ export default function ReportBank({ filters }) {
         </h3>
       </div>
       <div className="card-body">
-        {state.load ? (
-          <div>
-            <div className="spinner-border text-primary mr-4" role="status">
-              <span className="sr-only">Loading...</span>
-            </div>
-            <span className="font-weight-light font-italic">
-              Espere cargando datos de banco
-            </span>
-          </div>
-        ) : (
-          <ul className="list-group">
-            {state.data.length ? (
-              state.data.map((bank, i) => {
-                return (
-                  <li
-                    className="list-group-item d-flex justify-content-between align-items-center"
-                    key={i}
-                  >
-                    <label className="text-uppercase">{bank.name}</label>
-                    <span className="badge badge-primary">
-                      {dollarUS.format(bank.total)}
-                    </span>
-                  </li>
-                );
-              })
-            ) : (
-              <li className="list-group-item d-flex justify-content-between align-items-center">
-                <h6 className="text-warning">
-                  <i className="fas fa-info mr-2"></i>
-                  No hay datos para este dia
-                </h6>
-              </li>
-            )}
-          </ul>
-        )}
+        <ul className="list-group">
+          {state.data.length ? (
+            state.data.map((bank, i) => {
+              return (
+                <li
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                  key={i}
+                >
+                  <label className="text-uppercase">{bank.name}</label>
+                  <span className="badge badge-primary">
+                    {dollarUS.format(bank.total)}
+                  </span>
+                </li>
+              );
+            })
+          ) : (
+            <li className="list-group-item d-flex justify-content-between align-items-center">
+              <h6 className="text-warning">
+                <i className="fas fa-info mr-2"></i>
+                No hay datos para este dia
+              </h6>
+            </li>
+          )}
+        </ul>
       </div>
+      {state.load && (
+        <div className="overlay dark">
+          <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+        </div>
+      )}
     </div>
   );
 }

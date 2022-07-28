@@ -1,57 +1,71 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
-
 //Context
 import { ConfigContext } from "../../context/ConfigContext";
-
 //Hooks
-import useUsers from "../../hooks/useUsers"
+import useUsers from "../../hooks/useUsers";
 
-export default function Filters({ filters, changeState }) {  
-
+export default function Filters({ filters, changeState }) {
   const { user, branch_id, date_end, date_start } = filters;
   const [state, setState] = useState({
     branch_id: branch_id,
     user: user,
     date_start,
     date_end,
+    userData: [],
+    load: false,
   });
-  
-  const [usersList, setUsersList] = useState([]);
   const usersHook = useUsers();
   const config = useContext(ConfigContext);
   const branches = config.data.filter((c) => c.name === "branches");
 
-
-  
   // Functions
   const sendDataFilter = () => {
-      const { user, branch_id, date_end, date_start } = state;
-      changeState({
-        branch_id,
-        user,
-        date_start,
-        date_end,
-      });
-    },
-    handleChangeDate = (field, date) => {
-      setState({
-        ...state,
-        [field]: moment(date).format("YYYY-MM-DD"),
-      });
-    };
+    const { user, branch_id, date_end, date_start } = state;
 
-    useEffect(()=>{
-      usersHook.getListUsers().then((data)=>{
-        if(data){
-          setUsersList(data.data)
-        }else{
-          console.error("Error al obtener la lista de usuarios");
-        }
-      })
-    },[])// eslint-disable-line react-hooks/exhaustive-deps
+    changeState({
+      branch_id,
+      user,
+      date_start,
+      date_end,
+    });
+    getDataApi();
+  };
+  const handleChangeDate = (field, date) => {
+    setState({
+      ...state,
+      [field]: moment(date).format("YYYY-MM-DD"),
+    });
+  };
+  const getDataApi = () => {
+    setState({
+      ...state,
+      load: true,
+    });
+    usersHook.getListUsers({ branch_id: state.branch_id }).then(({ data }) => {
+      if (data) {
+        setState({
+          ...state,
+          userData: data,
+          load: false,
+        });
+      } else {
+        console.error("[Orus System] Error al obtener la lista de usuarios");
+        setState({
+          ...state,
+          load: false,
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    getDataApi();
+  }, []);
+
   return (
     <div className="border-bottom pb-3 mb-4">
       <div className="card-body p-0 bg-light">
@@ -64,13 +78,13 @@ export default function Filters({ filters, changeState }) {
             <div className="col-lg-12">
               <select
                 className="form-control text-capitalize"
-                defaultValue={branch_id}
+                value={state.branch_id}
                 onChange={({ target }) =>
                   setState({ ...state, branch_id: target.value })
                 }
               >
                 <option value="">
-                  {branch_id === "" ? "Sucursal" : "Todas"}
+                  {state.load && !branches.length ? "Cargando..." : "Todas"}
                 </option>
                 {branches.map((branch) => {
                   return (
@@ -92,8 +106,8 @@ export default function Filters({ filters, changeState }) {
                   setState({ ...state, user: target.value })
                 }
               >
-                <option value="">{user === "" ? "Usuarios" : "Todos"}</option>
-                {usersList.map((user) => {
+                <option value="">{state.load ? "Cargando..." : "Todos"}</option>
+                {state.userData.map((user) => {
                   if (!branch_id) {
                     return (
                       <option key={user.id} value={user.id}>

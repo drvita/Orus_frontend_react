@@ -47,8 +47,8 @@ export default function Filters({ filters, changeState }) {
     });
     usersHook.getListUsers({ branch_id: state.branch_id }).then(({ data }) => {
       if (data) {
-        const users = data.filter((u) => u.role !== "doctor");
-
+        const users = data.filter((u) => !u.roles.includes("doctor"));
+        console.log("[DEBUG] users load:", data, users);
         setState({
           ...state,
           userData: users,

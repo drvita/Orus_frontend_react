@@ -46,7 +46,7 @@ export default function ReportPaymentsDetails({ filters }) {
   useEffect(() => {
     getSaleDay();
   }, [
-    filters.user,
+    filters.user_id,
     filters.date_start,
     filters.date_end,
     filters.branch_id,

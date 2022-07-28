@@ -113,7 +113,12 @@ export default function ReportPays({ filters, changeState, auth }) {
 
   useEffect(() => {
     getSaleDay();
-  }, [filters.user, filters.date_start, filters.date_end, filters.branch_id]);
+  }, [
+    filters.user_id,
+    filters.date_start,
+    filters.date_end,
+    filters.branch_id,
+  ]);
 
   useEffect(() => {
     changeState({ ventas: state.efectivo });

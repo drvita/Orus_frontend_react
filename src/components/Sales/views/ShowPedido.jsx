@@ -17,8 +17,8 @@ export default function ShowPedido(){
             <button
                 className="btn btn-info mr-2"
                 title="Pedido"
-                disabled = {saleContext.id ? false : true}     
-                onClick={watchOrder}                     
+                disabled = {saleContext.order ? false : true}     
+                onClick={watchOrder}                                     
             >
                 <i className="fas fa-file-alt"></i>
              </button>          

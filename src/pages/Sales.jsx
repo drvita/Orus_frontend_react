@@ -50,6 +50,7 @@ export default function IndexSalesComponent(props) {
     print: false,
     isPayed: false,
     thereNews: false,
+    loading:false,
   };
 
   const [state, setState] = useState(initialState);
@@ -202,6 +203,10 @@ export default function IndexSalesComponent(props) {
 
   useEffect(() => {
     if (props.match.params.id) {
+      setState({
+        ...state,
+        loading:true
+      })
       hookSale.getSaleById(props.match.params.id).then((data) => {
         if (data) {
           setState({
@@ -220,23 +225,22 @@ export default function IndexSalesComponent(props) {
             activitys: data.data.activity,
             customer: data.data.customer,
             thereNews: false,
+            loading:false
           });
         }
-      });
+      })
+      .catch(()=>{
+        setState({
+          ...state,
+          loading:false
+        })
+      })
     }
   }, []);
 
 
-  return (
-    <>
-    {!state.id ? (      
-      <div className="d-flex flex-column justify-content-center align-items-center">
-        <h1>Cargando informacion</h1>
-        <div className="spinner-border text-primary" role="status">          
-        </div>
-      </div>  
-    ) : (
-      <SaleContext.Provider value={{ ...state, set: handleSet }}>
+  return (     
+    <SaleContext.Provider value={{ ...state, set: handleSet }}>
         <div className="card border border-gray">
           <div className="card-body pb-2 d-print-none">
             <nav className="row">
@@ -267,7 +271,15 @@ export default function IndexSalesComponent(props) {
               className="overflow-auto text-right p-0 border border-gray"
               style={{ minHeight: "65vh" }}
             >
-              <SalesDetailsTableComponent />
+              {state.loading ? (
+                <div className="d-flex flex-column justify-content-center align-items-center">
+                <h1>Cargando informacion</h1>
+                <div className="spinner-border text-primary" role="status">          
+                </div>
+              </div> 
+              ):(
+                <SalesDetailsTableComponent />
+              )}             
             </div>
           </div>
 
@@ -306,7 +318,5 @@ export default function IndexSalesComponent(props) {
           </div>
         </div>
       </SaleContext.Provider>
-    )}       
-    </>   
   );
 }

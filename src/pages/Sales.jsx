@@ -235,7 +235,7 @@ export default function IndexSalesComponent(props) {
             </div>
 
             <div className="col">
-              <SaleDate></SaleDate>
+              <SaleDate></SaleDate>              
             </div>
 
             <div className="col-3">

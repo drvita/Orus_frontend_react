@@ -15,6 +15,7 @@ import ShowToPay from "../components/Sales/views/ShowToPay";
 import ShowTotal from "../components/Sales/views/ShowTotal";
 import saleHelper from "../components/Sales/helpers";
 import InfoButton from "../components/Sales/views/InfoButton";
+import ShowPedido from "../components/Sales/views/ShowPedido";
 
 //Context
 import { SaleContext } from "../context/SaleContext";
@@ -225,73 +226,87 @@ export default function IndexSalesComponent(props) {
     }
   }, []);
 
+
   return (
-    <SaleContext.Provider value={{ ...state, set: handleSet }}>
-      <div className="card border border-gray">
-        <div className="card-body pb-2 d-print-none">
-          <nav className="row">
-            <div className="col">
-              <CustomerBtnComponent />
+    <>
+    {!state.id ? (      
+      <div className="d-flex flex-column justify-content-center align-items-center">
+        <h1>Cargando informacion</h1>
+        <div className="spinner-border text-primary" role="status">          
+        </div>
+      </div>  
+    ) : (
+      <SaleContext.Provider value={{ ...state, set: handleSet }}>
+        <div className="card border border-gray">
+          <div className="card-body pb-2 d-print-none">
+            <nav className="row">
+              <div className="col">
+                <CustomerBtnComponent />
+              </div>
+
+              <div className="col">
+                <SaleDate></SaleDate>              
+              </div>
+
+              <div className="col-3">
+                <div className="card-tools d-flex justify-content-end mb-3">
+
+                  <ShowPedido/>                
+
+                  <ListSalesBtn />
+
+                  <DiscountBtnComponent />
+
+                  <EraseBtn {...props} />
+
+                  <InfoButton />
+                </div>
+              </div>
+            </nav>
+            <div
+              className="overflow-auto text-right p-0 border border-gray"
+              style={{ minHeight: "65vh" }}
+            >
+              <SalesDetailsTableComponent />
             </div>
+          </div>
 
-            <div className="col">
-              <SaleDate></SaleDate>              
-            </div>
+          <div className="card-footer">
+            <div className="row">
+              <div className="col d-print-none">
+                <ShowTotal />
+              </div>
 
-            <div className="col-3">
-              <div className="card-tools d-flex justify-content-end mb-3">
-                <ListSalesBtn />
+              <div className="col d-print-none">
+                <ShowToPay />
+              </div>
 
-                <DiscountBtnComponent />
+              <div className="col-6 text-right">
+                <InputSearchItem />
 
-                <EraseBtn {...props} />
+                <PaymentBtnComponent />
 
-                <InfoButton />
+                <button
+                  className="btn btn-primary ml-3"
+                  onClick={() => validateSale()}
+                  disabled={disabled}
+                >
+                  <i className="fas fa-print mr-2"></i>
+                  Imprimir
+                </button>
+
+                {state.print && (
+                  <PrintSaleComponent
+                    data={{ ...state, order_id: state.order }}
+                    setPrint={() => setState({ ...state, print: false })}
+                  />
+                )}
               </div>
             </div>
-          </nav>
-          <div
-            className="overflow-auto text-right p-0 border border-gray"
-            style={{ minHeight: "65vh" }}
-          >
-            <SalesDetailsTableComponent />
           </div>
         </div>
-
-        <div className="card-footer">
-          <div className="row">
-            <div className="col d-print-none">
-              <ShowTotal />
-            </div>
-
-            <div className="col d-print-none">
-              <ShowToPay />
-            </div>
-
-            <div className="col-6 text-right">
-              <InputSearchItem />
-
-              <PaymentBtnComponent />
-
-              <button
-                className="btn btn-primary ml-3"
-                onClick={() => validateSale()}
-                disabled={disabled}
-              >
-                <i className="fas fa-print mr-2"></i>
-                Imprimir
-              </button>
-
-              {state.print && (
-                <PrintSaleComponent
-                  data={{ ...state, order_id: state.order }}
-                  setPrint={() => setState({ ...state, print: false })}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </SaleContext.Provider>
+      </SaleContext.Provider>
+    )}       
+    </>   
   );
 }

@@ -3,8 +3,8 @@ import { useRef } from "react";
 export default function Input(props) {
   const { showIcon = true } = props;
 
-  const inputRef = useRef('');
-  
+  const inputRef = useRef("");
+
   return (
     <div className="input-group mb-3">
       {showIcon && (
@@ -26,9 +26,7 @@ export default function Input(props) {
         className="custom-select text-uppercase"
         value={props.value ?? ""}
         disabled={props.load ?? false}
-        onChange={({ target }) => {   
-          console.log(inputRef.current.options);
-          //console.log(inputRef.current.options[inputRef.current.value].text);       
+        onChange={({ target }) => {
           if (props.handleChange) {
             props.handleChange(parseInt(target.value));
           }

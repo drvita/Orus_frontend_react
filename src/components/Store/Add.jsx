@@ -8,7 +8,7 @@ import { StoreContext } from "../../context/StoreContext";
 import useStore from "../../hooks/useStore";
 
 //Helper
-import helper from '../Store/helpers';
+import helper from "../Store/helpers";
 
 // Components
 import CategoryInput from "./Categories";
@@ -39,6 +39,7 @@ const initialState = {
     codes: [],
     category_code: [],
     activity: [],
+    codenames: [],
   },
   loading: false,
 };
@@ -54,7 +55,6 @@ export default function Add(props) {
   const idsCategory = state.data.category.code
     ? state.data.category.code.filter((i) => i !== "")
     : [];
-
 
   let readyToSave = false;
   if (idsCategory.includes("1")) {
@@ -106,7 +106,7 @@ export default function Add(props) {
     });
   };
 
-  const getItem = () => { 
+  const getItem = () => {
     _store.getItem(id).then((res) => {
       setState({
         ...state,
@@ -135,22 +135,21 @@ export default function Add(props) {
     }
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const getNameCodeDefault = () => {    
+  const getNameCodeDefault = () => {
     const { code: currentCode, grad } = state;
 
     // Make name
     if (parseInt(this.category0.current.value) !== 1) {
       // To other categories
       const type =
-          this.category0.current !== null &&
-          this.category0.current.selectedIndex
-            ? this.category0.current.options[
-                this.category0.current.selectedIndex
-              ].text
-                .trim()
-                .replace(/\s/gim, "")
-                .slice(0, 7)
-            : "";
+        this.category0.current !== null && this.category0.current.selectedIndex
+          ? this.category0.current.options[
+              this.category0.current.selectedIndex
+            ].text
+              .trim()
+              .replace(/\s/gim, "")
+              .slice(0, 7)
+          : "";
 
       const name = helper.handleCodeString(
           type === "varios" ? "" : type,
@@ -167,17 +166,17 @@ export default function Add(props) {
     } else {
       // To lent categories
       const name = helper.handleNameLent(
-          grad,
-          this.category1,
-          this.category2,
-          this.category3
-        );
+        grad,
+        this.category1,
+        this.category2,
+        this.category3
+      );
       const code = helper.handleCodeLent(
-          grad,
-          this.category1,
-          this.category2,
-          this.category3
-        );
+        grad,
+        this.category1,
+        this.category2,
+        this.category3
+      );
 
       return {
         name,
@@ -215,6 +214,17 @@ export default function Add(props) {
                           ...state.data,
                           category_code: code,
                         },
+                      });
+                    }}
+                    handleSetCatName={(codenames) => {
+                      console.log("[DEBUG] categories name:", codenames);
+                      setState({
+                        ...state,
+                        data: {
+                          ...state.data,
+                          codenames,
+                        },
+                        loading: false,
                       });
                     }}
                   />
@@ -330,7 +340,7 @@ export default function Add(props) {
                           code: codeReceibed,
                         });
                       }}
-                      createAutoName = {getNameCodeDefault}
+                      createAutoName={getNameCodeDefault}
                     />
                   </div>
                   <div className="col">
@@ -466,7 +476,7 @@ export default function Add(props) {
                     branch_default={state.branch_default}
                     showIcon={false}
                     setBranchId={(target) => {
-                      const { value } = target;                      
+                      const { value } = target;
                       setState({
                         ...state,
                         branch_default: parseInt(value),

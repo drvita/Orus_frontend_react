@@ -7,7 +7,6 @@ import useCategory from "../../hooks/useCategory";
 import Input from "../Input";
 
 export default function Categories(props) {
-
   const _categories = useCategory();
 
   const [state, setState] = useState({
@@ -16,9 +15,9 @@ export default function Categories(props) {
     cat2: 0,
     cat3: 0,
     cat4: 0,
+    catNameSelect: [],
     load: true,
   });
-
 
   const input2 = state.categories.filter((cat) => cat.id === state.cat1)[0];
   const input3 = input2?.sons?.filter((cat) => cat.id === state.cat2)[0];
@@ -39,10 +38,18 @@ export default function Categories(props) {
         });
       });
   };
+  const handleCodeName = (categories, select) => {
+    const cat = categories.filter((c) => c.id === select)[0];
+
+    if (cat?.codeName && cat.codeName.length) {
+      //TODO: To send fhater
+      props.handleSetCatName(cat.codeName);
+    }
+  };
 
   const getCategory = (id) => {
     _categories.getCategory(id).then((cat) => {
-      if (state.cat1 === parseInt(cat.code[0])) {        
+      if (state.cat1 === parseInt(cat.code[0])) {
         if (state.cat2 === parseInt(cat.code[1])) {
           if (state.cat3 === parseInt(cat.code[2])) {
             if (state.cat4 === parseInt(cat.code[3])) {
@@ -63,17 +70,11 @@ export default function Categories(props) {
     });
   };
 
-  const getNameCategory = (category)=>{
-
-  }
-
-
   const handleReturn = () => {
-
-    if (state.cat1 && input2 && !input2.sons?.length) {      
-      return props.handleChange(state.cat1, input2.code);      
+    if (state.cat1 && input2 && !input2.sons?.length) {
+      return props.handleChange(state.cat1, input2.code);
     } else if (props.category) {
-      if (state.cat1 && !state.cat2 && !state.cat3 && !state.cat4) {        
+      if (state.cat1 && !state.cat2 && !state.cat3 && !state.cat4) {
         return props.handleChange(0, []);
       }
     }
@@ -105,14 +106,13 @@ export default function Categories(props) {
     }
 
     handleReturn();
-
-  }, [state]);// eslint-disable-line react-hooks/exhaustive-deps
+  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (state.categories.length && props.category) {
       getCategory(props.category);
     }
-  }, [state.categories, props.category]);// eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.categories, props.category]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div>
@@ -121,8 +121,9 @@ export default function Categories(props) {
         options={state.categories}
         value={state.cat1}
         load={state.load}
-        handleChange={(val) => {          
-          setState({ ...state, cat1: val, cat2: 0, cat3: 0, cat4: 0, })
+        handleChange={(val) => {
+          handleCodeName(state.categories, val);
+          setState({ ...state, cat1: val, cat2: 0, cat3: 0, cat4: 0 });
         }}
       />
 
@@ -131,9 +132,10 @@ export default function Categories(props) {
           text={`Seleccione una categoria para ${input2.name}`}
           options={input2.sons}
           value={state.cat2}
-          handleChange={(val) =>
-            setState({ ...state, cat2: val, cat3: 0, cat4: 0 })
-          }
+          handleChange={(val) => {
+            handleCodeName(input2.sons, val);
+            setState({ ...state, cat2: val, cat3: 0, cat4: 0 });
+          }}
         />
       )}
 
@@ -142,7 +144,10 @@ export default function Categories(props) {
           text={`Seleccione una categoria para ${input3.name}`}
           options={input3.sons}
           value={state.cat3}
-          handleChange={(val) => setState({ ...state, cat3: val, cat4: 0 })}
+          handleChange={(val) => {
+            handleCodeName(input3.sons, val);
+            setState({ ...state, cat3: val, cat4: 0 });
+          }}
         />
       )}
 
@@ -151,7 +156,10 @@ export default function Categories(props) {
           text={`Seleccione una categoria para ${input4.name}`}
           options={input4.sons}
           value={state.cat4}
-          handleChange={(val) => setState({ ...state, cat4: val })}
+          handleChange={(val) => {
+            handleCodeName(input4.sons, val);
+            setState({ ...state, cat4: val });
+          }}
         />
       )}
     </div>

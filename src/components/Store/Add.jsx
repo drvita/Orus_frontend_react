@@ -7,6 +7,9 @@ import { StoreContext } from "../../context/StoreContext";
 //Hooks
 import useStore from "../../hooks/useStore";
 
+//Helper
+import helper from '../Store/helpers';
+
 // Components
 import CategoryInput from "./Categories";
 import Suppliers from "./Suppliers";
@@ -52,14 +55,15 @@ export default function Add(props) {
     ? state.data.category.code.filter((i) => i !== "")
     : [];
 
+
   let readyToSave = false;
   if (idsCategory.includes("1")) {
     readyToSave = state.category_id && state.code && state.name;
   } else {
     readyToSave =
       state.category_id &&
-      state.code &&
-      state.name &&
+      state.code.length &&
+      state.name.length &&
       state.supplier_id &&
       state.brand_id;
   }
@@ -102,7 +106,7 @@ export default function Add(props) {
     });
   };
 
-  const getItem = () => {
+  const getItem = () => { 
     _store.getItem(id).then((res) => {
       setState({
         ...state,
@@ -131,6 +135,57 @@ export default function Add(props) {
     }
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const getNameCodeDefault = () => {    
+    const { code: currentCode, grad } = state;
+
+    // Make name
+    if (parseInt(this.category0.current.value) !== 1) {
+      // To other categories
+      const type =
+          this.category0.current !== null &&
+          this.category0.current.selectedIndex
+            ? this.category0.current.options[
+                this.category0.current.selectedIndex
+              ].text
+                .trim()
+                .replace(/\s/gim, "")
+                .slice(0, 7)
+            : "";
+
+      const name = helper.handleCodeString(
+          type === "varios" ? "" : type,
+          this.category1,
+          this.brandRef,
+          currentCode
+        ),
+        code = "";
+
+      return {
+        name,
+        code,
+      };
+    } else {
+      // To lent categories
+      const name = helper.handleNameLent(
+          grad,
+          this.category1,
+          this.category2,
+          this.category3
+        );
+      const code = helper.handleCodeLent(
+          grad,
+          this.category1,
+          this.category2,
+          this.category3
+        );
+
+      return {
+        name,
+        code,
+      };
+    }
+  };
+
   return (
     <div className="row">
       <div className="col">
@@ -151,7 +206,8 @@ export default function Add(props) {
 
                   <CategoryInput
                     category={state.category_id}
-                    handleChange={(id, code) => {
+                    handleChange={(id, code, name) => {
+                      console.log(name);
                       setState({
                         ...state,
                         category_id: id,
@@ -274,6 +330,7 @@ export default function Add(props) {
                           code: codeReceibed,
                         });
                       }}
+                      createAutoName = {getNameCodeDefault}
                     />
                   </div>
                   <div className="col">

@@ -1,5 +1,9 @@
+import { useRef } from "react";
+
 export default function Input(props) {
   const { showIcon = true } = props;
+
+  const inputRef = useRef('');
   
   return (
     <div className="input-group mb-3">
@@ -18,10 +22,13 @@ export default function Input(props) {
       )}
 
       <select
+        ref={inputRef}
         className="custom-select text-uppercase"
         value={props.value ?? ""}
         disabled={props.load ?? false}
-        onChange={({ target }) => {
+        onChange={({ target }) => {   
+          console.log(inputRef.current.options);
+          //console.log(inputRef.current.options[inputRef.current.value].text);       
           if (props.handleChange) {
             props.handleChange(parseInt(target.value));
           }
@@ -39,9 +46,9 @@ export default function Input(props) {
           </>
         )}
 
-        {props.options?.map((cat) => {
+        {props.options?.map((cat, index) => {
           return (
-            <option value={cat.id} key={cat.id}>
+            <option value={cat.id} key={cat.id} id={index}>
               {cat.name}
             </option>
           );

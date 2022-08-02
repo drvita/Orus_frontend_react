@@ -38,11 +38,15 @@ export default function Code(props) {
               if(data.data.length){         
                 if(data.data[0].code === props.code){                                  
                   setInUse(false);
+                  //Generar nombre automático   
+                  props.createAutoName();             
                 }else{
                   setInUse(true);
                 }              
               }else if(data.data.length === 0){              
                 setInUse(false);
+                //Generar nombre automático
+                props.createAutoName();
               }
             })
           }

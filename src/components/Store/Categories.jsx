@@ -42,7 +42,7 @@ export default function Categories(props) {
 
   const getCategory = (id) => {
     _categories.getCategory(id).then((cat) => {
-      if (state.cat1 === parseInt(cat.code[0])) {
+      if (state.cat1 === parseInt(cat.code[0])) {        
         if (state.cat2 === parseInt(cat.code[1])) {
           if (state.cat3 === parseInt(cat.code[2])) {
             if (state.cat4 === parseInt(cat.code[3])) {
@@ -63,12 +63,17 @@ export default function Categories(props) {
     });
   };
 
+  const getNameCategory = (category)=>{
+
+  }
+
 
   const handleReturn = () => {
-    if (state.cat1 && input2 && !input2.sons?.length) {
-      return props.handleChange(state.cat1, input2.code);
+
+    if (state.cat1 && input2 && !input2.sons?.length) {      
+      return props.handleChange(state.cat1, input2.code);      
     } else if (props.category) {
-      if (state.cat1 && !state.cat2 && !state.cat3 && !state.cat4) {
+      if (state.cat1 && !state.cat2 && !state.cat3 && !state.cat4) {        
         return props.handleChange(0, []);
       }
     }
@@ -116,9 +121,9 @@ export default function Categories(props) {
         options={state.categories}
         value={state.cat1}
         load={state.load}
-        handleChange={(val) =>
+        handleChange={(val) => {          
           setState({ ...state, cat1: val, cat2: 0, cat3: 0, cat4: 0, })
-        }
+        }}
       />
 
       {Boolean(state.cat1) && Boolean(input2?.sons?.length) && (

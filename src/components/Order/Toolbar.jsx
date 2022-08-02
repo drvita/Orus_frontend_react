@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 //Context
 import { OrderContext } from "../../context/OderContext";
 import SideBar from "../../pages/partials/SideBar";
@@ -22,10 +22,6 @@ export default function Toolbar() {
       },
     });
   };
-
-  useEffect(() => {
-    console.log("[DEBUG] id:", id);
-  });
 
   return (
     <div className="row">

@@ -27,9 +27,18 @@ export default function Brands(props) {
       });
   };
 
+  const filterBrandName = (id)=>{
+    const brandName = state.brands.filter((brand) => brand.id === id);
+    return brandName[0].name
+  }
+
   useEffect(() => {
     getBrands();
   }, [props.supplier]);// eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    console.log("Cambio la marca");
+  }, [props.brand]);// eslint-disable-line react-hooks/exhaustive-deps
 
 
   return (
@@ -46,9 +55,9 @@ export default function Brands(props) {
           emptyText="No hay marcas para este proveedor"
           load={state.load}
           loadText="Cargando marcas"
-          handleChange={(id) => {
-            if (props.handleChangeBrand) {
-              props.handleChangeBrand(id);
+          handleChange={(id) => {            
+            if (props.handleChangeBrand) {              
+              props.handleChangeBrand(id, filterBrandName(id));
             }
           }}
         />

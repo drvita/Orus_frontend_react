@@ -1,9 +1,5 @@
-import { useRef } from "react";
-
 export default function Input(props) {
   const { showIcon = true } = props;
-
-  const inputRef = useRef("");
 
   return (
     <div className="input-group mb-3">
@@ -21,8 +17,7 @@ export default function Input(props) {
         </div>
       )}
 
-      <select
-        ref={inputRef}
+      <select        
         className="custom-select text-uppercase"
         value={props.value ?? ""}
         disabled={props.load ?? false}

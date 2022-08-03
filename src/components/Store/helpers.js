@@ -169,31 +169,20 @@ const handleCatOne = (data) => ({
     category_id4: 0,
     category_list4: data.hijos,
   });
-const handleCodeString = (
-    stringcode = "armazon",
-    category,
-    brand,
-    code = ""
-  ) => {
-    stringcode +=
-      category.current !== null && category.current.selectedIndex
-        ? " " +
-          category.current.options[category.current.selectedIndex].text.trim()
-        : "";
-    stringcode +=
-      brand.current !== null && brand.current.selectedIndex
-        ? " " +
-          brand.current.options[brand.current.selectedIndex].text
-            .trim()
-            .replace(/\s/gim, "")
-        : "";
+const handleCodeString = ( stringcode = "armazon", category, brand, code = "") => {    
+
+    stringcode += category !== null ? " " + category.trim() : "";
+
+    stringcode += brand !== null  ? " " + brand.trim().replace(/\s/gim, ""): "";
 
     if (code) {
       stringcode += " " + code.replace(/[-\s]+/gm, "");
     }
-
+    
     return stringcode.toLowerCase();
   },
+
+
   codeLentString = (string) => {
     switch (string) {
       case "monofocales":
@@ -245,30 +234,30 @@ const handleCodeString = (
     }
   },
   handleCodeLent = (grad, category1, category2, category3) => {
-    if (!category1.current || !category2.current || !category3.current) {
+    if (!category1 || !category2 || !category3) {
       return "";
     }
 
     let stringcode =
-      category1.current !== null
+      category1 !== null
         ? codeLentString(
-            category1.current.options[category1.current.selectedIndex].text
+            category1
               .trim()
               .toLowerCase()
           )
         : "";
     stringcode +=
-      category2.current !== null
+      category2 !== null
         ? codeLentString(
-            category2.current.options[category2.current.selectedIndex].text
+            category2
               .trim()
               .toLowerCase()
           )
         : "";
     stringcode +=
-      category3.current !== null
+      category3 !== null
         ? codeLentString(
-            category3.current.options[category3.current.selectedIndex].text
+            category3
               .trim()
               .toLowerCase()
           )
@@ -276,29 +265,37 @@ const handleCodeString = (
 
     return stringcode + grad.toString().trim().replace(/\s/gim, "");
   },
+
+
   handleNameLent = (grad, category1, category2, category3) => {
-    if (!category1.current || !category2.current || !category3.current) {
+    if (!category1 || !category2 || !category3) {
       return "";
     }
 
     let stringcode = "";
+
     stringcode +=
-      category1.current !== null
-        ? category1.current.options[category1.current.selectedIndex].text.trim()
+      category1 !== null
+        ? category1.trim()
         : "";
+      
     stringcode +=
-      category2.current !== null
+      category2 !== null
         ? " " +
-          category2.current.options[category2.current.selectedIndex].text.trim()
+          category2.trim()
         : "";
+
+
     stringcode +=
-      category3.current !== null
+      category3 !== null
         ? " " +
-          category3.current.options[category3.current.selectedIndex].text.trim()
+          category3.trim()
         : "";
 
     stringcode += " " + grad.toString();
+
     return stringcode.toLowerCase();
+
   };
 
 const toExport = {

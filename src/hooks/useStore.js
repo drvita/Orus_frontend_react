@@ -85,6 +85,7 @@ export default function useStore() {
     delete data.loading;
 
     if (id) {
+      console.log("Data a enviar", data);
       const url = setUrl("store", id);
 
       return await api(url, "PUT", data)
@@ -100,7 +101,11 @@ export default function useStore() {
           throw err;
         });
     } else {
+      console.log("Data a enviar", data);
       const url = setUrl("store");
+      
+      delete data.supplier_id
+      delete data.brand_id
 
       return await api(url, "POST", data)
         .then((res) => {

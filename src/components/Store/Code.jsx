@@ -1,18 +1,20 @@
-import { useState } from "react";
-//Hooks
-import useProducts from "../../hooks/useProducts";
-
-
+import { useEffect } from "react";
 export default function Code(props) {
-  const hookStore = useProducts();
-  const [inUse, setInUse] = useState(props.code.length === 0 ? true : false);
+
+  
+
+  useEffect(()=>{
+   /*  if(props.code.length){      
+   } */
+   props.validateOnBlur(props.code);
+  },[props.code])
 
   return (
     <div className="input-group mb-3">
       <div className="input-group-prepend">
         <span
           className={
-            inUse === true ? "input-group-text bg-warning" :  "input-group-text bg-primary"
+            props.codeAvailable === false ? "input-group-text bg-warning" :  "input-group-text bg-primary"
           }
         >
           <i className="fas fa-code"></i>
@@ -30,35 +32,22 @@ export default function Code(props) {
           props.onChangeProductCode(value);
         }}
         
-        onBlur={() => {
-          if(props.code.length === 0){
-            setInUse(true);
-          }else{
-            hookStore.getProductByCode(props.code, props.id).then((data)=>{
-              if(data.data.length){         
-                if(data.data[0].code === props.code){                                  
-                  setInUse(false);
-                  //Generar nombre automático   
-                  props.createAutoName();             
-                }else{
-                  setInUse(true);
-                }              
-              }else if(data.data.length === 0){              
-                setInUse(false);
-                //Generar nombre automático
-                props.createAutoName();
-              }
-            })
-          }
+        onBlur={({target}) => {
+          const {value} = target;          
+          props.validateOnBlur(value);
         }}
         autoComplete="off"
         maxLength="18"
       />
-      {inUse === true ? (
+      {props.codeAvailable === false ? (
         <span className="text-muted text-xs d-block w-100">
-          Campo vacio o còdigo en uso
+          {props.codeMessage}
         </span>
-      ) : null}
+      ) : (
+        <span className="text-muted text-xs d-block w-100">
+          {props.codeMessage}
+        </span>
+      )}
     </div>
   );
 }

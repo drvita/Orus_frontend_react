@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
+import useProducts from "../../hooks/useProducts";
 
 //Context
 import { StoreContext } from "../../context/StoreContext";
@@ -33,14 +34,17 @@ const initialState = {
   category_id: 0,
   branch_default: 0,
   data: {
-    category: { code: [] },
+    category: '',
     categories: [],
     branches: [],
     codes: [],
     category_code: [],
     activity: [],
     codenames: [],
+    brandname : '',
   },
+  codeMessage:'',
+  codeAvailable:false,
   loading: false,
 };
 
@@ -51,10 +55,11 @@ export default function Add(props) {
   const _store = useStore();
   const { code, loading: LOADING } = state;
   const history = useHistory();
+  const hookStore = useProducts();
 
-  const idsCategory = state.data.category.code
-    ? state.data.category.code.filter((i) => i !== "")
-    : [];
+  const idsCategory = state.data.category.code ? state.data.category.code.filter((i) => i !== ""):[];
+
+    //let readyToSave = state.category_id && state.code.length && state.name.length && state.supplier_id && state.brand_id;
 
   let readyToSave = false;
   if (idsCategory.includes("1")) {
@@ -65,12 +70,14 @@ export default function Add(props) {
       state.code.length &&
       state.name.length &&
       state.supplier_id &&
-      state.brand_id;
+      state.brand_id &&
+      state.codeAvailable === true
   }
 
   // Functions
   const saveProduct = () => {
-    _store.saveItem(state).then((data) => {
+    _store.saveItem(state)
+    .then((data) => {
       if (data) {
         window.Swal.fire({
           title: "Productos",
@@ -100,9 +107,12 @@ export default function Add(props) {
           confirmButtonColor: "#007bff",
           confirmButtonText: "Crear",
           cancelButtonText: "Cancelar",
-          showLoaderOnConfirm: true,
+          showLoaderOnConfirm: true,  
         });
       }
+    })
+    .catch((error)=>{
+      console.log(error.data);      
     });
   };
 
@@ -135,54 +145,91 @@ export default function Add(props) {
     }
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const getNameCodeDefault = () => {
-    const { code: currentCode, grad } = state;
+
+  const validCode = (code)=>{
+    if(!code.length){
+      setState({
+        ...state,
+        codeMessage:'Còdigo vacio',
+        codeAvailable:false
+      }); 
+      return
+    }else{
+      hookStore.getProductByCode(code, state.id).then((data)=>{        
+        if(data.data.length){         
+          if(data.data[0].code === code){                                                        
+            setState({
+              ...state,
+              codeMessage:'El còdigo ya està en uso',
+              codeAvailable:false
+            });  
+            return          
+          }else{
+            setState({
+              ...state,
+              codeMessage:'Còdigo disponible',
+              codeAvailable:true
+            });       
+            return    
+          }              
+        }else if(data.data.length === 0){    
+          setState({
+            ...state,
+            codeMessage:'Còdigo disponible',
+            codeAvailable:true
+          });         
+          return                          
+        }
+      });
+    }    
+  }
+
+  const getNameCodeDefault = (id, brandName) => {
+    const { code: currentCode, grad} = state;
+    const {codenames, brandname} = state.data;
 
     // Make name
-    if (parseInt(this.category0.current.value) !== 1) {
+    if (codenames[0] !== 'lentes') {      
       // To other categories
-      const type =
-        this.category0.current !== null && this.category0.current.selectedIndex
-          ? this.category0.current.options[
-              this.category0.current.selectedIndex
-            ].text
-              .trim()
-              .replace(/\s/gim, "")
-              .slice(0, 7)
-          : "";
+      const type = codenames[0] !== null ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7) : "";
 
-      const name = helper.handleCodeString(
-          type === "varios" ? "" : type,
-          this.category1,
-          this.brandRef,
-          currentCode
-        ),
-        code = "";
+      const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[1], brandname, currentCode)
+      const code = "";        
 
-      return {
-        name,
-        code,
-      };
-    } else {
+      setState({
+        ...state,
+        brand_id: id,
+        name: name,
+        data:{
+          ...state.data,
+          brandname: brandName
+        }   
+
+      });
+
+    } else {      
       // To lent categories
       const name = helper.handleNameLent(
         grad,
-        this.category1,
-        this.category2,
-        this.category3
-      );
-      const code = helper.handleCodeLent(
-        grad,
-        this.category1,
-        this.category2,
-        this.category3
+        codenames[1],
+        codenames[2],
+        codenames[3]
       );
 
-      return {
-        name,
-        code,
-      };
-    }
+      const code = helper.handleCodeLent(
+        grad,
+        codenames[1],
+        codenames[2],
+        codenames[3]
+      );
+      
+      setState({
+        ...state,
+        name: name,
+        code:code
+      });
+
+    } 
   };
 
   return (
@@ -204,20 +251,18 @@ export default function Add(props) {
                   </small>
 
                   <CategoryInput
-                    category={state.category_id}
-                    handleChange={(id, code, name) => {
-                      console.log(name);
+                    category={state.category_id}                  
+                    handleChange={(id, code, name) => {                      
                       setState({
                         ...state,
                         category_id: id,
                         data: {
-                          ...state.data,
-                          category_code: code,
+                          ...state.data,                          
+                          category_code: code,                          
                         },
                       });
                     }}
-                    handleSetCatName={(codenames) => {
-                      console.log("[DEBUG] categories name:", codenames);
+                    handleSetCatName={(codenames) => {                      
                       setState({
                         ...state,
                         data: {
@@ -226,7 +271,7 @@ export default function Add(props) {
                         },
                         loading: false,
                       });
-                    }}
+                    }}                    
                   />
                 </fieldset>
               </div>
@@ -251,11 +296,17 @@ export default function Add(props) {
                 brand={state.brand_id}
                 supplier={state.supplier_id}
                 textSelect="Selecione la marca"
-                handleChangeBrand={(id) => {
-                  setState({
+                handleChangeBrand={(id, brandName) => {    
+                  console.log(id, brandName);              
+                  /* setState({
                     ...state,
                     brand_id: id,
-                  });
+                    data:{
+                      ...state.data,
+                      brandname: brandName
+                    }                    
+                  }); */
+                  getNameCodeDefault(id, brandName);
                 }}
               />
             )}
@@ -282,6 +333,9 @@ export default function Add(props) {
                           onChange={({ target }) =>
                             setState({ ...state, grad: target.value })
                           }
+                          onBlur={()=>{
+                            getNameCodeDefault()                            
+                          }}
                           maxLength="7"
                           autoComplete="off"
                         />
@@ -339,8 +393,12 @@ export default function Add(props) {
                           ...state,
                           code: codeReceibed,
                         });
-                      }}
-                      createAutoName={getNameCodeDefault}
+                      }}   
+                      validateOnBlur = {(code)=>{                        
+                        validCode(code);
+                      }}    
+                      codeMessage={state.codeMessage}
+                      codeAvailable={state.codeAvailable}               
                     />
                   </div>
                   <div className="col">
@@ -442,10 +500,8 @@ export default function Add(props) {
                     onClick={() => {
                       saveProduct();
                     }}
-                    className={
-                      !readyToSave ? "btn btn-secondary" : "btn btn-primary"
-                    }
-                    disabled={!readyToSave}
+                    className={"btn btn-primary"}                    
+                    disabled={/* state.data.codenames[0] === "lentes" ? readyToSave :  */!readyToSave}
                   >
                     <i className="fas fa-save mr-1"></i>
                     Guardar

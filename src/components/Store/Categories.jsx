@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 //Hooks
 import useCategory from "../../hooks/useCategory";
 
@@ -38,6 +37,7 @@ export default function Categories(props) {
         });
       });
   };
+
   const handleCodeName = (categories, select) => {
     const cat = categories.filter((c) => c.id === select)[0];
 

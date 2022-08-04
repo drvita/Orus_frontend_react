@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
-import useProducts from "../../hooks/useProducts";
 
 //Context
 import { StoreContext } from "../../context/StoreContext";
@@ -43,9 +42,9 @@ const initialState = {
     codenames: [],
     brandname : '',
   },
-  codeMessage:'',
-  codeAvailable:false,
+  codeStatus:'empty',
   loading: false,
+  readyToSave: false
 };
 
 export default function Add(props) {
@@ -55,24 +54,8 @@ export default function Add(props) {
   const _store = useStore();
   const { code, loading: LOADING } = state;
   const history = useHistory();
-  const hookStore = useProducts();
 
-  const idsCategory = state.data.category.code ? state.data.category.code.filter((i) => i !== ""):[];
-
-    //let readyToSave = state.category_id && state.code.length && state.name.length && state.supplier_id && state.brand_id;
-
-  let readyToSave = false;
-  if (idsCategory.includes("1")) {
-    readyToSave = state.category_id && state.code && state.name;
-  } else {
-    readyToSave =
-      state.category_id &&
-      state.code.length &&
-      state.name.length &&
-      state.supplier_id &&
-      state.brand_id &&
-      state.codeAvailable === true
-  }
+  
 
   // Functions
   const saveProduct = () => {
@@ -112,7 +95,16 @@ export default function Add(props) {
       }
     })
     .catch((error)=>{
-      console.log(error.data);      
+      window.Swal.fire({
+        title: "Error al guardar el producto",
+        text: error.errors.name[0],
+        icon: "info",
+        showCancelButton: false,
+        confirmButtonColor: "#007bff",
+        confirmButtonText: "Cambiar nombre",
+        cancelButtonText: "Cancelar",
+        showLoaderOnConfirm: true,  
+      });      
     });
   };
 
@@ -139,6 +131,24 @@ export default function Add(props) {
     });
   };
 
+  let readyToSave = false;
+  
+  if(state.data.codenames[0] === 'lentes'){    
+    if(state.category_id && state.grad && state.code && state.codeStatus === 'available' && state.name.length){
+      readyToSave = true
+    }else{      
+      readyToSave=false      
+    }
+  }else{    
+    if(state.category_id && state.supplier_id && state.brand_id && state.code && state.codeStatus === 'available' && state.name.length){
+      readyToSave= true
+      console.log(readyToSave);
+    }else{
+      readyToSave= false;
+      console.log(readyToSave);
+    }
+  }
+
   useEffect(() => {
     if (id) {
       getItem();
@@ -146,43 +156,7 @@ export default function Add(props) {
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
-  const validCode = (code)=>{
-    if(!code.length){
-      setState({
-        ...state,
-        codeMessage:'Còdigo vacio',
-        codeAvailable:false
-      }); 
-      return
-    }else{
-      hookStore.getProductByCode(code, state.id).then((data)=>{        
-        if(data.data.length){         
-          if(data.data[0].code === code){                                                        
-            setState({
-              ...state,
-              codeMessage:'El còdigo ya està en uso',
-              codeAvailable:false
-            });  
-            return          
-          }else{
-            setState({
-              ...state,
-              codeMessage:'Còdigo disponible',
-              codeAvailable:true
-            });       
-            return    
-          }              
-        }else if(data.data.length === 0){    
-          setState({
-            ...state,
-            codeMessage:'Còdigo disponible',
-            codeAvailable:true
-          });         
-          return                          
-        }
-      });
-    }    
-  }
+
 
   const getNameCodeDefault = (id, brandName) => {
     const { code: currentCode, grad} = state;
@@ -192,8 +166,9 @@ export default function Add(props) {
     if (codenames[0] !== 'lentes') {      
       // To other categories
       const type = codenames[0] !== null ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7) : "";
+      console.log("TYPE:", type);
 
-      const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[1], brandname, currentCode)
+      const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[0], brandname, currentCode)
       const code = "";        
 
       setState({
@@ -387,18 +362,19 @@ export default function Add(props) {
 
                     <Code
                       code={state.code}
-                      id={state.id}
-                      onChangeProductCode={(codeReceibed) => {
+                      id={state.id}                      
+                      onChangeStatusCode = {(status)=>{
+                        setState({
+                          ...state,
+                          codeStatus: status            
+                        })
+                      }}      
+                      onChangeProductCode={(codeReceibed) => {                        
                         setState({
                           ...state,
                           code: codeReceibed,
                         });
-                      }}   
-                      validateOnBlur = {(code)=>{                        
-                        validCode(code);
-                      }}    
-                      codeMessage={state.codeMessage}
-                      codeAvailable={state.codeAvailable}               
+                      }}                                                             
                     />
                   </div>
                   <div className="col">
@@ -500,8 +476,9 @@ export default function Add(props) {
                     onClick={() => {
                       saveProduct();
                     }}
-                    className={"btn btn-primary"}                    
-                    disabled={/* state.data.codenames[0] === "lentes" ? readyToSave :  */!readyToSave}
+                    className={"btn btn-primary"} 
+                    disabled={!readyToSave}                   
+                    /* disabled={state.data.codenames[0] === "lentes" ? readyToSave : !readyToSave} */
                   >
                     <i className="fas fa-save mr-1"></i>
                     Guardar

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import useProducts from "../../hooks/useProducts";
 
-
 export default function Code(props) {
 
   const hookProducts = useProducts();
@@ -21,7 +20,7 @@ export default function Code(props) {
     }else{
       validCode();
     }
-  },[props.code]);
+  },[props.code]);// eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(()=>{
     hookProducts.getProductByCode(props.code, props.id)
@@ -34,16 +33,15 @@ export default function Code(props) {
       }
     })
     .catch((error) => console.log(error));
-  },[]);
+  },[]);// eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(()=>{
-    console.log("Cambio de status del codigo");
     props.onChangeStatusCode(state.codeStatus);
-  },[state.codeStatus]);
+  },[state.codeStatus]);// eslint-disable-line react-hooks/exhaustive-deps
 
 
   const validCode = ()=>{   
-    const searchReturned = state.productCodes.filter((code)=> code == props.code.toUpperCase());
+    const searchReturned = state.productCodes.filter((code)=> code === props.code.toUpperCase());
     if(searchReturned.length){
       setState({
         ...state,
@@ -81,11 +79,7 @@ export default function Code(props) {
           const {value} = target;
           props.onChangeProductCode(value);
         }}
-        
-        /* onBlur={({target}) => {
-          const {value} = target;          
-          props.validateOnBlur(value);
-        }} */
+
         autoComplete="off"
         maxLength="18"
       />

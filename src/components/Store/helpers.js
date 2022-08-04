@@ -180,8 +180,7 @@ const handleCodeString = ( stringcode = "armazon", category, brand, code = "") =
       stringcode += " " + code.replace(/[-\s]+/gm, "");
     }
 
-    return stringcode.toLowerCase();
-    //console.log(stringcode.toLowerCase());
+    return stringcode.toLowerCase();    
   },
 
 

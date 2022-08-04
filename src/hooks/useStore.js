@@ -77,48 +77,12 @@ export default function useStore() {
   };
 
   const saveItem = async (data) => {
-    if (!data) return;
-    const { id } = data;
 
-    //delete data.id;
-    delete data.data;
-    delete data.loading;
-
-    if (id) {
-      console.log("Data a enviar", data);
-      const url = setUrl("store", id);
-
-      return await api(url, "PUT", data)
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          console.error(
-            "[Orus System] Catch when save item in hook:",
-            err.message
-          );
-
-          throw err;
-        });
-    } else {
-      console.log("Data a enviar", data);
-      const url = setUrl("store");
-      
-      delete data.supplier_id
-      delete data.brand_id
-
-      return await api(url, "POST", data)
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          console.error(
-            "[Orus System] Catch when save item in hook:",
-            err.message
-          );
-          throw err;
-        });
-    }
+    const {id} = data;
+    const url = setUrl("store", id);
+    const method = !id ? 'POST' : 'PUT';
+    
+    return await api(url, method, data)
   };
 
   const saveQantityandPrice = async (data) => {

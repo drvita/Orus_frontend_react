@@ -59,9 +59,22 @@ export default function Add(props) {
 
   // Functions
   const saveProduct = () => {
-    _store.saveItem(state)
-    .then((data) => {
-      if (data) {
+    const dataSend = {
+      ...state,
+    }
+
+    if(!dataSend.brand_id){
+      delete dataSend.brand_id
+    }
+
+    if(!dataSend.supplier_id){
+      delete dataSend.supplier_id
+    }
+
+
+    _store.saveItem(dataSend)
+    .then((data)=>{
+      if(data){
         window.Swal.fire({
           title: "Productos",
           text: "Producto guardado correctamente",
@@ -81,20 +94,9 @@ export default function Add(props) {
             history.push("/almacen");
           }
         });
-      } else {
-        window.Swal.fire({
-          title: "Almacenamiento",
-          text: "Error al guardar el producto",
-          icon: "error",
-          showCancelButton: false,
-          confirmButtonColor: "#007bff",
-          confirmButtonText: "Crear",
-          cancelButtonText: "Cancelar",
-          showLoaderOnConfirm: true,  
-        });
       }
     })
-    .catch((error)=>{
+    .catch((error)=>{      
       window.Swal.fire({
         title: "Error al guardar el producto",
         text: error.errors.name[0],
@@ -106,7 +108,8 @@ export default function Add(props) {
         showLoaderOnConfirm: true,  
       });      
     });
-  };
+    }
+
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
@@ -141,11 +144,9 @@ export default function Add(props) {
     }
   }else{    
     if(state.category_id && state.supplier_id && state.brand_id && state.code && state.codeStatus === 'available' && state.name.length){
-      readyToSave= true
-      console.log(readyToSave);
+      readyToSave= true      
     }else{
-      readyToSave= false;
-      console.log(readyToSave);
+      readyToSave= false;      
     }
   }
 
@@ -166,10 +167,9 @@ export default function Add(props) {
     if (codenames[0] !== 'lentes') {      
       // To other categories
       const type = codenames[0] !== null ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7) : "";
-      console.log("TYPE:", type);
 
       const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[0], brandname, currentCode)
-      const code = "";        
+      //const code = "";        
 
       setState({
         ...state,
@@ -271,16 +271,7 @@ export default function Add(props) {
                 brand={state.brand_id}
                 supplier={state.supplier_id}
                 textSelect="Selecione la marca"
-                handleChangeBrand={(id, brandName) => {    
-                  console.log(id, brandName);              
-                  /* setState({
-                    ...state,
-                    brand_id: id,
-                    data:{
-                      ...state.data,
-                      brandname: brandName
-                    }                    
-                  }); */
+                handleChangeBrand={(id, brandName) => {                                        
                   getNameCodeDefault(id, brandName);
                 }}
               />

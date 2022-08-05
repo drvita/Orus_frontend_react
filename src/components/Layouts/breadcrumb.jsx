@@ -7,7 +7,6 @@ import { AuthContext } from "../../context/AuthContext";
 import { ConfigContext } from "../../context/ConfigContext";
 
 export default function BreadcrumbComponent() {
-
   const { auth, setBranch } = useContext(AuthContext);
   const config = useContext(ConfigContext);
   const pathName = useLocation().pathname.split("/");
@@ -22,7 +21,7 @@ export default function BreadcrumbComponent() {
   });
 
   const branches = config.data?.filter((c) => c.name === "branches") ?? [];
-  
+
   // functions
   const handleChangeBranch = (e) => {
     e.preventDefault();
@@ -56,27 +55,26 @@ export default function BreadcrumbComponent() {
       showLoaderOnConfirm: true,
     }).then(({ dismiss }) => {
       if (!dismiss) {
-        setBranch(branch_id)        
-        .then((res) => {
-          if (res) {
-            console.log("Respuesta cambio de sucursal:", res);                      
-            window.location.reload();
-          } else {
-            window.Swal.fire({
-              icon: "error",
-              text: "Lo sentimos, hay un problema de comunicacion con el servidor. Comfirme el IP.",
-              showConfirmButton: false,
-              timer: 3000,
-              position: "top center",
-            });
-          }
-        })
+        setBranch(branch_id)
+          .then((res) => {
+            if (res) {
+              window.location.reload();
+            } else {
+              window.Swal.fire({
+                icon: "error",
+                text: "Lo sentimos, hay un problema de comunicacion con el servidor. Comfirme el IP.",
+                showConfirmButton: false,
+                timer: 3000,
+                position: "top center",
+              });
+            }
+          })
 
-        .catch((error)=>{
-          if(error){
-            console.log("Error al cambiar la sucursal:", error);
-          }
-        })
+          .catch((error) => {
+            if (error) {
+              console.error("[Orus System] When change branch:", error.message);
+            }
+          });
       }
     });
   };
@@ -177,6 +175,4 @@ export default function BreadcrumbComponent() {
       <hr />
     </div>
   );
-
-  
 }

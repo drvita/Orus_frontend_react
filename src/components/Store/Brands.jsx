@@ -4,7 +4,6 @@ import Input from "../Input";
 import useStore from "../../hooks/useStore";
 
 export default function Brands(props) {
-  
   const [state, setState] = useState({
     brands: [],
     load: true,
@@ -13,33 +12,27 @@ export default function Brands(props) {
   const _store = useStore();
 
   const getBrands = () => {
-    _store.getBrands({supplier: props.supplier}).then((brands) => {
-        if(brands){
-          setState({
-            ...state, 
-          brands: brands.data,  
+    _store.getBrands({ supplier: props.supplier }).then((brands) => {
+      if (brands) {
+        setState({
+          ...state,
+          brands: brands.data,
           load: false,
         });
-        }else{
-          console.error("Error al obetner las marcas");
-        }
-        
-      });
+      } else {
+        console.error("Error al obetner las marcas");
+      }
+    });
   };
 
-  const filterBrandName = (id)=>{
+  const filterBrandName = (id) => {
     const brandName = state.brands.filter((brand) => brand.id === id);
-    return brandName[0].name
-  }
+    return brandName[0].name;
+  };
 
   useEffect(() => {
     getBrands();
-  }, [props.supplier]);// eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    console.log("Cambio la marca");
-  }, [props.brand]);// eslint-disable-line react-hooks/exhaustive-deps
-
+  }, [props.supplier]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="row">
@@ -55,8 +48,8 @@ export default function Brands(props) {
           emptyText="No hay marcas para este proveedor"
           load={state.load}
           loadText="Cargando marcas"
-          handleChange={(id) => {            
-            if (props.handleChangeBrand) {              
+          handleChange={(id) => {
+            if (props.handleChangeBrand) {
               props.handleChangeBrand(id, filterBrandName(id));
             }
           }}

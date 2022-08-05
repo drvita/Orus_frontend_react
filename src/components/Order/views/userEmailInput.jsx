@@ -14,28 +14,26 @@ export default function UserEmailInputComponent(props) {
 
   const contactHook = useContact();
 
-  const handleSearchUser = (email)=>{
-    contactHook.getContacts({email}).then((data)=>{
-      if(data){
-        if(data.data.length){
+  const handleSearchUser = (email) => {
+    contactHook.getContacts({ email }).then((data) => {
+      if (data) {
+        if (data.data.length) {
           setState({
             ...state,
             bgColor: "bg-warning",
             validate: "border border-warning",
             text: `El email ${email} ya está registrado`,
           });
-  
-          _handleValidData("email", false, email);
-        }else{         
-          _handleValidData("email", true, email);          
-        }    
-       
-      }else{
-        console.log("Error al obtener la data de los contactos");
-      }   
-    })
-  };
 
+          _handleValidData("email", false, email);
+        } else {
+          _handleValidData("email", true, email);
+        }
+      } else {
+        console.error("[Orus System] When get data from users:", data);
+      }
+    });
+  };
 
   const validEmail = (target) => {
     const regex =
@@ -49,12 +47,8 @@ export default function UserEmailInputComponent(props) {
         validate: " border border-primary",
         text: "",
       });
-      
+
       handleSearchUser(emailSearch);
-
-      //console.log("Email valido:", emailSearch);
-
-      //_handleValidData("email", true, emailSearch);
     } else {
       setState({
         ...state,

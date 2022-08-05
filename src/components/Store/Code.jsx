@@ -5,10 +5,10 @@ export default function Code(props) {
 
   const hookProducts = useProducts();
   const [state, setState] = useState({
-    productCodes:[], 
     codeMessage:'', 
-    codeStatus:'empty'
-  })
+    codeStatus:'empty',
+    rendered: false
+  });
 
   useEffect(()=>{    
     if(!props.code.length){
@@ -18,22 +18,14 @@ export default function Code(props) {
         codeStatus:'empty'
       });
     }else{
-      validCode();
+      if(state.rendered){
+        return null
+      }else{
+        validCode();        
+      }     
     }
   },[props.code]);// eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(()=>{
-    hookProducts.getProductByCode(props.code, props.id)
-    .then((data)=>{
-      if(data.data.length){       
-        setState({
-          ...state,
-          productCodes: data.data.map((product)=> product.code.toUpperCase())
-        });        
-      }
-    })
-    .catch((error) => console.log(error));
-  },[]);// eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(()=>{
     props.onChangeStatusCode(state.codeStatus);
@@ -41,20 +33,31 @@ export default function Code(props) {
 
 
   const validCode = ()=>{   
-    const searchReturned = state.productCodes.filter((code)=> code === props.code.toUpperCase());
-    if(searchReturned.length){
-      setState({
-        ...state,
-        codeMessage:'Còdigo ya en uso',
-        codeStatus:'inUse'
-      });    
-    }else{
-      setState({
-        ...state,
-        codeMessage:'Còdigo disponible',
-        codeStatus:'available'
-      });
-    }
+    setState({
+      ...state,
+      codeMessage:'Validando código . . .',
+      codeStatus:'validating'
+    });
+    hookProducts.getProductByCode(props.code, props.id)
+    .then((data)=>{
+      console.log(data.data);
+      if(data.data.length){   
+        setState({
+          ...state,
+          codeMessage:'Còdigo ya en uso',
+          codeStatus:'inUse',
+          rendered:true
+        });             
+      }else{
+        setState({
+          ...state,
+          codeMessage:'Còdigo disponible',
+          codeStatus:'available',
+          rendered:true
+        });
+      }
+    })
+    .catch((error) => console.log(error));
   };
 
   return (
@@ -78,6 +81,19 @@ export default function Code(props) {
         onChange={({target}) => {
           const {value} = target;
           props.onChangeProductCode(value);
+        }}
+
+        onBlur = {()=>{
+          if(props.type === 'lentes'){
+            validCode()
+          }else{
+            validCode()
+            props.createName()
+          }      
+          
+          /* validCode()
+          props.createName() */
+
         }}
 
         autoComplete="off"

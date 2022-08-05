@@ -74,7 +74,7 @@ export default function Add(props) {
 
     _store.saveItem(dataSend)
     .then((data)=>{
-      if(data){
+      if(data){        
         window.Swal.fire({
           title: "Productos",
           text: "Producto guardado correctamente",
@@ -113,6 +113,7 @@ export default function Add(props) {
 
   const getItem = () => {
     _store.getItem(id).then((res) => {
+      console.log("Dta devuelta", res);
       setState({
         ...state,
         id: res.id ? res.id : 0,
@@ -122,6 +123,7 @@ export default function Add(props) {
         brand_id: res.brand?.id,
         branch_default: res.branch_default ?? 0,
         code: res.code ? res.code : "",
+        codebar: res.barcode ? res.barcode : "",
         data: {
           ...state.data,
           category: res.category ? res.category : [],
@@ -137,7 +139,7 @@ export default function Add(props) {
   let readyToSave = false;
   
   if(state.data.codenames[0] === 'lentes'){    
-    if(state.category_id && state.grad && state.code && state.codeStatus === 'available' && state.name.length){
+    if(state.category_id && state.code && state.codeStatus === 'available' && state.name.length){
       readyToSave = true
     }else{      
       readyToSave=false      
@@ -161,15 +163,15 @@ export default function Add(props) {
 
   const getNameCodeDefault = (id, brandName) => {
     const { code: currentCode, grad} = state;
-    const {codenames, brandname} = state.data;
+    const {codenames} = state.data;
 
     // Make name
-    if (codenames[0] !== 'lentes') {      
+    if (codenames[0] !== 'lentes') {            
       // To other categories
-      const type = codenames[0] !== null ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7) : "";
+      const type = codenames[0] !== null ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7) : "";    
 
-      const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[0], brandname, currentCode)
-      //const code = "";        
+      const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[0], brandName, currentCode)
+      //const code = ""; 
 
       setState({
         ...state,
@@ -197,12 +199,21 @@ export default function Add(props) {
         codenames[2],
         codenames[3]
       );
+
+      if(!state.grad){
+        setState({
+          ...state,
+          name: name,          
+        });
+      }else{
+        setState({
+          ...state,
+          name: name,
+          code:code
+        });
+      }
       
-      setState({
-        ...state,
-        name: name,
-        code:code
-      });
+      
 
     } 
   };
@@ -271,8 +282,16 @@ export default function Add(props) {
                 brand={state.brand_id}
                 supplier={state.supplier_id}
                 textSelect="Selecione la marca"
-                handleChangeBrand={(id, brandName) => {                                        
-                  getNameCodeDefault(id, brandName);
+                handleChangeBrand={(id, brandName) => {    
+                  setState({
+                    ...state,
+                    brand_id:id,
+                    data:{
+                      ...state.data,
+                      brandname: brandName,
+                    }                                          
+                  })                                    
+                  //getNameCodeDefault(id, brandName);
                 }}
               />
             )}
@@ -353,7 +372,9 @@ export default function Add(props) {
 
                     <Code
                       code={state.code}
-                      id={state.id}                      
+                      id={state.id}   
+                      type={state.data.codenames[0]}   
+                      createName={()=>getNameCodeDefault(state.brand_id, state.data.brandname)}                
                       onChangeStatusCode = {(status)=>{
                         setState({
                           ...state,

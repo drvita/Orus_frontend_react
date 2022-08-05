@@ -36,10 +36,6 @@ export default function Brands(props) {
     getBrands();
   }, [props.supplier]);// eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    console.log("Cambio la marca");
-  }, [props.brand]);// eslint-disable-line react-hooks/exhaustive-deps
-
 
   return (
     <div className="row">

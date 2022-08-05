@@ -31,8 +31,8 @@ const initialState = {
   age: "",
   address_street: "",
   address_neighborhood: "",
-  address_location: "Colima",
-  address_state: "Colima",
+  address_location: "",
+  address_state: "",
   address_zip: "",
   done: {
     purchases: [],
@@ -119,27 +119,105 @@ export default function AddContact(props) {
       },
     };
 
-    window.Swal.fire({
-      title: "Contactos",
-      text: data.id
-        ? "¿Desea actualizar a este contacto?"
-        : "¿Desea crear un nuevo contacto?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: data.id ? "Actualizar" : "Crear",
-      cancelButtonText: "Cancelar",
-      showLoaderOnConfirm: true,
-    }).then(({ dismiss }) => {
-      if (!dismiss) {
-        _contacts.saveContact(data).then((res) => {
-          if (res?.id) {
-            console.log("[Orus System] Create contatc successfully", res.id);
-            _handleNewOrEdit();
-            history.push("/contactos");
-          }
-        });
+
+
+    if(contact.address_street.length){
+      if(!contact.address_neighborhood){        
+        window.Swal.fire({
+          title: "Contactos",
+          icon:'warning',
+          text: "Completa el campo Colonia",
+          showCancelButton: false,
+          confirmButtonText:"Ok",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        })
+        return
       }
-    });
+      if(!contact.address_location){        
+        window.Swal.fire({
+          title: "Contactos",
+          icon:'warning',
+          text: "Completa el campo Municipio",
+          showCancelButton: false,
+          confirmButtonText:"Ok",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        })
+        return
+      }
+      if(!contact.address_state){        
+        window.Swal.fire({
+          title: "Contactos",
+          icon:'warning',
+          text: "Completa el campo Estado",
+          showCancelButton: false,
+          confirmButtonText:"Ok",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        })
+        return
+      }
+      if(!contact.address_zip){ 
+        window.Swal.fire({
+          title: "Contactos",
+          icon:'warning',
+          text: "Completa el campo código postal",
+          showCancelButton: false,
+          confirmButtonText:"Ok",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        })
+        return
+      }
+      window.Swal.fire({
+        title: "Contactos",
+        text: data.id
+          ? "¿Desea actualizar a este contacto?"
+          : "¿Desea crear un nuevo contacto?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: data.id ? "Actualizar" : "Crear",
+        cancelButtonText: "Cancelar",
+        showLoaderOnConfirm: true,
+      }).then(({ dismiss }) => {
+        if (!dismiss) {
+          _contacts.saveContact(data).then((res) => {
+            if (res?.id) {
+              console.log("[Orus System] Create contatc successfully", res.id);
+              _handleNewOrEdit();
+              history.push("/contactos");
+            }
+          });
+        }
+      });
+      
+    }else{
+      window.Swal.fire({
+        title: "Contactos",
+        text: data.id
+          ? "¿Desea actualizar a este contacto?"
+          : "¿Desea crear un nuevo contacto?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: data.id ? "Actualizar" : "Crear",
+        cancelButtonText: "Cancelar",
+        showLoaderOnConfirm: true,
+      }).then(({ dismiss }) => {
+        if (!dismiss) {
+          delete data.domicilio;          
+          _contacts.saveContact(data).then((res) => {
+            if (res?.id) {
+              console.log("[Orus System] Create contatc successfully", res.id);
+              _handleNewOrEdit();
+              history.push("/contactos");
+            }
+          });      
+        }
+      });
+    }
+
+    
   };
 
   useEffect(() => {

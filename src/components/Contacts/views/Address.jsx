@@ -1,4 +1,4 @@
-export default function Address({ data, handleChange }) {
+export default function Address({ data, handleChange }) {  
   return (
     <>
       <div className="col">
@@ -19,10 +19,11 @@ export default function Address({ data, handleChange }) {
             type="text"
             className="form-control text-capitalize"
             placeholder="Calle y numero"
-            defaultValue={data.address_street ?? ""}
-            onChange={({ target }) =>
-              handleChange("address_street", target.value.toLowerCase())
-            }
+            value={data.address_street ?? ""}
+            onChange={({ target }) =>{
+              console.log("FUNCTION COMPONENT", target.value);
+              handleChange("address_street", target.value.toLowerCase());
+            }}
           />
         </div>
         {data.address_neighborhood ? (
@@ -65,7 +66,7 @@ export default function Address({ data, handleChange }) {
             type="text"
             className="form-control text-capitalize"
             placeholder="Municipio"
-            defaultValue={data.address_location ?? ""}
+            defaultValue={data.address_location ? data.address_location : ""}
             onChange={({ target }) =>
               handleChange("address_location", target.value.toLowerCase())
             }
@@ -90,7 +91,7 @@ export default function Address({ data, handleChange }) {
             type="text"
             className="form-control text-capitalize"
             placeholder="Estado"
-            defaultValue={data.address_state ?? ""}
+            defaultValue={data.address_state ? data.address_state : ""}
             onChange={({ target }) =>
               handleChange("address_state", target.value.toLowerCase())
             }

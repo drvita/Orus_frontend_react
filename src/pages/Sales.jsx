@@ -65,14 +65,17 @@ export default function IndexSalesComponent(props) {
 
   const validateSale = () => {
     if (state.id && state.order && state.thereNews) {
+      console.log("Entrando al if");
       saveSale();
     } else {
+      console.log("Entrando al else");
       setState({
         ...state,
         print: true,
       });
     }
   };
+
   const handleSet = (obj) => {
     return new Promise((done) => {
       setState(obj);
@@ -122,8 +125,87 @@ export default function IndexSalesComponent(props) {
   };
 
   const saveSale = () => {
-    const returnedSale = hookSale.saveSale(setDataToSend());
+    window.Swal.fire({
+      title: "Ventas",
+      text: `¿Realmente quires guardar esta venta?`,
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "Solo guardar",
+      cancelButtonText: "Imprimir y guardar",
+      showLoaderOnConfirm: true,
+      showDenyButton: true
+    }).then(({ dismiss })=>{
+      if(dismiss){
+        //Guardar e imprimir los cambios    
+        const returnedSale = hookSale.saveSale(setDataToSend());
+        returnedSale.then(({ data }) => {
+          if (data) {          
+            if (state.id && state.order) {          
+              setState({
+                ...state,
+                id: data.id,
+                thereNews: false,
+                print: true,
+              });
+            } else {
+              window.Swal.fire({
+                title: "Venta Guardada correctamente",
+                text: `¿Quieres imprimir el ticket de la venta?`,
+                icon: "success",
+                showCancelButton: true,
+                confirmButtonText: "Imprimir",
+                cancelButtonText: "Cancelar",
+                showLoaderOnConfirm: true,
+              }).then(({ dismiss }) => {
+                if (!dismiss) {
+                  setState({
+                    ...state,
+                    id: data.id,
+                    thereNews: false,
+                    print: true,
+                  });
+                } else {
+                  helpers.confirm("Cerrar la venta actual", () => {
+                    setState(initialState);
+                  });
+                }
+              });
+            }
+          } else {
+            console.error("Error al guardar la venta");
+          }
+        });
 
+      }else{
+        //Solo guardar los cambios        
+        const returnedSale = hookSale.saveSale(setDataToSend());
+        returnedSale.then(({ data }) => {
+          if (data) {          
+            if (state.id && state.order) {          
+              setState({
+                ...state,
+                id: data.id,
+                thereNews: false,
+                //print: true,
+              });
+            } else {
+              window.Swal.fire({
+                title: "Venta Guardada correctamente",                
+                icon: "success",
+                showCancelButton: false,
+                showConfirmButton:false,                                
+                showLoaderOnConfirm: true,
+                timer:3000,
+              });
+            }
+          } else {
+            console.error("Error al guardar la venta");
+          }
+        });
+      }
+    })
+
+    /* const returnedSale = hookSale.saveSale(setDataToSend());
     returnedSale.then(({ data }) => {
       if (data) {          
         if (state.id && state.order) {          
@@ -160,7 +242,7 @@ export default function IndexSalesComponent(props) {
       } else {
         console.error("Error al guardar la venta");
       }
-    });
+    }); */
   };
 
   useEffect(() => {    
@@ -272,10 +354,10 @@ export default function IndexSalesComponent(props) {
               style={{ minHeight: "65vh" }}
             >
               {state.loading ? (
-                <div className="d-flex flex-column justify-content-center align-items-center">
-                <h1>Cargando informacion</h1>
-                <div className="spinner-border text-primary" role="status">          
-                </div>
+                <div className="d-flex flex-column justify-content-center align-items-center  mt-5">
+                  <h1>Cargando informacion</h1>
+                  <div className="spinner-border text-primary" role="status">          
+                  </div>
               </div> 
               ):(
                 <SalesDetailsTableComponent />

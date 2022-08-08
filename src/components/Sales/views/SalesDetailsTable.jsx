@@ -231,7 +231,7 @@ export default function SalesDetailsTableComponent() {
             </>
           ) : null}
 
-          {sale.thereNews && sale.order ? (
+          {sale.thereNews && sale.order ? (            
             <tr className="table-info">
               <td colSpan="2">
                 <span className=" w-full d-block text-uppercase text-center text-bold">

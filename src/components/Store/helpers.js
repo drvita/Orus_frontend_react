@@ -177,7 +177,7 @@ const handleCodeString = ( stringcode = "armazon", category, brand, code = "") =
     stringcode += brand !== null  ? " " + brand.trim().replace(/\s/gim, ""): "";
 
     if (code) {
-      stringcode += " " + code.replace(/[-\s]+/gm, "");
+      stringcode += " " + code.replace(/[\s]+/gm, "");
     }
     return stringcode.toLowerCase();  
   },

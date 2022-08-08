@@ -74,25 +74,18 @@ export default function Add(props) {
 
     _store.saveItem(dataSend)
     .then((data)=>{
-      if(data){        
+      if(data){           
+        const {id} = data.data;        
         window.Swal.fire({
           title: "Productos",
           text: "Producto guardado correctamente",
           icon: "success",
-          showCancelButton: false,
-          confirmButtonColor: "#007bff",
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancelar",
+          showConfirmButton: false,
+          timerProgressBar: true,          
           showLoaderOnConfirm: true,
-        }).then(({ dismiss }) => {
-          if (!dismiss) {
-            setState(initialState);
-            storeContext.set({
-              ...storeContext,
-              panel: "inbox",
-            });
-            history.push("/almacen");
-          }
+          timer: 3000,          
+        }).then(() => {
+          history.push(`/almacen/${id}`);          
         });
       }
     })
@@ -112,8 +105,7 @@ export default function Add(props) {
 
 
   const getItem = () => {
-    _store.getItem(id).then((res) => {
-      console.log("Dta devuelta", res);
+    _store.getItem(id).then((res) => {      
       setState({
         ...state,
         id: res.id ? res.id : 0,
@@ -170,8 +162,7 @@ export default function Add(props) {
       // To other categories
       const type = codenames[0] !== null ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7) : "";    
 
-      const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[0], brandName, currentCode)
-      //const code = ""; 
+      const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[1], brandName, currentCode)      
 
       setState({
         ...state,
@@ -184,8 +175,7 @@ export default function Add(props) {
 
       });
 
-    } else {      
-      // To lent categories
+    } else {            
       const name = helper.handleNameLent(
         grad,
         codenames[1],

@@ -19,7 +19,7 @@ export default function Code(props) {
       });
     }else{
       if(state.rendered){
-        return null
+        return null;
       }else{
         validCode();        
       }     
@@ -39,21 +39,20 @@ export default function Code(props) {
       codeStatus:'validating'
     });
     hookProducts.getProductByCode(props.code, props.id)
-    .then((data)=>{
-      console.log(data.data);
+    .then((data)=>{      
       if(data.data.length){   
         setState({
           ...state,
           codeMessage:'Còdigo ya en uso',
           codeStatus:'inUse',
-          rendered:true
+          rendered:true,
         });             
       }else{
         setState({
           ...state,
           codeMessage:'Còdigo disponible',
           codeStatus:'available',
-          rendered:true
+          rendered:true,
         });
       }
     })
@@ -85,15 +84,11 @@ export default function Code(props) {
 
         onBlur = {()=>{
           if(props.type === 'lentes'){
-            validCode()
+            validCode();
           }else{
-            validCode()
-            props.createName()
-          }      
-          
-          /* validCode()
-          props.createName() */
-
+            validCode();
+            props.createName();
+          }                
         }}
 
         autoComplete="off"

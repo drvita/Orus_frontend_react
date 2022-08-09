@@ -50,7 +50,7 @@ export default function IndexSalesComponent(props) {
     print: false,
     isPayed: false,
     thereNews: false,
-    loading:false,
+    loading: false,
   };
 
   const [state, setState] = useState(initialState);
@@ -65,10 +65,8 @@ export default function IndexSalesComponent(props) {
 
   const validateSale = () => {
     if (state.id && state.order && state.thereNews) {
-      console.log("Entrando al if");
       saveSale();
     } else {
-      console.log("Entrando al else");
       setState({
         ...state,
         print: true,
@@ -133,14 +131,14 @@ export default function IndexSalesComponent(props) {
       confirmButtonText: "Solo guardar",
       cancelButtonText: "Imprimir y guardar",
       showLoaderOnConfirm: true,
-      showDenyButton: true
-    }).then(({ dismiss })=>{
-      if(dismiss){
-        //Guardar e imprimir los cambios    
+      showDenyButton: true,
+    }).then(({ dismiss }) => {
+      if (dismiss) {
+        //Guardar e imprimir los cambios
         const returnedSale = hookSale.saveSale(setDataToSend());
         returnedSale.then(({ data }) => {
-          if (data) {          
-            if (state.id && state.order) {          
+          if (data) {
+            if (state.id && state.order) {
               setState({
                 ...state,
                 id: data.id,
@@ -175,13 +173,12 @@ export default function IndexSalesComponent(props) {
             console.error("Error al guardar la venta");
           }
         });
-
-      }else{
-        //Solo guardar los cambios        
+      } else {
+        //Solo guardar los cambios
         const returnedSale = hookSale.saveSale(setDataToSend());
         returnedSale.then(({ data }) => {
-          if (data) {          
-            if (state.id && state.order) {          
+          if (data) {
+            if (state.id && state.order) {
               setState({
                 ...state,
                 id: data.id,
@@ -190,12 +187,12 @@ export default function IndexSalesComponent(props) {
               });
             } else {
               window.Swal.fire({
-                title: "Venta Guardada correctamente",                
+                title: "Venta Guardada correctamente",
                 icon: "success",
                 showCancelButton: false,
-                showConfirmButton:false,                                
+                showConfirmButton: false,
                 showLoaderOnConfirm: true,
-                timer:3000,
+                timer: 3000,
               });
             }
           } else {
@@ -203,7 +200,7 @@ export default function IndexSalesComponent(props) {
           }
         });
       }
-    })
+    });
 
     /* const returnedSale = hookSale.saveSale(setDataToSend());
     returnedSale.then(({ data }) => {
@@ -245,25 +242,27 @@ export default function IndexSalesComponent(props) {
     }); */
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     const total = state.items?.reduce(
-      (back, item) => item.cant * item.price + back, 0);
-    const payments = state.payments?.reduce((back, item) => item.total + back, 0);
+      (back, item) => item.cant * item.price + back,
+      0
+    );
+    const payments = state.payments?.reduce(
+      (back, item) => item.total + back,
+      0
+    );
     let payed = Boolean(!(total - state.discount - payments));
     let thereNews = state.id ? false : true;
 
     if (!total && !payments) {
       thereNews = false;
       payed = false;
-
-    } 
-
-    else if (state.thereNews) {
+    } else if (state.thereNews) {
       thereNews = true;
     }
 
-    if(state.thereNews === false && state.load === false){      
-      thereNews = true
+    if (state.thereNews === false && state.load === false) {
+      thereNews = true;
     }
 
     setState({
@@ -272,7 +271,6 @@ export default function IndexSalesComponent(props) {
       thereNews,
       load: false,
     });
-
   }, [state.items, state.payments, state.discount]);
 
   useEffect(() => {
@@ -287,118 +285,120 @@ export default function IndexSalesComponent(props) {
     if (props.match.params.id) {
       setState({
         ...state,
-        loading:true
-      })
-      hookSale.getSaleById(props.match.params.id).then((data) => {
-        if (data) {
+        loading: true,
+      });
+      hookSale
+        .getSaleById(props.match.params.id)
+        .then((data) => {
+          if (data) {
+            setState({
+              ...state,
+              id: data.data.id,
+              order: data.data.order,
+              contact_id: data.data.customer.id,
+              items: data.data.items,
+              session: data.data.session,
+              discount: data.data.discount,
+              subtotal: data.data.subtotal,
+              total: data.data.total,
+              payments: data.data.payments,
+              branch_id: data.data.branch.id,
+              created_at: data.data.created_at,
+              activitys: data.data.activity,
+              customer: data.data.customer,
+              thereNews: false,
+              loading: false,
+            });
+          }
+        })
+        .catch(() => {
           setState({
             ...state,
-            id: data.data.id,
-            order: data.data.order,
-            contact_id: data.data.customer.id,
-            items: data.data.items,
-            session: data.data.session,
-            discount: data.data.discount,
-            subtotal: data.data.subtotal,
-            total: data.data.total,
-            payments: data.data.payments,
-            branch_id: data.data.branch.id,
-            created_at: data.data.created_at,
-            activitys: data.data.activity,
-            customer: data.data.customer,
-            thereNews: false,
-            loading:false
+            loading: false,
           });
-        }
-      })
-      .catch(()=>{
-        setState({
-          ...state,
-          loading:false
-        })
-      })
+        });
     }
   }, []);
 
-
-  return (     
+  return (
     <SaleContext.Provider value={{ ...state, set: handleSet }}>
-        <div className="card border border-gray">
-          <div className="card-body pb-2 d-print-none">
-            <nav className="row">
-              <div className="col">
-                <CustomerBtnComponent />
-              </div>
-
-              <div className="col">
-                <SaleDate></SaleDate>              
-              </div>
-
-              <div className="col-3">
-                <div className="card-tools d-flex justify-content-end mb-3">
-
-                  <ShowPedido/>                
-
-                  <ListSalesBtn />
-
-                  <DiscountBtnComponent />
-
-                  <EraseBtn {...props} />
-
-                  <InfoButton />
-                </div>
-              </div>
-            </nav>
-            <div
-              className="overflow-auto text-right p-0 border border-gray"
-              style={{ minHeight: "65vh" }}
-            >
-              {state.loading ? (
-                <div className="d-flex flex-column justify-content-center align-items-center  mt-5">
-                  <h1>Cargando informacion</h1>
-                  <div className="spinner-border text-primary" role="status">          
-                  </div>
-              </div> 
-              ):(
-                <SalesDetailsTableComponent />
-              )}             
+      <div className="card border border-gray">
+        <div className="card-body pb-2 d-print-none">
+          <nav className="row">
+            <div className="col">
+              <CustomerBtnComponent />
             </div>
+
+            <div className="col">
+              <SaleDate></SaleDate>
+            </div>
+
+            <div className="col-3">
+              <div className="card-tools d-flex justify-content-end mb-3">
+                <ShowPedido />
+
+                <ListSalesBtn />
+
+                <DiscountBtnComponent />
+
+                <EraseBtn {...props} />
+
+                <InfoButton />
+              </div>
+            </div>
+          </nav>
+          <div
+            className="overflow-auto text-right p-0 border border-gray"
+            style={{ minHeight: "65vh" }}
+          >
+            {state.loading ? (
+              <div className="d-flex flex-column justify-content-center align-items-center  mt-5">
+                <h1>Cargando informacion</h1>
+                <div
+                  className="spinner-border text-primary"
+                  role="status"
+                ></div>
+              </div>
+            ) : (
+              <SalesDetailsTableComponent />
+            )}
           </div>
+        </div>
 
-          <div className="card-footer">
-            <div className="row">
-              <div className="col d-print-none">
-                <ShowTotal />
-              </div>
+        <div className="card-footer">
+          <div className="row">
+            <div className="col d-print-none">
+              <ShowTotal />
+            </div>
 
-              <div className="col d-print-none">
-                <ShowToPay />
-              </div>
+            <div className="col d-print-none">
+              <ShowToPay />
+            </div>
 
-              <div className="col-6 text-right">
-                <InputSearchItem />
+            <div className="col-6 text-right">
+              <InputSearchItem />
 
-                <PaymentBtnComponent />
+              <PaymentBtnComponent />
 
-                <button
-                  className="btn btn-primary ml-3"
-                  onClick={() => validateSale()}
-                  disabled={disabled}
-                >
-                  <i className="fas fa-print mr-2"></i>
-                  Imprimir
-                </button>
+              <button
+                className="btn btn-primary ml-3"
+                onClick={() => validateSale()}
+                disabled={disabled}
+              >
+                <i className="fas fa-print mr-2"></i>
+                Imprimir
+              </button>
 
-                {state.print && (
-                  <PrintSaleComponent
-                    data={{ ...state, order_id: state.order }}
-                    setPrint={() => setState({ ...state, print: false })}
-                  />
-                )}
-              </div>
+              {state.print && (
+                <PrintSaleComponent
+                  data={{ ...state, order_id: state.order }}
+                  setPrint={() => setState({ ...state, print: false })}
+                />
+              )}
             </div>
           </div>
         </div>
-      </SaleContext.Provider>
+      </div>
+    </SaleContext.Provider>
   );
 }

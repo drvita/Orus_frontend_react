@@ -9,7 +9,9 @@ export const Auth = () => useContext(AuthContext);
 export default function useUser({ children }) {
   const history = useHistory();
 
-  const LS = sessionStorage.getItem("OrusSystem");
+  const LS = localStorage.getItem("OrusSystemLogin");
+  //const LS = sessionStorage.getItem("OrusSystem");
+
   let initialSession = {
     isLogged: false,
     idUser: 0,
@@ -21,6 +23,7 @@ export default function useUser({ children }) {
     branch: "",
     roles: "",
     permissions: [],
+
   };
 
   const [user, setUser] = useState(() => {
@@ -49,7 +52,8 @@ export default function useUser({ children }) {
       };
 
       setUser(toSave);
-      sessionStorage.setItem("OrusSystem", JSON.stringify(toSave));
+      localStorage.setItem('OrusSystemLogin', JSON.stringify(toSave));
+      //sessionStorage.setItem("OrusSystem", JSON.stringify(toSave));
     },
     session = async (credentials) => {
       const { email, password } = credentials;
@@ -88,7 +92,8 @@ export default function useUser({ children }) {
       return await api("user/logout", "POST")
         .then(() => {
           setUser(initialSession);
-          sessionStorage.setItem("OrusSystem", "{}");
+          localStorage.setItem('OrusSystemLogin', '{}');
+          //sessionStorage.setItem("OrusSystem", "{}");
 
           return true;
         })
@@ -101,10 +106,11 @@ export default function useUser({ children }) {
           if (err?.message === "Unauthenticated.") {
             if (history.location?.pathname !== "/login") {
               setUser(initialSession);
-              sessionStorage.setItem(
+              localStorage.setItem('OrusSystemLogin', JSON.stringify(initialSession));
+              /* sessionStorage.setItem(
                 "OrusSystem",
                 JSON.stringify(initialSession)
-              );
+              ); */
 
               history.push("/login");
             }

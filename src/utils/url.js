@@ -9,7 +9,7 @@ export function getLastParam() {
 export function api(url, method = "GET", body, controller = null) {
   return new Promise((done, reject) => {
     const LS = localStorage.getItem("OrusSystem"),
-      SS = sessionStorage.getItem("OrusSystem"),
+      SS = localStorage.getItem("OrusSystemLogin"),
       {
         protocol: PROTOCOL = window.location.protocol,
         host: HOST = window.location.hostname,

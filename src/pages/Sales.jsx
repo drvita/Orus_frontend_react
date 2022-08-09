@@ -64,11 +64,9 @@ export default function IndexSalesComponent(props) {
     : false;
 
   const validateSale = () => {
-    if (state.id && state.order && state.thereNews) {
-      console.log("Entrando al if");
+    if (state.id && state.order && state.thereNews) {      
       saveSale();
     } else {
-      console.log("Entrando al else");
       setState({
         ...state,
         print: true,
@@ -204,45 +202,6 @@ export default function IndexSalesComponent(props) {
         });
       }
     })
-
-    /* const returnedSale = hookSale.saveSale(setDataToSend());
-    returnedSale.then(({ data }) => {
-      if (data) {          
-        if (state.id && state.order) {          
-          setState({
-            ...state,
-            id: data.id,
-            thereNews: false,
-            print: true,
-          });
-        } else {
-          window.Swal.fire({
-            title: "Venta Guardada correctamente",
-            text: `¿Quieres imprimir el ticket de la venta?`,
-            icon: "success",
-            showCancelButton: true,
-            confirmButtonText: "Imprimir",
-            cancelButtonText: "Cancelar",
-            showLoaderOnConfirm: true,
-          }).then(({ dismiss }) => {
-            if (!dismiss) {
-              setState({
-                ...state,
-                id: data.id,
-                thereNews: false,
-                print: true,
-              });
-            } else {
-              helpers.confirm("Cerrar la venta actual", () => {
-                setState(initialState);
-              });
-            }
-          });
-        }
-      } else {
-        console.error("Error al guardar la venta");
-      }
-    }); */
   };
 
   useEffect(() => {    

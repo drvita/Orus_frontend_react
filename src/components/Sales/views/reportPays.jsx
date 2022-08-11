@@ -128,20 +128,14 @@ export default function ReportPays({ filters, changeState, auth }) {
     <div className="card card-success card-outline">
       <div className="card-header">
         <h3 className="card-title text-success">
-          {state.roles !== "admin"
-            ? "Mis ventas del dia por metodo de pago"
-            : "Ventas del dia por metodo de pago"}
+          Ventas del dia por metodo de pago
         </h3>
       </div>
       <div className="card-body">
         <canvas id="donutChart"></canvas>
-        <p>
-          {state.roles === "admin" && (
-            <React.Fragment>
-              Venta: <strong>{dollarUS.format(state.total)}</strong>
-              <br />
-            </React.Fragment>
-          )}
+        <p>          
+          Venta total: <strong>{dollarUS.format(state.total)}</strong>
+          <br/>
           Efectivo: <strong>{dollarUS.format(state.efectivo)}</strong>
         </p>
       </div>

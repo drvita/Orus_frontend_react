@@ -9,8 +9,8 @@ export const Auth = () => useContext(AuthContext);
 export default function useUser({ children }) {
   const history = useHistory();
 
-  const LS = localStorage.getItem("OrusSystemLogin");
-  //const LS = sessionStorage.getItem("OrusSystem");
+  //const LS = localStorage.getItem("OrusSystemLogin");
+  const LS = sessionStorage.getItem("OrusSystemLogin");
 
   let initialSession = {
     isLogged: false,
@@ -36,7 +36,7 @@ export default function useUser({ children }) {
 
   // Functions
   const setUserData = (data) => {
-      if (!data) return;
+      if (!data) return;      
 
       const toSave = {
         isLogged: data.isLogged ?? user.isLogged,
@@ -49,11 +49,10 @@ export default function useUser({ children }) {
         branch: { ...data.branch.data, id: data.branch.id },
         roles: data.roles[0],
         permissions: data.permissions,
-      };
-
+      };      
       setUser(toSave);
-      localStorage.setItem('OrusSystemLogin', JSON.stringify(toSave));
-      //sessionStorage.setItem("OrusSystem", JSON.stringify(toSave));
+      //localStorage.setItem('OrusSystemLogin', JSON.stringify(toSave));
+      sessionStorage.setItem("OrusSystemLogin", JSON.stringify(toSave));
     },
     session = async (credentials) => {
       const { email, password } = credentials;
@@ -92,8 +91,8 @@ export default function useUser({ children }) {
       return await api("user/logout", "POST")
         .then(() => {
           setUser(initialSession);
-          localStorage.setItem('OrusSystemLogin', '{}');
-          //sessionStorage.setItem("OrusSystem", "{}");
+          //localStorage.setItem('OrusSystemLogin', '{}');
+          sessionStorage.setItem("OrusSystemLogin", "{}");
 
           return true;
         })
@@ -106,11 +105,11 @@ export default function useUser({ children }) {
           if (err?.message === "Unauthenticated.") {
             if (history.location?.pathname !== "/login") {
               setUser(initialSession);
-              localStorage.setItem('OrusSystemLogin', JSON.stringify(initialSession));
-              /* sessionStorage.setItem(
-                "OrusSystem",
+              //localStorage.setItem('OrusSystemLogin', JSON.stringify(initialSession));
+              sessionStorage.setItem(
+                "OrusSystemLogin",
                 JSON.stringify(initialSession)
-              ); */
+              );
 
               history.push("/login");
             }

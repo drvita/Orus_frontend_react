@@ -107,7 +107,7 @@ export default function Login() {
 
     auth
       .setSession({ email: state.email, password: state.password })
-      .then((res) => {
+      .then((res) => {        
         setState({
           ...state,
           load: false,

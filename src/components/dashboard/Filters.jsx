@@ -9,15 +9,19 @@ import { ConfigContext } from "../../context/ConfigContext";
 import useUsers from "../../hooks/useUsers";
 
 export default function Filters({ filters, changeState }) {
+
   const { user_id, branch_id, date_end, date_start } = filters;
   const [state, setState] = useState({
     branch_id,
     user_id,
     date_start,
     date_end,
+
     userData: [],
     load: false,
   });
+
+
   const usersHook = useUsers();
   const config = useContext(ConfigContext);
   const branches = config.data.filter((c) => c.name === "branches");
@@ -34,9 +38,9 @@ export default function Filters({ filters, changeState }) {
     });
     getDataApi();
   };
-  const handleChangeDate = (field, date) => {
+  const handleChangeDate = (field, date) => {    
     setState({
-      ...state,
+      ...state,      
       [field]: moment(date).format("YYYY-MM-DD"),
     });
   };
@@ -65,8 +69,10 @@ export default function Filters({ filters, changeState }) {
 
 
   useEffect(() => {
-    getDataApi();        
+    getDataApi();            
   }, []);
+
+
 
   
 
@@ -129,9 +135,8 @@ export default function Filters({ filters, changeState }) {
             <div className="col-lg-10">
              <DatePicker
                 className="form-control"                  
-                selected={     
-                  new Date(state.date_start)                                                 
-                  /* new Date(moment(state.date_start).format("MM-DD-YYYY")) */
+                selected={                                                        
+                  new Date(moment(state.date_start).format(""))
                 }
                 onSelect={(date) => handleChangeDate("date_start", date)}
                 onChange={(date) => handleChangeDate("date_start", date)}
@@ -146,9 +151,8 @@ export default function Filters({ filters, changeState }) {
             <div className="col-lg-10">
               <DatePicker
                 className="form-control"
-                selected={
-                  new Date(state.date_end)
-                  /* new Date(moment(state.date_end).format("MM-DD-YYYY")) */
+                selected={                  
+                  new Date(moment(state.date_end).format(""))
                 }
                 onSelect={(date) => handleChangeDate("date_end", date)}
                 onChange={(date) => handleChangeDate("date_end", date)}

@@ -8,8 +8,8 @@ import NotFound from "../components/404NotFound";
 import Login from "../pages/Login";
 
 export default function Router() {
-  const { auth } = useContext(AuthContext);
-
+  const { auth } = useContext(AuthContext);  
+  
   return (
     <Switch>
       <Route path="/login" render={() => <Login />} />

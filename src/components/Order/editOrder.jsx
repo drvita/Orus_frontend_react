@@ -357,7 +357,7 @@ export default function EditOrderComponent(props) {
               {/* ------------------SELECCION DE ESTATUS ------------------ */}
               <h6 className="w-100 d-block font-weight-bold">Estado</h6>
               <div className="card mt-2">
-                <div className="btn-group-vertical bg-success">
+                <div className="btn-group-vertical">
                   {helper.getStatusType.map((type, index) => (
                     <button
                       key={index}
@@ -396,7 +396,7 @@ export default function EditOrderComponent(props) {
 
                 <button
                   className="btn btn-warning"
-                  disabled={Boolean(state.status === state.statusInitial)}
+                  /* disabled={Boolean(state.status === state.statusInitial)} */
                   onClick={handleSave}
                 >
                   Guardar

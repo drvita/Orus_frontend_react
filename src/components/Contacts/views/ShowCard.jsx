@@ -31,7 +31,7 @@ export default function ShowContactComponent(props) {
               </span>
               <span className="badge badge-secondary ml-1">
                 <i className="fas fa-calendar mr-1"></i>
-                {props.age ? `${props.age} años` : "--"}
+                {props.age ? `${props.age} años` : "--"}                
               </span>
             </span>
             {!readOnly && (

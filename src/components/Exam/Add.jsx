@@ -60,11 +60,15 @@ export default function Add(props) {
     };
 
 
+
     const { contact } = data;
     delete data.loading;
     delete data.panel;
     delete data.used;
     delete data.contact;
+
+    delete data.activitys;        
+
     if (!data.category_ii) delete data.category_ii;
     if (!data.category_id) delete data.category_id;
 
@@ -114,7 +118,7 @@ export default function Add(props) {
     });
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     if (id) {
       console.log("[Orus System] Loading exam:", id);
       setState({
@@ -123,7 +127,7 @@ export default function Add(props) {
       });
       _exams.getExam(id).then((res) => {        
         res.category_ii = res.category_ii?.id;
-        res.category_id = res.category_id?.id;
+        res.category_id = res.category_id?.id;        
 
         setState({
           ...getDataDefault(res),
@@ -170,7 +174,7 @@ export default function Add(props) {
               left="6.5rem"
               data={state.contact}
               age = {state.age}
-              handleContactSelect={(doc) => {
+              handleContactSelect={(doc) => {                
                 setState({
                   ...state,
                   contact: doc,
@@ -503,10 +507,14 @@ export default function Add(props) {
   );
 }
 
-function getDataDefault(data = {}) {  
+function getDataDefault(data = {}) {    
+  let edad = 0;
+  if(data?.customer?.age){
+    edad = data.customer.age;
+  }
   return {
     id: data.id ?? 0,
-    age: data.age ? data.age : 0,
+    age: data.age ? data.age : edad,    
     keratometriaoi: data.keratometriaoi ?? "",
     keratometriaod: data.keratometriaod ?? "",
     pantalleooi: data.pantalleooi ?? "",

@@ -38,7 +38,7 @@ export default function UsersComponent(props) {
         <div className="col-lg-2">
           <FiltersToolbar
             newOrEdit={state.newOrEdit}
-            handleNewOrEdit={() =>
+            handleNewOrEdit={() =>  
               setState({
                 ...state,
                 newOrEdit: !state.newOrEdit,
@@ -72,3 +72,4 @@ export default function UsersComponent(props) {
     </UserContext.Provider>
   );
 }
+

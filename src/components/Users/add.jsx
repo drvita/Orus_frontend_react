@@ -156,7 +156,7 @@ export default function UserAddComponent(props) {
   useEffect(() => {
     if (id) {
       _users.getUserById(id).then((data) => {
-        if (data) {
+        if (data) {          
           processData(data.data);
         }
       });
@@ -276,7 +276,8 @@ export default function UserAddComponent(props) {
                       <select
                         className="custom-select"
                         name="role"
-                        defaultValue={currentUser.role}
+                        /* defaultValue={currentUser.role} */
+                        value={currentUser.role}
                         onChange={({ target }) => catchInputs(target)}
                       >
                         <option value="admin">Administrador</option>

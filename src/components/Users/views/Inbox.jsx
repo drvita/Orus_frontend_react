@@ -5,13 +5,11 @@ import useUsers from "../../../hooks/useUsers";
 import { UserContext } from "../../../context/UserContext";
 import ListInbox from "../../../layouts/list_inbox";
 import { useHistory } from "react-router-dom";
-//import { AuthContext } from '../../../context/AuthContext';
 
 export default function InboxComponent() {
   const history = useHistory();
   const _users = useUsers();
   const _userContext = useContext(UserContext);
-  //const _authContext = useContext(AuthContext);
   const [userSelected, setUserSelected] = useState("");
 
   const [data, setData] = useState({

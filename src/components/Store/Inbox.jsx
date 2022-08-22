@@ -113,18 +113,24 @@ export default function Inbox(props) {
       }
     },
     handleDownload = async () => {
-      // _setLoading(true);
+      setState({
+        ...state,
+        loading: true
+      }); 
       const newOptions = { ...context.options, responseType: "csv" };
       console.log("[Orus Sytem] Start donwload csv");
-
       const url = setUrl("store", null, newOptions);
-
-      const data = await api(url);
-      // _setLoading();
+      const data = await api(url);           
       if (data) {
-        console.log("[Orus Sytem] Process data csv");
-        window.open(URL.createObjectURL(data));
+        console.log("[Orus Sytem] Process data csv");                        
+        var fileData = [data];
+        var oMyBlob = new Blob(fileData, {type : 'text/csv'}); // the blob        
+        window.open(URL.createObjectURL(oMyBlob));                
         console.log("[Orus Sytem] Donwload is ok");
+        setState({
+          ...state,
+          loading: false
+        });
         window.Swal.fire({
           title: "Descargas",
           text: "El archivo CSV fue generado correctamente",
@@ -133,6 +139,10 @@ export default function Inbox(props) {
           timer: 1500,
         });
       } else {
+        setState({
+          ...state,
+          loading: false
+        });
         window.Swal.fire({
           title: "Descargas",
           text: "El archivo CSV no se genero correctamente",
@@ -142,6 +152,8 @@ export default function Inbox(props) {
         });
       }
     };
+
+
   const handleSync = () => {
     setState({
       ...state,

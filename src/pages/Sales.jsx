@@ -96,6 +96,7 @@ export default function IndexSalesComponent(props) {
 
     state.items.forEach((item) =>
       data.items.push({
+        id: item.id,
         cant: item.cant,
         price: item.price,
         store_items_id: item.store_items_id,
@@ -105,6 +106,7 @@ export default function IndexSalesComponent(props) {
     if (state.payments.length) {
       state.payments.forEach((payment) => {
         const pay = {
+          id: payment.id ? payment.id : 0,
           metodopago: payment.metodopago,
           total: payment.total,
         };
@@ -201,45 +203,6 @@ export default function IndexSalesComponent(props) {
         });
       }
     });
-
-    /* const returnedSale = hookSale.saveSale(setDataToSend());
-    returnedSale.then(({ data }) => {
-      if (data) {          
-        if (state.id && state.order) {          
-          setState({
-            ...state,
-            id: data.id,
-            thereNews: false,
-            print: true,
-          });
-        } else {
-          window.Swal.fire({
-            title: "Venta Guardada correctamente",
-            text: `¿Quieres imprimir el ticket de la venta?`,
-            icon: "success",
-            showCancelButton: true,
-            confirmButtonText: "Imprimir",
-            cancelButtonText: "Cancelar",
-            showLoaderOnConfirm: true,
-          }).then(({ dismiss }) => {
-            if (!dismiss) {
-              setState({
-                ...state,
-                id: data.id,
-                thereNews: false,
-                print: true,
-              });
-            } else {
-              helpers.confirm("Cerrar la venta actual", () => {
-                setState(initialState);
-              });
-            }
-          });
-        }
-      } else {
-        console.error("Error al guardar la venta");
-      }
-    }); */
   };
 
   useEffect(() => {
@@ -289,23 +252,23 @@ export default function IndexSalesComponent(props) {
       });
       hookSale
         .getSaleById(props.match.params.id)
-        .then((data) => {
+        .then(({ data }) => {
           if (data) {
             setState({
               ...state,
-              id: data.data.id,
-              order: data.data.order,
-              contact_id: data.data.customer.id,
-              items: data.data.items,
-              session: data.data.session,
-              discount: data.data.discount,
-              subtotal: data.data.subtotal,
-              total: data.data.total,
-              payments: data.data.payments,
-              branch_id: data.data.branch.id,
-              created_at: data.data.created_at,
-              activitys: data.data.activity,
-              customer: data.data.customer,
+              id: data.id,
+              order: data.order,
+              contact_id: data.customer.id,
+              items: data.items,
+              session: data.session,
+              discount: data.discount,
+              subtotal: data.subtotal,
+              total: data.total,
+              payments: data.payments,
+              branch_id: data.branch.id,
+              created_at: data.created_at,
+              activitys: data.activity,
+              customer: data.customer,
               thereNews: false,
               loading: false,
             });

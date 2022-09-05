@@ -34,7 +34,7 @@ export default function ToolBarContact({
                 value={context.options?.type}
                 onChange={({ target }) => {
                   const value = parseInt(target.value);
-                  
+
                   context.set({
                     ...context,
                     options: {
@@ -122,8 +122,9 @@ export default function ToolBarContact({
                 href="#back"
                 className="d-flex justify-content-between align-items-center"
                 onClick={(e) => {
-                  e.preventDefault();                  
+                  e.preventDefault();
                   history.push("/contactos");
+                  window.location.href = "/contactos";
                 }}
               >
                 Ver listado

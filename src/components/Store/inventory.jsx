@@ -27,7 +27,7 @@ export default class Inventory extends Component {
       this.getItems(this.state.catid_3);
     }
   }
-  
+
   render() {
     const {
         catid_1,
@@ -107,11 +107,7 @@ export default class Inventory extends Component {
 
                 {catid_2 && catData_3.length ? (
                   <div className="col">
-                    <div
-                      className="btn-group"
-                      role="group"
-                      aria-label="Basic example"
-                    >
+                    <div className="btn-group">
                       {catData_3.map((cat) => {
                         return (
                           <button
@@ -157,8 +153,7 @@ export default class Inventory extends Component {
                           Total de productos: <label>{items.length}</label>
                         </div>
                         <div className="col-6">
-                          <div className="row">          
-                          </div>
+                          <div className="row"></div>
                         </div>
                       </div>
 
@@ -196,7 +191,6 @@ export default class Inventory extends Component {
     const { price, catid_3: catid, load } = this.state;
 
     if (price && catid) {
-
       const ls = JSON.parse(localStorage.getItem("OrusSystem")),
         url =
           "http://" +
@@ -233,8 +227,6 @@ export default class Inventory extends Component {
     }
   };
 
-
-
   handelChangePrice = (e) => {
     const { value } = e.target;
     this.setState({
@@ -242,17 +234,14 @@ export default class Inventory extends Component {
     });
   };
 
-
-
-
   getItems = async (catid) => {
     const { load } = this.state;
-    
+
     const getItemsParams = {
-      cat:catid,
-      itemsPage:500
+      cat: catid,
+      itemsPage: 500,
     };
-    const urlGetItems = getUrl("store", null, getItemsParams );
+    const urlGetItems = getUrl("store", null, getItemsParams);
 
     //Cargando
     if (!load) {
@@ -262,15 +251,15 @@ export default class Inventory extends Component {
     }
 
     //Categories main
-    const {data, message} = await api(urlGetItems);
+    const { data, message } = await api(urlGetItems);
 
-    if(data){
+    if (data) {
       console.log("[Orus System] Descarga de producto exitosa");
       this.setState({
         items: data && data.length ? data : [],
         load: false,
       });
-    }else{
+    } else {
       console.error("[Orus system] Salida por error:", message);
       this.setState({
         load: false,
@@ -278,9 +267,6 @@ export default class Inventory extends Component {
     }
   };
 
-
-
-  
   handleClickCat = (e) => {
     const { name, value } = e.target,
       { catData_1, catData_2 } = this.state;
@@ -320,27 +306,18 @@ export default class Inventory extends Component {
     }
   };
 
-
-
-
   getCategories = async () => {
-    //Variables en localStorage
-    //url = "http://" + ls.host + "/api/categories/1";
+    const urlGetCategories = getUrl("categories", 1);
 
-    //Categories main
+    const { data, message } = await api(urlGetCategories);
 
-
-    const urlGetCategories = getUrl("categories", 1)
-
-    const {data, message} = await api(urlGetCategories);
-
-    if(data){
+    if (data) {
       if (data && data.hijos.length) {
         this.setState({
           catData_1: data.hijos,
         });
       }
-    }else{
+    } else {
       console.error("[Orus system] Salida por error:", message);
       window.Swal.fire(
         "Fallo de conexion",

@@ -11,14 +11,16 @@ export default function StoreEntries() {
   const branchesId = branches.map((b) => b.id);
   const store = useStore();
   const [state, setState] = useState({
+    numFactura:'',
     items: [
       {
-        id: `${Date.now()}`,
+        id: `${Date.now()}`,        
         code: "",
         name: "",
         branch_id: 0,
-        cant: 0,
+        cant: '',
         price: 0,
+        cost:'',
         branches: [],
         branches_used: [],
         branch_default: null,
@@ -89,6 +91,7 @@ export default function StoreEntries() {
     }
 
     setState({
+      ...state,
       items,
     });
   };
@@ -130,6 +133,7 @@ export default function StoreEntries() {
       if (i.id === item.id && i.branch_id === item.branch_id) {
         i.cant = item.cant;
         i.price = item.price;
+        i.cost = item.cost;        
         i.branch_id = item.branch_id;
       }
 
@@ -143,10 +147,11 @@ export default function StoreEntries() {
     }
 
     setState({
+      ...state,
       items,
     });
   };
-  const setBranch = (id, c_branch, n_branch) => {
+  const setBranch = (id, c_branch, n_branch) => {    
     const items = [...state.items];
 
     items.forEach((i) => {
@@ -156,9 +161,12 @@ export default function StoreEntries() {
     });
 
     setState({
+      ...state,
       items,
     });
   };
+
+
   const deleteItem = (item) => {
     const items = [...state.items];
     const newItems = items.filter((i) => {
@@ -170,6 +178,7 @@ export default function StoreEntries() {
     });
 
     setState({
+      ...state,
       items: newItems,
     });
   };
@@ -177,13 +186,21 @@ export default function StoreEntries() {
     const items = state.items.filter((i) => typeof i.id === "number");
     const newItems = [];
 
-    for (let i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.length; i++) {      
+      items[i].invoice = state.numFactura;
+      items[i].cost = parseInt(items[i].cost);
+      items[i].price = parseInt(items[i].price);
+      items[i].cant = parseInt(items[i].cant);
       delete items[i].branch_default;
       delete items[i].branches;
       delete items[i].branches_used;
       delete items[i].name;
       delete items[i].code;
     }
+
+    console.log(items);
+
+
     // MFPLAR-000075
     store
       .saveItemByList(items)
@@ -209,7 +226,7 @@ export default function StoreEntries() {
   }, [state.items]);
 
   return (
-    <div className="row" style={{height:'100vh'}}>
+    <div className="row" style={{height:'100vh'}}>      
       <div className="col-12">
         <div className="card card-primary card-outline">
           <div className="card-header">
@@ -224,8 +241,8 @@ export default function StoreEntries() {
                 onClick={() => {
                   const items = [...state.items];
                   items.push(getNewItem());
-
                   setState({
+                    ...state,
                     items,
                   });
                 }}
@@ -236,19 +253,53 @@ export default function StoreEntries() {
           </div>
 
           <div className="card-body">
+
+          <div className="form-group d-flex align-items-end justify-content-end w-100">
+            <label className="mr-2" htmlFor="code">Número de factura</label>
+            <input
+              type="text"
+              className="form-control text-uppercase w-25"
+              placeholder="Número de factura"
+              id="code"            
+              value={state.numFactura ? state.numFactura : ''}
+              maxLength="50"
+              onChange={({ target }) =>
+                setState({ ...state, numFactura: target.value.toLowerCase() })
+              }            
+            />
+          </div>
+
             {state.items.map((item, i) => (
               <FormEntries
                 key={`${item.id}${Date.now()}${i}`}
                 data={item}
                 eraseItem={deleteItem}
                 setItemNew={setNewItem}
-                setData={setDataItem}
-                setBranch={setBranch}
+                setData={(id, name, value) => {
+                  console.log(id, name, value);
+                  if(!id || !name || !value){
+                    return;
+                  }
+                  const items = [...state.items];
+                  items.forEach((item) => {
+                    if(item.id === id){
+                      console.log(item[name]);
+                      item[name] = value;      
+                      return;                
+                    }                    
+                  });
+                  setState({                    
+                    items: items,
+                  })
+                }}                
+                setBranch={setBranch}                                           
               />
             ))}
           </div>
+
+
           <div className="card-footer text-right">
-            <button className="btn btn-primary" onClick={saveItems}>
+            <button className="btn btn-primary" onClick={saveItems} disabled={!state?.numFactura?.length ? true : false}>
               Enviar
             </button>
           </div>
@@ -265,6 +316,7 @@ function getNewItem() {
     name: "",
     branch_id: 0,
     cant: 0,
+    cost:'',
     price: 0,
     branches: [],
     branches_used: [],

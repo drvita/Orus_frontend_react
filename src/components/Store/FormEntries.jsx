@@ -9,6 +9,8 @@ export default function FormEntries({
   setItemNew,
   setData,
   setBranch,
+  setCantidad,
+  setCosto
 }) {
   const configContext = Config();
   const branches = configContext?.data.filter(
@@ -19,7 +21,8 @@ export default function FormEntries({
     id: 0,
     code: "",
     branch_id: 0,
-    cant: 0,
+    cant: '',
+    cost:'',
     price: 0,
     currentCant: 0,
     branchesId: [],
@@ -86,154 +89,169 @@ export default function FormEntries({
       ...state,
       id: data.id,
       code: data.code,
-      cant: data.cant,
+      cant: data.cant,      
       branch_id,
       currentCant,
+      cost:'',
       price: currentPrice,
       branchesId,
     });
   }, [data.id, data.branch_id]);
 
   return (
-    <div className="form-row border-bottom mt-2">
-      <div className="form-group col-2">
-        <label htmlFor="code">Codigo</label>
-        <input
-          type="text"
-          className="form-control text-uppercase"
-          placeholder="Codigo del producto"
-          id="code"
-          disabled={typeof state.id === "number" ? true : false}
-          value={state.code}
-          onChange={({ target }) =>
-            setState({ ...state, code: target.value.toLowerCase() })
-          }
-          onKeyPress={({ key }) => key === "Enter" && searchProductByItem()}
-        />
-      </div>
-      <div className="form-group col-3">
-        <label htmlFor="name">Producto</label>
-        <input
-          type="text"
-          className="form-control text-uppercase"
-          placeholder="Nombre del producto"
-          id="name"
-          value={data.name ?? ""}
-          disabled={true}
-          onChange={() => {}}
-        />
-      </div>
-      <div className="form-group col-3">
-        <label htmlFor="branch">Sucursal</label>
-        <select
-          id="branch"
-          className="form-control text-uppercase"
-          disabled={
-            typeof state.id === "string" ||
-            branchesId.includes(data.branch_default) ||
-            data.cant
-              ? true
-              : false
-          }
-          value={data.branch_default ? data.branch_default : state.branch_id}
-          onChange={({ target }) => {
-            if (!isNaN(target.value)) {
-              setBranch(state.id, state.branch_id, parseInt(target.value));
+    <div>      
+      <div className="form-row border-bottom mt-2">     
+        <div className="form-group col-2">
+          <label htmlFor="code">Codigo</label>
+          <input
+            type="text"
+            className="form-control text-uppercase"
+            placeholder="Codigo del producto"
+            id="code"
+            disabled={typeof state.id === "number" ? true : false}
+            value={state.code}
+            onChange={({ target }) =>
+              setState({ ...state, code: target.value.toLowerCase() })
             }
-          }}
-        >
-          <option value={0}>--- Seleccione una sucursal ---</option>
-          {branches.map((branch) => {            
-            if (data.branches_used.includes(branch.id)) {
-              return null;
+            onKeyPress={({ key }) => key === "Enter" && searchProductByItem()}
+          />
+        </div>
+        <div className="form-group col-3">
+          <label htmlFor="name">Producto</label>
+          <input
+            type="text"
+            className="form-control text-uppercase"
+            placeholder="Nombre del producto"
+            id="name"
+            value={data.name ?? ""}
+            disabled={true}
+            onChange={() => {}}
+          />
+        </div>
+        <div className="form-group col-3">
+          <label htmlFor="branch">Sucursal</label>
+          <select
+            id="branch"
+            className="form-control text-uppercase"
+            disabled={
+              typeof state.id === "string" ||
+              branchesId.includes(data.branch_default) ||
+              data.cant
+                ? true
+                : false
             }
+            value={data.branch_default ? data.branch_default : state.branch_id}
+            onChange={({ target }) => {
+              if (!isNaN(target.value)) {
+                //setData(state.id, 'sucursal', target.value)
+                setBranch(state.id, state.branch_id, parseInt(target.value));
+              }
+            }}
+          >
+            <option value={0}>--- Seleccione una sucursal ---</option>
+            {branches.map((branch) => {            
+              if (data.branches_used.includes(branch.id)) {
+                return null;
+              }
 
-            return (
-              <option key={branch.id} value={branch.id}>
-                {branch.data?.name}
-              </option>
-            );
-          })}
-        </select>
-      </div>
-      <div className="form-group col-1">
-        <label htmlFor="current">Actual</label>
-        <input
-          type="text"
-          className="form-control"
-          id="current"
-          value={state.currentCant ?? 0}
-          disabled={true}
-          onChange={() => {}}
-        />
-      </div>
-      <div className="form-group col-1">
-        <label htmlFor="cant">Ingreso</label>
-        <input
-          type="text"
-          className={
-            data.cant !== state.cant
-              ? "form-control is-warning"
-              : "form-control"
-          }
-          placeholder="Cantidad"
-          id="cant"
-          disabled={typeof state.id === "string" ? true : false}
-          value={state.cant ?? 0}
-          onChange={({ target }) => {
-            if (!isNaN(target.value)) {
-              setState({
-                ...state,
-                cant: parseInt(target.value ? target.value : 0),
-              });
+              return (
+                <option key={branch.id} value={branch.id}>
+                  {branch.data?.name}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+        <div className="form-group col-1">
+          <label htmlFor="current">Actual</label>
+          <input
+            type="text"
+            className="form-control"
+            id="current"
+            value={state.currentCant ?? 0}
+            disabled={true}
+            onChange={() => {}}
+          />
+        </div>
+        <div className="form-group col-1">
+          <label htmlFor="cant">Cantidad</label>
+          <input
+            type="text"
+            className={
+              data.cant !== state.cant
+                ? "form-control is-warning"
+                : "form-control"
             }
-          }}
-        />
-      </div>
-      <div className="form-group col-1">
-        <label htmlFor="price">Precio</label>
-        <input
-          type="text"
-          className={
-            data.price !== state.price
-              ? "form-control is-warning"
-              : "form-control"
-          }
-          placeholder="Precio"
-          id="price"
-          disabled={typeof state.id === "string" ? true : false}
-          value={state.price ?? 0}
-          onChange={({ target }) => {
-            if (!isNaN(target.value)) {
-              setState({ ...state, price: parseInt(target.value) });
-            }
-          }}
-          onKeyPress={({ key }) => key === "Enter" && setData(state)}
-        />
-      </div>
-      <div className="form-group col-1 text-right pt-4">
-        <div
-          className="btn-group btn-group-sm mt-2"
-          role="group"
-          aria-label="..."
-        >
-          <button
-            className="btn btn-sm btn-warning"
-            onClick={() => eraseItem(data)}
-          >
-            <i className="fas fa-trash" />
-          </button>
-          <button
-            className="btn btn-sm btn-success"
+            placeholder="Cantidad"
+            id="cant"
             disabled={typeof state.id === "string" ? true : false}
-            onClick={() => setData(state)}
+            value={state.cant ?? ''}
+            onChange = {({target})=>{
+              /* if (!isNaN(target.value)) {  
+                alert("Debe ser un numero mayor a 0")                              
+                return;
+              } */
+              setData(data.id, 'cant', target.value)
+            }}            
+          />
+        </div>
+        <div className="form-group col-1">
+          <label htmlFor="costos">Costo</label>
+          <input
+            type="text"
+            className="form-control"
+            id="costos"
+            placeholder="Costo"
+            value={data.cost}    
+            disabled={typeof state.id === "string" ? true : false}        
+            onChange={({target}) => setData(data.id, 'cost', target.value)}
+          />
+        </div>        
+        <div className="form-group col-1">
+          <label htmlFor="price">Precio</label>
+          <input
+            type="text"
+            className={
+              data.price !== state.price
+                ? "form-control is-warning"
+                : "form-control"
+            }
+            placeholder="Precio"
+            id="price"
+            disabled={typeof state.id === "string" ? true : false}
+            value={state.price ?? 0}
+            onChange={({ target }) => {
+              if (!isNaN(target.value)) {
+                setData(data.id, 'price', target.value)                                  
+              }
+            }}
+            onKeyPress={({ key }) => key === "Enter" && setData(state)}
+          />
+        </div>
+        <div className="form-group col-1 text-right pt-4">
+          <div
+            className="btn-group btn-group-sm mt-2"
+            role="group"
+            aria-label="..."
           >
-            {data.cant ? (
-              <i className="fas fa-pen" />
-            ) : (
-              <i className="fas fa-check" />
-            )}
-          </button>
+            <button
+              className="btn btn-sm btn-warning"
+              onClick={() => eraseItem(data)}
+            >
+              <i className="fas fa-trash" />
+            </button>
+            <button
+              className="btn btn-sm btn-success"
+              disabled={typeof state.id === "string" ? true : false}
+              onClick={() => setData(state)}
+            >
+              {data.cant ? (
+                <i className="fas fa-pen" />
+              ) : (
+                <i className="fas fa-check" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

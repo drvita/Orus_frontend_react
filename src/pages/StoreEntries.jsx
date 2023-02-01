@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import FormEntries from "../components/Store/FormEntries";
 import useStore from "../hooks/useStore";
@@ -6,6 +7,8 @@ export default function StoreEntries() {
   const store = useStore();
   const [state, setState] = useState({
     numFactura: "",
+    showList: false,
+    btnStatus: false,
     items: [
       {
         key: `${Date.now()}`,
@@ -23,41 +26,75 @@ export default function StoreEntries() {
     ],
   });
   const saveItems = () => {
-    const items = state.items.filter((i) => typeof i.id === "number");
+    window.Swal.fire({
+      title: "Almacen",
+      html: `Se va a guardar los datos de la factura: <strong>${state.numFactura.toUpperCase()}</strong><br/> ¿Realmente desea realizar esta acción?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      showLoaderOnConfirm: true,
+    }).then(({ dismiss }) => {
+      if (dismiss === "cancel") {
+        return false;
+      }
 
-    for (let i = 0; i < items.length; i++) {
-      items[i].invoice = state.numFactura;
-      delete items[i].branch_default;
-      delete items[i].branches;
-      delete items[i].branches_used;
-      delete items[i].name;
-      delete items[i].code;
-    }
+      const items = state.items.filter((i) => typeof i.id === "number");
 
-    console.log("[DEBUG] Send items", items);
+      for (let i = 0; i < items.length; i++) {
+        items[i].invoice = state.numFactura;
+        delete items[i].branch_default;
+        delete items[i].branches;
+        delete items[i].branches_used;
+        delete items[i].name;
+        delete items[i].code;
+        delete items[i].key;
+      }
 
-    // MFPLAR-000075
-    store
-      .saveItemByList(items)
-      .then((res) => {
-        window.Swal.fire({
-          title: "Almacen",
-          text: "Productos almacenados con exito",
-          icon: "success",
-          timer: 2500,
-        });
+      store
+        .saveItemByList(items)
+        .then((res) => {
+          window.Swal.fire({
+            title: "Almacen",
+            text: "Productos almacenados con exito",
+            icon: "success",
+            timer: 2500,
+          });
 
-        setState({
-          numFactura: "",
-          items: [getNewItem()],
-        });
-      })
-      .catch((err) => console.error("Error when save items:", err.message));
+          console.log("[DEBUG] Send items", items);
+          setState({
+            numFactura: "",
+            btnStatus: false,
+            showList: false,
+            items: [getNewItem()],
+          });
+        })
+        .catch((err) => console.error("Error when save items:", err.message));
+    });
   };
 
   useEffect(() => {
-    console.log("[DEBUG] Items useEffect:", state.items);
-  }, [state.items]);
+    // console.log("[DEBUG] Items useEffect:", state.items);
+    let btnStatus = true;
+    const itemsValid = state.items.filter(
+      (i) => i.id && i.branch_id && i.cant && i.price && i.price >= i.cost
+    );
+
+    if (!Boolean(state.numFactura)) {
+      btnStatus = false;
+    }
+
+    if (!itemsValid.length) {
+      btnStatus = false;
+    }
+
+    if (state.btnStatus !== btnStatus) {
+      setState({
+        ...state,
+        btnStatus,
+      });
+    }
+  }, [state.items, state.numFactura]);
 
   return (
     <div className="row" style={{ height: "100vh" }}>
@@ -87,7 +124,13 @@ export default function StoreEntries() {
           </div>
 
           <div className="card-body">
-            <div className="form-group d-flex align-items-end justify-content-end w-100">
+            <div
+              className={
+                state.showList
+                  ? "form-group d-flex align-items-end justify-content-end w-100"
+                  : "form-group d-flex align-items-center justify-content-center w-100"
+              }
+            >
               <label className="mr-2" htmlFor="code">
                 Número de factura
               </label>
@@ -96,113 +139,120 @@ export default function StoreEntries() {
                 className="form-control text-uppercase w-25"
                 placeholder="Número de factura"
                 id="code"
-                value={state.numFactura ? state.numFactura : ""}
+                value={state.numFactura ?? ""}
                 maxLength="50"
-                onChange={({ target }) =>
-                  setState({ ...state, numFactura: target.value.toLowerCase() })
+                onChange={({ target: { value } }) =>
+                  setState({ ...state, numFactura: value.toLowerCase() })
+                }
+                onBlur={() =>
+                  setState({ ...state, showList: Boolean(state.numFactura) })
+                }
+                onKeyPress={({ key }) =>
+                  key === "Enter" &&
+                  setState({ ...state, showList: Boolean(state.numFactura) })
                 }
               />
             </div>
 
-            {state.items.map((item, i) => (
-              <FormEntries
-                key={item.key}
-                data={item}
-                eraseItem={(item) => {
-                  const items = [...state.items];
-                  const newItems = items.filter((i) => {
-                    if (i.id === item.id && i.branch_id === item.branch_id) {
-                      return false;
-                    }
+            {state.showList &&
+              state.items.map((item, i) => (
+                <FormEntries
+                  key={item.key}
+                  data={item}
+                  eraseItem={(item) => {
+                    const items = [...state.items];
+                    const newItems = items.filter((i) => {
+                      if (i.id === item.id && i.branch_id === item.branch_id) {
+                        return false;
+                      }
 
-                    return true;
-                  });
+                      return true;
+                    });
 
-                  setState({
-                    ...state,
-                    items: newItems,
-                  });
-                }}
-                setItemNew={(select, item) => {
-                  const items = [...state.items];
+                    setState({
+                      ...state,
+                      items: newItems,
+                    });
+                  }}
+                  setItemNew={(select, item) => {
+                    const items = [...state.items];
 
-                  items.forEach((prod, i) => {
-                    if (prod.key === select.key) {
-                      console.log(
-                        "[DEBUG] Set new item id:",
-                        prod.key,
-                        select.key
-                      );
-                      console.log(
-                        "[DEBUG] Set new item branch:",
-                        prod.branch_id,
-                        select.branch_id
-                      );
-                      items[i] = {
-                        ...items[i],
-                        id: item.id,
-                        code: item.code,
-                        name: item.name,
-                        branch_id: item.branch_default
-                          ? item.branch_default
-                          : 0,
-                        cant: "",
-                        price: item.price,
-                        cost: "",
-                        branches: item.branches,
-                        branches_used: [],
-                        branch_default: item.branch_default,
-                      };
-                      console.log("[DEBUG] update selected");
+                    items.forEach((prod, i) => {
+                      if (prod.key === select.key) {
+                        items[i] = {
+                          ...items[i],
+                          id: item.id,
+                          code: item.code,
+                          name: item.name,
+                          branch_id: item.branch_default
+                            ? item.branch_default
+                            : 0,
+                          cant: "",
+                          price: "",
+                          cost: "",
+                          branches: item.branches,
+                          branches_used: [],
+                          branch_default: item.branch_default,
+                        };
+                        return;
+                      }
+                    });
+
+                    setState({
+                      ...state,
+                      items,
+                    });
+                  }}
+                  setData={(item, name, value) => {
+                    if (!item || !name) {
                       return;
                     }
-                  });
+                    const items = [...state.items];
+                    if (name === "branch_id") {
+                      const itemFound = items.filter(
+                        (i) => i.branch_id === value && i.id === item.id
+                      );
 
-                  setState({
-                    ...state,
-                    items,
-                  });
-                }}
-                setData={(item, name, value) => {
-                  if (!item || !name) {
-                    return;
-                  }
-                  const items = [...state.items];
-                  if (name === "branch_id") {
-                    const itemFound = items.filter(
-                      (i) => i.branch_id === value && i.id === item.id
-                    );
-                    if (itemFound.length) {
-                      window.Swal.fire({
-                        title: "Almacen",
-                        text: "Esta linea de captura ya se encuentra en el listado",
-                        icon: "warning",
-                        timer: 2500,
-                      });
-                      value = null;
+                      if (itemFound.length) {
+                        window.Swal.fire({
+                          title: "Almacen",
+                          text: "Esta linea de captura ya se encuentra en el listado",
+                          icon: "warning",
+                          timer: 2500,
+                        });
+                        value = null;
+                      }
                     }
-                    console.log("[DEBUG] Branchs filters:", itemFound);
-                  }
-                  items.forEach((i) => {
-                    if (i.key === item.key) {
-                      i[name] = value;
-                      return;
-                    }
-                  });
-                  setState({
-                    ...state,
-                    items: items,
-                  });
-                }}
-              />
-            ))}
+                    items.forEach((i) => {
+                      if (i.key === item.key) {
+                        if (name === "price" && i.cost > value) {
+                          window.Swal.fire({
+                            title: "Almacen",
+                            text: "El precio del producto no puede ser menor al costo",
+                            icon: "warning",
+                            timer: 2500,
+                          });
+                          value = null;
+                        }
+
+                        i[name] = value;
+                        return;
+                      }
+                    });
+                    setState({
+                      ...state,
+                      items: items,
+                    });
+                  }}
+                />
+              ))}
           </div>
 
           <div className="card-footer text-right">
             <button
               className="btn btn-primary"
               onClick={saveItems}
-              disabled={!state?.numFactura?.length ? true : false}
+              disabled={!state.btnStatus}
             >
               Enviar
             </button>

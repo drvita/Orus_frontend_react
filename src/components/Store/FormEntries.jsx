@@ -141,7 +141,6 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
           >
             <option value={0}>--- Seleccione una sucursal ---</option>
             {branches.map((branch) => {
-              // console.log("[DEBUG] Branches select:", branch);
               if (data.branches_used.includes(branch.id)) {
                 return null;
               }

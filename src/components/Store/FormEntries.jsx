@@ -3,28 +3,20 @@ import { useEffect, useState } from "react";
 import { Config } from "../../context/ConfigContext";
 import useStore from "../../hooks/useStore";
 
-export default function FormEntries({
-  data,
-  eraseItem,
-  setItemNew,
-  setData,
-  setBranch,
-  setCantidad,
-  setCosto
-}) {
+export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
   const configContext = Config();
   const branches = configContext?.data.filter(
     (conf) => conf.name === "branches"
   );
   const branchesId = branches.map((b) => b.id);
   const [state, setState] = useState({
+    key: "",
     id: 0,
     code: "",
     branch_id: 0,
-    cant: '',
-    cost:'',
-    price: 0,
-    currentCant: 0,
+    cant: "",
+    cost: "",
+    price: "",
     branchesId: [],
     showLoader: false,
   });
@@ -48,12 +40,12 @@ export default function FormEntries({
     const item = items?.data.length ? items.data[0] : {};
 
     if (item && Object.keys(item).length) {
-      setItemNew(state.id, state.branch_id, item);
+      setItemNew(state, item);
       setState({
         ...state,
         showLoader:false,
-      });      
-    } else {      
+      }); 
+    } else {
       window.Swal.fire({
         title: "Almacen",
         text: "Codigo no encontrado",
@@ -94,7 +86,7 @@ export default function FormEntries({
   };
   const getBranchesId = () => {
     const branches = [];
-    data.branches?.forEach((branch) => branches.push(branch.branch_id));
+    data.branches?.forEach((b) => branches.push(b.branch_id));
 
     return branches;
   };
@@ -105,28 +97,21 @@ export default function FormEntries({
 
     setState({
       ...state,
+      key: data.key,
       id: data.id,
       code: data.code,
-      cant: data.cant,      
-      branch_id,
+      cant: data.cant,
+      branch_id: branch_id ?? 0,
+      cost: data.cost,
       currentCant,
-      cost:'',
-      price: currentPrice,
+      price: data.price ? data.price : currentPrice,
       branchesId,
     });
   }, [data.id, data.branch_id]);
 
   return (
-    <div className="">
-      {state.showLoader ? (
-        <div className="text-center">
-          <h4 className="text-primary">Buscando producto</h4>
-          <div className="spinner-border text-primary ml-4" role="status">
-            <span className="sr-only">Cargando ...</span>
-          </div>
-        </div>
-      ):(
-        <div className="form-row border-bottom mt-2">     
+    <div>
+      <div className="form-row border-bottom mt-2">
         <div className="form-group col-2">
           <label htmlFor="code">Codigo</label>
           <input
@@ -136,9 +121,10 @@ export default function FormEntries({
             id="code"
             disabled={typeof state.id === "number" ? true : false}
             value={state.code}
-            onChange={({ target }) =>
-              setState({ ...state, code: target.value.toLowerCase() })
+            onChange={({ target: { value } }) =>
+              setState({ ...state, code: value.toLowerCase() })
             }
+            onBlur={() => searchProductByItem()}
             onKeyPress={({ key }) => key === "Enter" && searchProductByItem()}
           />
         </div>
@@ -151,10 +137,9 @@ export default function FormEntries({
             id="name"
             value={data.name ?? ""}
             disabled={true}
-            onChange={() => {}}
           />
         </div>
-        <div className="form-group col-3">
+        <div className="form-group col-2">
           <label htmlFor="branch">Sucursal</label>
           <select
             id="branch"
@@ -166,16 +151,14 @@ export default function FormEntries({
                 ? true
                 : false
             }
-            value={data.branch_default ? data.branch_default : state.branch_id}
-            onChange={({ target }) => {
-              if (!isNaN(target.value)) {
-                //setData(state.id, 'sucursal', target.value)
-                setBranch(state.id, state.branch_id, parseInt(target.value));
-              }
-            }}
+            value={state.branch_id}
+            onChange={({ target: { value } }) =>
+              setState({ ...state, branch_id: parseInt(value) })
+            }
+            onBlur={() => setData(data, "branch_id", state.branch_id)}
           >
             <option value={0}>--- Seleccione una sucursal ---</option>
-            {branches.map((branch) => {            
+            {branches.map((branch) => {
               if (data.branches_used.includes(branch.id)) {
                 return null;
               }
@@ -196,7 +179,6 @@ export default function FormEntries({
             id="current"
             value={state.currentCant ?? 0}
             disabled={true}
-            onChange={() => {}}
           />
         </div>
         <div className="form-group col-1">
@@ -211,14 +193,22 @@ export default function FormEntries({
             placeholder="Cantidad"
             id="cant"
             disabled={typeof state.id === "string" ? true : false}
-            value={state.cant ?? ''}
-            onChange = {({target})=>{
-              /* if (!isNaN(target.value)) {  
-                alert("Debe ser un numero mayor a 0")                              
+            value={state.cant ?? ""}
+            onChange={({ target: { value: val } }) => {
+              if (val && isNaN(val)) {
                 return;
-              } */
-              setData(data.id, 'cant', target.value)
-            }}            
+              }
+
+              val = val ? parseInt(val) : 0;
+              setState({
+                ...state,
+                cant: val,
+              });
+            }}
+            onBlur={() => setData(data, "cant", state.cant)}
+            onKeyPress={({ key }) =>
+              key === "Enter" && setData(data, "cant", state.cant)
+            }
           />
         </div>
         <div className="form-group col-1">
@@ -228,11 +218,22 @@ export default function FormEntries({
             className="form-control"
             id="costos"
             placeholder="Costo"
-            value={data.cost}    
-            disabled={typeof state.id === "string" ? true : false}        
-            onChange={({target}) => setData(data.id, 'cost', target.value)}
+            value={state.cost}
+            disabled={typeof state.id === "string" ? true : false}
+            onChange={({ target: { value: val } }) => {
+              if (val && isNaN(val)) {
+                return;
+              }
+
+              val = val ? parseInt(val) : 0;
+              setState({ ...state, cost: val });
+            }}
+            onBlur={() => setData(data, "cost", state.cost)}
+            onKeyPress={({ key }) =>
+              key === "Enter" && setData(data, "cost", state.cost)
+            }
           />
-        </div>        
+        </div>
         <div className="form-group col-1">
           <label htmlFor="price">Precio</label>
           <input
@@ -246,12 +247,18 @@ export default function FormEntries({
             id="price"
             disabled={typeof state.id === "string" ? true : false}
             value={state.price ?? 0}
-            onChange={({ target }) => {
-              if (!isNaN(target.value)) {
-                setData(data.id, 'price', target.value)                                  
+            onChange={({ target: { value: val } }) => {
+              if (val && isNaN(val)) {
+                return;
               }
+
+              val = val ? parseInt(val) : 0;
+              setState({ ...state, price: val });
             }}
-            onKeyPress={({ key }) => key === "Enter" && setData(state)}
+            onKeyPress={({ key }) =>
+              key === "Enter" && setData(data, "price", state.price)
+            }
+            onBlur={() => setData(data, "price", state.price)}
           />
         </div>
         <div className="form-group col-1 text-right pt-4">
@@ -266,21 +273,9 @@ export default function FormEntries({
             >
               <i className="fas fa-trash" />
             </button>
-            <button
-              className="btn btn-sm btn-success"
-              disabled={typeof state.id === "string" ? true : false}
-              onClick={() => setData(state)}
-            >
-              {data.cant ? (
-                <i className="fas fa-pen" />
-              ) : (
-                <i className="fas fa-check" />
-              )}
-            </button>
           </div>
         </div>
-      </div>
-      )}           
+      </div>       
     </div>
   );
 }

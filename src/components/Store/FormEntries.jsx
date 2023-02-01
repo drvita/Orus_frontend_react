@@ -39,12 +39,12 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
     const items = await store.getItems({ code: state.code });
     const item = items?.data.length ? items.data[0] : {};
 
-    if (item && Object.keys(item).length) {
-      setItemNew(state, item);
+    if (item && Object.keys(item).length) {      
       setState({
         ...state,
         showLoader:false,
-      }); 
+      });
+      setItemNew(state, item);       
     } else {
       window.Swal.fire({
         title: "Almacen",
@@ -111,7 +111,15 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
 
   return (
     <div>
-      <div className="form-row border-bottom mt-2">
+      {state.showLoader ? (
+        <div className="text-center">
+          <h4 className="text-primary">Buscando producto</h4>
+          <div className="spinner-border text-primary ml-4" role="status">
+            <span className="sr-only">Cargando ...</span>
+          </div>
+      </div>
+      ):(
+        <div className="form-row border-bottom mt-2">
         <div className="form-group col-2">
           <label htmlFor="code">Codigo</label>
           <input
@@ -275,7 +283,8 @@ export default function FormEntries({ data, eraseItem, setItemNew, setData }) {
             </button>
           </div>
         </div>
-      </div>       
+      </div>
+      )}             
     </div>
   );
 }

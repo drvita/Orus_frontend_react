@@ -52,6 +52,11 @@ export default function StoreEntries() {
         delete items[i].key;
       }
 
+      setState({
+        ...state,
+        showLoader:true,
+      })
+
       store
         .saveItemByList(items)
         .then((res) => {
@@ -108,7 +113,7 @@ export default function StoreEntries() {
               <div className="spinner-border text-primary ml-4" role="status">
                 <span className="sr-only">Cargando ...</span>
               </div>
-          </div>
+            </div>
         ):(
 
           <div className="card card-primary card-outline">

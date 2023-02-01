@@ -26,17 +26,34 @@ export default function FormEntries({
     price: 0,
     currentCant: 0,
     branchesId: [],
+    showLoader: false,
   });
   const store = useStore();
   const searchProductByItem = async () => {
-    if (!state.code) return;
+
+    setState({
+      ...state,
+      showLoader:true,
+    });    
+
+    if (!state.code){      
+      setState({
+        ...state,
+        showLoader:false,
+      });
+      return;
+    }
 
     const items = await store.getItems({ code: state.code });
     const item = items?.data.length ? items.data[0] : {};
 
     if (item && Object.keys(item).length) {
       setItemNew(state.id, state.branch_id, item);
-    } else {
+      setState({
+        ...state,
+        showLoader:false,
+      });      
+    } else {      
       window.Swal.fire({
         title: "Almacen",
         text: "Codigo no encontrado",
@@ -46,6 +63,7 @@ export default function FormEntries({
       setState({
         ...state,
         code: "",
+        showLoader:false,
       });
     }
   };
@@ -99,8 +117,16 @@ export default function FormEntries({
   }, [data.id, data.branch_id]);
 
   return (
-    <div>      
-      <div className="form-row border-bottom mt-2">     
+    <div className="">
+      {state.showLoader ? (
+        <div className="text-center">
+          <h4 className="text-primary">Buscando producto</h4>
+          <div className="spinner-border text-primary ml-4" role="status">
+            <span className="sr-only">Cargando ...</span>
+          </div>
+        </div>
+      ):(
+        <div className="form-row border-bottom mt-2">     
         <div className="form-group col-2">
           <label htmlFor="code">Codigo</label>
           <input
@@ -254,6 +280,7 @@ export default function FormEntries({
           </div>
         </div>
       </div>
+      )}           
     </div>
   );
 }

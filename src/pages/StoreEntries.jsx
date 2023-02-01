@@ -26,8 +26,9 @@ export default function StoreEntries() {
         branch_default: null,
       },
     ],
+    showLoader:false,
   });
-  const setNewItem = (id, branch_id, item) => {
+  const setNewItem = (id, branch_id, item) => {    
     const items = [...state.items];
     const branches_used = {};
     const branches_rest = {};
@@ -201,7 +202,11 @@ export default function StoreEntries() {
     console.log(items);
 
 
-    // MFPLAR-000075
+    // MFPLAR-000075    
+    setState({
+      ...state,
+      showLoader:true,
+    });
     store
       .saveItemByList(items)
       .then((res) => {        
@@ -215,11 +220,16 @@ export default function StoreEntries() {
         setState({
           ...state,
           items: newItems,
+          showLoader:false,
         });
       })
-      .catch((err) =>
-        console.error("Error when save items:", err.message)
-      );
+      .catch((err) => {
+        console.error("Error when save items:", err.message);
+        setState({
+          ...state,
+          showLoader:false,
+        });        
+      });
   };
 
   useEffect(() => {
@@ -228,48 +238,56 @@ export default function StoreEntries() {
   return (
     <div className="row" style={{height:'100vh'}}>      
       <div className="col-12">
-        <div className="card card-primary card-outline">
-          <div className="card-header">
-            <h5 className="card-title mt-2 ml-2 text-bold">
-              Entradas de productos por lote
-            </h5>
-            <div className="card-tools">
-              <button
-                className="btn btn-sm btn-primary"
-                title="Agregar una linea nueva"
-                alt="Agregar una linea nueva"
-                onClick={() => {
-                  const items = [...state.items];
-                  items.push(getNewItem());
-                  setState({
-                    ...state,
-                    items,
-                  });
-                }}
-              >
-                <i className="fas fa-plus" />
-              </button>
-            </div>
+        {state.showLoader ? (
+            <div className="text-center">
+              <h4 className="text-primary">Guardando entrada </h4>
+              <div className="spinner-border text-primary ml-4" role="status">
+                <span className="sr-only">Cargando ...</span>
+              </div>
           </div>
+        ):(
+          <div className="card card-primary card-outline">
+            <div className="card-header">
+              <h5 className="card-title mt-2 ml-2 text-bold">
+                Entradas de productos por lote
+              </h5>
+              <div className="card-tools">
+                <button
+                  className="btn btn-sm btn-primary"
+                  title="Agregar una linea nueva"
+                  alt="Agregar una linea nueva"
+                  onClick={() => {
+                    const items = [...state.items];
+                    items.push(getNewItem());
+                    setState({
+                      ...state,
+                      items,
+                    });
+                  }}
+                >
+                  <i className="fas fa-plus" />
+                </button>
+              </div>
+            </div>
 
           <div className="card-body">
 
-          <div className="form-group d-flex align-items-end justify-content-end w-100">
-            <label className="mr-2" htmlFor="code">Número de factura</label>
-            <input
-              type="text"
-              className="form-control text-uppercase w-25"
-              placeholder="Número de factura"
-              id="code"            
-              value={state.numFactura ? state.numFactura : ''}
-              maxLength="50"
-              onChange={({ target }) =>
-                setState({ ...state, numFactura: target.value.toLowerCase() })
-              }            
-            />
-          </div>
+            <div className="form-group d-flex align-items-end justify-content-end w-100">
+              <label className="mr-2" htmlFor="code">Número de factura</label>
+              <input
+                type="text"
+                className="form-control text-uppercase w-25"
+                placeholder="Número de factura"
+                id="code"            
+                value={state.numFactura ? state.numFactura : ''}
+                maxLength="50"
+                onChange={({ target }) =>
+                  setState({ ...state, numFactura: target.value.toLowerCase() })
+                }            
+                />
+              </div>
 
-            {state.items.map((item, i) => (
+              {state.items.map((item, i) => (
               <FormEntries
                 key={`${item.id}${Date.now()}${i}`}
                 data={item}
@@ -294,16 +312,17 @@ export default function StoreEntries() {
                 }}                
                 setBranch={setBranch}                                           
               />
-            ))}
-          </div>
+             ))}
+            </div>
 
 
-          <div className="card-footer text-right">
-            <button className="btn btn-primary" onClick={saveItems} disabled={!state?.numFactura?.length ? true : false}>
-              Enviar
-            </button>
-          </div>
-        </div>
+            <div className="card-footer text-right">
+              <button className="btn btn-primary" onClick={saveItems} disabled={!state?.numFactura?.length ? true : false}>
+                Enviar
+              </button>
+            </div>
+          </div>          
+        )}        
       </div>
     </div>
   );

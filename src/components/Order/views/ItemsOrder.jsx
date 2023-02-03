@@ -58,9 +58,11 @@ export default function ListItemComponent(props) {
     });
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     const items = props.items.filter((item) =>
-      ["lentes", "armazones", "lentes de contacto"].includes(item.category?.code?.codeNameCategory[0])
+      ["lentes", "armazones", "lentes de contacto"].includes(
+        item.category?.code?.codeNameCategory[0]
+      )
     );
     const total = props.items.reduce(
       (sub, item) => item.cant * item.price + sub,
@@ -196,6 +198,9 @@ export default function ListItemComponent(props) {
                       <span className="text-muted ml-2">
                         ({item.descripcion})
                       </span>
+                    )}
+                    {item.lot && (
+                      <span className="text-muted ml-2">Fac: {item.lot}</span>
                     )}
                   </td>
 

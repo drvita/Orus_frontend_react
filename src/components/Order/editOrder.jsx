@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import moment from "moment";
 
 //Context
@@ -192,8 +192,9 @@ export default function EditOrderComponent(props) {
 
   useEffect(() => {
     hookOrder.getOrder(idurl).then(({ data }) => {
+      console.log("[DEBUG] Sale in order:", data.items);
       if (data) {
-        setState({
+        const $order = {
           id: data.id ?? 0,
           paciente: data.paciente ?? {},
           session: data.session ?? null,
@@ -209,21 +210,23 @@ export default function EditOrderComponent(props) {
           created_at: data.created_at ?? null,
           updated: data.updated ?? {},
           updated_at: data.updated_at ?? null,
-          sale: {
+          contact_id: data.paciente.id,
+          activitys: data.activity ?? [],
+          statusInitial: data.status ?? 0,
+        };
+        if (data.sale) {
+          $order.sale = {
             id: data.sale.id,
             total: data.sale.total,
             subtotal: data.sale.subtotal,
             session: data.sale.session,
             payments: data.sale.payments,
             paid: data.sale.paid,
-            discount: data.sale.descuento,            
+            discount: data.sale.descuento,
             customer: data.paciente,
-            //...(data.sale ?? {}),            
-          },
-          contact_id: data.paciente.id,
-          activitys: data.activity ?? [],
-          statusInitial: data.status ?? 0,
-        });
+          };
+        }
+        setState($order);
       } else {
         console.error("Error al obtener los datos");
       }

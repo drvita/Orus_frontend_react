@@ -16,7 +16,7 @@ export default function useStore() {
           err.message
         );
 
-        throw err;
+        return err.response.data;
       });
   };
 
@@ -77,12 +77,11 @@ export default function useStore() {
   };
 
   const saveItem = async (data) => {
-
-    const {id} = data;
+    const { id } = data;
     const url = setUrl("store", id);
-    const method = !id ? 'POST' : 'PUT';
-    
-    return await api(url, method, data)
+    const method = !id ? "POST" : "PUT";
+
+    return await api(url, method, data);
   };
 
   const saveQantityandPrice = async (data) => {
@@ -111,12 +110,12 @@ export default function useStore() {
     return await api(URL, method, data);
   };
 
-  const saveQantity = async (data)=>{   
+  const saveQantity = async (data) => {
     const product_id = data.product_id;
     const url = setUrl(`store/setcant/${product_id}`);
-    const method = 'POST';
+    const method = "POST";
     return await api(url, method, data);
-  }
+  };
 
   // Brands functions -------------------------
   const getBrands = async (options) => {

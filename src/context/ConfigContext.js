@@ -10,6 +10,8 @@ const storage = JSON.parse(localStorage.getItem("OrusSystem"));
 const initialState = {
   data: [],
   meta: {},
+  branches: [],
+  banks: [],
   server: storage,
 };
 
@@ -33,16 +35,27 @@ export default function useConfig({ children }) {
     localStorage.setItem("OrusSystem", JSON.stringify(newStorage));
     return true;
   };
+  const handleGetConfig = () => {
+    return api("config?itemsPage=100", "GET").then((res) => res);
+  };
+  const handleSetState = async () => {
+    const req = await handleGetConfig();
+    const banks = req.data?.filter((con) => con.name === "bank");
+    const reqBranches = req.data?.filter((con) => con.name === "branches");
+    const branches = reqBranches.map((row) => ({ ...row.data, id: row.id }));
+
+    setstate({
+      ...state,
+      data: req.data,
+      meta: req.meta,
+      branches,
+      banks,
+      setStorage,
+    });
+  };
 
   useEffect(() => {
-    api("config?itemsPage=100", "GET").then((response) => {
-      setstate({
-        ...state,
-        data: response.data,
-        meta: response.meta,
-        setStorage,
-      });
-    });
+    handleSetState();
   }, []);
 
   return (

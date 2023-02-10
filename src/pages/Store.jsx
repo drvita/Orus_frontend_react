@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 
-//Context
+// Context
 import { StoreContext } from "../context/StoreContext";
 
-//Compinentes
+// Components
 import ToolBar from "../components/Store/ToolBar";
 import Inbox from "../components/Store/Inbox";
 import Add from "../components/Store/Add";
 import Categories from "./StoreCategories";
 import Brands from "./StoreBrand";
 import Inventory from "./StoreInventory";
-import Entries from "./StoreEntries";
+import Entries from "./StoreEntriesArm";
+// Hooks
+import CatHook from "../hooks/useCategory";
+import ContHook from "../hooks/useContact";
+import ConfigHook from "../hooks/useConfig";
 
 const optionsDefault = {
   page: 1,
@@ -24,13 +28,56 @@ const optionsDefault = {
 };
 
 export default function Store(props) {
-  
   const [state, setState] = useState({
     panel: "",
+    cats: [],
+    suppliers: [],
+    branches: [],
     options: optionsDefault,
   });
-
+  const categories = CatHook();
+  const contacts = ContHook();
+  const config = ConfigHook();
   const { id } = props.match.params;
+
+  const handleGetCategories = async () => {
+    return await categories
+      .getCategories({ search: "armazones" })
+      .then(({ data }) => {
+        const dataFilter = data.filter((cat) => cat.name === "armazones");
+        return dataFilter[0].sons;
+      });
+  };
+  const handleGetSuppliers = async () => {
+    return await contacts
+      .getContacts({ type: 1, business: 0 })
+      .then(({ data }) => {
+        const filters = data.filter((row) => row.brands && row.brands.length);
+
+        return filters;
+      });
+  };
+  const handleGetBranchs = async () => {
+    return await config.get({ itemsPage: 100 }).then(({ data }) => {
+      const filters = data.filter((row) => row.name === "branches");
+      const branches = filters.map((row) => ({ ...row.data, id: row.id }));
+
+      return branches;
+    });
+  };
+  const handleSet = async (panel) => {
+    const cats = await handleGetCategories();
+    const suppliers = await handleGetSuppliers();
+    const branches = await handleGetBranchs();
+
+    setState({
+      ...state,
+      cats,
+      suppliers,
+      panel,
+      branches,
+    });
+  };
 
   useEffect(() => {
     let panel = "inbox";
@@ -57,17 +104,12 @@ export default function Store(props) {
         }
       }
     }
-
-    setState({
-      ...state,
-      panel,
-    });
-
+    handleSet(panel);
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <StoreContext.Provider value={{ ...state, set: setState }}>
-      <div className="row" style={{minHeight: '100vh'}}>
+      <div className="row" style={{ minHeight: "100vh" }}>
         <div className="col-sm-12 col-md-2">
           <button
             className="btn bg-primary btn-block mb-3"

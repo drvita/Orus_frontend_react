@@ -27,7 +27,7 @@ export default function ToolBar() {
       },
     });
   };
-  
+
   const handleChangeSupplier = (id) => {
     context.set({
       ...context,
@@ -171,7 +171,7 @@ export default function ToolBar() {
                 : "fas fa-plus mr-1"
             }
           ></i>
-          Entradas
+          Entrada armazon
         </a>
       </li>
 

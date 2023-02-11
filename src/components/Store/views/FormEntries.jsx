@@ -16,6 +16,7 @@ export default function FormEntries({
     class: "danger",
     message: "",
   });
+  const [braDef, setBraDef] = useState({ status: false, branch_id: null });
 
   const handleSetName = () => {
     const category = context.cats.filter((cat) => cat.id === state.category_id);
@@ -25,14 +26,48 @@ export default function FormEntries({
     const name =
       "Armazon " + category_name + " " + brand_name + " " + state.code;
 
-    setState({
-      ...state,
-      name,
-    });
+    console.log("[Orus System] Set name:", name);
+    handleSetPrice(name);
+  };
+  const handleSetPrice = (name) => {
+    if (itemSearch?.id) {
+      const branch_selected = itemSearch.branch_default
+        ? itemSearch.branch_default
+        : state.branch_id;
+      const branch = itemSearch.branches.filter(
+        (b) => b.branch_id === branch_selected
+      )[0];
+      if (branch && branch.price) {
+        const {
+          code: { codeNameCategory },
+        } = itemSearch.category;
+        if (codeNameCategory[0] === "armazones") {
+          console.log("[Orus System] set price from branch:", branch.price);
+          const data = {
+            ...state,
+            price: parseFloat(branch.price),
+          };
+          if (name) data.name = name;
+
+          setState(data);
+        }
+      }
+    }
   };
 
   useEffect(() => {
     if (!itemSearch) return;
+
+    if (itemSearch.branch_default && !braDef.status) {
+      setBraDef({
+        status: true,
+        branch_id: itemSearch.branch_default,
+      });
+      setState({
+        ...state,
+        branch_id: itemSearch.branch_default,
+      });
+    }
 
     if (state.price && state.cost) {
       if (state.cost > state.price) {
@@ -206,11 +241,12 @@ export default function FormEntries({
           <label htmlFor="code">Sucrusal</label>
           <select
             className="form-control text-uppercase"
-            defaultValue={state.branch_id ?? ""}
+            value={braDef.status ? braDef.branch_id : state.branch_id ?? ""}
             onChange={({ target: { value } }) =>
               setState({ ...state, branch_id: parseInt(value) })
             }
-            disabled={!state.brand_id}
+            disabled={!state.brand_id || braDef.status}
+            onBlur={handleSetPrice}
           >
             <option>-- Seleccione uno --</option>
             {context.branches.map((br) => (
@@ -228,7 +264,7 @@ export default function FormEntries({
             min={1}
             className="form-control text-uppercase"
             placeholder="Descripcion del producto"
-            defaultValue={state.name ?? ""}
+            value={state.name ?? ""}
             onChange={({ target: { value } }) =>
               setState({ ...state, name: value.toLowerCase() })
             }
@@ -260,7 +296,7 @@ export default function FormEntries({
             min={1}
             className="form-control text-uppercase"
             placeholder="Cantidad inicial"
-            defaultValue={state.price ?? ""}
+            value={state.price ?? ""}
             onChange={({ target: { value } }) =>
               setState({ ...state, price: parseFloat(value) })
             }

@@ -52,6 +52,11 @@ export default function FormEntries({
           setState(data);
         }
       }
+    } else {
+      setState({
+        ...state,
+        name,
+      });
     }
   };
 
@@ -179,10 +184,11 @@ export default function FormEntries({
               setState({ ...state, category_id: parseInt(value) })
             }
             disabled={(() => {
-              if (state.codeBar.length > 10) {
+              // console.log("[DEBUG] codes:", state.code, state.codeBar);
+              if (state.codeBar?.length > 10) {
                 return false;
               }
-              if (state.code.length > 3) {
+              if (state.code?.length > 3) {
                 return false;
               }
 

@@ -52,7 +52,7 @@ export default function FormEntries({
           setState(data);
         }
       }
-    } else {
+    } else if (name) {
       setState({
         ...state,
         name,
@@ -252,7 +252,7 @@ export default function FormEntries({
               setState({ ...state, branch_id: parseInt(value) })
             }
             disabled={!state.brand_id || braDef.status}
-            onBlur={handleSetPrice}
+            onBlur={() => handleSetPrice()}
           >
             <option>-- Seleccione uno --</option>
             {context.branches.map((br) => (

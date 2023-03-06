@@ -79,8 +79,6 @@ export default function AddContact(props) {
     metadata,
   } = contact;
   const history = useHistory();
-  let btn_enabled =
-    Object.values(contact.validates).filter((val) => val).length === 4;
 
   // Functions
   const handleChangeData = (key, value) => {
@@ -188,6 +186,45 @@ export default function AddContact(props) {
         });
       }
     });
+  };
+  const validateBussines = () => {
+    if (!contact.name) {
+      return true;
+    }
+    if (!contact.email) {
+      return true;
+    }
+    if (
+      contact.phone_notices.length < 10 &&
+      contact.phone_cell.length < 10 &&
+      contact.phone_office.length < 10
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+  const validateClient = () => {
+    if (validateBussines()) {
+      return true;
+    }
+    if (!contact.birthday) {
+      return true;
+    }
+    if (!Boolean(moment().diff(contact.birthday, "days") > 0)) {
+      return true;
+    }
+
+    return false;
+  };
+  const handleValidateBtn = () => {
+    // Validate busssines
+    if (contact.type) {
+      return validateBussines();
+    }
+
+    // Validate client
+    return validateClient();
   };
 
   useEffect(() => {
@@ -306,7 +343,7 @@ export default function AddContact(props) {
                       type="button"
                       className="btn bg-indigo"
                       onClick={() => handleSaveContact()}
-                      disabled={!btn_enabled}
+                      disabled={handleValidateBtn()}
                     >
                       <i className="fas fa-save mr-1"></i>
                       {contact.id ? "Actualizar" : "Guardar"}

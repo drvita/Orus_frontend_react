@@ -137,18 +137,20 @@ export default function Personal({ data = {}, handleChange, fn }) {
           />
         </div>
 
-        <div className="form-group">
-          <label>Género</label>
-          <select
-            className="custom-select"
-            name="gender"
-            value={data.gender ?? ""}
-            onChange={({ target }) => handleChange("gender", target.value)}
-          >
-            <option value="male">Hombre</option>
-            <option value="female">Mujer</option>
-          </select>
-        </div>
+        {!data.type && (
+          <div className="form-group">
+            <label>Género</label>
+            <select
+              className="custom-select"
+              name="gender"
+              value={data.gender ?? ""}
+              onChange={({ target }) => handleChange("gender", target.value)}
+            >
+              <option value="male">Hombre</option>
+              <option value="female">Mujer</option>
+            </select>
+          </div>
+        )}
       </div>
       <div className="col">
         <div className="form-group position-relative">

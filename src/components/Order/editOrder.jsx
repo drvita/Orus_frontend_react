@@ -59,7 +59,6 @@ export default function EditOrderComponent(props) {
     created_at,
   } = state;
 
-  const idurl = props.match.params;
   const hookOrder = useOrder();
   const authContext = useContext(AuthContext);
   const role = authContext.auth.roles;
@@ -191,10 +190,11 @@ export default function EditOrderComponent(props) {
   };
 
   useEffect(() => {
-    hookOrder.getOrder(idurl).then(({ data }) => {
-      console.log("[DEBUG] Sale in order:", data.items);
+    const { id } = props.match.params;
+    console.log("[Orus System] Loading order:", id);
+    hookOrder.getOrder(id).then(({ data }) => {
       if (data) {
-        const $order = {
+        const order = {
           id: data.id ?? 0,
           paciente: data.paciente ?? {},
           session: data.session ?? null,
@@ -213,9 +213,10 @@ export default function EditOrderComponent(props) {
           contact_id: data.paciente.id,
           activitys: data.activity ?? [],
           statusInitial: data.status ?? 0,
+          sale: {},
         };
         if (data.sale) {
-          $order.sale = {
+          order.sale = {
             id: data.sale.id,
             total: data.sale.total,
             subtotal: data.sale.subtotal,
@@ -226,7 +227,7 @@ export default function EditOrderComponent(props) {
             customer: data.paciente,
           };
         }
-        setState($order);
+        setState(order);
       } else {
         console.error("Error al obtener los datos");
       }
@@ -503,6 +504,7 @@ export default function EditOrderComponent(props) {
             ...state.sale,
             items: state.items,
             order_id: state.id,
+            created_at: state.created_at,
           }}
           setPrint={() => setState({ ...state, print: false })}
         />

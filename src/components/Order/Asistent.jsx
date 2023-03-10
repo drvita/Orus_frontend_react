@@ -180,8 +180,8 @@ export default function AsistentComponent(props) {
             setState({
               ...state,
               id: data.id,
-              sale: {           
-                id: data.sale.id,                
+              sale: {
+                id: data.sale.id,
                 total: data.sale.total,
                 subtotal: data.sale.subtotal,
                 discount: data.sale.descuento,
@@ -208,7 +208,7 @@ export default function AsistentComponent(props) {
       panel: "inbox",
     });
   };
-  
+
   return (
     <div className="mainAssitentComponent ">
       <div className="card card-warning card-outline col-lg-12">
@@ -333,6 +333,7 @@ export default function AsistentComponent(props) {
               ...state.sale,
               items: state.items,
               order_id: state.id,
+              created_at: state.created_at,
             }}
             setPrint={() => setState({ ...state, print: false })}
           />

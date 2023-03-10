@@ -30,22 +30,27 @@ export default function PrintSaleComponent(props) {
     };
   }, []);
 
-  return <div className="load" style={{
-    position:'fixed',
-    zIndex:'5',
-    width:'100%',
-    top:0,
-    left:0,
-    height:'100%',
-    display:'flex',
-    flexDirection:'column',
-    justifyContent:'center',
-    alignItems:'center',
-    backgroundColor: 'rgba(0,0,0,.5)',
-    }}>      
-      <h1 style={{color:'white', marginBottom:'5%'}}>IMPRESION EN CURSO</h1>
-      <i className="fas fa-print fa-6x"></i>      
-  </div>;
+  return (
+    <div
+      className="load"
+      style={{
+        position: "fixed",
+        zIndex: "5",
+        width: "100%",
+        top: 0,
+        left: 0,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0,0,0,.5)",
+      }}
+    >
+      <h1 style={{ color: "white", marginBottom: "5%" }}>IMPRESION EN CURSO</h1>
+      <i className="fas fa-print fa-6x"></i>
+    </div>
+  );
 }
 
 function getPage(data, branch) {

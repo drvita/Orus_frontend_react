@@ -37,7 +37,7 @@ export default function HTMLOrderPrint(sale, branch) {
       <br />
       <span>${branch.address}</span>
       <br/>
-      <strong>${moment().format("LLLL")}</strong>
+      <strong>${moment(sale.created_at).format("LLLL")}</strong>
     </div>
 
     <h4 style="font-size: 22; font-family: sans-serif; text-align: center; text-transform: uppercase;">

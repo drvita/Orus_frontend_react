@@ -2,61 +2,59 @@ import { useEffect, useState } from "react";
 import useProducts from "../../hooks/useProducts";
 
 export default function Code(props) {
-
   const hookProducts = useProducts();
   const [state, setState] = useState({
-    codeMessage:'', 
-    codeStatus:'empty',
-    rendered: false
+    codeMessage: "",
+    codeStatus: "empty",
+    rendered: false,
   });
 
-  useEffect(()=>{    
-    if(!props.code.length){
+  useEffect(() => {
+    if (!props.code.length) {
       setState({
         ...state,
-        codeMessage:'Còdigo vacio',
-        codeStatus:'empty'
+        codeMessage: "Còdigo vacio",
+        codeStatus: "empty",
       });
-    }else{
-      if(state.rendered){
+    } else {
+      if (state.rendered) {
         return null;
-      }else{
-        validCode();        
-      }     
+      } else {
+        validCode();
+      }
     }
-  },[props.code]);// eslint-disable-line react-hooks/exhaustive-deps
+  }, [props.code]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
-  useEffect(()=>{
+  useEffect(() => {
     props.onChangeStatusCode(state.codeStatus);
-  },[state.codeStatus]);// eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.codeStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
-  const validCode = ()=>{   
+  const validCode = () => {
     setState({
       ...state,
-      codeMessage:'Validando código . . .',
-      codeStatus:'validating'
+      codeMessage: "Validando código . . .",
+      codeStatus: "validating",
     });
-    hookProducts.getProductByCode(props.code, props.id)
-    .then((data)=>{      
-      if(data.data.length){   
-        setState({
-          ...state,
-          codeMessage:'Còdigo ya en uso',
-          codeStatus:'inUse',
-          rendered:true,
-        });             
-      }else{
-        setState({
-          ...state,
-          codeMessage:'Còdigo disponible',
-          codeStatus:'available',
-          rendered:true,
-        });
-      }
-    })
-    .catch((error) => console.log(error));
+    hookProducts
+      .getProductByCode(props.code, props.id)
+      .then((data) => {
+        if (data.data.length) {
+          setState({
+            ...state,
+            codeMessage: "Còdigo ya en uso",
+            codeStatus: "inUse",
+            rendered: true,
+          });
+        } else {
+          setState({
+            ...state,
+            codeMessage: "Còdigo disponible",
+            codeStatus: "available",
+            rendered: true,
+          });
+        }
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -64,7 +62,9 @@ export default function Code(props) {
       <div className="input-group-prepend">
         <span
           className={
-            state.codeStatus === 'empty' || state.codeStatus === 'inUse' ? "input-group-text bg-warning" :  "input-group-text bg-primary"
+            state.codeStatus === "empty" || state.codeStatus === "inUse"
+              ? "input-group-text bg-warning"
+              : "input-group-text bg-primary"
           }
         >
           <i className="fas fa-code"></i>
@@ -76,27 +76,24 @@ export default function Code(props) {
         placeholder="Codigo"
         name="code"
         defaultValue={props.code}
-
-        onChange={({target}) => {
-          const {value} = target;
+        onChange={({ target }) => {
+          const { value } = target;
           props.onChangeProductCode(value);
         }}
-
-        onBlur = {()=>{
-          if(props.type === 'lentes'){
+        onBlur={() => {
+          if (props.type === "lentes") {
             validCode();
-          }else{
+          } else {
             validCode();
             props.createName();
-          }                
+          }
         }}
-
         autoComplete="off"
         maxLength="18"
       />
       <span className="text-muted text-xs d-block w-100">
-          {state.codeMessage}
-        </span>
+        {state.codeMessage}
+      </span>
     </div>
   );
 }

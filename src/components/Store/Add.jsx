@@ -33,18 +33,18 @@ const initialState = {
   category_id: 0,
   branch_default: 0,
   data: {
-    category: '',
+    category: "",
     categories: [],
     branches: [],
     codes: [],
     category_code: [],
     activity: [],
     codenames: [],
-    brandname : '',
+    brandname: "",
   },
-  codeStatus:'empty',
+  codeStatus: "empty",
   loading: false,
-  readyToSave: false
+  readyToSave: false,
 };
 
 export default function Add(props) {
@@ -55,57 +55,54 @@ export default function Add(props) {
   const { code, loading: LOADING } = state;
   const history = useHistory();
 
-  
-
   // Functions
   const saveProduct = () => {
     const dataSend = {
       ...state,
+    };
+
+    if (!dataSend.brand_id) {
+      delete dataSend.brand_id;
     }
 
-    if(!dataSend.brand_id){
-      delete dataSend.brand_id
+    if (!dataSend.supplier_id) {
+      delete dataSend.supplier_id;
     }
 
-    if(!dataSend.supplier_id){
-      delete dataSend.supplier_id
-    }
-
-
-    _store.saveItem(dataSend)
-    .then((data)=>{
-      if(data){           
-        const {id} = data.data;        
+    _store
+      .saveItem(dataSend)
+      .then((data) => {
+        if (data) {
+          const { id } = data.data;
+          window.Swal.fire({
+            title: "Productos",
+            text: "Producto guardado correctamente",
+            icon: "success",
+            showConfirmButton: false,
+            timerProgressBar: true,
+            showLoaderOnConfirm: true,
+            timer: 3000,
+          }).then(() => {
+            history.push(`/almacen/${id}`);
+          });
+        }
+      })
+      .catch((error) => {
         window.Swal.fire({
-          title: "Productos",
-          text: "Producto guardado correctamente",
-          icon: "success",
-          showConfirmButton: false,
-          timerProgressBar: true,          
+          title: "Error al guardar el producto",
+          text: error.errors.name[0],
+          icon: "info",
+          showCancelButton: false,
+          confirmButtonColor: "#007bff",
+          confirmButtonText: "Cambiar nombre",
+          cancelButtonText: "Cancelar",
           showLoaderOnConfirm: true,
-          timer: 3000,          
-        }).then(() => {
-          history.push(`/almacen/${id}`);          
         });
-      }
-    })
-    .catch((error)=>{      
-      window.Swal.fire({
-        title: "Error al guardar el producto",
-        text: error.errors.name[0],
-        icon: "info",
-        showCancelButton: false,
-        confirmButtonColor: "#007bff",
-        confirmButtonText: "Cambiar nombre",
-        cancelButtonText: "Cancelar",
-        showLoaderOnConfirm: true,  
-      });      
-    });
-    }
-
+      });
+  };
 
   const getItem = () => {
-    _store.getItem(id).then((res) => {      
+    _store.getItem(id).then((res) => {
       setState({
         ...state,
         id: res.id ? res.id : 0,
@@ -129,18 +126,30 @@ export default function Add(props) {
   };
 
   let readyToSave = false;
-  
-  if(state.data.codenames[0] === 'lentes'){    
-    if(state.category_id && state.code && state.codeStatus === 'available' && state.name.length){
-      readyToSave = true
-    }else{      
-      readyToSave=false      
+
+  if (state.data.codenames[0] === "lentes") {
+    if (
+      state.category_id &&
+      state.code &&
+      state.codeStatus === "available" &&
+      state.name.length
+    ) {
+      readyToSave = true;
+    } else {
+      readyToSave = false;
     }
-  }else{    
-    if(state.category_id && state.supplier_id && state.brand_id && state.code && state.codeStatus === 'available' && state.name.length){
-      readyToSave= true      
-    }else{
-      readyToSave= false;      
+  } else {
+    if (
+      state.category_id &&
+      state.supplier_id &&
+      state.brand_id &&
+      state.code &&
+      state.codeStatus === "available" &&
+      state.name.length
+    ) {
+      readyToSave = true;
+    } else {
+      readyToSave = false;
     }
   }
 
@@ -150,32 +159,35 @@ export default function Add(props) {
     }
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
-
-
   const getNameCodeDefault = (id, brandName) => {
-    const { code: currentCode, grad} = state;
-    const {codenames} = state.data;
+    const { code: currentCode, grad } = state;
+    const { codenames } = state.data;
 
     // Make name
-    if (codenames[0] !== 'lentes') {            
+    if (codenames[0] !== "lentes") {
       // To other categories
-      const type = codenames[0] !== null ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7) : "";    
+      const type =
+        codenames[0] !== null
+          ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7)
+          : "";
 
-      const name = helper.handleCodeString( type === "varios" ? "" : type, codenames[1], brandName, currentCode)      
+      const name = helper.handleCodeString(
+        type === "varios" ? "" : type,
+        codenames[1],
+        brandName,
+        currentCode
+      );
 
       setState({
         ...state,
         brand_id: id,
         name: name,
-        data:{
+        data: {
           ...state.data,
-          brandname: brandName
-        }   
-
+          brandname: brandName,
+        },
       });
-
-    } else {            
+    } else {
       const name = helper.handleNameLent(
         grad,
         codenames[1],
@@ -190,22 +202,19 @@ export default function Add(props) {
         codenames[3]
       );
 
-      if(!state.grad){
-        setState({
-          ...state,
-          name: name,          
-        });
-      }else{
+      if (!state.grad) {
         setState({
           ...state,
           name: name,
-          code:code
+        });
+      } else {
+        setState({
+          ...state,
+          name: name,
+          code: code,
         });
       }
-      
-      
-
-    } 
+    }
   };
 
   return (
@@ -227,18 +236,18 @@ export default function Add(props) {
                   </small>
 
                   <CategoryInput
-                    category={state.category_id}                  
-                    handleChange={(id, code, name) => {                      
+                    category={state.category_id}
+                    handleChange={(id, code, name) => {
                       setState({
                         ...state,
                         category_id: id,
                         data: {
-                          ...state.data,                          
-                          category_code: code,                          
+                          ...state.data,
+                          category_code: code,
                         },
                       });
                     }}
-                    handleSetCatName={(codenames) => {                      
+                    handleSetCatName={(codenames) => {
                       setState({
                         ...state,
                         data: {
@@ -247,7 +256,7 @@ export default function Add(props) {
                         },
                         loading: false,
                       });
-                    }}                    
+                    }}
                   />
                 </fieldset>
               </div>
@@ -272,15 +281,15 @@ export default function Add(props) {
                 brand={state.brand_id}
                 supplier={state.supplier_id}
                 textSelect="Selecione la marca"
-                handleChangeBrand={(id, brandName) => {    
+                handleChangeBrand={(id, brandName) => {
                   setState({
                     ...state,
-                    brand_id:id,
-                    data:{
+                    brand_id: id,
+                    data: {
                       ...state.data,
                       brandname: brandName,
-                    }                                          
-                  })                                    
+                    },
+                  });
                   //getNameCodeDefault(id, brandName);
                 }}
               />
@@ -308,8 +317,8 @@ export default function Add(props) {
                           onChange={({ target }) =>
                             setState({ ...state, grad: target.value })
                           }
-                          onBlur={()=>{
-                            getNameCodeDefault()                            
+                          onBlur={() => {
+                            getNameCodeDefault();
                           }}
                           maxLength="7"
                           autoComplete="off"
@@ -362,21 +371,27 @@ export default function Add(props) {
 
                     <Code
                       code={state.code}
-                      id={state.id}   
-                      type={state.data.codenames[0]}   
-                      createName={()=>getNameCodeDefault(state.brand_id, state.data.brandname)}                
-                      onChangeStatusCode = {(status)=>{
+                      id={state.id}
+                      type={state.data.codenames[0]}
+                      createName={() =>
+                        getNameCodeDefault(state.brand_id, state.data.brandname)
+                      }
+                      onChangeStatusCode={(status) => {
                         setState({
                           ...state,
-                          codeStatus: status            
-                        })
-                      }}      
-                      onChangeProductCode={(codeReceibed) => {                        
+                          codeStatus: status,
+                        });
+                      }}
+                      onChangeProductCode={(codeReceibed) => {
+                        if (codeReceibed?.length > 18) {
+                          return;
+                        }
+
                         setState({
                           ...state,
                           code: codeReceibed,
                         });
-                      }}                                                             
+                      }}
                     />
                   </div>
                   <div className="col">
@@ -478,8 +493,8 @@ export default function Add(props) {
                     onClick={() => {
                       saveProduct();
                     }}
-                    className={"btn btn-primary"} 
-                    disabled={!readyToSave}                   
+                    className={"btn btn-primary"}
+                    disabled={!readyToSave}
                     /* disabled={state.data.codenames[0] === "lentes" ? readyToSave : !readyToSave} */
                   >
                     <i className="fas fa-save mr-1"></i>

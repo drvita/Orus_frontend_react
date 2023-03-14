@@ -153,9 +153,10 @@ export default function FormEntries({
             type="text"
             className="form-control text-uppercase"
             placeholder="Codigo del producto"
-            defaultValue={state.code ?? ""}
+            value={state.code ?? ""}
+            maxLength="18"
             onChange={({ target: { value } }) =>
-              setState({ ...state, code: value.toLowerCase() })
+              setState({ ...state, code: value.toLowerCase().replace(" ", "") })
             }
           />
         </div>

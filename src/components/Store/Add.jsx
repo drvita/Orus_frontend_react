@@ -389,7 +389,7 @@ export default function Add(props) {
 
                         setState({
                           ...state,
-                          code: codeReceibed,
+                          code: codeReceibed.replace(" ", ""),
                         });
                       }}
                     />

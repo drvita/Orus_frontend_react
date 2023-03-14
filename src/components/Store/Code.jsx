@@ -75,7 +75,7 @@ export default function Code(props) {
         className="form-control text-uppercase"
         placeholder="Codigo"
         name="code"
-        defaultValue={props.code}
+        value={props.code}
         onChange={({ target }) => {
           const { value } = target;
           props.onChangeProductCode(value);

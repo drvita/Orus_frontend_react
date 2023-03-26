@@ -19,6 +19,21 @@ export default function StoreEntriesArm() {
   const store = useStore();
   const [state, setState] = useState({ ...initialState });
   const [newRow, setNewRow] = useState(null);
+  const setModel = (data) => {
+    return {
+      code: data.code,
+      name: data.name,
+      codebar: data.codeBar,
+      cant: data.cant,
+      category_id: data.category_id,
+      brand_id: data.brand_id,
+      branch_id: data.branch_id,
+      price: data.price,
+      cost: data.cost,
+      supplier_id: state.supplier_id,
+      invoice: state.invoice,
+    };
+  };
   const saveItems = () => {
     window.Swal.fire({
       title: "Almacen",
@@ -33,15 +48,10 @@ export default function StoreEntriesArm() {
         return false;
       }
 
-      const items = [...state.items];
+      const items = [];
 
-      for (let i = 0; i < items.length; i++) {
-        items[i].invoice = state.invoice;
-        items[i].supplier_id = state.supplier_id;
-        delete items[i].saved;
-        delete items[i].cantAdd;
-        delete items[i].id;
-        delete items[i].used;
+      for (let i = 0; i < state.items.length; i++) {
+        items.push(setModel({ ...state.items[i] }));
       }
 
       setState({
@@ -51,7 +61,7 @@ export default function StoreEntriesArm() {
 
       store
         .saveItemByList(items)
-        .then((res) => {
+        .then(() => {
           window.Swal.fire({
             title: "Almacen",
             text: "Productos almacenados con exito",

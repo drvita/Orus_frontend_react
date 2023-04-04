@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 
 //Context
@@ -19,7 +20,6 @@ const optionsDefault = {
 export default function UsersComponent(props) {
   const [state, setState] = useState({
     options: optionsDefault,
-    panel: null,
     newOrEdit: null,
   });
 
@@ -30,15 +30,15 @@ export default function UsersComponent(props) {
       ...state,
       newOrEdit: id ? true : false,
     });
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [id]);
 
   return (
     <UserContext.Provider value={{ ...state, set: setState }}>
-      <div className="row" style={{minHeight: '100vh'}}>
+      <div className="row" style={{ minHeight: "100vh" }}>
         <div className="col-lg-2">
           <FiltersToolbar
             newOrEdit={state.newOrEdit}
-            handleNewOrEdit={() =>  
+            handleNewOrEdit={() =>
               setState({
                 ...state,
                 newOrEdit: !state.newOrEdit,
@@ -72,4 +72,3 @@ export default function UsersComponent(props) {
     </UserContext.Provider>
   );
 }
-

@@ -10,19 +10,21 @@ export default function FormEntries({
   searchFn,
 }) {
   const context = Store();
-
   const [alert, setAlert] = useState({
     status: false,
     class: "danger",
     message: "",
   });
   const [braDef, setBraDef] = useState({ status: false, branch_id: null });
-
   const handleSetName = () => {
+    if (!state.code || !state.brand_id || !state.category_id) {
+      return;
+    }
+
     const category = context.cats.filter((cat) => cat.id === state.category_id);
     const category_name = category[0].name;
     const brand = brands.filter((bra) => bra.id === state.brand_id);
-    const brand_name = brand[0].name;
+    const brand_name = brand[0]?.name ?? "";
     const name =
       "Armazon " + category_name + " " + brand_name + " " + state.code;
 
@@ -47,7 +49,7 @@ export default function FormEntries({
             ...state,
             price: parseFloat(branch.price),
           };
-          if (name) data.name = name;
+          if (name && !state.name) data.name = name;
 
           setState(data);
         }
@@ -62,16 +64,21 @@ export default function FormEntries({
 
   useEffect(() => {
     if (!itemSearch) return;
+    const stateLocal = { ...state, name: itemSearch.name, used: false };
+    console.log("[DEBUG] Search:", itemSearch);
+    if (itemSearch.barcode) {
+      stateLocal.codeBar = itemSearch.barcode;
+    }
+    if (itemSearch.brand) {
+      stateLocal.brand_id = itemSearch.brand.id ?? "";
+    }
 
     if (itemSearch.branch_default && !braDef.status) {
       setBraDef({
         status: true,
         branch_id: itemSearch.branch_default,
       });
-      setState({
-        ...state,
-        branch_id: itemSearch.branch_default,
-      });
+      stateLocal.branch_id = itemSearch.branch_default;
     }
 
     if (state.price && state.cost) {
@@ -129,12 +136,24 @@ export default function FormEntries({
       message: "",
       class: "danger",
     });
-    setState({
-      ...state,
-      used: false,
-    });
+    setState(stateLocal);
     return;
-  }, [itemSearch?.id, state.category_id, state.cost]);
+  }, [itemSearch?.id, itemSearch?.barcode, state.category_id, state.cost]);
+
+  useEffect(() => {
+    if (state.codeBar && state.codeBar.length < 10) {
+      setAlert({
+        status: true,
+        message: "El codigo de barras no puede ser menor a 10 digitos",
+      });
+      return;
+    }
+
+    setAlert({
+      status: false,
+      message: "",
+    });
+  }, [state.codeBar]);
 
   return (
     <>
@@ -185,8 +204,7 @@ export default function FormEntries({
               setState({ ...state, category_id: parseInt(value) })
             }
             disabled={(() => {
-              // console.log("[DEBUG] codes:", state.code, state.codeBar);
-              if (state.codeBar?.length > 10) {
+              if (state.codeBar && state.codeBar?.length > 10) {
                 return false;
               }
               if (state.code?.length > 3) {
@@ -227,10 +245,10 @@ export default function FormEntries({
             onBlur={handleSetName}
           >
             <option>
-              --{" "}
+              --
               {brands.length
                 ? "Seleccione una marca"
-                : "Primero seleccione un proveedor"}{" "}
+                : "Primero seleccione un proveedor"}
               --
             </option>
 

@@ -20,11 +20,12 @@ export default function StoreEntriesArm() {
   const [state, setState] = useState({ ...initialState });
   const [newRow, setNewRow] = useState(null);
   const setModel = (data) => {
-    return {
+    if (!data) return;
+
+    const response = {
       code: data.code,
       name: data.name,
-      codebar: data.codeBar,
-      cant: data.cant,
+      cant: data.cant ?? 0,
       category_id: data.category_id,
       brand_id: data.brand_id,
       branch_id: data.branch_id,
@@ -33,6 +34,10 @@ export default function StoreEntriesArm() {
       supplier_id: state.supplier_id,
       invoice: state.invoice,
     };
+
+    if (data.codeBar) response.codebar = data.codeBar;
+
+    return response;
   };
   const saveItems = () => {
     window.Swal.fire({
@@ -51,7 +56,9 @@ export default function StoreEntriesArm() {
       const items = [];
 
       for (let i = 0; i < state.items.length; i++) {
-        items.push(setModel({ ...state.items[i] }));
+        const data = setModel({ ...state.items[i] });
+        if (!data) continue;
+        items.push(data);
       }
 
       setState({
@@ -75,9 +82,21 @@ export default function StoreEntriesArm() {
             btnStatus: false,
             showList: false,
             items: [],
+            showLoader: false,
           });
         })
-        .catch((err) => console.error("Error when save items:", err.message));
+        .catch((err) => {
+          console.error("Error when save items:", err.message);
+          window.Swal.fire({
+            text: "Tenemos un error al almacenar por lista. Revise la consola.",
+            icon: "error",
+            timer: 2500,
+          });
+          setState({
+            ...state,
+            showLoader: false,
+          });
+        });
     });
   };
 
@@ -139,6 +158,30 @@ export default function StoreEntriesArm() {
                         key={item.id}
                         newRow={newRow}
                         supplier_id={state.supplier_id}
+                        handleDelete={(id) => {
+                          window.Swal.fire({
+                            title: "Almacen",
+                            text: `Realmente desea eliminar este articulo`,
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonText: "Guardar",
+                            cancelButtonText: "Cancelar",
+                            showLoaderOnConfirm: true,
+                          }).then(({ dismiss }) => {
+                            if (dismiss === "cancel") {
+                              return false;
+                            }
+
+                            const itemsFilter = state.items.filter(
+                              (i) => i.id !== id
+                            );
+
+                            setState({
+                              ...state,
+                              items: itemsFilter,
+                            });
+                          });
+                        }}
                       />
                     ))}
                   </tbody>

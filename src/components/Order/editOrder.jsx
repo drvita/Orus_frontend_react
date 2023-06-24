@@ -227,6 +227,7 @@ export default function EditOrderComponent(props) {
             customer: data.paciente,
           };
         }
+        console.log("[DEBUG] items:", order.items);
         setState(order);
       } else {
         console.error("Error al obtener los datos");

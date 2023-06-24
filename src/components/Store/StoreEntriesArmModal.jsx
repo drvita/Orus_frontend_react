@@ -33,14 +33,17 @@ export default function ModalComponents({
     used: false,
   });
   const handleSearchItem = (search) => {
+    setLoad(true);
     return hookStore
       .getItems({
         search,
       })
       .then((res) => {
-        const items = res.data.filter((i) => i.code === state.code);
-        const item = items.length ? items[0] : null;
+        const item = res.data.find(
+          (i) => i.code.toLowerCase() === state.code.toLowerCase()
+        );
         setItemSearch(item);
+        setLoad(false);
         return item;
       });
   };
@@ -150,6 +153,7 @@ export default function ModalComponents({
                   disabled={(() => {
                     if (
                       load ||
+                      (state.codeBar && state.codeBar.length < 10) ||
                       !state.brand_id ||
                       !state.branch_id ||
                       !state.cant ||

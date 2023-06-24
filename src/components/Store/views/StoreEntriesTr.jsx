@@ -1,6 +1,11 @@
 import { Store } from "../../../context/StoreContext";
 
-export default function StoreEntriesTr({ item, newRow, supplier_id }) {
+export default function StoreEntriesTr({
+  item,
+  newRow,
+  supplier_id,
+  handleDelete,
+}) {
   const ctx = Store();
   const cat = ctx.cats.filter((c) => c.id === item.category_id)[0];
   const supplier = ctx.suppliers.filter((s) => s.id === supplier_id)[0];
@@ -32,10 +37,13 @@ export default function StoreEntriesTr({ item, newRow, supplier_id }) {
       <td className={item.cantAdd ? "font-weight-bold" : ""}>{item.cant}</td>
       <td>$ {item.price}</td>
       <td className="text-capitalize">{cat.name}</td>
-      <td className="text-capitalize">{brand.name}</td>
-      <td className="text-capitalize">{branch.name}</td>
+      <td className="text-capitalize">{brand?.name ?? ""}</td>
+      <td className="text-capitalize">{branch?.name ?? ""}</td>
       <td>
-        <i className="fas fa-trash text-danger"></i>
+        <i
+          className="fas fa-trash text-danger"
+          onClick={() => handleDelete(item.id)}
+        ></i>
       </td>
     </tr>
   );

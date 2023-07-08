@@ -160,11 +160,6 @@ export default function MenuComponent() {
                     </p>
                   </Link>
                 </li>
-              </>
-            ) : null}
-
-            {auth.roles === "admin" ? (
-              <>
                 <li
                   className={
                     active === "almacen"
@@ -185,6 +180,11 @@ export default function MenuComponent() {
                     </p>
                   </Link>
                 </li>
+              </>
+            ) : null}
+
+            {auth.roles === "admin" && (
+              <>
                 <li className="nav-item">
                   <Link
                     to="/usuarios"
@@ -216,7 +216,7 @@ export default function MenuComponent() {
                   </Link>
                 </li>
               </>
-            ) : null}
+            )}
 
             <li className="nav-item">
               <Link to="/" className="nav-link" onClick={handleLogOut}>

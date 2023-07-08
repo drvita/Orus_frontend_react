@@ -168,7 +168,7 @@ export default function Add(props) {
       // To other categories
       const type =
         codenames[0] !== null
-          ? codenames[0].trim().replace(/\s/gim, "").slice(0, 7)
+          ? codenames[0]?.trim().replace(/\s/gim, "").slice(0, 7)
           : "";
 
       const name = helper.handleCodeString(

@@ -36,9 +36,6 @@ export default function BreadcrumbComponent() {
   };
   const handleClickChangeBranch = () => {
     const { branchSelect: branch_id } = state;
-
-    handleCancelModal();
-
     if (!branch_id) {
       console.error("[Orus System][ERROR] branch id is empty");
       window.location.reload();
@@ -69,13 +66,13 @@ export default function BreadcrumbComponent() {
               });
             }
           })
-
           .catch((error) => {
             if (error) {
               console.error("[Orus System] When change branch:", error.message);
             }
           });
       }
+      handleCancelModal();
     });
   };
   const getHtmlBody = () => {

@@ -169,20 +169,22 @@ const handleCatOne = (data) => ({
     category_id4: 0,
     category_list4: data.hijos,
   });
-const handleCodeString = ( stringcode = "armazon", category, brand, code = "") => { 
+const handleCodeString = (
+    stringcode = "armazon",
+    category,
+    brand,
+    code = ""
+  ) => {
+    stringcode += category !== null ? " " + category?.trim() : "";
 
-
-    stringcode += category !== null ? " " + category.trim() : "";
-
-    stringcode += brand !== null  ? " " + brand.trim().replace(/\s/gim, ""): "";
+    stringcode +=
+      brand !== null ? " " + brand?.trim().replace(/\s/gim, "") : "";
 
     if (code) {
       stringcode += " " + code.replace(/[\s]+/gm, "");
     }
-    return stringcode.toLowerCase();  
+    return stringcode.toLowerCase();
   },
-
-
   codeLentString = (string) => {
     switch (string) {
       case "monofocales":
@@ -239,34 +241,14 @@ const handleCodeString = ( stringcode = "armazon", category, brand, code = "") =
     }
 
     let stringcode =
-      category1 !== null
-        ? codeLentString(
-            category1
-              .trim()
-              .toLowerCase()
-          )
-        : "";
+      category1 !== null ? codeLentString(category1.trim().toLowerCase()) : "";
     stringcode +=
-      category2 !== null
-        ? codeLentString(
-            category2
-              .trim()
-              .toLowerCase()
-          )
-        : "";
+      category2 !== null ? codeLentString(category2.trim().toLowerCase()) : "";
     stringcode +=
-      category3 !== null
-        ? codeLentString(
-            category3
-              .trim()
-              .toLowerCase()
-          )
-        : "";
+      category3 !== null ? codeLentString(category3.trim().toLowerCase()) : "";
 
     return stringcode + grad.toString().trim().replace(/\s/gim, "");
   },
-
-
   handleNameLent = (grad, category1, category2, category3) => {
     if (!category1 || !category2 || !category3) {
       return "";
@@ -274,28 +256,15 @@ const handleCodeString = ( stringcode = "armazon", category, brand, code = "") =
 
     let stringcode = "";
 
-    stringcode +=
-      category1 !== null
-        ? category1.trim()
-        : "";
-      
-    stringcode +=
-      category2 !== null
-        ? " " +
-          category2.trim()
-        : "";
+    stringcode += category1 !== null ? category1.trim() : "";
 
+    stringcode += category2 !== null ? " " + category2.trim() : "";
 
-    stringcode +=
-      category3 !== null
-        ? " " +
-          category3.trim()
-        : "";
+    stringcode += category3 !== null ? " " + category3.trim() : "";
 
     stringcode += " " + grad.toString();
 
     return stringcode.toLowerCase();
-
   };
 
 const toExport = {

@@ -9,7 +9,6 @@ import helpers from "../../Sales/helpers";
 function PaymentModal({
   forPaid,
   handleClose: _close,
-  sale,
   handleSetPayments: _handleSetPayments,
 }) {
   const config = useContext(ConfigContext);
@@ -28,15 +27,15 @@ function PaymentModal({
 
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
-      let val = value;
+    let val = value;
 
-      if (type === "number" || type === "select-one") val = parseFloat(value);
+    if (type === "number" || type === "select-one") val = parseFloat(value);
 
-      setData({
-        ...data,
-        [name]: val,
-      });
-    },
+    setData({
+      ...data,
+      [name]: val,
+    });
+  },
     handleSetPayment = () => {
       if (!data.total) {
         window.Swal.fire({
@@ -53,7 +52,7 @@ function PaymentModal({
         data.metodopago !== 4 &&
         data.metodopago !== 0
       ) {
-        if (!data.bank_id) {
+        if (data.bank_id === "" || data.bank_id === null) {
           window.Swal.fire({
             icon: "warning",
             title: "Seleccione un banco",
@@ -162,20 +161,30 @@ function PaymentModal({
                     {data.metodopago !== 4 && data.metodopago !== 0 ? (
                       <>
                         <label>Banco</label>
-                        <select
-                          name="bank_id"
-                          className="custom-select text-uppercase"
-                          onChange={({ target }) => handleChangeInput(target)}
-                        >
-                          <option value="">--Seleccione un banco--</option>
-                          {listBanks.map((bank) => {
-                            return bank.name === "bank" ? (
-                              <option key={bank.id} value={bank.id}>
-                                {bank.data}
-                              </option>
-                            ) : null;
-                          })}
-                        </select>
+                        {data.bank_id != 0 ?
+                          <select
+                            name="bank_id"
+                            className="custom-select text-uppercase"
+                            onChange={({ target }) => handleChangeInput(target)}
+                          >
+                            <option value="">--Seleccione un banco--</option>
+                            {listBanks.map((bank) => {
+                              return bank.name === "bank" ? (
+                                <option key={bank.id} value={bank.id}>
+                                  {bank.data}
+                                </option>
+                              ) : null;
+                            })}
+                            <option value="0">Otro</option>
+                          </select>
+                          : <input
+                            type="text"
+                            className="form-control text-uppercase"
+                            name="details"
+                            placeholder="Escriba el nombre del banco"
+                            onChange={({ target }) => handleChangeInput(target)} 
+                          />
+                        }
                       </>
                     ) : !data.metodopago ? (
                       <>

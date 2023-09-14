@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import PaymentModal from "./PaymentModal";
 
 export default function CardOrderPayments({
-  data = {},
+  data = {
+    subtotal: 0,
+    total: 0,
+    discount: 0,
+  },
   disabled,
   handleSetPayments: _handleSetPayments,
 }) {
@@ -15,8 +19,12 @@ export default function CardOrderPayments({
   });
 
   const handleToPaid = () => {
-    const amount = data.payments?.reduce((back, pay) => pay.total + back, 0);
-    const toPaid = (data.subtotal ? data.subtotal: data.total) - (amount ?? 0) - data.discount;
+    if(!data.subtotal) data.subtotal = 0;
+    if(!data.total) data.total = 0;
+    if(!data.discount) data.discount = 0;
+    let amount = data.payments?.reduce((back, pay) => pay.total + back, 0);
+    if(!amount) amount = 0;
+    const toPaid = (data.subtotal ? data.subtotal : data.total) - (amount ?? 0) - data.discount;
 
     setState({
       ...state,
@@ -57,7 +65,7 @@ export default function CardOrderPayments({
                         {payment.metodoname}
                       </span>
                       {payment.auth && (
-                        <span className="text-muted">- {payment.auth}</span>
+                        <span className="text-muted text-sm">{payment.auth}</span>
                       )}
                     </h6>
                   </div>
@@ -78,7 +86,7 @@ export default function CardOrderPayments({
                           payments,
                         });
                       }}
-                      disabled={!Boolean(state.toPaid) || disabled}
+                      disabled={Boolean(state.toPaid) || disabled}
                     >
                       <i className="fas fa-trash"></i>
                     </button>
@@ -110,16 +118,16 @@ export default function CardOrderPayments({
               </button>
             </div>
             <h4 className="mr-4 text-success">
-              <span className="font-weight-bold text-dark mr-2">
+              <label className="font-weight-bold text-dark mr-2 block">
                 Abono total:
-              </span>{" "}
-              $ {state.amount}
+              </label>
+              <span>$ {state.amount}</span>
             </h4>
             <h4 className="text-danger">
-              <span className="font-weight-bold text-dark mr-2">
+              <label className="font-weight-bold text-dark mr-2 block">
                 Por pagar:
-              </span>
-              $ {state.toPaid}
+              </label>
+              <span>$ {state.toPaid}</span>
             </h4>
           </div>
         </div>

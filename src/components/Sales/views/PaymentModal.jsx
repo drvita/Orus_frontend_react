@@ -1,16 +1,14 @@
 import { useState, useContext } from "react";
-//Context
 import { ConfigContext } from "../../../context/ConfigContext";
-import { Sale } from "../../../context/SaleContext";
+// import { Sale } from "../../../context/SaleContext";
 
 //Helpers
 import helpers from "../helpers";
 
-function PaymentModal({ forPaid, handleClose: _close }) {
+function PaymentModal({ sale, forPaid, handleClose: _close }) {
   const config = useContext(ConfigContext);
   const listBanks = config.data;
-
-  const sale = Sale();
+  // const sale = Sale();
 
   //States
   const [data, setData] = useState({
@@ -170,7 +168,7 @@ function PaymentModal({ forPaid, handleClose: _close }) {
                     {data.metodopago !== 4 && data.metodopago !== 0 ? (
                       <>
                         <label>Banco</label>
-                        {data.bank_id != 0 ?
+                        {data.bank_id !== 0 ?
                           <select
                             name="bank_id"
                             className="custom-select text-uppercase"

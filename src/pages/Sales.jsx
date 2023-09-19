@@ -51,20 +51,13 @@ export default function IndexSalesComponent(props) {
     isPayed: false,
     thereNews: false,
     loading: false,
+    btnPrintStatus: false,
   };
 
   const [state, setState] = useState(initialState);
-
-  const pagado = helpers.getPagado(state.payments) + state.discount;
-  const paid = state.total <= pagado ? true : false;
-  const disabled = state.order
-    ? false
-    : !paid || !state.items.length
-    ? true
-    : false;
-
   const validateSale = () => {
-    if (state.id && state.order && state.thereNews) {
+    console.log("[DEBUG] state:", state);
+    if ((state.id || state.order) && state.thereNews) {
       saveSale();
     } else {
       setState({
@@ -115,6 +108,9 @@ export default function IndexSalesComponent(props) {
           pay.auth = payment.auth;
           if (payment.metodopago !== 4) {
             pay.bank_id = payment.bank_id;
+            if(payment.bank_id === 0){
+              pay.details = payment.details;
+            }
           }
         }
 
@@ -245,6 +241,17 @@ export default function IndexSalesComponent(props) {
   }, [state.isPayed]);
 
   useEffect(() => {
+    // const pagado = helpers.getPagado(state.payments) + state.discount;
+    // const paid = state.total <= pagado ? true : false;
+
+    console.log("[App] Btn print status:", Boolean(state.items.length));
+    setState({
+      ...state,
+      btnPrintStatus: !state.items.length,
+    });
+  }, [state.items.length]);
+
+  useEffect(() => {
     if (props.match.params.id) {
       setState({
         ...state,
@@ -346,7 +353,7 @@ export default function IndexSalesComponent(props) {
               <button
                 className="btn btn-primary ml-3"
                 onClick={() => validateSale()}
-                disabled={disabled}
+                disabled={state.btnPrintStatus}
               >
                 <i className="fas fa-print mr-2"></i>
                 Imprimir

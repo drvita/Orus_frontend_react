@@ -161,7 +161,7 @@ function PaymentModal({
                     {data.metodopago !== 4 && data.metodopago !== 0 ? (
                       <>
                         <label>Banco</label>
-                        {data.bank_id != 0 ?
+                        {data.bank_id !== 0 ?
                           <select
                             name="bank_id"
                             className="custom-select text-uppercase"

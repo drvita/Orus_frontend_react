@@ -41,7 +41,7 @@ export default function EraseSaleBtnComponent(props) {
     },
 
     handleEraseSale = () => {
-      helpers.confirm("¿Desea terminar esta venta? La venta actual no se guardara", eraseSale);
+      helpers.confirm("¿Desea cerrar esta venta?", eraseSale);
     };
 
   return (

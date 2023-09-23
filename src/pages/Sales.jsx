@@ -56,7 +56,6 @@ export default function IndexSalesComponent(props) {
 
   const [state, setState] = useState(initialState);
   const validateSale = () => {
-    console.log("[DEBUG] state:", state);
     if ((state.id || state.order) && state.thereNews) {
       saveSale();
     } else {
@@ -77,7 +76,7 @@ export default function IndexSalesComponent(props) {
   const setDataToSend = () => {
     const data = {
       id: state.id,
-      contact_id: state.contact_id,
+      contact_id: state.contact_id ? state.contact_id : 2,
       discount: state.discount,
       items: [],
       payments: [],
@@ -168,7 +167,15 @@ export default function IndexSalesComponent(props) {
               });
             }
           } else {
-            console.error("Error al guardar la venta");
+            console.error("[App] Error al guardar la venta");
+            window.Swal.fire({
+              title: "Error al guardar la venta",
+              icon: "error",
+              showCancelButton: false,
+              showConfirmButton: false,
+              showLoaderOnConfirm: true,
+              timer: 3000,
+            });
           }
         });
       } else {
@@ -194,7 +201,15 @@ export default function IndexSalesComponent(props) {
               });
             }
           } else {
-            console.error("Error al guardar la venta");
+            console.error("[App] Error al guardar la venta");
+            window.Swal.fire({
+              title: "Error al guardar la venta",
+              icon: "error",
+              showCancelButton: false,
+              showConfirmButton: false,
+              showLoaderOnConfirm: true,
+              timer: 3000,
+            });
           }
         });
       }

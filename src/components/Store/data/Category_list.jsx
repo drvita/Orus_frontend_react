@@ -52,7 +52,7 @@ export default function CategoryListComponent(props){
     const { last, categorySelect: _categorySelect } = props, { category_raiz } = state;
 
     if (last) return false;
-    if (!cat.sons || (cat.sons && !cat.sons.length)) return false;
+    // if (!cat.sons || (cat.sons && !cat.sons.length)) return false;
 
     _categorySelect({
       category_id: cat.id,
@@ -177,8 +177,6 @@ export default function CategoryListComponent(props){
 
     //helper.handleSaveItem(id, data, options, _save, _close, text);
   };
-
-
 
   return (
     <div className="card card-primary card-outline">

@@ -1,15 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from "react";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
+
 import useUsers from "../../hooks/useUsers";
 import { Config } from "../../context/ConfigContext";
 import { useHistory } from "react-router-dom";
-
-//Component
 import UserNameInput from "./views/userNameInput";
 import UserEmailInput from "./views/userEmailInput";
 import Metadata from "./Metadata";
 import Permissions from "./Permissions";
 import Activities from "../Activitys";
+import NameInput from "./views/NameInput";
+import PasswordInput from "./views/PasswordInput";
+import SelectInputComponent from "./views/SelectInput";
 
 const initialState = {
   id: 0,
@@ -47,7 +51,7 @@ export default function UserAddComponent(props) {
     if (data) {
       setCurrentUser({
         id: data.id,
-        role: data.roles[0],
+        role: 'ventas',
         username: data.username,
         name: data.name,
         email: data.email,
@@ -67,16 +71,8 @@ export default function UserAddComponent(props) {
       });
     }
   }
-
-  const handleValidate = ({ name, value }) => {
-    setData({
-      ...data,
-      [name]: value,
-    });
-  };
-
   const catchInputs = ({ name, value }) => {
-    if (typeof value === "string") {
+    if (typeof value === "string" && name !== 'password') {
       value = value
         .toLowerCase()
         .normalize("NFD")
@@ -88,7 +84,6 @@ export default function UserAddComponent(props) {
       [name]: value,
     });
   };
-
   const handleSave = () => {
     const { id, name, username, role, password, email, branch_id } =
       currentUser;
@@ -121,6 +116,10 @@ export default function UserAddComponent(props) {
     };
 
     if (password.length >= 8) dataToSave.password = password;
+    setData({
+      ...data,
+      load: true,
+    });
 
     _users.saveUser(dataToSave, id).then((response) => {
       if (response) {
@@ -138,6 +137,11 @@ export default function UserAddComponent(props) {
           if (!dismiss) {
             history.push("/usuarios");
             _handleNewOrEdit();
+          } else {
+            setData({
+              ...data,
+              load: false,
+            });
           }
         });
       }
@@ -189,87 +193,33 @@ export default function UserAddComponent(props) {
                     userId={id ? id : ""}
                     col={6}
                     onChange={catchInputs}
-                    handleValidate={handleValidate}
                     isValid={(status) => {
-                      console.log("[DEBUG] user is Valid / data:", status);
                       setData({
                         ...data,
                         validUserName: status,
                       });
                     }}
                   />
-                  <div className="col-6">
-                    {currentUser.name.length ? (
-                      <small>
-                        <label>Nombre completo</label>
-                      </small>
-                    ) : (
-                      <br />
-                    )}
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text bg-blue">
-                          <i className="fas fa-user-tag"></i>
-                        </span>
-                      </div>
-                      <input
-                        type="text"
-                        className="form-control text-capitalize"
-                        placeholder="Nombre completo"
-                        name="name"
-                        autoComplete="off"
-                        defaultValue={currentUser.name}
-                        onChange={({ target }) => catchInputs(target)}
-                        required="required"
-                        minLength="8"
-                        pattern="^[a-zA-Z]{2,20}[\s]{1}[a-zA-Z]{2,20}.*"
-                      />
-                    </div>
-                  </div>
+                  <NameInput
+                    value={currentUser.name}
+                    name="name"
+                    onChange={catchInputs}
+                    col={6}
+                  />
                 </div>
                 <div className="row">
-                  <div className="col-md-6">
-                    {currentUser.password.length || id ? (
-                      <small>
-                        <label>Contraseña</label>
-                        {!id && (
-                          <span className="ml-2 text-muted">
-                            De 8 a 16 caracteres, por lo menos una mayuscula, un
-                            numero y un caracter especial
-                          </span>
-                        )}
-                      </small>
-                    ) : (
-                      <br />
-                    )}
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text bg-blue">
-                          <i className="fas fa-lock"></i>
-                        </span>
-                      </div>
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Contraseña"
-                        name="password"
-                        autoComplete="off"
-                        defaultValue={currentUser.password}
-                        onChange={({ target }) => catchInputs(target)}
-                        required={id ? false : true}
-                        minLength="8"
-                        maxLength="16"
-                        pattern="^(?=.*[A-Z])(?=.*[!@#$&.*])(?=.*[0-9])(?=.*[a-z]).{8,16}$"
-                      />
-                    </div>
-                  </div>
+                  <PasswordInput
+                    value={currentUser.password}
+                    name="password"
+                    onChange={catchInputs}
+                    col={6}
+                  />
                   <UserEmailInput
                     email={currentUser.email}
                     userId={id ? id : ""}
                     col={6}
                     onChange={catchInputs}
                     isValid={(status) => {
-                      console.log("[DEBUG] email is Valid:", status);
                       setData({
                         ...data,
                         validUserEmail: status,
@@ -278,55 +228,33 @@ export default function UserAddComponent(props) {
                   />
                 </div>
                 <div className="row">
-                  <div className="col-md-6">
-                    <small>
-                      <label>Tipo de usuario</label>
-                    </small>
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text bg-blue">
-                          <i className="fas fa-id-card"></i>
-                        </span>
-                      </div>
-                      <select
-                        className="custom-select"
-                        name="role"
-                        /* defaultValue={currentUser.role} */
-                        value={currentUser.role}
-                        onChange={({ target }) => catchInputs(target)}
-                      >
-                        <option value="admin">Administrador</option>
-                        <option value="ventas">Ventas</option>
-                        <option value="doctor">Optometrista</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <small>
-                      <label>Sucursal</label>
-                    </small>
-                    <div className="input-group mb-3">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text bg-blue">
-                          <i className="fas fa-store"></i>
-                        </span>
-                      </div>
-                      <select
-                        className="custom-select text-uppercase"
-                        name="branch_id"
-                        value={currentUser.branch_id}
-                        onChange={({ target }) => catchInputs(target)}
-                      >
-                        {branchs.map((branch) =>
-                          branch.name !== "bank" ? (
-                            <option value={branch.id} key={branch.id}>
-                              {branch.data.name}
-                            </option>
-                          ) : null
-                        )}
-                      </select>
-                    </div>
-                  </div>
+                  <SelectInputComponent
+                    label="Tipo de usuario"
+                    name="role"
+                    value={currentUser.role}
+                    icon={<AccountBoxIcon />}
+                    col={6}
+                    color="success"
+                    onChange={catchInputs}
+                    options={[
+                      { value: 'admin', label: 'Administrador' },
+                      { value: 'ventas', label: 'Ventas' },
+                      { value: 'doctor', label: 'Optometrista' },
+                    ]}
+                  />
+                  <SelectInputComponent
+                    label="Sucursal"
+                    name="branch_id"
+                    value={currentUser.branch_id}
+                    icon={<WorkOutlineIcon />}
+                    col={6}
+                    color="success"
+                    onChange={catchInputs}
+                    options={
+                      branchs.filter((b) => b.name !== 'bank')
+                        .map((b) => ({ value: b.id, label: b.data.name }))
+                    }
+                  />
                 </div>
               </>
             )}
@@ -365,7 +293,9 @@ export default function UserAddComponent(props) {
           </div>
         </form>
 
-        <Permissions data={{...data, role: currentUser.role}} />
+        {!!currentUser.id && (
+          <Permissions data={{ ...data, role: currentUser.role }} />
+        )}
       </div>
       {id && (
         <div className="col-4">

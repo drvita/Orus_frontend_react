@@ -1,16 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from "react";
 import { InputAdornment, TextField } from "@mui/material";
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import useUsers from "../../../hooks/useUsers";
+import BadgeIcon from '@mui/icons-material/Badge';
 
-export default function UserNameInputComponent(props) {
-  const user = useUsers();
+export default function NameInputComponent(props) {
   const [value, setValue] = React.useState("");
   const [error, setError] = React.useState("");
   const [color, setColor] = React.useState('primary');
   const [isValid, setIsValid] = React.useState(false);
-  const [load, setLoad] = React.useState(false);
 
   const handleChange = ({ value }) => setValue(value.toLowerCase());
   const handleFocus = () => {
@@ -19,25 +16,16 @@ export default function UserNameInputComponent(props) {
     setColor('primary');
   };
   const validUser = () => {
-    const regex = /^[\w]{4,16}$/;
-    const userSearch = value.replace(/\s/g, "");
-    if (!regex.test(userSearch)) {
-      setError("El usuario debe de tener entre 4 y 16 caracteres");
+    const regex = /^[\w\s]{4,}$/;
+    if (!regex.test(value)) {
+      console.log("[DEBUG] Regex", value, regex.test(value));
+      setError("El nombre completo debe de tener entre almenos 4 caracteres");
       return;
     }
 
-    setLoad(true);
-    handleSearchUser(userSearch, props.userId, user).then((status) => {
-      if (status) {
-        setError("El usuario ya esta registrado");
-        return;
-      }
-      setIsValid(true);
-    })
-      .finally(() => {
-        setLoad(false);
-      });
+    setIsValid(true);
   };
+  
   React.useEffect(() => {
     if (props.isValid) {
       props.isValid(isValid);
@@ -45,7 +33,7 @@ export default function UserNameInputComponent(props) {
     if (isValid) {
       if(props.onChange){
         props.onChange({
-          name: "username",
+          name: props.name ?? '',
           value: value.toLowerCase(),
         });
       }
@@ -54,18 +42,18 @@ export default function UserNameInputComponent(props) {
     }
   }, [isValid]);
   React.useEffect(() => {
-    setValue(props.username ?? '');
+    setValue(props.value ?? '');
   }, [props]);
 
   return (
     <div className={"col-" + props.col}>
       <div className="input-group">
         <TextField
-          label="Usuario"
+          label="Nombre completo"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <AccountCircle />
+                <BadgeIcon />
               </InputAdornment>
             ),
           }}
@@ -78,7 +66,7 @@ export default function UserNameInputComponent(props) {
           onChange={({ target }) => handleChange(target)}
           onBlur={validUser}
           onFocus={handleFocus}
-          disabled={load}
+          disabled={props.disabled ?? false}
           color={color}
           focused
         />
@@ -86,16 +74,3 @@ export default function UserNameInputComponent(props) {
     </div>
   );
 }
-
-const handleSearchUser = async (username, userId = null, user) => {
-  const result = await user.getListUsers({ username, userId, deleted: 0 });
-
-  if (result.data && result.data.length) {
-    const { username: user } = result.data[0];
-
-    if (user.toLowerCase() === username) {
-      return true;
-    }
-  }
-  return false;
-};

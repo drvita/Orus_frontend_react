@@ -2,11 +2,15 @@
   "name": "orussystem",
   "version": "2.1.0",
   "private": true,
-  "engines" : { 
-    "npm" : ">=6.0.0 <6.14.18",
-    "node" : ">=14.0.0 <16.20.1"
+  "engines": {
+    "npm": ">=6.0.0 <6.14.18",
+    "node": ">=14.0.0 <16.20.1"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
     "axios": "^0.27.2",
     "moment": "^2.29.1",
     "react": "^17.0.2",

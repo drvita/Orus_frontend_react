@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React from "react";
 import useUsers from "../../hooks/useUsers";
 import { Config } from "../../context/ConfigContext";
 import { useHistory } from "react-router-dom";
@@ -19,17 +19,17 @@ const initialState = {
   name: "",
   email: "",
   branch_id: 12,
-  data: {
-    session: {},
-    roles: [],
-    permissions: [],
-    load: false,
-    validUserName: false,
-    validUserEmail: false,
-    created_at: "",
-    updated_at: "",
-    activities: [],
-  },
+};
+const initialdata = {
+  session: {},
+  roles: [],
+  permissions: [],
+  load: false,
+  validUserName: false,
+  validUserEmail: false,
+  created_at: "",
+  updated_at: "",
+  activities: [],
 };
 
 export default function UserAddComponent(props) {
@@ -38,18 +38,13 @@ export default function UserAddComponent(props) {
   const _users = useUsers();
   const configContext = Config();
   const branchs = configContext.data;
-  const [currentUser, setCurrentUser] = useState(initialState);
+  const [currentUser, setCurrentUser] = React.useState(initialState);
+  const [data, setData] = React.useState(initialdata);
   const history = useHistory();
-  const send =
-    currentUser.name.length &&
-    !currentUser.data.load &&
-    currentUser.data.validUserName &&
-    currentUser.data.validUserEmail
-      ? false
-      : true;
+  const [btnDisabled, setBtnDisabled] = React.useState(true);
 
   function processData(data) {
-    if (data) {      
+    if (data) {
       setCurrentUser({
         id: data.id,
         role: data.roles[0],
@@ -58,33 +53,30 @@ export default function UserAddComponent(props) {
         email: data.email,
         password: "",
         branch_id: data.branch.id,
-        data: {
-          session: data.session ? data.session : {},
-          permissions: data.permissions,
-          roles: data.roles,
-          load: data.load ? data.load : false,
-          validUserName: true,
-          validUserEmail: true,
-          created_at: data.created_at,
-          updated_at: data.updated_at,
-          activities: data.activity,
-        },
+      });
+      setData({
+        session: data.session ? data.session : {},
+        permissions: data.permissions,
+        roles: data.roles,
+        load: data.load ? data.load : false,
+        validUserName: true,
+        validUserEmail: true,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        activities: data.activity,
       });
     }
   }
 
   const handleValidate = ({ name, value }) => {
-    setCurrentUser({
-      ...currentUser,
-      data: {
-        ...currentUser.data,
-        [name]: value,
-      },
+    setData({
+      ...data,
+      [name]: value,
     });
   };
 
-  const catchInputs = ({ name, value, type }) => {
-    if (type === "text") {
+  const catchInputs = ({ name, value }) => {
+    if (typeof value === "string") {
       value = value
         .toLowerCase()
         .normalize("NFD")
@@ -101,8 +93,7 @@ export default function UserAddComponent(props) {
     const { id, name, username, role, password, email, branch_id } =
       currentUser;
 
-    //Valid primary data
-    if (!currentUser.data.validUserName) {
+    if (!data.validUserName) {
       window.Swal.fire({
         icon: "error",
         title: "El nombre de usuario ya esta en uso",
@@ -111,7 +102,7 @@ export default function UserAddComponent(props) {
       });
       return false;
     }
-    if (!currentUser.data.validUserEmail) {
+    if (!data.validUserEmail) {
       window.Swal.fire({
         icon: "error",
         title: "El correo ya esta en uso",
@@ -121,7 +112,7 @@ export default function UserAddComponent(props) {
       return false;
     }
 
-    let data = {
+    let dataToSave = {
       name,
       username,
       role,
@@ -129,10 +120,10 @@ export default function UserAddComponent(props) {
       branch_id,
     };
 
-    if (password.length >= 8) data.password = password;
+    if (password.length >= 8) dataToSave.password = password;
 
-    _users.saveUser(data, id).then((data) => {
-      if (data) {
+    _users.saveUser(dataToSave, id).then((response) => {
+      if (response) {
         window.Swal.fire({
           title: "Usuarios",
           text: id
@@ -153,15 +144,25 @@ export default function UserAddComponent(props) {
     });
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (id) {
       _users.getUserById(id).then((data) => {
-        if (data) {          
+        if (data) {
           processData(data.data);
         }
       });
     }
   }, [id]);
+  React.useEffect(() => {
+    const isValid = currentUser.name.length &&
+      !data.load &&
+      data.validUserName &&
+      data.validUserEmail
+      ? true
+      : false;
+
+    setBtnDisabled(!isValid);
+  }, [currentUser, data]);
 
   return (
     <div className="row" style={{ height: "100vh" }}>
@@ -174,7 +175,7 @@ export default function UserAddComponent(props) {
             </h1>
           </div>
           <div className="card-body was-validated">
-            {currentUser.load ? (
+            {data.load ? (
               <div className="alert alert-light text-center p-4">
                 <div className="spinner-border text-primary" role="status">
                   <span className="sr-only">Loading...</span>
@@ -189,6 +190,13 @@ export default function UserAddComponent(props) {
                     col={6}
                     onChange={catchInputs}
                     handleValidate={handleValidate}
+                    isValid={(status) => {
+                      console.log("[DEBUG] user is Valid / data:", status);
+                      setData({
+                        ...data,
+                        validUserName: status,
+                      });
+                    }}
                   />
                   <div className="col-6">
                     {currentUser.name.length ? (
@@ -260,6 +268,13 @@ export default function UserAddComponent(props) {
                     userId={id ? id : ""}
                     col={6}
                     onChange={catchInputs}
+                    isValid={(status) => {
+                      console.log("[DEBUG] email is Valid:", status);
+                      setData({
+                        ...data,
+                        validUserEmail: status,
+                      });
+                    }}
                   />
                 </div>
                 <div className="row">
@@ -334,11 +349,11 @@ export default function UserAddComponent(props) {
                   <button
                     type="button"
                     className={
-                      currentUser.load
+                      data.load
                         ? "btn btn-primary disabled"
                         : "btn btn-primary"
                     }
-                    disabled={send ? true : false}
+                    disabled={btnDisabled}
                     onClick={handleSave}
                   >
                     <i className="fas fa-save mr-1"></i>
@@ -350,12 +365,12 @@ export default function UserAddComponent(props) {
           </div>
         </form>
 
-        <Permissions data={currentUser} />
+        <Permissions data={{...data, role: currentUser.role}} />
       </div>
       {id && (
         <div className="col-4">
-          <Metadata data={currentUser} />
-          <Activities data={currentUser.data.activities} />
+          <Metadata data={data} />
+          <Activities data={data.activities} />
         </div>
       )}
     </div>

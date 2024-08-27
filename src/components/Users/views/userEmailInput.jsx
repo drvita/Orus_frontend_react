@@ -1,149 +1,97 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from "react";
 import useUsers from "../../../hooks/useUsers";
+import { InputAdornment, TextField } from "@mui/material";
+import EmailIcon from '@mui/icons-material/Email';
 
 export default function UserEmailInputComponent(props) {
-  const [state, setState] = useState({
-    bgColor: "bg-blue",
-    validate: "",
-    text: "No tiene el formato de un email",
-    searchEmail: false,
-  });
+  const [value, setValue] = React.useState("");
+  const [error, setError] = React.useState("");
+  const [color, setColor] = React.useState('primary');
+  const [isValid, setIsValid] = React.useState(false);
+  const [load, setLoad] = React.useState(false);
 
   const user = useUsers();
+  const handleFocus = () => {
+    setIsValid(false);
+    setError('');
+    setColor('primary');
+  };
+  const handleChange = ({ value }) => setValue(value.toLowerCase());
+  const validEmail = () => {
+    const regex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    const emailSearch = value.replace(/\s/g, "");
 
-  //Vars
-  const { col, email, userId, onChange: _onChange } = props,
-    { bgColor, validate, text, searchEmail } = state;
+    if (!regex.test(emailSearch)) {
+      setError("El formato de correo electronico no es valido");
+      return;
+    }
 
-  //Functions
-  const handleChange = ({ name, value }) => {
-      _onChange({
-        name,
-        value: value.toLowerCase(),
-      });
-    },
-
-    validEmail = () => {
-      const regex =
-          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-        emailSearch = email.replace(/\s/g, "");
-
-      if (regex.test(emailSearch)) {
-        //User valid, next search if exist
-        setState({
-          ...state,
-          searchUser: true,
-        });
-        
-        handleSearchUser(emailSearch, userId, user).then((response) => {
-          if (response) {
-            setState({
-              bgColor: "bg-red",
-              validate: " border border-danger",
-              text: "El usuario ya esta registrado.",
-              searchUser: false,
-            });
-            _onChange({
-              name: "validUserEmail",
-              value: false,
-            });
-          } else {
-            setState({
-              ...state,
-              bgColor: "bg-blue",
-              validate: "",
-              text: "",
-            });
-            _onChange({
-              name: "validUserEmail",
-              value: true,
-            });
-          }
-        });
-      } else {
-        //User no valid
-        if (emailSearch.length > 8) {
-          setState({
-            ...state,
-            bgColor: "bg-red",
-            validate: " border border-danger",
-            text: "No tiene el formato de un email valido",
-          });
-          _onChange({
-            name: "validUserEmail",
-            value: false,
-          });
-        } else if (!emailSearch.length) {
-          setState({
-            ...state,
-            bgColor: "bg-red",
-            validate: " border border-danger",
-            text: "Escriba un email valido",
-          });
-          _onChange({
-            name: "validUserEmail",
-            value: false,
-          });
-        }
+    setLoad(true);
+    handleSearchUser(emailSearch, props.userId, user).then((status) => {
+      if (status) {
+        setError("El correo electronico ya esta registrado");
+        return;
       }
-    };
+      setIsValid(true);
+    })
+      .finally(() => {
+        setLoad(false);
+      });
+  };
+
+  React.useEffect(() => {
+    if (props.isValid) {
+      props.isValid(isValid);
+    }
+    if (isValid) {
+      if (props.onChange) {
+        props.onChange({
+          name: "email",
+          value: value.toLowerCase(),
+        });
+      }
+      
+      setColor('success');
+    }
+  }, [isValid]);
+  React.useEffect(() => {
+    setValue(props.email ?? '');
+  }, [props]);
 
   return (
-    <div className={"col-" + col}>
-      {email.length ? (
-        <small>
-          <label>Email</label>
-        </small>
-      ) : (
-        <br />
-      )}
+    <div className={"col-" + props.col}>
       <div className="input-group">
-        <div className="input-group-prepend">
-          <span className={"input-group-text " + bgColor}>
-            {searchEmail ? (
-              <i className="fas fa-spinner"></i>
-            ) : (
-              <i className="fas fa-at"></i>
-            )}
-          </span>
-        </div>
-        <input
-          type="email"
-          className={"form-control" + validate}
-          placeholder="email"
-          name="email"
+        <TextField
+          label="Correo electronico"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <EmailIcon />
+              </InputAdornment>
+            ),
+          }}
+          fullWidth
+          variant="standard"
+          helperText={error}
+          error={!!error}
           autoComplete="off"
-          defaultValue={email}
+          value={value}
           onChange={({ target }) => handleChange(target)}
           onBlur={validEmail}
-          required="required"
+          onFocus={handleFocus}
+          disabled={load}
+          color={color}
+          focused
         />
       </div>
-      {validate ? <small className="text-muted">{text}</small> : ""}
     </div>
   );
 }
 
-
-const handleSearchUser = async (username, userId = null, user) => {
-  const result = await user.getListUsers({ username, userId, deleted: 0 });
-
-  if (result.data && result.data.length) {
-    const { username: user } = result.data[0];
-
-    if (user.toLowerCase() === username) {
-      return true;
-    }
-  }
-  return false;
-};
-
-
-
-/* const handleSearchUser = async (email, userId = null, user) => {
-  const result = await user.getListUser
-  const url = getUrl("users", null, { email, userId, deleted: 0 }),
-    result = await api(url);
+const handleSearchUser = async (email, userId = null, user) => {
+  const result = await user.getListUsers({ email, userId, deleted: 0 });
 
   if (result.data && result.data.length) {
     const { email: user } = result.data[0];
@@ -154,4 +102,3 @@ const handleSearchUser = async (username, userId = null, user) => {
   }
   return false;
 };
- */

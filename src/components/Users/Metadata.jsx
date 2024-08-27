@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export default function MetadataComponent({ data: currentUser }) {
+export default function MetadataComponent({ data }) {
   return (
     <div className="card card-primary card-outline">
       <div className="card-header">
@@ -10,18 +10,18 @@ export default function MetadataComponent({ data: currentUser }) {
         </h3>
       </div>
       <div className="card-body">
-        {currentUser.data?.session ? (
+        {data?.session ? (
           <ul className="list-group">
             <li className="list-group-item">
               <h6>Datos del usuario</h6>
               <div className="row">
                 <div className="col">
                   <span className="text-primary">Registrado</span>
-                  <p>{moment(currentUser.data.created_at).fromNow()}</p>
+                  <p>{moment(data.created_at).fromNow()}</p>
                 </div>
                 <div className="col">
                   <span className="text-primary">Ultima actualizacion</span>
-                  <p>{moment(currentUser.data.updated_at).fromNow()}</p>
+                  <p>{moment(data.updated_at).fromNow()}</p>
                 </div>
               </div>
             </li>
@@ -31,16 +31,16 @@ export default function MetadataComponent({ data: currentUser }) {
                 <div className="col">
                   <span className="text-primary">IP</span>
                   <p>
-                    {currentUser.data.session?.ip_address
-                      ? currentUser.data.session.last_activity
+                    {data.session?.ip_address
+                      ? data.session.last_activity
                       : "--"}
                   </p>
                 </div>
                 <div className="col">
                   <span className="text-primary">Ultima actividad</span>
                   <p>
-                    {currentUser.data.session?.last_activity
-                      ? moment(currentUser.data.session.last_activity).fromNow()
+                    {data.session?.last_activity
+                      ? moment(data.session.last_activity).fromNow()
                       : "--"}
                   </p>
                 </div>
@@ -49,16 +49,16 @@ export default function MetadataComponent({ data: currentUser }) {
             <li className="list-group-item">
               <span className="text-primary">Navegador y OS</span>
               <p>
-                {currentUser.data.session?.user_agent
-                  ? currentUser.data.session.user_agent
+                {data.session?.user_agent
+                  ? data.session.user_agent
                   : "--"}
               </p>
             </li>
             <li className="list-group-item">
               <span className="text-primary">Token</span>
               <p>
-                {currentUser.data.session?.user_data
-                  ? currentUser.data.session.user_data
+                {data.session?.user_data
+                  ? data.session.user_data
                   : "--"}
               </p>
             </li>
@@ -67,7 +67,7 @@ export default function MetadataComponent({ data: currentUser }) {
           <p>Usuario no ha registrado actividad.</p>
         )}
       </div>
-      {currentUser.data.session && (
+      {data.session && (
         <div className="card-footer text-right">
           <button
             type="button"

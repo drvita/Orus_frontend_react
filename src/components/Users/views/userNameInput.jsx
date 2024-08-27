@@ -1,134 +1,89 @@
-import { useEffect, useRef, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from "react";
 import useUsers from "../../../hooks/useUsers";
+import { InputAdornment, TextField } from "@mui/material";
+import AccountCircle from '@mui/icons-material/AccountCircle';
+
 
 export default function UserNameInputComponent(props) {
   const user = useUsers();
-  const mounted = useRef(true);
-  const [state, setState] = useState({
-    bgColor: "bg-blue",
-    validate: "",
-    text: "Debe de tener al menos 4 caracteres.",
-    searchUser: false,
-  });
-  const { onChange: _onChange, handleValidate: _handleValidate } = props;
+  const [value, setValue] = React.useState("");
+  const [error, setError] = React.useState("");
+  const [color, setColor] = React.useState('primary');
+  const [isValid, setIsValid] = React.useState(false);
+  const [load, setLoad] = React.useState(false);
 
-  const handleChange = ({ value }) => {
-    _onChange({
-      name: "username",
-      value: value.toLowerCase(),
-    });
+  const handleChange = ({ value }) => setValue(value.toLowerCase());
+  const handleFocus = () => {
+    setIsValid(false);
+    setError('');
+    setColor('primary');
   };
   const validUser = () => {
-    if (!mounted.current) return;
+    const regex = /^[\w]{4,16}$/;
+    const userSearch = value.replace(/\s/g, "");
+    if (!regex.test(userSearch)) {
+      setError("El usuario debe de tener entre 4 y 16 caracteres");
+      return;
+    }
 
-    const regex = /^[\w]{4,16}$/,
-      userSearch = props.username.replace(/\s/g, "");
-
-    if (regex.test(userSearch)) {
-      //User valid, next search if exist
-      setState({
-        ...state,
-        searchUser: true,
+    setLoad(true);
+    handleSearchUser(userSearch, props.userId, user).then((status) => {
+      if (status) {
+        setError("El usuario ya esta registrado");
+        return;
+      }
+      setIsValid(true);
+    })
+      .finally(() => {
+        setLoad(false);
       });
-
-      handleSearchUser(userSearch, props.userId, user).then((status) => {
-        if (!mounted.current) return;
-
-        if (status) {
-          setState({
-            ...state,
-            bgColor: "bg-red",
-            validate: " border border-danger",
-            text: "El usuario ya esta registrado.",
-            searchUser: false,
-          });
-          _handleValidate({
-            name: "validUserName",
-            value: false,
-          });
-        } else {
-          setState({
-            ...state,
-            bgColor: "bg-blue",
-            validate: "",
-            text: "",
-            searchUser: false,
-          });
-          _handleValidate({
-            name: "validUserName",
-            value: true,
-          });
-        }
-      });
-    } else {
-      //User no valid
-      if (userSearch.length > 4) {
-        setState({
-          ...state,
-          bgColor: "bg-red",
-          validate: " border border-danger",
-          text: "No tiene el formato de usuario",
-        });
-        _handleValidate({
-          name: "validUserName",
-          value: false,
-        });
-      } else if (!userSearch.length) {
-        setState({
-          ...state,
-          bgColor: "bg-red",
-          validate: " border border-danger",
-          text: "Debe de tener de 4 a 16 caracteres alfanumericos.",
-        });
-        _handleValidate({
-          name: "validUserName",
-          value: false,
+  };
+  React.useEffect(() => {
+    if (props.isValid) {
+      props.isValid(isValid);
+    }
+    if (isValid) {
+      if(props.onChange){
+        props.onChange({
+          name: "username",
+          value: value.toLowerCase(),
         });
       }
+      
+      setColor('success');
     }
-  };
-
-  useEffect(() => {
-    return () => {
-      mounted.current = false;
-    };
-  });
+  }, [isValid]);
+  React.useEffect(() => {
+    setValue(props.username ?? '');
+  }, [props]);
 
   return (
     <div className={"col-" + props.col}>
-      {props.username.length ? (
-        <small>
-          <label>Usuario</label>
-        </small>
-      ) : (
-        <br />
-      )}
       <div className="input-group">
-        <div className="input-group-prepend">
-          <span className={"input-group-text " + state.bgColor}>
-            {state.searchUser ? (
-              <i className="fas fa-spinner"></i>
-            ) : (
-              <i className="fas fa-user-check"></i>
-            )}
-          </span>
-        </div>
-        <input
-          type="text"
-          className={"form-control" + state.validate}
-          placeholder="Usuario"
+        <TextField
+          label="Usuario"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <AccountCircle />
+              </InputAdornment>
+            ),
+          }}
+          fullWidth
+          variant="standard"
+          helperText={error}
+          error={!!error}
           autoComplete="off"
-          autoFocus="autofocus"
-          defaultValue={props.username}
+          value={value}
           onChange={({ target }) => handleChange(target)}
           onBlur={validUser}
-          required="required"
-          minLength="4"
-          maxLength="16"
-          pattern="^[\w]{4,16}$"
+          onFocus={handleFocus}
+          disabled={load}
+          color={color}
+          focused
         />
       </div>
-      {state.validate ? <small className="text-muted">{state.text}</small> : ""}
     </div>
   );
 }

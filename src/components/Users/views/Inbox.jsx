@@ -1,58 +1,93 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import moment from "moment";
-import { useEffect, useState } from "react";
-import { connect } from "react-redux";
-//Components
+import { useEffect, useState, useContext } from "react";
+import useUsers from "../../../hooks/useUsers";
+import { UserContext } from "../../../context/UserContext";
 import ListInbox from "../../../layouts/list_inbox";
-//Actions
-import { userActions } from "../../../redux/user/index";
-import helper from "../helpers";
+import { useHistory } from "react-router-dom";
 
-function InboxComponent(props) {
-  const {
-    loading,
-    meta,
-    users,
-    options,
-    //Functions
-    _getListUsers,
-    _setOptions,
-    _deleteUser,
-    _setUser,
-    _getUser,
-  } = props;
-  //States
-  const [userSelected, setUserSelected] = useState({ id: 0 });
-  //Functions
+export default function InboxComponent() {
+  const history = useHistory();
+  const _users = useUsers();
+  const _userContext = useContext(UserContext);
+  const [userSelected, setUserSelected] = useState("");
+
+  const [data, setData] = useState({
+    users: [],
+    meta: {},
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const { users, meta } = data;
+
   const handleChangeOptions = (key, value) => {
-      if (options[key] !== value) {
-        _setOptions({
-          key,
-          value,
-        });
-      }
-    },
-    deleteItem = () => {
-      helper.handleDelete(userSelected, options, _deleteUser);
-      setUserSelected({ id: 0 });
-    },
-    handleUserSelect = ({ checked }, item) => {
-      if (!checked) item = { id: 0 };
-      setUserSelected(item);
-    },
-    handleSelectUser = (e, order = { id: 0 }) => {
-      if (e) e.preventDefault();
+    _userContext.set({
+      ..._userContext,
+      options: {
+        ..._userContext.options,
+        [key]: value,
+      },
+    });
+  };
 
-      if (order.id) {
-        _setUser(order);
-      } else if (userSelected.id) {
-        _getUser(userSelected.id);
-      }
-    };
+  const deleteItem = () => {
+    setLoading(true);
+    _users
+      .deleteUser(userSelected)
+      .then((data) => {
+        window.Swal.fire({
+          icon: "success",
+          title: "Usuario eliminado correctamente",
+          showConfirmButton: false,
+          timer: 2500,
+        });
+
+        setUserSelected({ id: 0 });
+
+        _users.getListUsers(_userContext.options).then((data) => {
+          if (data) {
+            setData({
+              ...data,
+              users: data.data,
+              meta: data.meta,
+            });
+            setLoading(false);
+          }
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handleSelectUser = (e, order = { id: 0 }) => {
+    if (userSelected) {
+      history.push(`usuarios/${userSelected}`);
+    } else {
+      window.Swal.fire({
+        title: "Error",
+        text: "Lo sentimos no existe un contacto seleccionado",
+        icon: "error",
+      });
+    }
+  };
 
   useEffect(() => {
-    _getListUsers(options);
-    //eslint-disable-next-line
-  }, [options]);
+    setLoading(true);
+    _users.getListUsers(_userContext.options).then((data) => {
+      if (data) {
+        setData({
+          ...data,
+          users: data.data,
+          meta: data.meta,
+        });
+        setLoading(false);
+      } else {
+        console.error("Error al obtener los datos");
+      }
+    });
+  }, [_userContext.options]);
 
   return (
     <ListInbox
@@ -61,13 +96,23 @@ function InboxComponent(props) {
       color="primary"
       loading={loading}
       meta={meta}
-      itemSelected={userSelected.id}
-      defaultSearch={options.search}
+      itemSelected={userSelected}
+      defaultSearch={_userContext.options.search}
       handlePagination={(page) => handleChangeOptions("page", page)}
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleDeleteItem={deleteItem}
       handleEditItem={handleSelectUser}
-      handleSync={() => _getListUsers(options)}
+      handleSync={() => {
+        _userContext.set({
+          ..._userContext,
+          options: {
+            page: 1,
+            orderby: "created_at",
+            order: "desc",
+            itemsPage: 10,
+          },
+        });
+      }}
     >
       <table className="table table-hover table-striped">
         <thead>
@@ -77,7 +122,7 @@ function InboxComponent(props) {
             <th>Email/Usuario</th>
             <th>Rol</th>
             <th>Sucursal</th>
-            {options.orderby === "created_at" ? (
+            {_userContext.options.orderby === "created_at" ? (
               <th>Creado</th>
             ) : (
               <th>Modificado</th>
@@ -96,37 +141,42 @@ function InboxComponent(props) {
                         className="form-check-input mt-4"
                         value={user.id}
                         id={"item_" + user.id}
-                        checked={userSelected.id === user.id ? true : false}
-                        onChange={({ target }) =>
-                          handleUserSelect(target, user)
-                        }
+                        checked={userSelected === user.id ? true : false}
+                        onChange={({ target }) => {
+                          const { value, checked } = target;
+                          setUserSelected(checked ? parseInt(value) : "");
+                          //handleUserSelect(target);
+                        }}
                       />
                       <label
                         htmlFor={"item_" + user.id}
                         className="sr-only"
                       ></label>
                     </td>
-                    <td className="mailbox-name text-capitalize text-truncate">
-                      <a
-                        href="·link"
-                        onClick={(e) => handleSelectUser(e, user)}
-                        className="text-bold"
-                      >
-                        {user.name}
-                      </a>
+                    <td
+                      className="mailbox-name text-capitalize text-truncate text-bold text-primary"
+                      style={{ cursor: "pointer", maxWidth: 180 }}
+                      onClick={(e) => {
+                        //handleSelectUser(e, user)
+                        history.push(`usuarios/${user.id}`);
+                      }}
+                    >
+                      {user.name}
                     </td>
                     <td className="mailbox-name text-muted text-truncate">
                       <span>{user.email}</span>
                     </td>
-                    <td className="mailbox-name text-dark text-bold text-truncate">
-                      {helper.getNameRoles(user.roles)}
+                    <td className="mailbox-name ">
+                      <span className={getClassByRole(user.roles[0])}>
+                        {user.roles[0]}
+                      </span>
                     </td>
                     <td className="text-truncate">
                       <span className="text-capitalize">
-                        {user.branch.values.name}
+                        {user.branch.data.name}
                       </span>
                     </td>
-                    {options.orderby === "created_at" ? (
+                    {_userContext.options.orderby === "created_at" ? (
                       <td className="mailbox-date text-muted text-truncate">
                         <span>{moment(user.created_at).format("LL")}</span>
                       </td>
@@ -152,21 +202,13 @@ function InboxComponent(props) {
   );
 }
 
-const mapStateToProps = ({ users }) => {
-    return {
-      users: users.list,
-      meta: users.meta,
-      messages: users.messages,
-      loading: users.loading,
-      options: users.options,
-    };
-  },
-  mapActionsToProps = {
-    _getListUsers: userActions.getListUsers,
-    _setOptions: userActions.setOptions,
-    _setUser: userActions.setUser,
-    _getUser: userActions.getUser,
-    _deleteUser: userActions.deleteUser,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(InboxComponent);
+function getClassByRole(role) {
+  switch (role) {
+    case "admin":
+      return "text-capitalize badge badge-pill badge-dark";
+    case "ventas":
+      return "text-capitalize badge badge-pill badge-success";
+    default:
+      return "text-capitalize badge badge-pill badge-primary";
+  }
+}

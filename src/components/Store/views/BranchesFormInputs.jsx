@@ -1,26 +1,23 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { storeActions } from "../../../redux/store/";
+import { useState, useEffect } from "react";
 
-export default function BranchesFormInputs({
-  inBranch = {},
-  branch,
-  store_item_id,
-}) {
+//Hooks
+import useStore from "../../../hooks/useStore";
+
+export default function BranchesFormInputs({ inBranch, branchID, storeItemID }) {
+
+  const hookStore = useStore();
+
   const [data, setData] = useState({
-    id: inBranch.id ?? 0,
-    cant: inBranch.cant ?? 0,
-    price: inBranch.price ?? 1,
-    store_item_id,
-    branch_id: branch.id,
+    id: 0,
+    cant:0,
+    price: 1,
+    store_item_id: 0,
+    branch_id:0,
     readyToSave: false,
   });
-  const dispatch = useDispatch();
-  // functions
+
   const handleChangeInput = ({ name, value }) => {
     let readyToSave = false;
-
     if (name === "cant") {
       value = parseInt(value);
     } else {
@@ -36,22 +33,30 @@ export default function BranchesFormInputs({
       [name]: value,
     });
   };
+
   const handleSaveInBranch = () => {
-    dispatch(
-      storeActions.saveInBranch({
-        id: data.id,
-        data,
-      })
-    );
+    hookStore.saveQantityandPrice(data).then((data)=>{
+      if(data){
+      }else{
+        console.error("Error al guardar la informacion");
+      }
+    });
     setData({
       ...data,
       readyToSave: false,
     });
   };
 
-  useEffect(() => {
-    // console.log("[DEBUG]", inBranch);
-  }, []);
+  useEffect(()=>{
+    setData({
+      id: inBranch.id ? inBranch.id : 0,
+      cant: inBranch.cant ? inBranch.cant : 0,
+      price: inBranch.price ? inBranch.price : 0,
+      readyToSave: false,
+      store_item_id: storeItemID,
+      branch_id: branchID,
+    });
+  }, [inBranch])// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

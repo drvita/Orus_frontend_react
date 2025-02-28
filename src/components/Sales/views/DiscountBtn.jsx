@@ -1,66 +1,54 @@
-//TODO: Componente de discount Button
+//Context
+import { Sale } from '../../../context/SaleContext';
 
-import { useDispatch } from "react-redux";
-import { saleActions } from "../../../redux/sales";
+//Helper
+import helper from '../helpers';
 
-export default function DiscountBtnComponent({ sale, paid, btnDisabled }) {
+export default function DiscountBtnComponent() {
 
-  //console.log("---------",sale, paid)
-  const dispatch = useDispatch();
+  const sale = Sale();
+  const pagado = helper.getPagado(sale.payments);
+  const btnDisabled = sale.subtotal - pagado > 0 && sale.discount === 0 && pagado === 0 ? false : true;
+
+
   //Functions
   const handleAddDiscount = () => {
     const discount = window.prompt("Agregue el descuento a aplicar"),
       isNumeric = /^[0-9]+$/gms,
       isPercen = /^[0-9]{2,3}%$/gms;
 
-    let sum = 0;
-    sale.items.forEach((item) => (sum += item.subtotal));
+      if(discount === null){
+        return null;
+      }else{
+        let sum = 0;
+        sale.items.forEach((item) => (sum += item.subtotal));
 
-    if (discount.match(isNumeric)) {
-      const value = parseInt(discount);
-      //Add to redux
-      dispatch(
-        saleActions.saveSale({
-          id: sale.id,
-          data: {
+        if (discount.match(isNumeric)) {
+          const value = parseInt(discount);
+          
+          sale.set({
             ...sale,
-            descuento: value,
-            total: sum - value,
-            items: JSON.stringify(sale.items),
-            payments: null,
-          },
-        })
-      );
-    } else if (discount.match(isPercen)) {
-      const percent = parseInt(discount.replace("%", "")) / 100,
-        value = parseInt(sum * percent);
-      dispatch(
-        saleActions.saveSale({
-          id: sale.id,
-          data: {
+            discount: value,
+            total: sale.subtotal - value,
+          });
+
+        } else if (discount.match(isPercen)) {
+          const percent = parseInt(discount.replace("%", "")) / 100,
+          value = parseInt(sum * percent);          
+          sale.set({
             ...sale,
-            descuento: value,
-            total: sum - value,
-            items: JSON.stringify(sale.items),
-            payments: null,
-          },
-        })
-      );
-    }
+            discount: value,  
+            total: sale.subtotal - value,               
+          })          
+        }
+      }
   };
-
-
-  
-  // const
-  const total = sale.total - sale.pagado;
-  
 
   return (
     <button
       className="btn btn-primary mx-1"
       title="Agregar descuento"
       onClick={handleAddDiscount}
-     /*  disabled={!total || paid} */
       disabled={btnDisabled}
     >
       <i className="fas fa-percent"></i>

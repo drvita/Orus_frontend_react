@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { saleActions } from "../../../redux/sales";
+
+//Context
+import { Sale } from "../../../context/SaleContext";
+
 //Components
 import ListSalesModal from "./ListSalesModal";
 
-export default function ListSalesBtn({ setSale: _setSale }) {
-  const [data, setData] = useState(false),
-    dispatch = useDispatch();
+export default function ListSalesBtn() {
+  const sale = Sale();
+  const [data, setData] = useState(false);
+  const disabled = sale.items.length ? true : false;
+
   //Functions
   const handleShowListSales = () => {
       setData(true);
@@ -14,32 +18,29 @@ export default function ListSalesBtn({ setSale: _setSale }) {
     handleCloseListSales = () => {
       setData(false);
     },
-    handleSelectSale = (sale) => {
+    handleSelectSale = (saleSelected) => {
       let pagado = 0;
-
-      sale.payments.forEach((pay) => (pagado = pay.total));
-
+      saleSelected.payments.forEach((pay) => (pagado = pay.total));
       setData(false);
-      _setSale({
-        pagado,
-        order_id: sale.pedido,
+      
+      sale.set({
+        id: saleSelected.id,
+        contact_id: saleSelected.customer.id,
+        customer: saleSelected.customer,
+        items: saleSelected.items,
+        session: saleSelected.session,
+        discount: saleSelected.discount,
+        subtotal: saleSelected.subtotal,
+        total: saleSelected.total,
+        payments: saleSelected.payments,
+        branch_id: saleSelected.branch.id,
+        created_at: saleSelected.created_at,
+        activitys: saleSelected.activity,
+        order: saleSelected.order ?? 0,
+        thereNews: false,
       });
-      //Add to redux
-      dispatch(
-        saleActions.setSale({
-          id: sale.id,
-          customer: sale.customer,
-          contact_id: sale.customer.id,
-          items: sale.items,
-          session: sale.session,
-          descuento: sale.descuento,
-          subtotal: sale.subtotal,
-          total: sale.total,
-          payments: sale.payments,
-          pedido: sale.pedido,
-          created_at: sale.created_at,
-        })
-      );
+
+      return pagado;
     };
 
   return (
@@ -48,9 +49,11 @@ export default function ListSalesBtn({ setSale: _setSale }) {
         className="btn btn-primary mr-1"
         title="Cargar una venta"
         onClick={handleShowListSales}
+        disabled={disabled}
       >
         <i className="fas fa-list"></i>
       </button>
+
       {data && (
         <ListSalesModal
           handleClose={handleCloseListSales}

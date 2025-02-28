@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 //Components
 import Search from "../data/searchStore";
 //Actions
 import helper from "../helpers";
 
-//Current User
-import {useSelector} from 'react-redux';
+//Context
+import { AuthContext } from "../../../context/AuthContext";
 
 function AddItemModalComponent(props) {
-
-  const currentUser = useSelector((state)=> state.users.dataLoggin);
+  const authContex = useContext(AuthContext);
+  const currentUser = authContex.auth;
 
   //Props and vars
   const {
@@ -18,12 +18,13 @@ function AddItemModalComponent(props) {
     handleAddItem: _handleAddItem,
     handleCloseModal: _handleCloseModal,
   } = props;
+
   //States
   const [item, setItem] = useState({
       id: 0,
-      producto: codeDefault,
-      cantidad: cantDefault,
-      precio: 0,
+      name: codeDefault,
+      cant: cantDefault,
+      price: 0,
       out: 0,
       inStorage: 0,
       subtotal: 0,
@@ -32,19 +33,20 @@ function AddItemModalComponent(props) {
       category: 0,
     }),
     [showDesc, setShowDesc] = useState(false);
+
   //Functions
   const _reset = () => {
       setItem({
         id: 0,
-        producto: "",
-        precio: 0,
+        name: "",
+        price: 0,
         out: 0,
-        cantidad: 1,
+        cant: 1,
         inStorage: 0,
         subtotal: 0,
         store_items_id: 0,
         descripcion: "",
-        category: 0,
+        category: {},
       });
     },
     close = () => {
@@ -52,18 +54,18 @@ function AddItemModalComponent(props) {
       _handleCloseModal();
     },
     hanleChangeDataItem = (data) => {
-      //console.log("[DEBUG] select item", data);
       setItem({
-        id: 0,
-        producto: data.producto.toLowerCase(),
-        precio: parseFloat(data.precio),
-        out: data.cantidades,
-        cantidad: 1,
-        inStorage: 0,
-        subtotal: 0,
+        ...item,
         store_items_id: data.id,
+        id: 0,
+        name: data.name.toLowerCase(),
+        price: parseFloat(data.price),
+        out: data.cant_total,
+        cant: 1,
+        inStorage: 0,
+        subtotal: data.price,
         descripcion: "",
-        category: data.categoria ? data.categoria.id : 0,
+        category: data.category,
       });
     },
     handleChangeItem = (key, value) => {
@@ -77,12 +79,11 @@ function AddItemModalComponent(props) {
 
       if (!verify) return false;
 
-      item.inStorage = item.out >= item.cantidad ? true : false;
-      item.out = item.out >= item.cantidad ? 0 : item.cantidad - item.out;
-      item.subtotal = parseFloat(item.cantidad * item.precio);
+      item.inStorage = item.out >= item.cant ? true : false;
+      item.out = item.out >= item.cant ? 0 : item.cant - item.out;
+      item.subtotal = parseFloat(item.cant * item.price);
       item.branch_id = currentUser.branch.id;
       _handleAddItem(item);
-      close();
     };
 
   return (
@@ -111,11 +112,11 @@ function AddItemModalComponent(props) {
                       type="number"
                       className="form-control"
                       placeholder="Cantidad"
-                      value={item.cantidad}
+                      defaultValue={item.cant}
                       min="0"
                       max="100"
                       onChange={({ target }) =>
-                        handleChangeItem("cantidad", target.value)
+                        handleChangeItem("cant", target.value)
                       }
                     />
                   </div>
@@ -126,9 +127,9 @@ function AddItemModalComponent(props) {
                       className="form-control text-right"
                       placeholder="Precio"
                       min="0"
-                      value={item.precio}
+                      value={item.price ?? ""}
                       onChange={({ target }) =>
-                        handleChangeItem("precio", target.value)
+                        handleChangeItem("price", target.value)
                       }
                     />
                   </div>
@@ -172,9 +173,7 @@ function AddItemModalComponent(props) {
                 type="button"
                 className="btn btn-primary btn-sm text-bold"
                 disabled={
-                  item.store_items_id && item.cantidad && item.precio
-                    ? false
-                    : true
+                  item.store_items_id && item.cant && item.price ? false : true
                 }
                 onClick={() => hanldeSendBack()}
               >

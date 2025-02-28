@@ -28,3 +28,9 @@ div.donutChart {
 .cursor-pointer {
   cursor: pointer;
 }
+
+.cursor :hover {
+  cursor: pointer;  
+}
+
+

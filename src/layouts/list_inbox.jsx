@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Pagination from "../layouts/pagination";
+import { AuthContext } from "../context/AuthContext";
 
 const ListInbox = (props) => {
+  
   //Const
   const { defaultSearch = "" } = props;
   //States
   const [search, setSearch] = useState(defaultSearch);
   const [timer, setTimer] = useState("");
+  const inputRef = useRef();
+
+  const _authContext = useContext(AuthContext);
+  const { auth } = _authContext;
 
   useEffect(() => {
     let toTimer = null;
@@ -43,10 +49,11 @@ const ListInbox = (props) => {
                 className="form-control"
                 placeholder="Buscar"
                 defaultValue={search}
+                ref={inputRef}
                 onChange={({ target }) => {
                   const { value } = target;
                   setSearch(value);
-                }}
+                }}                                
                 onKeyPress={(e) => {
                   const { key } = e;
                   if (key === "Enter") {
@@ -65,7 +72,10 @@ const ListInbox = (props) => {
                 <div className="input-group-append">
                   <div
                     className="btn btn-secondary"
-                    onClick={(e) => setSearch("")}
+                    onClick={(e) => {
+                      inputRef.current.value = "";
+                      setSearch("");
+                    }}
                   >
                     <i className="fas fa-window-close"></i>
                   </div>
@@ -85,11 +95,12 @@ const ListInbox = (props) => {
           <div className="mailbox-controls">
             <div className="btn-group">
               {props.handleDeleteItem ? (
+                
                 <button
                   type="button"
-                  className="btn btn-default btn-sm"
+                  className="btn btn-default btn-sm text-danger"
                   title="Eliminar"
-                  disabled={props.itemSelected ? false : true}
+                  disabled = {props.itemSelected ? (props.itemSelected === auth.idUser) ? true : false : true}
                   onClick={(e) => props.handleDeleteItem()}
                 >
                   <i className="fas fa-trash-alt"></i>

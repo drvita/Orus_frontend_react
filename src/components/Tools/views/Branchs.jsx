@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { configActions } from "../../../redux/config";
-import helper from "../helpers";
+import { useState, useContext } from "react";
+import { ConfigContext } from "../../../context/ConfigContext";
+//import helper from "../helpers";
 
 export default function BranchsListComponent() {
-  const { list } = useSelector((state) => state.config),
-    dispatch = useDispatch();
+
   const [data, setData] = useState({
     showForm: false,
     id: 0,
@@ -13,23 +11,30 @@ export default function BranchsListComponent() {
     address: "",
     phone: "",
   });
-  const options = {
+  
+/*   const options = {
     page: 1,
     name: "branches",
     itemsPage: 10,
-  };
+  }; */
+
+  const configContext = useContext(ConfigContext);
+
+  const branches = configContext.data.filter((item)=>item.name === 'branches');
 
   //Actions
-  const handleUpdateConfig = ({ id, values }) => {
+  const handleUpdateConfig = ({ id, values, data }) => {
       setData({
         ...data,
         showForm: true,
         id,
-        name: values.name.toString().toLowerCase(),
-        address: values.address.toString().toLowerCase(),
-        phone: values.phone.toString().toLowerCase(),
+        //TODO: Destructuramoos data, Cambiamos values por data, validamos si existen [name, address, phone] evitar toString //
+        name: data.name?.toString().toLowerCase(),
+        address: data.address?.toString().toLowerCase(),
+        phone: data.phone?.toString().toLowerCase(),
       });
     },
+
     handleCancelForm = () =>
       setData({
         ...data,
@@ -39,28 +44,20 @@ export default function BranchsListComponent() {
         address: "",
         phone: "",
       }),
+
     handleNewBranch = () => setData({ ...data, showForm: true }),
+
     handleChangeValue = ({ name, value }) => {
       setData({
         ...data,
         [name]: value.toString().toLowerCase(),
       });
     },
+
     handleSendDataForm = (e) => {
       e.preventDefault();
-
-      if (helper.verifyData(data)) {
-        helper.saveConfig(data, options, dispatch);
-        handleCancelForm();
-      }
     };
-  // handleDeleteConf = ({ id, values }) =>
-  //   helper.deleteConfig(id, options, values.name, dispatch);
 
-  useEffect(() => {
-    dispatch(configActions.getListConfig(options));
-    //eslint-disable-next-line
-  }, []);
 
   return (
     <div className="card card-primary card-outline">
@@ -132,20 +129,14 @@ export default function BranchsListComponent() {
                 </tr>
               </thead>
               <tbody>
-                {list.map((branch) => (
-                  <tr key={branch.id}>
-                    <td className="text-capitalize">{branch.values.name}</td>
+                {branches.map((branch) => (
+                  branch.name !== 'bank' ? (
+                    <tr key={branch.id}>
+                    <td className="text-capitalize">{branch.data.name}</td>
                     <td className="text-truncate text-capitalize">
-                      {branch.values.address ?? "--"}
+                      {branch.data.address ?? "--"}
                     </td>
                     <td className="text-right">
-                      {/* <button
-                        type="button"
-                        className="btn btn-sm btn-warning"
-                        onClick={() => handleDeleteConf(branch)}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button> */}
                       <button
                         type="button"
                         className="btn btn-sm btn-primary ml-1"
@@ -155,6 +146,7 @@ export default function BranchsListComponent() {
                       </button>
                     </td>
                   </tr>
+                  ) : null
                 ))}
               </tbody>
             </table>

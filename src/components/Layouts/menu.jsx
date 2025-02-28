@@ -1,13 +1,12 @@
-import React from "react";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import { connect } from "react-redux";
-import { userActions } from "../../redux/user/";
+import { useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
-const MenuComponent = (props) => {
-  const history = useHistory();
+export default function MenuComponent() {
+  const { auth, outSession } = useContext(AuthContext);
   const handleLogOut = (e) => {
     e.preventDefault();
-    const { loggin: _LOGOUT } = props;
+
     window.Swal.fire({
       title: "Session",
       text: "¿Esta seguro de cerrar la sesion?",
@@ -18,20 +17,23 @@ const MenuComponent = (props) => {
       cancelButtonText: "Cancelar",
     }).then(({ dismiss }) => {
       if (!dismiss) {
-        _LOGOUT({});
-        history.push("/");
+        outSession();
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
     });
   };
 
-  const { companyName, user } = props,
-    active = useLocation().pathname.replace("/", ""),
-    mainRole = user.roles[0];
+  // TODO: import auth context
+  const companyName = "Optica Madero",
+    active = useLocation().pathname.replace("/", "");
 
   let avatar = "/img/avatars/avatar5.png";
-  if (mainRole === "ventas") avatar = "/img/avatars/avatar2.png";
-  if (!mainRole) avatar = "/img/avatars/avatar3.png";
-  if (user.idUser === 2) avatar = "/img/avatars/avatar4.png";
+  if (auth.roles === "ventas") avatar = "/img/avatars/avatar2.png";
+  if (auth.roles === "admin") avatar = "/img/avatars/avatar3.png";
+  if (auth.idUser === 2) avatar = "/img/avatars/avatar4.png";
 
   return (
     <aside className="main-sidebar sidebar-dark-primary">
@@ -52,17 +54,17 @@ const MenuComponent = (props) => {
             <img
               src={avatar}
               className="img-circle elevation-2"
-              alt={user.name}
+              alt={auth.name}
             />
           </div>
           <div className="info">
             <a href="#end" className="d-block text-capitalize">
-              {user.name}
-              <small className="text-lowercase">({user.username})</small>
+              {auth.name}
+              <small className="text-lowercase">({auth.username})</small>
               <br />
               <span className="badge badge-light">
-                {mainRole !== 'admin'
-                  ? mainRole === "ventas"
+                {auth.roles !== "admin"
+                  ? auth.roles === "ventas"
                     ? "Ventas"
                     : "Optometrista"
                   : "Administrador"}
@@ -77,7 +79,7 @@ const MenuComponent = (props) => {
             role="menu"
             data-accordion="false"
           >
-            {mainRole === "admin" ? (
+            {auth.roles === "admin" ? (
               <li className="nav-item">
                 <Link
                   to="/"
@@ -112,7 +114,7 @@ const MenuComponent = (props) => {
                 to="/consultorio"
                 className={
                   active === "consultorio" ||
-                  (active === "" && mainRole === "doctor")
+                  (active === "" && auth.roles === "doctor")
                     ? "nav-link active"
                     : "nav-link"
                 }
@@ -125,14 +127,14 @@ const MenuComponent = (props) => {
               </Link>
             </li>
 
-            {mainRole !== "doctor" ? (
-              <React.Fragment>
+            {auth.roles !== "doctor" ? (
+              <>
                 <li className="nav-item">
                   <Link
                     to="/pedidos"
                     className={
                       active === "pedidos" ||
-                      (active === "" && mainRole === "ventas")
+                      (active === "" && auth.roles === "ventas")
                         ? "nav-link active"
                         : "nav-link"
                     }
@@ -158,11 +160,6 @@ const MenuComponent = (props) => {
                     </p>
                   </Link>
                 </li>
-              </React.Fragment>
-            ) : null}
-
-            {mainRole === "admin" ? (
-              <React.Fragment>
                 <li
                   className={
                     active === "almacen"
@@ -183,6 +180,11 @@ const MenuComponent = (props) => {
                     </p>
                   </Link>
                 </li>
+              </>
+            ) : null}
+
+            {auth.roles === "admin" && (
+              <>
                 <li className="nav-item">
                   <Link
                     to="/usuarios"
@@ -213,8 +215,8 @@ const MenuComponent = (props) => {
                     </p>
                   </Link>
                 </li>
-              </React.Fragment>
-            ) : null}
+              </>
+            )}
 
             <li className="nav-item">
               <Link to="/" className="nav-link" onClick={handleLogOut}>
@@ -227,19 +229,4 @@ const MenuComponent = (props) => {
       </div>
     </aside>
   );
-};
-
-const mapStateToProps = ({ default: system, users }) => {
-    return {
-      user: {
-        ...users.dataLoggin,
-      },
-      companyName: system.company,
-      active: "",
-    };
-  },
-  mapDispatchToProps = {
-    loggin: userActions.setLogout,
-  };
-
-export default connect(mapStateToProps, mapDispatchToProps)(MenuComponent);
+}

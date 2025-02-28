@@ -1,54 +1,108 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 
-//Components
 import Main from "../../../layouts/list_inbox";
-//Actions
-import { orderActions } from "../../../redux/order";
 import helper from "../helpers";
+import useOrder from "../../../hooks/useOrder";
+import { Order } from "../../../context/OderContext";
 
 const InboxOrderComponent = (props) => {
-  const {
-    orders: pedidos = [],
-    meta,
-    options,
-    loading,
-    //Functions
-    _getList,
-    _getOrder,
-    _setOrder,
-    _setOptions,
-    _deleteOrder,
-    _saveOrder,
-  } = props;
+  const orderContext = Order();
+  const orderHook = useOrder();
+  const options = orderContext?.options;
+
+  const [pedidos, setPedidos] = useState({
+    data: [],
+    meta: {},
+    loading: false,
+  });
+
+  const { _saveOrder } = props;
+
+  const history = useHistory();
+
   const [orderSelected, setOrderSelected] = useState({ id: 0 });
 
-  const handleChangeOptions = (key, value) => {
-    _setOptions({
-      key,
-      value,
+  const getList = () => {
+    if (!options) return null;
+
+    setPedidos({
+      ...pedidos,
+      loading: true,
+    });
+
+    orderHook.getListOrders(options).then((data) => {
+      if (data) {
+        setPedidos({
+          data: data.data,
+          meta: data.meta,
+        });
+      } else {
+        console.error("Error al obtener la lista de pedidos");
+      }
     });
   };
+
+  const handleChangeOptions = (key, value) => {
+    orderContext?.set({
+      ...orderContext,
+      options: {
+        ...options,
+        [key]: value,
+      },
+    });
+  };
+
   const handleSelectOrder = (e, order = { id: 0 }) => {
     if (e) e.preventDefault();
-
-    if (order.id) {
-      _setOrder(order);
-    } else if (orderSelected.id) {
-      _getOrder(orderSelected.id);
+    if (order.id !== 0) {
+      history.push(`/pedidos/${order.id}`);
+    } else {
+      history.push(`pedidos/${orderSelected.id}`);
     }
-    props.handleChangePanel(null, 3);
   };
+
   const handleOrderSelect = ({ checked }, pedido) => {
     if (!checked) pedido = { id: 0 };
     setOrderSelected(pedido);
   };
+
   const deleteOrder = () => {
-    helper.handleDeleteOrder(orderSelected, options, _deleteOrder);
-    setOrderSelected({ id: 0 });
+    window.Swal.fire({
+      title: "¿Estás seguro de eliminar la orden?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+    }).then(({ dismiss }) => {
+      if (!dismiss) {
+        orderHook.deleteOrder(orderSelected.id);
+
+        window.Swal.fire({
+          icon: "success",
+          title: "Orden eliminada correctamente",
+          showConfirmButton: false,
+          timer: 3000,
+        });
+
+        orderContext.set({
+          ...orderContext,
+          options: {
+            page: 1,
+            orderby: "created_at",
+            order: "desc",
+            itemsPage: 10,
+            status: 0,
+            search: "",
+          },
+        });
+      }
+    });
   };
+
   const handleStatus = () => {
     if (orderSelected.id && orderSelected.estado < 3) {
       helper.handleSaveOrder(
@@ -62,26 +116,36 @@ const InboxOrderComponent = (props) => {
   };
 
   useEffect(() => {
-    _getList(options);
+    getList();
     // eslint-disable-next-line
   }, [options]);
-
-  //console.log("[DEBUG] Render", pedidos);
 
   return (
     <Main
       title="Listado de pedidos"
       icon="clipboard-list"
       color="warning"
-      meta={meta}
+      meta={pedidos.meta}
       itemSelected={orderSelected.id}
-      loading={loading}
-      defaultSearch={options.search}
+      loading={pedidos.loading}
+      defaultSearch={options?.search}
       handlePagination={(page) => handleChangeOptions("page", page)}
       handleSearch={(search) => handleChangeOptions("search", search)}
       handleEditItem={handleSelectOrder}
       handleDeleteItem={deleteOrder}
-      handleSync={() => _getList(options)}
+      handleSync={() => {
+        orderContext.set({
+          ...orderContext,
+          options: {
+            page: 1,
+            orderby: "created_at",
+            order: "desc",
+            itemsPage: 10,
+            status: 0,
+            search: "",
+          },
+        });
+      }}
       handleStatus={handleStatus}
     >
       <table className="table table-hover table-striped">
@@ -93,13 +157,13 @@ const InboxOrderComponent = (props) => {
             <th>Estado</th>
             <th>Nota</th>
             <th>
-              {options.orderby === "created_at" ? "Registrado" : "Modificado"}
+              {options?.orderby === "created_at" ? "Registrado" : "Modificado"}
             </th>
           </tr>
         </thead>
         <tbody>
-          {pedidos.length ? (
-            pedidos.map((pedido) => {
+          {pedidos.data.length ? (
+            pedidos.data.map((pedido, i) => {
               return (
                 <tr key={pedido.id}>
                   <td>
@@ -110,7 +174,7 @@ const InboxOrderComponent = (props) => {
                         value={pedido.id}
                         id={"order_" + pedido.id}
                         checked={orderSelected.id === pedido.id ? true : false}
-                        disabled={pedido.estado > 2}
+                        disabled={pedido.status > 2}
                         onChange={({ target }) =>
                           handleOrderSelect(target, pedido)
                         }
@@ -138,26 +202,18 @@ const InboxOrderComponent = (props) => {
                         }
                       >
                         <i className="fas fa-user text-sm mr-2"></i>
-                        {pedido.paciente.nombre}
+                        {pedido.paciente.name}
                       </span>
                     </a>
                   </td>
                   <td className="mailbox-subject">
-                    <span
-                      className={`badge badge-${
-                        pedido.status < 3 ? "primary" : "secondary"
-                      } mr-2 text-uppercase`}
-                    >
-                      {helper.handleStatusString(pedido.status)}
-                    </span>
+                    {helper.getBadgeStatus(pedido.status)}
                     {pedido.status === 1 ? (
                       <div>
                         <span className="mr-1 text-dark">
-                          {pedido.laboratorio
-                            ? pedido.laboratorio.nombre
-                            : "Sin asignar"}
+                          {pedido.lab ? pedido.lab.nombre : "Sin asignar"}
                         </span>
-                        {pedido.laboratorio ? "/ " + pedido.npedidolab : ""}
+                        {pedido.lab ? "/ " + pedido.npedidolab : ""}
                       </div>
                     ) : pedido.status === 2 ? (
                       <small>
@@ -178,10 +234,10 @@ const InboxOrderComponent = (props) => {
                     ) : null}
                   </td>
                   <td className="mailbox-attachment">
-                    {pedido.nota ? (
-                      <Link to={"/notas/registro/" + pedido.nota.id}>
+                    {pedido.sale ? (
+                      <Link to={"/notas/registro/" + pedido.sale.id}>
                         <span className="badge badge-success">
-                          {pedido.nota.id}
+                          {pedido.sale.id}
                         </span>
                       </Link>
                     ) : (
@@ -209,21 +265,4 @@ const InboxOrderComponent = (props) => {
   );
 };
 
-const mapStateToProps = ({ order }) => {
-    return {
-      orders: order.list,
-      options: order.options,
-      meta: order.metaList,
-      loading: order.loading,
-    };
-  },
-  mapActionsToProps = {
-    _getList: orderActions.getListOrder,
-    _getOrder: orderActions.getOrder,
-    _setOrder: orderActions.setOrder,
-    _setOptions: orderActions.setOptions,
-    _deleteOrder: orderActions.deleteOrder,
-    _saveOrder: orderActions.saveOrder,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(InboxOrderComponent);
+export default InboxOrderComponent;

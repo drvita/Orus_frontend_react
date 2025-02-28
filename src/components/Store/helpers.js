@@ -1,5 +1,5 @@
 const verifyItem = (item) => {
-  if (item.cantidad <= 0) {
+  if (item.cant <= 0) {
     window.Swal.fire({
       title: "Verificacion",
       text: "La cantidad debe de ser un valor valido",
@@ -15,7 +15,7 @@ const verifyItem = (item) => {
     });
     return false;
   }
-  if (!item.precio) {
+  if (!item.price) {
     window.Swal.fire({
       title: "Verificacion",
       text: "El precio no es valido",
@@ -175,23 +175,14 @@ const handleCodeString = (
     brand,
     code = ""
   ) => {
+    stringcode += category !== null ? " " + category?.trim() : "";
+
     stringcode +=
-      category.current !== null && category.current.selectedIndex
-        ? " " +
-          category.current.options[category.current.selectedIndex].text.trim()
-        : "";
-    stringcode +=
-      brand.current !== null && brand.current.selectedIndex
-        ? " " +
-          brand.current.options[brand.current.selectedIndex].text
-            .trim()
-            .replace(/\s/gim, "")
-        : "";
+      brand !== null ? " " + brand?.trim().replace(/\s/gim, "") : "";
 
     if (code) {
-      stringcode += " " + code.replace(/[-\s]+/gm, "");
+      stringcode += " " + code.replace(/[\s]+/gm, "");
     }
-
     return stringcode.toLowerCase();
   },
   codeLentString = (string) => {
@@ -245,59 +236,34 @@ const handleCodeString = (
     }
   },
   handleCodeLent = (grad, category1, category2, category3) => {
-    if (!category1.current || !category2.current || !category3.current) {
+    if (!category1 || !category2 || !category3) {
       return "";
     }
 
     let stringcode =
-      category1.current !== null
-        ? codeLentString(
-            category1.current.options[category1.current.selectedIndex].text
-              .trim()
-              .toLowerCase()
-          )
-        : "";
+      category1 !== null ? codeLentString(category1.trim().toLowerCase()) : "";
     stringcode +=
-      category2.current !== null
-        ? codeLentString(
-            category2.current.options[category2.current.selectedIndex].text
-              .trim()
-              .toLowerCase()
-          )
-        : "";
+      category2 !== null ? codeLentString(category2.trim().toLowerCase()) : "";
     stringcode +=
-      category3.current !== null
-        ? codeLentString(
-            category3.current.options[category3.current.selectedIndex].text
-              .trim()
-              .toLowerCase()
-          )
-        : "";
+      category3 !== null ? codeLentString(category3.trim().toLowerCase()) : "";
 
     return stringcode + grad.toString().trim().replace(/\s/gim, "");
   },
   handleNameLent = (grad, category1, category2, category3) => {
-    if (!category1.current || !category2.current || !category3.current) {
+    if (!category1 || !category2 || !category3) {
       return "";
     }
 
     let stringcode = "";
-    stringcode +=
-      category1.current !== null
-        ? category1.current.options[category1.current.selectedIndex].text.trim()
-        : "";
-    stringcode +=
-      category2.current !== null
-        ? " " +
-          category2.current.options[category2.current.selectedIndex].text.trim()
-        : "";
-    stringcode +=
-      category3.current !== null
-        ? " " +
-          category3.current.options[category3.current.selectedIndex].text.trim()
-        : "";
+
+    stringcode += category1 !== null ? category1.trim() : "";
+
+    stringcode += category2 !== null ? " " + category2.trim() : "";
+
+    stringcode += category3 !== null ? " " + category3.trim() : "";
 
     stringcode += " " + grad.toString();
+
     return stringcode.toLowerCase();
   };
 

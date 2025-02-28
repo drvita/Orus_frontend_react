@@ -3,6 +3,9 @@ export default function PaginationComponent({
   color,
   handlePagination: _handlePagination,
 }) {
+
+
+
   const handleChangePage = (page) => {
     if (_handlePagination) {
       _handlePagination(page);

@@ -1,28 +1,28 @@
 import { useEffect, useState } from "react";
-import { connect } from "react-redux";
-//Actions
-import { saleActions } from "../../../redux/sales";
-import { storeActions } from "../../../redux/store/index";
+
+//Context
+import { Sale } from "../../../context/SaleContext";
+
 //Components
 import ListModal from "./ListItemsModal";
 
-function InputSearchItem({
-  sale,
-  list,
-  messages,
-  loading,
-  //Functions
-  _getList,
-  _setList,
-  _setSale,
-  _setMessage,
-}) {
+//Hooks
+import useProducts from "../../../hooks/useProducts";
+
+//Helper
+import helper from "../helpers";
+
+function InputSearchItem() {
   //State
   const [textSearch, setTextSearch] = useState("");
   const [showList, setShowList] = useState(false);
   const [cantDefault, setCantDefault] = useState(1);
-  // const [startSearch, setStartSearch] = useState(false);
+  const [list, setList] = useState([]);
+
+  const sale = Sale();
   const { session } = sale;
+  const hookProducts = useProducts();
+
   //Functions
   const handleChangeTextSearch = ({ value }) => {
       setTextSearch(value);
@@ -42,8 +42,12 @@ function InputSearchItem({
           setCantDefault(parseInt(codes[0]));
         }
 
-        _getList({
-          search,
+        hookProducts.getProducts(search).then((data) => {
+          if (data) {
+            setList(data.data);
+          } else {
+            console.error("Error al buscar el producto");
+          }
         });
         setTextSearch("");
       }
@@ -55,8 +59,8 @@ function InputSearchItem({
       return {
         id: 0,
         cant: data.cant,
-        price: parseFloat(data.item.precio),
-        subtotal: parseInt(data.cant) * parseFloat(data.item.precio),
+        price: parseFloat(data.item.price),
+        subtotal: parseInt(data.cant) * parseFloat(data.item.price),
         inStorage:
           parseInt(data.item.cantidades) >= parseInt(data.cant) ? true : false,
         out: parseInt(data.item.cantidades) - parseInt(data.cant),
@@ -64,18 +68,12 @@ function InputSearchItem({
         session,
         store_items_id: data.item.id,
         descripcion: data.item.descripcion,
-        producto: data.item.producto.toLowerCase(),
+        producto: data.item.name.toLowerCase(),
         category: data.item.categoria ? data.item.categoria.id : 0,
       };
     },
     handleSelectItem = (data) => {
       const item = makeItem(data);
-      _setList({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      });
       handleAddItem(item);
       setCantDefault(1);
     },
@@ -83,6 +81,7 @@ function InputSearchItem({
       const found = sale.items.filter(
         (item) => item.store_items_id === result.store_items_id
       );
+
       let newItems = sale.items.filter(
         (item) => item.store_items_id !== result.store_items_id
       );
@@ -97,13 +96,26 @@ function InputSearchItem({
             out: parseInt(result.cantInStore) - cantidad,
           };
         newItems.push(item);
+        window.Swal.fire({
+          title: "Producto agregado",
+          text: `Se agrego otro ${found[0].producto} a la lista`,
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonText: "Ok",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        });
       } else {
         newItems.push(result);
       }
 
-      _setSale({
+      let subtotal = helper.getSubTotal(newItems);
+
+      sale.set({
         ...sale,
         items: newItems,
+        total: helper.getTotal(subtotal, sale.discount),
+        subtotal: subtotal,
       });
     };
 
@@ -114,26 +126,26 @@ function InputSearchItem({
           item: list[0],
           cant: cantDefault ? cantDefault : 1,
         });
-        handleAddItem(item);
-        setCantDefault(1);
+
+        if (item.price <= 0) {
+          window.Swal.fire({
+            title: "Verificar",
+            text: `El item que intentas agregar tiene un precio de $0, revisa el precio en el almacen`,
+            icon: "warning",
+            showCancelButton: false,
+            confirmButtonText: "Ok",
+            cancelButtonText: "Cancelar",
+            showLoaderOnConfirm: true,
+          });
+        } else {
+          handleAddItem(item);
+          setCantDefault(1);
+        }
       } else {
         setShowList(true);
       }
-    } else if (!list.length && messages.length) {
-      messages.forEach((msg) => {
-        const { type, text } = msg;
-        window.Swal.fire({
-          icon: type,
-          title: text,
-          showConfirmButton: type !== "error" ? false : true,
-          timer: type !== "error" ? 1500 : 9000,
-        });
-      });
-      _setMessage();
     }
-
-    //eslint-disable-next-line
-  }, [list]);
+  }, [list]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="btn-group text-center d-print-none">
@@ -144,18 +156,14 @@ function InputSearchItem({
         onKeyPress={({ key }) => handlePressEnter(key)}
         value={textSearch}
       />
-      {loading ? (
-        <i className="fas fa-2x fa-spinner fa-spin"></i>
-      ) : (
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={searchItem}
-          disabled={textSearch.length > 2 ? false : true}
-        >
-          <i className="fas fa-barcode"></i>
-        </button>
-      )}
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={searchItem}
+        disabled={textSearch.length > 2 ? false : true}
+      >
+        <i className="fas fa-barcode"></i>
+      </button>
 
       {showList && list.length ? (
         <ListModal
@@ -169,19 +177,4 @@ function InputSearchItem({
   );
 }
 
-const mapStateToProps = ({ storeItem }) => {
-    return {
-      loading: storeItem.loading,
-      list: storeItem.list,
-      messages: storeItem.messages,
-      meta: storeItem.metaList,
-    };
-  },
-  mapActionsToProps = {
-    _getList: storeActions.getListStore,
-    _setList: storeActions.setListStore,
-    _setSale: saleActions.setSale,
-    _setMessage: storeActions.setMessagesStore,
-  };
-
-export default connect(mapStateToProps, mapActionsToProps)(InputSearchItem);
+export default InputSearchItem;

@@ -1,49 +1,49 @@
-import moment from "moment";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useContext, useState } from "react";
+
 //Components
 import PaymentDetails from "./PaymentDetails";
 import UpdateItemModal from "./UpdateItemModal";
-//Actions
-import { saleActions } from "../../../redux/sales";
+
+// Context
+import { Sale } from "../../../context/SaleContext";
+import { AuthContext } from "../../../context/AuthContext";
+
+//Helper
 import helpers from "../helpers";
 
-export default function SalesDetailsTableComponent({ paid }) {
-  const { sales, users } = useSelector((state) => state),
-    { sale } = sales,
-    { dataLoggin: userMain } = users,
-    dispatch = useDispatch(),
-    [data, setData] = useState({
-      showUpdateItem: false,
-      showPaymentDetails: false,
-      item: {},
-      payment: {},
-    });
+//Libraries
+import moment from "moment";
+
+export default function SalesDetailsTableComponent() {
+  const sale = Sale();
+  const pagado = !sale.discount
+    ? helpers.getPagado(sale.payments)
+    : helpers.getPagado(sale.payments) + sale.discount;
+  const paid = sale.subtotal <= pagado ? true : false;
+  const { auth } = useContext(AuthContext);
+  const { roles } = auth;
+
+  const [data, setData] = useState({
+    showUpdateItem: false,
+    showPaymentDetails: false,
+    item: {},
+    payment: {},
+  });
 
   //Functions
   const handleDeleteItem = (item) => {
       const newItems = sale.items.filter(
         (product) => product.store_items_id !== item.store_items_id
       );
-      if (sale.id) {
-        dispatch(
-          saleActions.saveSale({
-            id: sale.id,
-            data: {
-              ...sale,
-              items: JSON.stringify(newItems),
-              payments: null,
-            },
-          })
-        );
-      } else {
-        dispatch(
-          saleActions.setSale({
-            ...sale,
-            items: newItems,
-          })
-        );
-      }
+
+      let subtotal = helpers.getSubTotal(newItems);
+
+      sale.set({
+        ...sale,
+        items: newItems,
+        total: helpers.getTotal(subtotal, sale.discount),
+        subtotal: subtotal,
+      });
     },
     handleShowPaymentDetails = (e, payment) => {
       if (e) e.preventDefault();
@@ -56,36 +56,24 @@ export default function SalesDetailsTableComponent({ paid }) {
     },
     handleDeleteDiscount = () => {
       helpers.confirm("Realmente desea eliminar el descuento", () => {
-        dispatch(
-          saleActions.saveSale({
-            id: sale.id,
-            data: {
-              ...sale,
-              total: sale.total + sale.descuento,
-              descuento: 0,
-              items: JSON.stringify(sale.items),
-              payments: null,
-            },
-          })
-        );
+        sale.set({
+          ...sale,
+          discount: 0,
+        });
       });
     },
     handleDeletePayment = ({ id, total, metodoname }) => {
-      helpers.confirm(
-        `Realmente desea eliminar el pago ${metodoname}, de ${total}`,
-        () => {
-          dispatch(
-            saleActions.deletePayment({
-              id,
-              sale_id: sale.id,
-            })
-          );
-        }
-      );
+      const newPayments = sale.payments.filter((payment) => payment.id !== id);
+
+      helpers.confirm(`Realmente desea eliminar el pago de  $${total}`, () => {
+        sale.set({
+          ...sale,
+          payments: newPayments,
+        });
+      });
     },
     handleShowUpdateItem = (e, item) => {
       if (e) e.preventDefault();
-
       setData({
         ...data,
         showUpdateItem: true,
@@ -103,28 +91,16 @@ export default function SalesDetailsTableComponent({ paid }) {
       const newItems = sale.items.filter(
         (i) => i.store_items_id !== item.store_items_id
       );
-
       newItems.push(item);
 
-      if (sale.id) {
-        dispatch(
-          saleActions.saveSale({
-            id: sale.id,
-            data: {
-              ...sale,
-              items: JSON.stringify(newItems),
-              payments: null,
-            },
-          })
-        );
-      } else {
-        dispatch(
-          saleActions.setSale({
-            ...sale,
-            items: newItems,
-          })
-        );
-      }
+      let subtotal = helpers.getSubTotal(newItems);
+
+      sale.set({
+        ...sale,
+        items: newItems,
+        total: helpers.getTotal(subtotal, sale.discount),
+        subtotal: subtotal,
+      });
 
       handleCloseUpdateItem();
     },
@@ -144,21 +120,39 @@ export default function SalesDetailsTableComponent({ paid }) {
             <>
               {sale.items.map((item, index) => {
                 const disabled =
-                  (sale.total && paid) ||
+                  (sale.subtotal && paid) ||
                   sale.payments.length ||
-                  sale.descuento;
+                  sale.discount;
+                const diffDay = moment(Date.now()).diff(
+                  moment(sale.created_at),
+                  "days"
+                );
                 if (!item.store_items_id) return null;
 
                 return (
                   <tr key={index}>
                     {handleDeleteBtn(handleDeleteItem, item, disabled)}
-                    <td onClick={(e) => handleShowUpdateItem(null, item)}>
+                    <td
+                      onClick={(e) => {
+                        if (roles === "ventas" && diffDay !== 0) {
+                          alert("No puedes editar esta venta!");
+                        } else {
+                          handleShowUpdateItem(null, item);
+                        }
+                      }}
+                    >
                       <a
                         href="#details"
                         className="text-muted w-full d-block text-uppercase"
-                        onClick={(e) => handleShowUpdateItem(e, item)}
+                        onClick={(e) => {
+                          if (roles === "ventas") {
+                            return null;
+                          } else {
+                            handleShowUpdateItem(e, item);
+                          }
+                        }}
                       >
-                        {item.producto}
+                        {item.producto ? item.producto : item.name}
                       </a>
                       <label className="w-full d-block">
                         <span className="badge badge-dark mr-1">
@@ -185,7 +179,7 @@ export default function SalesDetailsTableComponent({ paid }) {
               })}
             </>
           ) : null}
-          {sale.descuento ? (
+          {sale.discount ? (
             <tr>
               {handleDeleteBtn(handleDeleteDiscount, null, paid)}
               <td>
@@ -193,7 +187,7 @@ export default function SalesDetailsTableComponent({ paid }) {
                   Descuento
                 </span>
                 <label className="w-full d-block">
-                  <span className="ml-1 text-danger">- ${sale.descuento}</span>
+                  <span className="ml-1 text-danger">- ${sale.discount}</span>
                 </label>
               </td>
             </tr>
@@ -201,11 +195,14 @@ export default function SalesDetailsTableComponent({ paid }) {
           {sale.payments.length ? (
             <>
               {sale.payments.map((pay, index) => {
-                const diffPay = moment(Date.now()).diff(
-                    moment(pay.created_at),
-                    "days"
-                  ),
-                  disabled = paid && diffPay && userMain.rol;
+                const disabled =
+                  sale.id && !sale.order
+                    ? true
+                    : sale.id && sale.order
+                    ? sale.isPayed
+                      ? true
+                      : false
+                    : false;
 
                 return (
                   <tr key={index}>
@@ -216,13 +213,7 @@ export default function SalesDetailsTableComponent({ paid }) {
                         className=" w-full d-block text-uppercase"
                         onClick={(e) => handleShowPaymentDetails(e, pay)}
                       >
-                        <span
-                          className={
-                            pay.id ? "text-success" : "text-warning text-bold"
-                          }
-                        >
-                          Abono
-                        </span>
+                        <span className="text-success">Abono</span>
                         <span className="ml-1 text-muted">
                           {pay.metodoname}
                         </span>
@@ -231,7 +222,6 @@ export default function SalesDetailsTableComponent({ paid }) {
                         <span className="ml-1 text-muted">
                           {moment(pay.created_at).format("LL")},
                         </span>
-
                         <span className="ml-1">${pay.total}</span>
                       </label>
                     </td>
@@ -240,24 +230,38 @@ export default function SalesDetailsTableComponent({ paid }) {
               })}
             </>
           ) : null}
-          {paid && sale.total ? (
+
+          {sale.thereNews && sale.order ? (            
             <tr className="table-info">
               <td colSpan="2">
                 <span className=" w-full d-block text-uppercase text-center text-bold">
                   <i className="fas fa-info-circle mr-1 text-primary"></i>
-                  Cuenta pagada
+                  Para guardar los cambios presione el boton ¡Imprimir!
                 </span>
               </td>
             </tr>
-          ) : null}
+          ) : (
+            Boolean(paid && sale.subtotal) && (
+              <tr className="table-info">
+                <td colSpan="2">
+                  <span className=" w-full d-block text-uppercase text-center text-bold">
+                    <i className="fas fa-info-circle mr-1 text-primary"></i>
+                    Cuenta pagada!
+                  </span>
+                </td>
+              </tr>
+            )
+          )}
         </tbody>
       </table>
+
       {data.showPaymentDetails && (
         <PaymentDetails
           handleClose={handleClosePaymentDetails}
           payment={data.payment}
         />
       )}
+
       {data.showUpdateItem && (
         <UpdateItemModal
           item={data.item}

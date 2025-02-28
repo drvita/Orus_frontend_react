@@ -62,7 +62,7 @@ function PendingOrdersComponent(props) {
     }
     // eslint-disable-next-line
   }, [load]);
-  //console.log("[DEBUG] Render data", data);
+
 
   return (
     <Main

@@ -10,12 +10,13 @@ export default function UpdateItemModal({
     price: item.price ?? 0,
   });
   //Functions
-  const handleChangeInput = ({ name, value }) => {
+  const handleChangeInput = ({ name, value }) => {      
       setData({
         ...data,
         [name]: parseInt(value),
       });
     },
+
     handleUpdateItem = () => {
       _update({
         ...item,
@@ -23,6 +24,7 @@ export default function UpdateItemModal({
         subtotal: data.cant * data.price,
       });
     },
+
     handleKeyPress = (key) => {
       if (key === "Enter") handleUpdateItem();
     };
@@ -32,7 +34,11 @@ export default function UpdateItemModal({
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Edite el producto</h5>
+            <h5 className="modal-title">
+              <span className="text-capitalize text-truncate">
+                {item.producto}
+              </span>
+            </h5>
             <button type="button" className="close" onClick={() => _close()}>
               <span aria-hidden="true">&times;</span>
             </button>

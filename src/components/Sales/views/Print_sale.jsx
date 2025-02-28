@@ -1,50 +1,140 @@
-import moment from "moment";
-import { useSelector, useDispatch } from "react-redux";
-import { saleActions } from "../../../redux/sales";
+import {useEffect, useContext} from 'react';
 
-export default function PrintSaleComponent({
-  sale = {},
-  payed: abonado = 0,
-  order,
-  text,
-  btn = "primary",
-}) {
+//Context
+import { AuthContext } from "../../../context/AuthContext";
+import { Sale } from '../../../context/SaleContext';
+
+//Hooks
+import useSale from '../../../hooks/useSale';
+
+//Helpers
+import helpers from '../helpers';
+
+import moment from "moment";
+
+export default function PrintSaleComponent({ payed: abonado = 0, order, text, btn = "primary" }) {
+  
+  const sale = Sale();
+  const _saleHook = useSale();
+  const {auth} = useContext(AuthContext);
+
+  const initialSale = {
+    id: 0,
+    customer: {
+      id: 0,
+      name: "venta de mostrador",
+    },
+    contact_id: 2,
+    items: [],
+    session: helpers.getSession(),
+    discount: 0,
+    subtotal: 0,
+    total: 0,
+    payments: [],
+    branch_id: auth.branch.id,
+  }
+
   const {
       items,
-      descuento,
+      discount,
       total = 0,
       created_at: date,
       id,
       customer: client,
-      payments
-    } = sale,
-    saldo = total - abonado,
-    { branch } = useSelector((state) => state.users.dataLoggin),
-    dispatch = useDispatch();
-  let totalItems = 0;
+    } = sale;
+
+    const saldo = total - abonado;
+
+    const { branch } = auth;
+
+    const pagado  = helpers.getPagado(sale.payments) + sale.discount; 
+    const paid = sale.total <= pagado ? true : false;
+        
+    let totalItems = 0;
+
+    const _saveSale = ()=>{
+      const returnedSale = _saleHook.saveSale(sale);
+      returnedSale.then((data)=>{
+        if(data.data){
+          sale.set({
+            ...sale,
+            id: data.data.id,
+          })
+          window.Swal.fire({
+            title: "Venta Guardada correctamente",
+            text: `¿Quieres imprimir el ticket de la venta?`,
+            icon: "success",
+            showCancelButton: true,
+            confirmButtonText: "Imprimir",
+            cancelButtonText: "Cancelar",
+            showLoaderOnConfirm: true,
+          }).then(({ dismiss }) => {
+            if (!dismiss) {
+              setTimeout(showPrint, 1000);
+            }else{
+              helpers.confirm("Cerrar la venta actual", () => {                
+                sale.set(initialSale);
+              });
+            }
+          });
+        }
+        else{
+          console.error("")
+        }
+      })
+    }
+
   //Functions
   const handlePrintShow = () => {
-    dispatch(
-      saleActions.saveSale({
-        id: sale.id,
-        data: {
-          ...sale,
-          items: JSON.stringify(sale.items),
-          payments: null,
-        },
-      })
-    );
-    window.print();
+    if(sale.id){                  
+      setTimeout(showPrint, 1000);
+    }
+    else{
+      return null
+    }
   };
 
-  // console.log("[DEBUG] branch:", branch);
-  
+  const showPrint = ()=>{
+    const path = window.location.pathname;
+    if (path !== "/notas") {
+      return false;
+    }
+    window.print();
+    
+  }
+
+  const handleClose = () => {
+    sale.set(initialSale);
+  };
+
+   useEffect(()=>{
+    if(paid){ 
+      if(sale.id){
+        if(sale.order){          
+          _saveSale();
+        }
+        return null;
+      }else{
+        _saveSale();
+      }
+    }else{
+      return null;
+    } 
+
+  },[paid]);// eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(()=>{
+    window.addEventListener("afterprint", ()=>{handleClose()});
+    return ()=>{
+      window.removeEventListener("afterprint", ()=>{handleClose()});
+    }
+  },[])// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
       <button
         className={`btn btn-${btn} ml-2 d-print-none`}
-        disabled={!payments.length}
+        disabled={sale.order ? false : !paid}
         onClick={handlePrintShow}
       >
         <i className={text ? "fas fa-print mr-1" : "fas fa-print"}></i>
@@ -103,8 +193,8 @@ export default function PrintSaleComponent({
                   className="text-uppercase text-center mb-1"
                   style={{ fontSize: 20, fontFamily: "sans-serif" }}
                 >
-                  {client && client.nombre
-                    ? client.nombre
+                  {client && client.name
+                    ? client.name
                     : "Venta de mostrador"}
                   <br />
                   <strong>
@@ -171,13 +261,13 @@ export default function PrintSaleComponent({
               <tfoot>
                 <tr>
                   <td className="text-right" colSpan="3">
-                    {descuento ? (
+                    {discount ? (
                       <>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
                           Subtotal: <label>$ {totalItems}</label>
                         </h4>
                         <h4 style={{ fontSize: 26, fontFamily: "sans-serif" }}>
-                          Descuento: <label>$ {descuento}</label>
+                          Descuento: <label>$ {discount}</label>
                         </h4>
                       </>
                     ) : null}

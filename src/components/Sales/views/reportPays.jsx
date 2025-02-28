@@ -1,93 +1,33 @@
-import React, { Component } from "react";
-import { api, getUrl } from "../../../redux/sagas/api";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
 import { dollarUS } from "../../../utils/current";
+import { api, setUrl } from "../../../utils/url";
 
-export default class ReportPay extends Component {
-  constructor(props) {
-    super(props);
-    const ls = JSON.parse(localStorage.getItem("OrusSystem"));
-    this.state = {
-      host: ls.host,
-      rol: ls.rol,
-      token: ls.token,
-      total: 0,
-      efectivo: 0,
-      page: 1,
-    };
-    this.char = null;
+export default function ReportPays({ filters, changeState, auth }) {
+  const [state, setState] = useState({
+    rol: auth.roles,
+    total: 0,
+    efectivo: 0,
+    char: null,
+    load: false,
+  });
 
-    this.controller = new AbortController();
-  }
-  componentWillUnmount() {
-    this.controller.abort();
-  }
-  componentDidMount() {
-    this.getSaleDay();
-  }
-  componentDidUpdate(props, state) {
-    if (
-      props.filters.date_start !== this.props.filters.date_start ||
-      props.filters.date_end !== this.props.filters.date_end ||
-      props.filters.user !== this.props.filters.user ||
-      props.filters.branch_id !== this.props.filters.branch_id ||
-      state.page !== this.state.page
-    ) {
-      this.getSaleDay();
-    }
-  }
-
-  render() {
-    const { total, efectivo, rol } = this.state;
-    const { data } = this.props;
-
-    return (
-      <div className="card card-success card-outline">
-        <div className="card-header">
-          <h3 className="card-title text-success">
-            {data.rol
-              ? "Mis ventas del dia por metodo de pago"
-              : "Ventas del dia por metodo de pago"}
-          </h3>
-        </div>
-        <div className="card-body">
-          <canvas id="donutChart"></canvas>
-          <p>
-            {!rol ? (
-              <React.Fragment>
-                Venta: <strong>{dollarUS.format(total)}</strong>
-                <br />
-              </React.Fragment>
-            ) : null}
-            Efectivo: <strong>{dollarUS.format(efectivo)}</strong>
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  changeState = (e) => {
-    let { value, name } = e.target;
-    if (name === "user") value = value * 1;
-    this.setState({
-      [name]: value,
+  const getSaleDay = async () => {
+    setState({
+      ...state,
+      load: true,
     });
-  };
-  getSaleDay = async () => {
-    //Variables en localStorage
-    let { page } = this.state,
-      { filters } = this.props;
 
     const newFiltersPays = {
       ...filters,
+      itemsPage: 20,
+      type: "methods",
     };
 
-    newFiltersPays.itemsPage = 12;
-    newFiltersPays.page = page;
-    newFiltersPays.type = "methods";
-
-    const url = getUrl("payments", null, newFiltersPays);
+    const url = setUrl("payments", null, newFiltersPays);
     const { data, message } = await api(url);
-    
+
+    console.log("[Orus System] Creating char");
     if (data) {
       var donutChartCanvas = window.$("#donutChart").get(0).getContext("2d"),
         donutOptions = {
@@ -99,7 +39,8 @@ export default class ReportPay extends Component {
         total = 0,
         efectivo = 0,
         donutData = {};
-      if (this.char) this.char.destroy();
+
+      if (state.char) state.char.destroy();
 
       if (!data.message) {
         if (data && data.length) {
@@ -107,7 +48,6 @@ export default class ReportPay extends Component {
             labels.push(mp.method);
             values.push(mp.total.toFixed(2));
             if (mp.method === "efectivo") {
-              this.props.changeState("ventas", mp.total);
               efectivo = mp.total;
             }
             total += mp.total;
@@ -118,14 +58,20 @@ export default class ReportPay extends Component {
           values = [0];
         }
 
-        this.setState({
+        setState({
+          ...state,
           total,
           efectivo,
+          load: false,
         });
       } else {
         console.error("[ORUS] Error al cargar la venta del dia", data.message);
         labels = ["No hay datos"];
         values = [100];
+        setState({
+          ...state,
+          load: false,
+        });
       }
       donutData = {
         labels: labels,
@@ -144,44 +90,60 @@ export default class ReportPay extends Component {
           },
         ],
       };
-      this.char = new window.Chart(donutChartCanvas, {
+      state.char = new window.Chart(donutChartCanvas, {
         type: "pie",
         data: donutData,
         options: donutOptions,
       });
-    } else if (message) {
+    } else {
       window.Swal.fire({
         title: "Error!",
         text: "Ups!\n Hubo un error al descargar las ventas",
         icon: "error",
         confirmButtonText: "Ok",
       });
+      setState({
+        ...state,
+        load: false,
+      });
+
       return message;
     }
-
-    //url = "http://" + host + "/api/payments?",
-    //date_start = "date_start=" + fechaInicial,
-    //date_end = "&date_end=" + fechaFinal,
-    //method = "&type=methods",
-    //saleUser = user ? "&user=" + user : "";
   };
 
-  SetMethodPayment = (status) => {
-    switch (status) {
-      case 1:
-        return "Efectivo";
-      case 2:
-        return "Tarjeta debito";
-      case 3:
-        return "Tarjeta de credito";
-      case 4:
-        return "La marina";
-      case 5:
-        return "Cheque";
-      case 6:
-        return "Transferencia";
-      default:
-        return "Otro";
-    }
-  };
+  useEffect(() => {
+    getSaleDay();
+  }, [
+    filters.user_id,
+    filters.date_start,
+    filters.date_end,
+    filters.branch_id,
+  ]);
+
+  useEffect(() => {
+    changeState({ ventas: state.efectivo });
+  }, [state.efectivo]);
+
+  return (
+    <div className="card card-success card-outline">
+      <div className="card-header">
+        <h3 className="card-title text-success">
+          Ventas del dia por metodo de pago
+        </h3>
+      </div>
+      <div className="card-body">
+        <canvas id="donutChart"></canvas>
+        <p>          
+          Venta total: <strong>{dollarUS.format(state.total)}</strong>
+          <br/>
+          Efectivo: <strong>{dollarUS.format(state.efectivo)}</strong>
+        </p>
+      </div>
+      {state.load && (
+        <div className="overlay dark">
+          <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+        </div>
+      )}
+    </div>
+  );
 }

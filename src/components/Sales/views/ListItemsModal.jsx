@@ -6,46 +6,56 @@ function ListItemsModal({
   handleClose: _close,
   handleSelect: _Select,
 }) {
+
+
   const [data, setData] = useState({
     item: null,
     cant: cantDefault,
-    precio: 0,
+    price: 0,
   });
+
+  const disabled = data.price <= 0 || isNaN(data.price) ? true : false;
+  
   //Functions
   const handleClose = () => {
       if (_close) _close();
     },
+
+
     handleClickItem = (e, item) => {
       e.preventDefault();
       setData({
         ...data,
-        precio: item.precio,
+        price: item.price,
         item,
       });
     },
+
     handleSelectItem = () => {
       const toSend = {
         ...data,
         item: {
           ...data.item,
-          precio: data.precio,
+          price: data.price,
         },
       };
 
       _Select(toSend);
+
       setData({
         item: null,
         cant: 1,
-        precio: 0,
+        price: 0,
       });
       handleClose();
     },
+
+
     handleChangeCant = ({ name, value }) => {
       setData({
         ...data,
         [name]: parseInt(value),
       });
-      //console.log("[DEBUG] change: " + name, value);
     };
 
   return (
@@ -66,7 +76,7 @@ function ListItemsModal({
               {data.item && data.item.id ? (
                 <>
                   <div className="text-uppercase mb-4">
-                    {data.item.producto}
+                    {data.item.producto}                  
                   </div>
                   <div className="form-group row">
                     <label className="col-2 col-form-label">Cantidad</label>
@@ -85,20 +95,16 @@ function ListItemsModal({
                       <span className="col text-lg">{data.cant}</span>
                     )}
                     <label className="col-2 col-form-label">Precio</label>
-                    {!data.item.precio ? (
-                      <div className="col">
+                    <div className="col">
                         <input
                           type="number"
                           placeholder="Precio"
-                          name="precio"
+                          name="price"
                           className="form-control"
-                          defaultValue={data.precio}
+                          defaultValue={data.price.toString()}
                           onChange={({ target }) => handleChangeCant(target)}
                         />
                       </div>
-                    ) : (
-                      <span className="col text-lg">${data.precio}</span>
-                    )}
                   </div>
                 </>
               ) : (
@@ -112,7 +118,7 @@ function ListItemsModal({
                               <tr key={item.id}>
                                 <td className="text-right">
                                   <span className="badge badge-dark">
-                                    {item.codigo}
+                                    {item.code}
                                   </span>
                                 </td>
                                 <td className="text-capitalize text-left">
@@ -120,10 +126,10 @@ function ListItemsModal({
                                     href="#select"
                                     onClick={(e) => handleClickItem(e, item)}
                                   >
-                                    {item.producto}
+                                    {item.name}
                                   </a>
                                 </td>
-                                <td>${item.precio}</td>
+                                <td>${item.price}</td>
                               </tr>
                             ))}
                           </>
@@ -159,6 +165,7 @@ function ListItemsModal({
               type="button"
               className="btn btn-primary"
               onClick={handleSelectItem}
+              disabled = { disabled }
             >
               <i className="fas fa-check mr-1"></i>
               Seleccionar

@@ -1,51 +1,65 @@
-import moment from "moment";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { saleActions } from "../../../redux/sales/";
+
+//Context
+import { Sale } from "../../../context/SaleContext";
+
+//Hooks
+import useSales from "../../../hooks/useSale";
+
+//Libraries
+import moment from "moment";
 
 function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
-  const { list: items, loading } = useSelector((state) => state.sales),
-    dispatch = useDispatch();
+  const _sales = useSales();
+
   const [search, setSearch] = useState("");
 
-  const handleSelectSale = (e, sale) => {
+  const [saleList, setSaleList] = useState([]);
+
+  const sale = Sale();
+
+  const items =
+    saleList.length !== 0 ? saleList : sale.length !== 0 ? sale : [];
+
+  const handleSelectSale = (e, saleSelected) => {
       if (e) e.preventDefault();
-      _select(sale);
+
+      if (sale.items.length) {
+        window.Swal.fire({
+          title: "Ventas",
+          text: `Si cargas una venta, se cerrará la venta actual`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Cargar",
+          cancelButtonText: "Cancelar",
+          showLoaderOnConfirm: true,
+        }).then(({ dismiss }) => {
+          if (!dismiss) {
+            _select(saleSelected);
+          } else {
+            return null;
+          }
+        });
+      } else {
+        _select(saleSelected);
+      }
     },
     handleChangeSearch = ({ value }) => {
       setSearch(value);
-    },
-    handleSearchEnter = (key) => {
-      if (key === "Enter") {
-        searchInDB(search);
-      }
-    },
-    searchInDB = (search = "") => {
-      dispatch(
-        saleActions.getListSale({
-          orderBy: "created_at",
-          order: "desc",
-          itemsPage: 25,
-          search,
-        })
-      );
     };
 
   useEffect(() => {
-    searchInDB();
-
-    return () => {
-      dispatch(
-        saleActions.setListSales({
-          result: {
-            list: [],
-            metaList: {},
-          },
-        })
-      );
-    };
-    //eslint-disable-next-line
-  }, []);
+    _sales
+      .getSaleList(search)
+      .then((data) => {
+        if (data) {          
+          setSaleList(data.data);
+        } else {
+          console.error("Error al obtener las ventas");
+        }
+      })
+      .catch((error) => console.error(error));
+  }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="modal d-block" tabIndex="-1">
@@ -64,13 +78,11 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                   type="text"
                   className="form-control"
                   placeholder="Buscar por folio o nombre"
-                  onChange={({ target }) => handleChangeSearch(target)}
-                  onKeyPress={({ key }) => handleSearchEnter(key)}
+                  onChange={({ target }) => handleChangeSearch(target)}              
                 />
                 <button
                   type="button"
-                  className="btn btn-default ml-1"
-                  onClick={() => handleSearchEnter("Enter")}
+                  className="btn btn-default ml-1"                  
                 >
                   <i className="fas fa-search"></i>
                 </button>
@@ -98,7 +110,7 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                                   href="#select"
                                   onClick={(e) => handleSelectSale(e, item)}
                                 >
-                                  {item.customer ? item.customer.nombre : "--"}
+                                  {item.customer ? item.customer.name : "--"}
                                 </a>
                               </td>
                               <td className="text-right">
@@ -108,8 +120,11 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
                           ))}
                         </>
                       ) : (
-                        <tr>
-                          <td>No existen ventas para esta coincidencia</td>
+                        <tr className="overlay dark">
+                          <td className="overlay dark">
+                            <i className="fas fa-2x fa-sync-alt fa-spin"></i>
+                            Cargando las ventas!!
+                          </td>
                         </tr>
                       )}
                     </>
@@ -135,11 +150,6 @@ function ListSalesModal({ handleClose: _close, handleSelect: _select }) {
               Cancelar
             </button>
           </div>
-          {loading ? (
-            <div className="overlay dark">
-              <i className="fas fa-2x fa-sync-alt fa-spin"></i>
-            </div>
-          ) : null}
         </div>
       </div>
     </div>

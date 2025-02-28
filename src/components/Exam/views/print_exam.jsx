@@ -42,11 +42,11 @@ export default function PrintExamComponent(props) {
           <div className="row">
             {list.map((sucursal) => (
               <div className="col" key={sucursal.id}>
-                <h5 className="text-capitalize">{sucursal.values.name}</h5>
+                <h5 className="text-capitalize">{sucursal.data.name}</h5>
                 <label className="text-capitalize mx-2">
-                  {sucursal.values.address}
+                  {sucursal.data.address}
                 </label>
-                <span>TEL: {sucursal.values.phone}</span>
+                <span>TEL: {sucursal.data.phone}</span>
               </div>
             ))}
           </div>

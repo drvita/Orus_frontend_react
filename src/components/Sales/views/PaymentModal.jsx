@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-//Actions
-import { saleActions } from "../../../redux/sales/";
+import { useState, useContext } from "react";
+import { ConfigContext } from "../../../context/ConfigContext";
+// import { Sale } from "../../../context/SaleContext";
+
+//Helpers
 import helpers from "../helpers";
 
 function PaymentModal({ sale, forPaid, handleClose: _close }) {
-  const { listBanks } = useSelector((state) => state.sales),
-    dispatch = useDispatch();
+  const config = useContext(ConfigContext);
+  const listBanks = config.data;
+  // const sale = Sale();
+
   //States
   const [data, setData] = useState({
     id: 0,
@@ -16,18 +19,18 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
     bank_id: null,
     details: null,
     auth: null,
+    forPaid: forPaid,
   });
+
   //Functions
   const handleChangeInput = ({ name, value, type }) => {
-      let val = value;
-
-      if (type === "number" || type === "select-one") val = parseFloat(value);
-
-      setData({
-        ...data,
-        [name]: val,
-      });
-    },
+    let val = value;
+    if (type === "number" || type === "select-one") val = parseFloat(value);
+    setData({
+      ...data,
+      [name]: val,
+    });
+  },
     handleSetPayment = () => {
       const payments = [...sale.payments];
       let pagado = 0;
@@ -47,7 +50,7 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
         data.metodopago !== 4 &&
         data.metodopago !== 0
       ) {
-        if (!data.bank_id) {
+        if (data.bank_id === "" || data.bank_id === null) {
           window.Swal.fire({
             icon: "warning",
             title: "Seleccione un banco",
@@ -56,10 +59,18 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
           });
           return false;
         }
-        if (data.auth.toString().length < 4) {
+        if (data.auth?.length < 4) {
           window.Swal.fire({
             icon: "warning",
             title: "Espesifique los ultimos 4 numeros de la tarjeta",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          return false;
+        } else if (data.auth?.length > 4) {
+          window.Swal.fire({
+            icon: "warning",
+            title: "Espesifique solamente 4 numeros",
             showConfirmButton: false,
             timer: 1500,
           });
@@ -81,33 +92,25 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
 
       payments.push({
         ...data,
+        id: `new${Date.now().toString()}`,
         metodoname: helpers.getMethodName(data.metodopago),
         total: forPaid < data.total ? forPaid : data.total,
       });
+
       payments.forEach((pay) => (pagado += pay.total));
 
       _close();
-      dispatch(
-        saleActions.saveSale({
-          id: sale.id,
-          data: {
-            ...sale,
-            pagado,
-            items: JSON.stringify(sale.items),
-            payments: JSON.stringify(payments),
-          },
-        })
-      );
+
+      sale.set({
+        ...sale,
+        payments: payments,
+        thereNews: true,
+      });
     },
     handleSubmitForm = (e) => {
       e.preventDefault();
       handleSetPayment();
     };
-
-  useEffect(() => {
-    dispatch(saleActions.getListBanks());
-    //eslint-disable-next-line
-  }, []);
 
   return (
     <div className="modal d-block" tabIndex="-1">
@@ -165,20 +168,30 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
                     {data.metodopago !== 4 && data.metodopago !== 0 ? (
                       <>
                         <label>Banco</label>
-                        <select
-                          name="bank_id"
-                          className="custom-select text-uppercase"
-                          onChange={({ target }) => handleChangeInput(target)}
-                        >
-                          <option value="">--Seleccione un banco--</option>
-                          {listBanks.map((bank) => {
-                            return (
-                              <option key={bank.id} value={bank.id}>
-                                {bank.name}
-                              </option>
-                            );
-                          })}
-                        </select>
+                        {data.bank_id !== 0 ?
+                          <select
+                            name="bank_id"
+                            className="custom-select text-uppercase"
+                            onChange={({ target }) => handleChangeInput(target)}
+                          >
+                            <option value="">--Seleccione un banco--</option>
+                            {listBanks.map((bank) => {
+                              return bank.name === "bank" ? (
+                                <option key={bank.id} value={bank.id}>
+                                  {bank.data}
+                                </option>
+                              ) : null;
+                            })}
+                            <option value="0">Otro</option>
+                          </select>
+                          : <input
+                            type="text"
+                            className="form-control text-uppercase"
+                            name="details"
+                            placeholder="Escriba el nombre del banco"
+                            onChange={({ target }) => handleChangeInput(target)}
+                          />
+                        }
                       </>
                     ) : !data.metodopago ? (
                       <>
@@ -246,7 +259,7 @@ function PaymentModal({ sale, forPaid, handleClose: _close }) {
               type="button"
               className="btn btn-primary"
               onClick={() => handleSetPayment()}
-              disabled={!data.total}
+              disabled={!data.total || data.total > data.forPaid}
             >
               <i className="fas fa-money-bill mr-1"></i>
               Abonar

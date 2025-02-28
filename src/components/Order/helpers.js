@@ -14,6 +14,42 @@ const handleStatusString = (status) => {
       return "garantia";
   }
 };
+const getBadgeStatus = (status) => {
+  switch (status) {
+    case 0:
+      return (
+        <span className="badge badge-light mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+    case 1:
+    case 2:
+      return (
+        <span className="badge badge-primary mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+    case 3:
+      return (
+        <span className="badge badge-info mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+    case 4:
+      return (
+        <span className="badge badge-secondary mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+    default:
+      return (
+        <span className="badge badge-dark mr-2 text-uppercase">
+          {handleStatusString(status)}
+        </span>
+      );
+  }
+};
+
 const getStatusType = [
   "procesando",
   "laboratorio",
@@ -21,9 +57,9 @@ const getStatusType = [
   "terminado",
   "entregado",
 ];
+
 const handleDeleteOrder = (order, options, _delete) => {
   if (order.id) {
-    //Check sale
     if (order.estado) {
       window.Swal.fire({
         title: "Verificacion",
@@ -40,7 +76,7 @@ const handleDeleteOrder = (order, options, _delete) => {
       });
       return false;
     }
-    //delete confirm
+
     window.Swal.fire({
       text: `¿Esta seguro de eliminar el pedido ${order.id}?`,
       icon: "question",
@@ -62,6 +98,7 @@ const handleDeleteOrder = (order, options, _delete) => {
     return false;
   }
 };
+
 const handleSaveOrder = (id, data, options, _save, _erase) => {
   window.Swal.fire({
     title: "Almacenamiento",
@@ -70,7 +107,6 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
       : "¿Esta seguro de crear un nuevo pedido?",
     icon: "question",
     showCancelButton: true,
-    //confirmButtonColor: "#007bff",
     confirmButtonText: id ? "Actualizar" : "Crear",
     cancelButtonText: "Cancelar",
     showLoaderOnConfirm: true,
@@ -86,6 +122,7 @@ const handleSaveOrder = (id, data, options, _save, _erase) => {
     }
   });
 };
+
 const getDataTemporary = (field) => {
     const data = JSON.parse(localStorage.getItem("OrusSystem") ?? "");
 
@@ -103,26 +140,28 @@ const getDataTemporary = (field) => {
     };
 
     localToSave.orders.push(data);
-    localStorage.setItem("OrusSystem", JSON.stringify(localToSave));
+    // localStorage.setItem("OrusSystem", JSON.stringify(localToSave));
   },
   removeDataTemporary = (id, fn) => {
-    const local = getDataTemporary(),
-      data = {
-        ...local,
-        orders: local.orders.filter((item) => item.id !== id),
-      };
-    localStorage.setItem("OrusSystem", JSON.stringify(data));
+    // const local = getDataTemporary(),
+    //   data = {
+    //     ...local,
+    //     orders: local.orders.filter((item) => item.id !== id),
+    //   };
+    // localStorage.setItem("OrusSystem", JSON.stringify(data));
     if (fn) fn();
   },
   getDataOneItem = (id) => {
     const local = getDataTemporary(),
       data = local.orders.filter((item) => item.id === id);
-
+    if (data) {
+    }
     return data[0] ?? {};
   };
 
 const toExport = {
   handleStatusString,
+  getBadgeStatus,
   handleDeleteOrder,
   handleSaveOrder,
   getDataTemporary,

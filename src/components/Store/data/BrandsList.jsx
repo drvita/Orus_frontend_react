@@ -6,7 +6,7 @@ export default function BrandsList({
   return (
     <ul className="card-text list-group">
       {!brands.length ? (
-        <li className="list-group-item">
+        <li className="list-group-item">  
           <p className="text-danger">
             <i className="fas fa-info-circle mr-1"></i>
             No exiten marcas para este proveedor!
@@ -21,9 +21,9 @@ export default function BrandsList({
             >
               <span className="text-dark text-uppercase text-truncate">
                 <i className="fas fa-thumbtack mr-1"></i>
-                {brand.nombre}
+                {brand.name}
               </span>
-              {handleEdit || handleDelete}
+              
               <div>
                 {handleEdit && (
                   <span

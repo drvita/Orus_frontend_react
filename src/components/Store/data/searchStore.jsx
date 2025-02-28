@@ -1,90 +1,76 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { connect } from "react-redux";
-//Actions
-import { storeActions } from "../../../redux/store/";
+
+//Hooks
+import useProducts from "../../../hooks/useProducts";
 
 function SearchItemsComponent(props) {
+  const hookProducts = useProducts();
+
   // Props and vars
   const {
-      items,
-      meta,
-      item = { producto: "" },
-      _getList,
-      _setList,
-      handleItemSelect: _handleItemSelect,
-    } = props,
-    perPage = 10;
+    item = { name: "" },
+    handleItemSelect: _handleItemSelect,
+  } = props;
+
   // States
-  const [search, setSearch] = useState(item.producto),
-    [timer, setTimer] = useState(""),
-    [load, setLoad] = useState(false);
-  // { dataLoggin: user } = useSelector((state) => state.users);
+  const [search, setSearch] = useState(item.name),
+  [timer, setTimer] = useState(""),
+  [load, setLoad] = useState(false),
+  [items, setItems] = useState([]);
+
   // Functions
   const handleChangeSearch = ({ target }) => {
-      const { value } = target;
-      setSearch(value.toLowerCase());
-      setLoad(true);
-    },
-    handleSelect = (item) => {
-      _setList({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      });
-      _handleItemSelect(item);
-      setSearch(item.producto.toUpperCase());
-    };
+    const { value } = target;
+    setSearch(value.toLowerCase());
+    setLoad(true);
+  };
+
+  const handleSelect = (item) => {
+    _handleItemSelect(item);
+    setSearch(item.name.toUpperCase());
+    setItems([]);
+  };
 
   useEffect(() => {
     let toTimer = null;
     if (search.length > 2 && !item.store_items_id) {
       if (timer) clearTimeout(timer);
       toTimer = setTimeout(() => {
-        _getList({
-          search: search,
-          itemsPage: perPage,
-          // branch: user.branch.id ? user.branch.id : null,
+        hookProducts.getProducts(search).then((data) => {
+          if (data) {
+            setItems(data.data);
+          } else {
+            console.error("Error al obtener la lista de productos");
+          }
         });
         setTimer("");
         setLoad(false);
       }, 1000);
       setTimer(toTimer);
     }
+
     if (!search.length && items.length) {
       if (timer) clearTimeout(timer);
-      _setList({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      });
       setLoad(false);
     }
+
+    if(!search){
+      setItems([]);
+    }
   }, [search]);
-  useEffect(() => {
-    return () => {
-      _setList({
-        result: {
-          list: [],
-          metaList: {},
-        },
-      });
-    };
-  }, []);
 
   return (
     <>
       <label>
         Producto
         {load ? (
-          <small
+          <span
             className="position-absolute text-primary ml-2"
             style={{ zIndex: "101", top: "0" }}
           >
             Buscando...
-          </small>
+          </span>
         ) : null}
       </label>
       <input
@@ -114,7 +100,7 @@ function SearchItemsComponent(props) {
               .map((product) => {
                 return getItemToShow(product, handleSelect);
               })}
-            {meta.total > perPage && (
+            {/* {meta.total > perPage && (
               <a
                 href="#more"
                 className="list-group-item text-center text-dark text-bold"
@@ -123,7 +109,7 @@ function SearchItemsComponent(props) {
                 <i className="fas fa-info-circle mr-1"></i>
                 Existen mas registros, sea más espesifico
               </a>
-            )}
+            )} */}
           </div>
         </div>
       ) : null}
@@ -131,7 +117,7 @@ function SearchItemsComponent(props) {
   );
 }
 
-const mapStateToProps = ({ storeItem }) => {
+/* const mapStateToProps = ({ storeItem }) => {
     return {
       items: storeItem.list,
       meta: storeItem.metaList,
@@ -141,12 +127,14 @@ const mapStateToProps = ({ storeItem }) => {
   mapActionsToProps = {
     _getList: storeActions.getListStore,
     _setList: storeActions.setListStore,
-  };
+  }; */
 
-export default connect(
+/* export default connect(
   mapStateToProps,
   mapActionsToProps
-)(SearchItemsComponent);
+)(SearchItemsComponent); */
+
+export default SearchItemsComponent;
 
 function getItemToShow(i, handleSelect) {
   if (i.cant !== i.cant_total) {
@@ -162,7 +150,7 @@ function getItemToShow(i, handleSelect) {
           }}
         >
           <span className="text-truncate text-uppercase text-muted">
-            [S]-{i.producto}
+            [S]-{i.name}
           </span>
           <span className="badge badge-dark badge-pill">{i.cant_total}</span>
         </a>
@@ -179,7 +167,7 @@ function getItemToShow(i, handleSelect) {
         }}
       >
         <span className="text-truncate text-uppercase text-primary">
-          {i.producto}
+          {i.name}
         </span>
         <span className="badge badge-dark badge-pill">{i.cant_total}</span>
       </a>
@@ -196,7 +184,7 @@ function getItemToShow(i, handleSelect) {
         }}
       >
         <span className="text-truncate text-uppercase text-danger">
-          [X]-{i.producto}
+          [X]-{i.name}
         </span>
         <span className="badge badge-dark badge-pill">{i.cant_total}</span>
       </a>
@@ -214,7 +202,7 @@ function getItemToShow(i, handleSelect) {
       }}
     >
       <span className="text-truncate text-uppercase text-primary">
-        {i.producto}
+        {i.name}
       </span>
       <span className="badge badge-dark badge-pill">{i.cant}</span>
     </a>

@@ -34,7 +34,6 @@ export default class ToolsCategory extends Component {
   }
   componentDidUpdate(props, state) {
     if (state.page !== this.state.page) {
-      console.log("Recargando categorias");
       this.getCategories();
     }
   }
@@ -269,7 +268,6 @@ export default class ToolsCategory extends Component {
           let { host, token } = this.state;
 
           //Inicio de proceso de eliminción por API
-          console.log("Solicitud de eliminación de categoria por API");
           return fetch("http://" + host + "/api/categories/" + id, {
             method: "DELETE",
             signal: this.signal,
@@ -307,7 +305,6 @@ export default class ToolsCategory extends Component {
       },
     }).then((result) => {
       if (result && !result.dismiss && result.value) {
-        console.log("Categoria eliminado");
         window.Swal.fire({
           icon: "success",
           title: "Categoria eliminada con exito",
@@ -315,7 +312,6 @@ export default class ToolsCategory extends Component {
           timer: 1500,
         }).then((res) => this.getCategories());
       } else if (result && !result.dismiss) {
-        console.log("Orus res: ", result);
         window.Swal.fire(
           "Error",
           "Se perdio la conexion con el servidor",
@@ -361,7 +357,6 @@ export default class ToolsCategory extends Component {
             };
 
           //Actualiza el pedido o creamos un pedido nuevo según el ID
-          console.log("Enviando datos a API para almacenar");
           return fetch("http://" + host + "/api/categories", {
             method: "POST",
             body: JSON.stringify(body),
@@ -398,7 +393,6 @@ export default class ToolsCategory extends Component {
         let data = result.value;
 
         if (data.data) {
-          console.log("Categoria almacenada");
           window.Swal.fire({
             icon: "success",
             title: "Categoria almacenada con exito",
@@ -448,73 +442,8 @@ export default class ToolsCategory extends Component {
         });
       }
 
-      console.log("Descargando lista de categorias");
-
 
       const {data} = await api(urlGetCategories);
-
-      if(data){
-        console.log("DATA CATEGORIES HERE", data);
-
-        console.log("Lista de categorias descargadas");
-       /*  this.setState({
-            category_list: data,
-            meta: data.meta,
-            newItem: 0,
-            add: false,
-            category_id: 0,
-            name: "",
-            load: false,
-          }); */
-
-      }
-      else{
-        console.log("Error al descargar categorias");
-      }
-
-
-   
-
-    /* fetch(url + page + itemsPage, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-        return response.json();
-      })
-      .then((cat) => {
-        if (cat.data) {
-          console.log("Lista de categorias descargadas");
-          this.setState({
-            category_list: cat.data,
-            meta: cat.meta,
-            newItem: 0,
-            add: false,
-            category_id: 0,
-            name: "",
-            load: false,
-          });
-        }
-      })
-      .catch((e) => {
-        if (e.code === 20) {
-          console.error("[Orus system] Salida por error:", e.code, e.message);
-          return false;
-        }
-
-        window.Swal.fire(
-          "Fallo de conexion",
-          "Verifique la conexion al servidor",
-          "error"
-        );
-      }); */
   };
 
 

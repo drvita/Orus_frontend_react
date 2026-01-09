@@ -242,7 +242,7 @@ export default function ListItemComponent(props) {
               <tr>
                 <td className="text-right text-lg" colSpan="5">
                   <span className=" mr-2">Total:</span>
-                  <label>$ {state.total.toFixed(2)}</label>
+                  <label>$ {Number(state.total || 0).toFixed(2)}</label>
                 </td>
                 <td>&nbsp;</td>
               </tr>

@@ -18,7 +18,7 @@ const ListOfSalesComponent = (props) => {
           return (
             <tr key={sale.id}>
               <th>#{sale.id}</th>
-              <td>$ {sale.total.toFixed(2)}</td>
+              <td>$ {Number(sale.total || 0).toFixed(2)}</td>
               <td>#{sale.pedido}</td>
               <td className="text-truncate">
                 <i className="fas fa-clock mr-2"></i>

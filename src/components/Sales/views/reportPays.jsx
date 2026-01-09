@@ -46,11 +46,11 @@ export default function ReportPays({ filters, changeState, auth }) {
         if (data && data.length) {
           await data.map((mp) => {
             labels.push(mp.method);
-            values.push(mp.total.toFixed(2));
+            values.push(Number(mp.total || 0).toFixed(2));
             if (mp.method === "efectivo") {
-              efectivo = mp.total;
+              efectivo = Number(mp.total || 0);
             }
-            total += mp.total;
+            total += Number(mp.total || 0);
             return null;
           });
         } else {

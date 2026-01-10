@@ -40,15 +40,15 @@ export default function useUser({ children }) {
 
       const toSave = {
         isLogged: data.isLogged ?? user.isLogged,
-        idUser: data.id,
-        username: data.username.toLowerCase(),
-        name: data.name.toLowerCase(),
-        rol: 2,
-        email: data.email,
-        token: data.token ?? user.token,
-        branch: { ...data.branch.data, id: data.branch.id },
-        roles: data.roles[0],
-        permissions: data.permissions,
+        idUser: data.id || user.idUser,
+        username: (data.username || user.username || "").toLowerCase(),
+        name: (data.name || user.name || "").toLowerCase(),
+        rol: data.rol || user.rol || 2,
+        email: data.email || user.email,
+        token: data.token || user.token,
+        branch: data.branch ? { ...data.branch.data, id: data.branch.id } : user.branch,
+        roles: data.roles ? data.roles[0] : user.roles,
+        permissions: data.permissions || user.permissions,
       };      
       setUser(toSave);
       //localStorage.setItem('OrusSystemLogin', JSON.stringify(toSave));
@@ -70,11 +70,12 @@ export default function useUser({ children }) {
             return { status: false, data };
           }
 
-          const { data: user } = data;
+          const { data: userData } = data;
+          const token = data.token || data.access_token || userData?.token;
 
           setUserData({
-            ...user,
-            token: data.token,
+            ...userData,
+            token: token,
             isLogged: true,
           });
 

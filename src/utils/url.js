@@ -8,38 +8,62 @@ export function getLastParam() {
 
 export function api(url, method = "GET", body, controller = null) {
   return new Promise((done, reject) => {
-    const LS = localStorage.getItem("OrusSystem"),
-      SS = sessionStorage.getItem("OrusSystemLogin"),
-      {
-        protocol: PROTOCOL = window.location.protocol,
-        host: HOST = window.location.hostname,
-        port: PORT = window.location.port,
-      } = JSON.parse(LS ? LS : "{}"),
-      { token: TOKEN = "" } = JSON.parse(SS ? SS : "{}");
-    const param = {
-      method,
-      url: `${PROTOCOL}://${HOST}:${PORT}/api/${url}`,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + TOKEN,
-      },
+    let protocol = window.location.protocol.replace(":", "");
+    let host = window.location.hostname;
+    let port = window.location.port;
+    let token = "";
+
+    // Load server config from localStorage
+    try {
+      const LS = localStorage.getItem("OrusSystem");
+      if (LS) {
+        const config = JSON.parse(LS);
+        protocol = config.protocol || protocol;
+        host = config.host || host;
+        port = config.port || "";
+      }
+    } catch (e) {
+      console.error("[Orus System] Error parsing localStorage config:", e);
+    }
+
+    // Load session (token) from sessionStorage
+    try {
+      const SS = sessionStorage.getItem("OrusSystemLogin");
+      if (SS) {
+        const sessionData = JSON.parse(SS);
+        token = sessionData.token || "";
+      }
+    } catch (e) {
+      console.error("[Orus System] Error parsing sessionStorage session:", e);
+    }
+
+    const baseUrl = `${protocol}://${host}${port ? ":" + port : ""}`;
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
     };
 
-    if (["POST", "PUT"].includes(method.toUpperCase()) && body) {
-      param.data = JSON.stringify(body);
+    if (token) {
+      headers["Authorization"] = "Bearer " + token;
+    }
+
+    const param = {
+      method,
+      url: `${baseUrl}/api/${url}`,
+      headers,
+    };
+
+    if (["POST", "PUT", "PATCH"].includes(method.toUpperCase()) && body) {
+      // Axios handles objects automatically, no need to stringify if using default config
+      param.data = body;
     }
     if (controller) param.signal = controller.signal;
 
     axios(param)
-      .then((res) => {
-        return done(res.data);
-      })
+      .then((res) => done(res.data))
       .catch((err) => {
-        console.error("[Orus System] Query API failer:", url);
-        console.error("[Orus System] Query API code:", err?.code);
-        console.error("[Orus System] Query API message:", err?.message);
-        return reject(err.response?.data);
+        console.error("[Orus System] Query API failure:", url, err.message);
+        return reject(err.response?.data || err);
       });
   });
 }

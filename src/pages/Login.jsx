@@ -14,9 +14,9 @@ export default function Login() {
     port: window.location.port,
   };
   const storage = LS ? JSON.parse(LS) : defaultStorage;
-  const server = `${storage.protocol + "://" ?? ""}${storage.host ?? ""}${
-    ":" + storage.port ?? ""
-  }`;
+  const server = `${storage.protocol ? storage.protocol + "://" : ""}${
+    storage.host ?? ""
+  }${storage.port ? ":" + storage.port : ""}`;
   const [state, setState] = useState({
     load: false,
     email: "",
@@ -152,46 +152,56 @@ export default function Login() {
       });
     }
 
-    const server = txtHost.split(":");
-    let host, port, protocol;
-
-    if (server.length === 2) {
-      protocol = window.location.protocol.replace(":", "");
-      host = server[0].replace("//", "");
-      port = server[1];
-    } else if (server.length === 3) {
-      protocol = server[0];
-      host = server[1].replace("//", "");
-      port = server[2];
-    } else {
-      protocol = window.location.protocol.replace(":", "");
-      host = window.location.hostname;
-      port = window.location.port;
+    let urlString = txtHost.trim().toLowerCase();
+    // Remove trailing slash
+    if (urlString.endsWith("/")) {
+      urlString = urlString.slice(0, -1);
     }
 
-    localStorage.setItem(
-      "OrusSystem",
-      JSON.stringify({
-        ...storage,
-        protocol,
-        host,
-        port,
-        token: "",
-      })
-    );
+    // Add protocol if missing
+    if (!urlString.includes("://")) {
+      urlString = `${window.location.protocol}//${urlString}`;
+    }
 
-    setState({
-      ...state,
-      hostShow: false,
-    });
+    try {
+      const url = new URL(urlString);
+      const protocol = url.protocol.replace(":", "");
+      const host = url.hostname;
+      const port = url.port || "";
 
-    window.Swal.fire({
-      icon: "success",
-      text: "Cambio de servidor exitoso",
-      showConfirmButton: false,
-      timer: 2500,
-      position: "top center",
-    });
+      localStorage.setItem(
+        "OrusSystem",
+        JSON.stringify({
+          ...storage,
+          protocol,
+          host,
+          port,
+          token: "",
+        })
+      );
+
+      setState({
+        ...state,
+        txtHost: `${protocol}://${host}${url.port ? ":" + port : ""}`,
+        hostShow: false,
+      });
+
+      window.Swal.fire({
+        icon: "success",
+        text: "Cambio de servidor exitoso",
+        showConfirmButton: false,
+        timer: 2500,
+        position: "top center",
+      });
+    } catch (e) {
+      window.Swal.fire({
+        icon: "error",
+        text: "La URL del servidor no es válida",
+        showConfirmButton: false,
+        timer: 2500,
+        position: "top center",
+      });
+    }
   };
   const handleEmailEnter = () => {
     if (state.email) inputPassword.current.focus();
@@ -305,6 +315,7 @@ export default function Login() {
                   ) : null}
                 </div>
               </div>
+
               <div className="row">
                 <div className="text-center col-12">
                   <button

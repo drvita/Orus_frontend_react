@@ -253,7 +253,7 @@ export default function InboxExams() {
                           }
                         >
                           <i className="fas fa-user text-sm mr-2"></i>
-                          {exam.customer?.name.toLowerCase()}
+                          {exam.customer?.name.toLowerCase() || exam.paciente?.name.toLowerCase()}
                         </span>
                       </a>
                     </td>

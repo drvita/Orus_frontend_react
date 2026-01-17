@@ -3,7 +3,7 @@ import moment from "moment";
 import useExam from "../../../hooks/useExam";
 
 export default function CardExamByUser({
-  exams,
+  exams = [],
   customer_id,
   handleClick: _handleClick,
 }) {

@@ -181,12 +181,12 @@ export default function AsistentComponent(props) {
               ...state,
               id: data.id,
               sale: {
-                id: data.sale.id,
-                total: data.sale.total,
-                subtotal: data.sale.subtotal,
-                discount: data.sale.descuento,
-                payments: data.sale.payments,
-                paid: data.sale.paid,
+                id: data.sale?.id,
+                total: data.sale?.total || 0,
+                subtotal: data.sale?.subtotal || 0,
+                discount: data.sale?.descuento || 0,
+                payments: data.sale?.payments || [],
+                paid: data.sale?.paid || 0,
                 customer: data.paciente,
               },
               print: true,
@@ -235,7 +235,7 @@ export default function AsistentComponent(props) {
                     setState({
                       ...state,
                       contact_id: contact.id ?? 0,
-                      examsList: contact.exams.length ? contact.exams : [],
+                      examsList: contact.exams?.length ? contact.exams : [],
                       contact,
                     });
                   }

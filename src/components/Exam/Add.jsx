@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import moment from "moment";
 
 //Componentes
 import Generales from "./views/GeneralesExam";
@@ -125,7 +126,7 @@ export default function Add(props) {
         ...state,
         loading: false,
       });
-      _exams.getExam(id).then((res) => {        
+      _exams.getExam(id).then((res) => {
         res.category_ii = res.category_ii?.id;
         res.category_id = res.category_id?.id;        
 
@@ -509,9 +510,10 @@ export default function Add(props) {
 
 function getDataDefault(data = {}) {    
   let edad = 0;
-  if(data?.customer?.age){
-    edad = data.customer.age;
+  if(data?.paciente?.birthday){
+    edad = moment().diff(moment(data.paciente.birthday), 'years');
   }
+
   return {
     id: data.id ?? 0,
     age: data.age ? data.age : edad,    
@@ -583,9 +585,9 @@ function getDataDefault(data = {}) {
     d_fcloi: data.d_fcloi ?? 0,
     d_fclod_time: data.d_fclod_time ?? "00:00",
     d_fcloi_time: data.d_fcloi_time ?? "00:00",
-    contact: data.customer ?? {},
+    contact: data.paciente ?? {},
     status: data.status ?? 1,
-    contact_id: data.customer?.id,
+    contact_id: data.paciente?.id,
     category_id: data.category_id ?? 0,
     category_ii: data.category_ii ?? 0,
   };

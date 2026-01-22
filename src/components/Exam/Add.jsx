@@ -18,10 +18,7 @@ import SideBarRigth from "./views/SideBarRigth";
 import useExam from "../../hooks/useExam";
 import Activitys from "../Activitys";
 
-export default function Add(props) {
-
-
-  const [state, setState] = useState({
+const dataDefault = {
     ...getDataDefault(),
     loading: false,
     panel: 0,
@@ -37,9 +34,10 @@ export default function Add(props) {
       recomendaciones: false,
     },
     activitys:[],
-  });
+}
 
-  
+export default function Add(props) {
+  const [state, setState] = useState(dataDefault);
   const { id } = props.match.params;
   const _exams = useExam();
   const history = useHistory();
@@ -128,7 +126,7 @@ export default function Add(props) {
       });
       _exams.getExam(id).then((res) => {
         res.category_ii = res.category_ii?.id;
-        res.category_id = res.category_id?.id;        
+        res.category_id = res.category_id?.id;
 
         setState({
           ...getDataDefault(res),

@@ -77,6 +77,7 @@ export default function InboxComponent() {
     setLoading(true);
     _users.getListUsers(_userContext.options).then((data) => {
       if (data) {
+        console.log("[DEBUG] Data", data.data);
         setData({
           ...data,
           users: data.data,
@@ -173,7 +174,7 @@ export default function InboxComponent() {
                     </td>
                     <td className="text-truncate">
                       <span className="text-capitalize">
-                        {user.branch.data.name}
+                        {user.branch.name}
                       </span>
                     </td>
                     {_userContext.options.orderby === "created_at" ? (

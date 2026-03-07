@@ -78,7 +78,6 @@ export default function Code(props) {
         value={props.code}
         onChange={({ target }) => {
           const { value } = target;
-          console.log("[DEBUG] onchange code", value);
           props.onChangeProductCode(value);
         }}
         onBlur={() => {

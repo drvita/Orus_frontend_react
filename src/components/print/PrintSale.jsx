@@ -21,7 +21,6 @@ export default function PrintSaleComponent(props) {
       "_blank",
       "fullscreen=1,menubar=0,resizable=0,scrollbars=0,titlebar=0,toolbar=0,top=0,left=300"
     );
-
     popup.document.write(getPage(props.data, currentBranch));
     popup.window.print();
 

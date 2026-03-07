@@ -65,7 +65,6 @@ export default function FormEntries({
   useEffect(() => {
     if (!itemSearch) return;
     const stateLocal = { ...state, name: itemSearch.name, used: false };
-    console.log("[DEBUG] Search:", itemSearch);
     if (itemSearch.barcode) {
       stateLocal.codeBar = itemSearch.barcode;
     }

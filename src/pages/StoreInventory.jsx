@@ -76,7 +76,7 @@ export default function Inventory() {
             showLoaderOnConfirm: true,
           }).then(({ dismiss }) => {
             if (!dismiss) {
-              console.log("[DEBUG] Show message ok");
+              console.log("[App.DEBUG] Show message ok");
             }
           });
         } else {
@@ -92,7 +92,7 @@ export default function Inventory() {
             showLoaderOnConfirm: true,
           }).then(({ dismiss }) => {
             if (!dismiss) {
-              console.log("[DEBUG] Show message failer");
+              console.log("[App.DEBUG] Show message failer");
             }
           });
         }

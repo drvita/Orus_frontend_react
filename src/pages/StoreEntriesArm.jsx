@@ -76,7 +76,6 @@ export default function StoreEntriesArm() {
             timer: 2500,
           });
 
-          console.log("[DEBUG] Send items", items);
           setState({
             numFactura: "",
             btnStatus: false,

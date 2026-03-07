@@ -67,7 +67,6 @@ export default function StoreEntries() {
             timer: 2500,
           });
 
-          console.log("[DEBUG] Send items", items);
           setState({
             numFactura: "",
             btnStatus: false,
@@ -80,7 +79,6 @@ export default function StoreEntries() {
   };
 
   useEffect(() => {
-    // console.log("[DEBUG] Items useEffect:", state.items);
     let btnStatus = true;
     const itemsValid = state.items.filter(
       (i) => i.id && i.branch_id && i.cant && i.price && i.price >= i.cost

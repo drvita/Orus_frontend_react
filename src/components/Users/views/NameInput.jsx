@@ -18,7 +18,6 @@ export default function NameInputComponent(props) {
   const validUser = () => {
     const regex = /^[\w\s]{4,}$/;
     if (!regex.test(value)) {
-      console.log("[DEBUG] Regex", value, regex.test(value));
       setError("El nombre completo debe de tener entre almenos 4 caracteres");
       return;
     }

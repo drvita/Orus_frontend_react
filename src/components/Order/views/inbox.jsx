@@ -202,7 +202,7 @@ const InboxOrderComponent = (props) => {
                         }
                       >
                         <i className="fas fa-user text-sm mr-2"></i>
-                        {pedido.paciente.name}
+                        {pedido.paciente?.name}
                       </span>
                     </a>
                   </td>

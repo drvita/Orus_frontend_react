@@ -77,7 +77,6 @@ export default function InboxComponent() {
     setLoading(true);
     _users.getListUsers(_userContext.options).then((data) => {
       if (data) {
-        console.log("[DEBUG] Data", data.data);
         setData({
           ...data,
           users: data.data,

@@ -102,8 +102,6 @@ export default function RecomendationGlass(props) {
             ...state,
             category: cat,
           });
-        } else {
-          console.error("[DEBUG] NEW ERROR", cat);
         }
       });
     }
